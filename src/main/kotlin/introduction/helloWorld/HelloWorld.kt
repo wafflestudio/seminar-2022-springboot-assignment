@@ -1,4 +1,4 @@
-package introduction.helloworld
+package introduction.helloWorld
 
 fun main() {
     println("Hello, World!")
