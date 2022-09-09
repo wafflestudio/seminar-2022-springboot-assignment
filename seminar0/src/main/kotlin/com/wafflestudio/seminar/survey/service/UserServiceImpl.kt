@@ -15,11 +15,15 @@ class UserServiceImpl(
         return surveyResponseRepository.findAll()
     }
 
-    override fun getSurveyId(id: Long): SurveyResponse {
+    override fun getSurveyOfId(id: Long): SurveyResponse {
         return surveyResponseRepository.findById(id)
     }
 
-    override fun getOSId(id: Long): OperatingSystem {
+    override fun getOSOfId(id: Long): OperatingSystem {
         return osRepository.findById(id)
+    }
+
+    override fun getOSOfName(name: String): OperatingSystem {
+        return osRepository.findByName(name)
     }
 }

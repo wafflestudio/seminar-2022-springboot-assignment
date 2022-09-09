@@ -5,6 +5,7 @@ import com.wafflestudio.seminar.survey.domain.SurveyResponse
 
 interface UserService {
     fun getAllSurvey(): List<SurveyResponse>
-    fun getSurveyId(id: Long): SurveyResponse
-    fun getOSId(id: Long): OperatingSystem
+    fun getSurveyOfId(id: Long): SurveyResponse
+    fun getOSOfId(id: Long): OperatingSystem
+    fun getOSOfName(name: String): OperatingSystem
 }
