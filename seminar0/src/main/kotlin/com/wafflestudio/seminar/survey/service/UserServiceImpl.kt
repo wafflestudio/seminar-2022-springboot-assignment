@@ -9,4 +9,8 @@ class UserServiceImpl(private val surveyResponseRepository: SurveyResponseReposi
     override fun getAllSurvey(): List<SurveyResponse> {
         return surveyResponseRepository.findAll()
     }
+
+    override fun getSurveyId(id: Long): SurveyResponse {
+        return surveyResponseRepository.findById(id)
+    }
 }
