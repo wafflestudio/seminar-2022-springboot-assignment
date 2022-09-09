@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.api
 
+import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.survey.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,5 +17,10 @@ class UserController(private val userService: UserService) {
     @GetMapping("/survey-id")
     fun getSurveyId(@RequestHeader(name = "id", required = true) id: Long): SurveyResponse {
         return userService.getSurveyId(id)
+    }
+    
+    @GetMapping("/os-id")
+    fun getOSId(@RequestHeader(name = "id", required = true) id: Long): OperatingSystem {
+        return userService.getOSId(id)
     }
 }
