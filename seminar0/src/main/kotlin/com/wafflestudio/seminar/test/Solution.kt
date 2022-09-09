@@ -35,7 +35,15 @@ fun main() {
                 }
                 currentSelect-=commandArray[2].toInt()
             }
-            print("ok")
+            else if(commandArray[1]=="-d"){
+                if (mainArray != null) {
+                    if(currentSelect+commandArray[2].toInt()> mainArray.size-1){
+                        println("Error 100")
+                        continue
+                    }
+                currentSelect+=commandArray[2].toInt()
+                }
+            
         }
         else if(commandArray[0]=="delete"){
             print("ok")
