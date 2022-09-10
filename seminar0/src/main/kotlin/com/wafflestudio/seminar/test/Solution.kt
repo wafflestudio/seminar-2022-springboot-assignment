@@ -4,24 +4,24 @@ import java.util.Stack
 import kotlin.system.exitProcess
 
 /**
- * TODO 
+ * TODO
  *   3번을 코틀린으로 다시 한번 풀어봐요.
  *   객체를 통한 구조화를 시도해보면 좋아요 :)
  */
 fun main() {
     // 여기를 채워 주세요!
-    // Get Students List
     val students: List<String> = makeList(readln())
     val studentList = StudentList(students)
-    
-    while (true) {
+    var toBeContinued = true
+
+    while (toBeContinued) {
         val decoded: Pair<Command, Int?> = decode(readln())
-        execute(decoded, studentList)
+        toBeContinued = execute(decoded, studentList)
     }
 }
 
 fun makeList(input: String): List<String> {
-    return input.substring(1 .. input.length-2).split(",").map {it.substring(1..it.length-2)}
+    return input.substring(1..input.length - 2).split(",").map { it.substring(1..it.length - 2) }
 }
 
 fun decode(input: String): Pair<Command, Int?> {
@@ -51,25 +51,29 @@ fun decode(input: String): Pair<Command, Int?> {
         }
         Pair(cmd, num)
     }
-    
+
     return cmdNum
 }
-fun execute(decoded: Pair<Command, Int?>, studentList: StudentList) {
+fun execute(decoded: Pair<Command, Int?>, studentList: StudentList): Boolean {
     when (decoded.first) {
         Command.MOVE -> {
             studentList.move(decoded.second!!)
+            return true
         }
         Command.DELETE -> {
             studentList.delete()
+            return true
         }
         Command.RESTORE -> {
             studentList.restore()
+            return true
         }
         Command.LIST -> {
             studentList.list()
+            return true
         }
         Command.EXIT -> {
-            exitProcess(0)
+            return false
         }
     }
 }
@@ -79,16 +83,16 @@ enum class Command {
 }
 
 class StudentList(val students: List<String>) {
-    val deletionMarks = MutableList<Boolean>(students.size, {false})
+    val deletionMarks = MutableList<Boolean>(students.size, { false })
     val deletedIdx = Stack<Int>()
     var currentIdx = 0
     var minusCnt = 0
     var plusCnt = students.size - 1
-    
+
     fun move(num: Int) {
         var num = num
         if (num < 0) {
-            if (minusCnt < -num) { 
+            if (minusCnt < -num) {
                 println("Error 100")
             } else {
                 minusCnt += num
@@ -101,7 +105,7 @@ class StudentList(val students: List<String>) {
                 }
             }
         } else if (num > 0) {
-            if (plusCnt < num) { 
+            if (plusCnt < num) {
                 println("Error 100")
             } else {
                 minusCnt += num
@@ -121,10 +125,10 @@ class StudentList(val students: List<String>) {
         deletionMarks[currentIdx] = true
         if (plusCnt > 0) {
             plusCnt--
-            while (deletionMarks[++currentIdx]){}
+            while (deletionMarks[++currentIdx]) {}
         } else {
             minusCnt--
-            while (deletionMarks[--currentIdx]){}
+            while (deletionMarks[--currentIdx]) {}
         }
     }
 
@@ -144,7 +148,8 @@ class StudentList(val students: List<String>) {
 
     fun list() {
         students.forEachIndexed {
-            i, name -> if (!deletionMarks[i]) { println(name) }
+            i, name ->
+            if (!deletionMarks[i]) { println(name) }
         }
     }
 }
