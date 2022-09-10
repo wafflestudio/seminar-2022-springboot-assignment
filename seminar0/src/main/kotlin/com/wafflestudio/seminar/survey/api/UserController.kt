@@ -14,17 +14,17 @@ class UserController(private val userService: UserService) {
     fun getAllSurvey(): List<SurveyResponse> {
         return userService.getAllSurvey()
     }
-    
+
     @GetMapping("/survey-id")
     fun getSurveyOfId(@RequestHeader(name = "id", required = true) id: Long): SurveyResponse {
         return userService.getSurveyOfId(id)
     }
-    
+
     @GetMapping("/os-id")
     fun getOSOfId(@RequestHeader(name = "id", required = true) id: Long): OperatingSystem {
         return userService.getOSOfId(id)
     }
-    
+
     @GetMapping("/os-name")
     fun getOSOfName(@RequestParam(name = "name", required = true)name: String): OperatingSystem {
         return userService.getOSOfName(name)

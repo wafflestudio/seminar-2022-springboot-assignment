@@ -4,7 +4,7 @@ import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.stereotype.Component
 
 @Component
-class SurveyResponseRepositoryImpl(private val memoryDB: MemoryDB): SurveyResponseRepository {
+class SurveyResponseRepositoryImpl(private val memoryDB: MemoryDB) : SurveyResponseRepository {
 
     override fun findAll(): List<SurveyResponse> {
         return memoryDB.getSurveyResponses()

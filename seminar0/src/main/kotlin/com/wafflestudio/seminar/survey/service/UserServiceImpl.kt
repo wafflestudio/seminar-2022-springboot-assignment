@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 class UserServiceImpl(
     private val surveyResponseRepository: SurveyResponseRepository,
     private val osRepository: OsRepository
-): UserService {
+) : UserService {
     override fun getAllSurvey(): List<SurveyResponse> {
         return surveyResponseRepository.findAll()
     }
