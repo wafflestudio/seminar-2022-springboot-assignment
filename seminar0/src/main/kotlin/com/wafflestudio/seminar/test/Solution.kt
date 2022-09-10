@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.test
 
 import java.util.StringJoiner
+import kotlin.io.path.createTempDirectory
 
 /**
  * TODO 
@@ -14,11 +15,9 @@ fun main() {
         val sliceNum=firstInput.length-3
         firstInput=firstInput.slice(IntRange(2,sliceNum))
     }
-    println(firstInput)
     val mainArray= firstInput?.split("\",\"")?.toMutableList()
     val deleteArray= mutableListOf<String>("first")
     val indexArray= mutableListOf<Int>(0)
-    println(mainArray)
     var currentSelect=0;
     while (true){
         val command= readLine().toString();
@@ -46,25 +45,30 @@ fun main() {
                     }
                     currentSelect += commandArray[2].toInt()
                 }
-                println(currentSelect)
             }
         }
         else if(commandArray[0]=="delete"){
             mainArray?.let { deleteArray.add(it[currentSelect]) }
             indexArray.add(currentSelect)
                 mainArray?.removeAt(currentSelect)
-                println(mainArray)
-                println(deleteArray)
-                println(indexArray)
+            if (mainArray != null) {
+                if(currentSelect==mainArray.size)currentSelect-=1
+            }
         }
         else if(commandArray[0]=="restore"){
-            mainArray?.add(indexArray[1],deleteArray[1])
-            if(indexArray[1]<currentSelect) currentSelect+1;
-            indexArray.removeAt(1)
-            deleteArray.removeAt(1)
+            if(indexArray.size==1){
+                println("Error 200")
+                continue
+            }
+            mainArray?.add(indexArray[indexArray.size-1],deleteArray[deleteArray.size-1])
+            if(indexArray[indexArray.size-1]<=currentSelect) currentSelect+=1;
+            indexArray.removeAt(indexArray.size-1)
+            deleteArray.removeAt(deleteArray.size-1)
         }
         else if(commandArray[0]=="list"){
-            println(mainArray)
+            if (mainArray != null) {
+                for (i in mainArray) println(i)
+            }
         }
         else if(commandArray[0]=="q") {
             break
