@@ -1,5 +1,7 @@
 package com.wafflestudio.seminar.test
 
+import java.util.StringJoiner
+
 /**
  * TODO 
  *   3번을 코틀린으로 다시 한번 풀어봐요.
@@ -14,6 +16,8 @@ fun main() {
     }
     println(firstInput)
     val mainArray= firstInput?.split("\",\"")?.toMutableList()
+    val deleteArray= mutableListOf<String>("first")
+    val indexArray= mutableListOf<Int>(0)
     println(mainArray)
     var currentSelect=0;
     while (true){
@@ -46,11 +50,18 @@ fun main() {
             }
         }
         else if(commandArray[0]=="delete"){
+            mainArray?.let { deleteArray.add(it[currentSelect]) }
+            indexArray.add(currentSelect)
                 mainArray?.removeAt(currentSelect)
                 println(mainArray)
+                println(deleteArray)
+                println(indexArray)
         }
         else if(commandArray[0]=="restore"){
-            print("ok")
+            mainArray?.add(indexArray[1],deleteArray[1])
+            if(indexArray[1]<currentSelect) currentSelect+1;
+            indexArray.removeAt(1)
+            deleteArray.removeAt(1)
         }
         else if(commandArray[0]=="list"){
             println(mainArray)
