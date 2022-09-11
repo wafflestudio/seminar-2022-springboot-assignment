@@ -9,18 +9,22 @@ import java.util.Optional;
 
 
 public class MemorySurveyResponseRepository implements SurveyResponseRepository {
-    private final MemoryDB db = new MemoryDB();
+    private final MemoryDB db;
     
+    public MemorySurveyResponseRepository(MemoryDB db) {
+        this.db = db;
+    }
+
     @NotNull
     @Override
     public List<SurveyResponse> findAll() {
-        return db.getSurveyResponses();
+        return this.db.getSurveyResponses();
     }
 
     @NotNull
     @Override
     public Optional<SurveyResponse> findById(long id) {
-        return db.getSurveyResponses().stream()
+        return this.db.getSurveyResponses().stream()
                 .filter(surveyResponse -> Objects.equals(surveyResponse.getId(), id))
                 .findFirst();
     }
