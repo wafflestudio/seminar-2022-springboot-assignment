@@ -1,15 +1,20 @@
 package com.wafflestudio.seminar.survey.database.os
 
+import com.wafflestudio.seminar.survey.database.MemoryDB
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import org.springframework.stereotype.Repository
 
 @Repository
-class OsRepositoryImpl: OsRepository {
+class OsRepositoryImpl(
+    val memoryDB: MemoryDB,
+): OsRepository {
+    
     override fun findAll(): List<OperatingSystem> {
-        TODO("Not yet implemented")
+        return memoryDB.getOperatingSystems()
     }
 
     override fun findById(id: Long): OperatingSystem {
-        TODO("Not yet implemented")
+        return memoryDB.getOperatingSystems()
+            .first { it.id == id }
     }
 }
