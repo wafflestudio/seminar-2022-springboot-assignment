@@ -1,15 +1,20 @@
 package com.wafflestudio.seminar.survey.database.survey
 
+import com.wafflestudio.seminar.survey.database.MemoryDB
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.stereotype.Repository
 
 @Repository
-class SurveyResponseRepositoryImpl: SurveyResponseRepository {
+class SurveyResponseRepositoryImpl(
+    val memoryDB: MemoryDB,
+): SurveyResponseRepository {
+    
     override fun findAll(): List<SurveyResponse> {
-        TODO("Not yet implemented")
+        return memoryDB.getSurveyResponses()
     }
 
     override fun findById(id: Long): SurveyResponse {
-        TODO("Not yet implemented")
+        return memoryDB.getSurveyResponses().first { it.id == id }
     }
+    
 }

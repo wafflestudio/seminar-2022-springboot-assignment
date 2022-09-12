@@ -2,23 +2,25 @@ package com.wafflestudio.seminar.survey.api
 
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.survey.service.SurveyResponseService
-import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
-@Controller
+@RestController
+@RequestMapping("/survey-responses")
 class SurveyResponseController(
     val surveyResponseService: SurveyResponseService
 ) {
     // 설문 결과 전체 보기 API
-    @GetMapping("/survey-responses")
-    fun surveyResponseAll(): List<SurveyResponse> {
-        TODO("Not yet implemented")
+    @GetMapping("")
+    fun findAll(): List<SurveyResponse> {
+        return surveyResponseService.findAll()
     }
     
     // 설문 결과 ID로 검색 API
-    @GetMapping("/survey-responses/{id}")
-    fun surveyResponseById(@PathVariable("id") id: Long): List<SurveyResponse> {
-        TODO("Not yet implemented")
+    @GetMapping("/{id}")
+    fun findById(@PathVariable id: Long): SurveyResponse {
+        return surveyResponseService.findById(id)
     }
 }
