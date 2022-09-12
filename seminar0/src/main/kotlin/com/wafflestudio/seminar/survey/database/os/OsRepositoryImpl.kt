@@ -2,6 +2,8 @@ package com.wafflestudio.seminar.survey.database.os
 
 import com.wafflestudio.seminar.survey.database.MemoryDB
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
+import com.wafflestudio.seminar.survey.exception.ErrorCode
+import com.wafflestudio.seminar.survey.exception.SurveyNotFoundException
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -15,6 +17,7 @@ class OsRepositoryImpl(
 
     override fun findById(id: Long): OperatingSystem {
         return memoryDB.getOperatingSystems()
-            .first { it.id == id }
+            .firstOrNull { it.id == id }
+            ?: throw SurveyNotFoundException(ErrorCode.OS_NOT_FOUND)
     }
 }
