@@ -11,13 +11,13 @@ class SearchController(
     private val searchService: SearchService
 ) {
     
-    @GetMapping("/os")
-    fun findOsById(@RequestHeader id:Long):OperatingSystem {
+    @GetMapping("/os/{id}")
+    fun findOsById(@PathVariable id:Long):OperatingSystem {
         return searchService.getOsById(id)
     }
     
-    @GetMapping("/os/{name}")
-    fun findOsByName(@PathVariable name:String):OperatingSystem? {
+    @GetMapping("/os")
+    fun findOsByName(@RequestParam name:String):OperatingSystem {
         return searchService.getOsByName(name)
     }
     
@@ -26,8 +26,8 @@ class SearchController(
         return searchService.getAllSurveyResponses()
     }
     
-    @GetMapping("/survey")
-    fun findSurveyResponse(@RequestHeader id:Long): SurveyResponse? {
+    @GetMapping("/survey/{id}")
+    fun findSurveyResponse(@PathVariable id:Long): SurveyResponse {
         return searchService.getSurveyResponseById(id)
     }
     

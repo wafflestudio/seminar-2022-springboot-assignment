@@ -21,9 +21,9 @@ class SeminarExceptionHandler {
      * 예외들은 어느 패키지에 있는게 적절할까요?
      * 예외는 어떤 정보를 공통적으로 담고 있을까요?
      */
-    @ExceptionHandler(value = [SeminarException::class])
-    fun handle(e: SeminarException): ResponseEntity<Any> {
-        TODO("적절한 ResponseBody & HttpStatus 조합을 내려줄 수도 있을 것 같다.")
+    @ExceptionHandler(value = [IllegalArgumentException::class])
+    fun handle(e: IllegalArgumentException): ResponseEntity<Any> {
+        return ResponseEntity("찾을 수 없습니다.", HttpStatus.NOT_FOUND)
     }
 
     inner class SeminarException() : RuntimeException()
