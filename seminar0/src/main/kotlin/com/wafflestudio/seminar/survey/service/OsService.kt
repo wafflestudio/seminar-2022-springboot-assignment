@@ -15,4 +15,7 @@ class OsService (
         fun getOsById(id:Long):OperatingSystem{
             return osRepository.findById(id)
         }
+        fun getOsByName(name: String):OperatingSystem{
+            return osRepository.findByName(name)
+        }
 }
