@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.database
 
+import com.wafflestudio.seminar.survey.api.SeminarExceptionHandler
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.stereotype.Component
 
@@ -12,6 +13,7 @@ class SurveyResponseRepositoryImpl(private val memoryDB: MemoryDB) :SurveyRespon
 
     override fun findById(id: Long): SurveyResponse {
         val responses=memoryDB.getSurveyResponses()
+        
         return responses.filter {it.id==id}[0]
     }
 }

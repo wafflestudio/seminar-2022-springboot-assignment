@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/")
 class SurveyController(
-    
+    private val seminarExceptionHandler: SeminarExceptionHandler,
     private val surveyService: SurveyService
 )
 {
@@ -22,7 +22,11 @@ class SurveyController(
     
     @GetMapping("responses/{id}/")
     fun geyResponseById(@PathVariable("id") id:Long):SurveyResponse{
-        return surveyService.getResponseById(id)
+            return try{
+                surveyService.getResponseById(id)
+            }catch(e:RuntimeException){
+                throw seminarExceptionHandler.UserNotFoundException()
+            }
     }
     
     
