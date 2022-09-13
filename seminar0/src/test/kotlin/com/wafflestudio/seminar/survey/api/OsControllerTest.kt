@@ -21,7 +21,7 @@ import org.springframework.util.MultiValueMap
 
 
 /*
-Implement Test Code for study
+과제 스펙은 아니지만 공부 목적으로 테스트 코드도 작성해봤습니다
  */
 
 @WebMvcTest

@@ -3,7 +3,6 @@ package com.wafflestudio.seminar.survey.service
 import com.wafflestudio.seminar.survey.database.SurveyResponseRepository
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.survey.exception.APIException
-import com.wafflestudio.seminar.survey.exception.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 

@@ -19,7 +19,7 @@ class OsService(val osRepository: OsRepository) {
         if (operatingSystem != null) {
             return operatingSystem
         } else {
-            throw APIException(HttpStatus.BAD_REQUEST, "BAD_REQUEST(400) - Invalid Os Id: $id")
+            throw APIException(HttpStatus.BAD_REQUEST, "BAD_REQUEST(400) - Invalid OS Id: $id")
         }
     }
     
@@ -28,7 +28,7 @@ class OsService(val osRepository: OsRepository) {
         if (operatingSystem != null) {
             return operatingSystem
         } else {
-            throw APIException(HttpStatus.BAD_REQUEST, "BAD_REQUEST(400) - Invalid Os Name: $osName")
+            throw APIException(HttpStatus.BAD_REQUEST, "BAD_REQUEST(400) - Invalid OS Name: $osName")
         }
     }
 }
