@@ -1,10 +1,10 @@
 package com.wafflestudio.seminar.survey.database
 
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Repository
 import java.util.*
 
-@Component
+@Repository
 class MemorySurveyResponseRepository(
     private val db: MemoryDB
 ): SurveyResponseRepository{
