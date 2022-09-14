@@ -11,13 +11,11 @@ class OsRepositoryImpl(private val db: MemoryDB,): OsRepository {
         return operatingSystems
     }
 
-    override fun findById(id: Long): OperatingSystem {
-        val os: OperatingSystem? = operatingSystems.find { it.id == id }
-        return os ?: throw IllegalArgumentException("OS$id NOT FOUND!")
+    override fun findById(id: Long): OperatingSystem? {
+        return operatingSystems.find { it.id == id }
     }
 
-    override fun findByName(osName: String): OperatingSystem {
-        val os: OperatingSystem? = operatingSystems.find { it.osName == osName}
-        return os ?: throw IllegalArgumentException("OS$osName NOT FOUND!")
+    override fun findByName(osName: String): OperatingSystem? {
+        return operatingSystems.find { it.osName == osName}
     }
 }

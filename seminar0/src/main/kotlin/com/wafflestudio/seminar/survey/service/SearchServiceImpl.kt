@@ -11,11 +11,11 @@ class SearchServiceImpl(
     private val osRepository: OsRepository,
     private val surveyResponseRepository: SurveyResponseRepository,
 ):SearchService {
-    override fun getOsById(id: Long): OperatingSystem {
+    override fun getOsById(id: Long): OperatingSystem? {
         return osRepository.findById(id)
     }
 
-    override fun getOsByName(name: String): OperatingSystem {
+    override fun getOsByName(name: String): OperatingSystem? {
         return osRepository.findByName(name)
     }
 
@@ -23,7 +23,7 @@ class SearchServiceImpl(
         return surveyResponseRepository.findAll()
     }
 
-    override fun getSurveyResponseById(id: Long): SurveyResponse {
+    override fun getSurveyResponseById(id: Long): SurveyResponse? {
         return surveyResponseRepository.findById(id)
     }
 }

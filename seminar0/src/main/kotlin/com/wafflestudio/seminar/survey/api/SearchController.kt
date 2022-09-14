@@ -13,12 +13,12 @@ class SearchController(
     
     @GetMapping("/os/{id}")
     fun findOsById(@PathVariable id:Long):OperatingSystem {
-        return searchService.getOsById(id)
+        return searchService.getOsById(id) ?: throw SeminarExceptionHandler().NoOSEntityException("OS$id NOT FOUND!")
     }
     
     @GetMapping("/os")
     fun findOsByName(@RequestParam name:String):OperatingSystem {
-        return searchService.getOsByName(name)
+        return searchService.getOsByName(name) ?: throw SeminarExceptionHandler().NoOSEntityException("OS$name NOT FOUND!")
     }
     
     @GetMapping("/survey-list")
@@ -28,7 +28,7 @@ class SearchController(
     
     @GetMapping("/survey/{id}")
     fun findSurveyResponse(@PathVariable id:Long): SurveyResponse {
-        return searchService.getSurveyResponseById(id)
+        return searchService.getSurveyResponseById(id) ?: throw SeminarExceptionHandler().NoSurveyEntityException("SurveyResponse$id NOT FOUND!")
     }
     
 }

@@ -11,8 +11,7 @@ class SurveyResponseRepositoryImpl(private val db: MemoryDB): SurveyResponseRepo
         return surveyResponses
     }
 
-    override fun findById(id: Long): SurveyResponse {
-        val sr:SurveyResponse? = surveyResponses.find {it.id == id}
-        return sr ?: throw IllegalArgumentException("SurveyResponse$id NOT FOUND!")
+    override fun findById(id: Long): SurveyResponse? {
+        return surveyResponses.find {it.id == id}
     }
 }
