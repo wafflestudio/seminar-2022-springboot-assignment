@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-class MemorySurveyResponseRepository(
+class SurveyResponseRepositoryImpl(
     private val db: MemoryDB
 ): SurveyResponseRepository{
     override fun findAll(): List<SurveyResponse> {
