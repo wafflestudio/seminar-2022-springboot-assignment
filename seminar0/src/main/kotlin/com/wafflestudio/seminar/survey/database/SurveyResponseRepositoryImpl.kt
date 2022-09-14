@@ -2,7 +2,6 @@ package com.wafflestudio.seminar.survey.database
 
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Repository
 class SurveyResponseRepositoryImpl(
@@ -12,7 +11,7 @@ class SurveyResponseRepositoryImpl(
         return db.getSurveyResponses()
     }
 
-    override fun findById(id: Long): Optional<SurveyResponse> {
-        return db.getSurveyResponses().stream().filter { it.id == id }.findFirst()
+    override fun findById(id: Long): SurveyResponse? {
+        return db.getSurveyResponses().associateBy { it.id }[id]
     }
 }

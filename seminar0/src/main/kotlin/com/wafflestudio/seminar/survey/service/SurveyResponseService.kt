@@ -3,7 +3,6 @@ package com.wafflestudio.seminar.survey.service
 import com.wafflestudio.seminar.survey.database.SurveyResponseRepositoryImpl
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.stereotype.Service
-import java.util.Optional
 
 @Service
 class SurveyResponseService(
@@ -14,11 +13,7 @@ class SurveyResponseService(
     }
     
     fun findById(id: Long): SurveyResponse {
-        val result: Optional<SurveyResponse> = surveyResponseRepository.findById(id)
-        if (result.isEmpty) {
-            throw IllegalArgumentException("SurveyResponse with id $id does not exist.")
-        }
-        
-        return result.get()
+        val result: SurveyResponse? = surveyResponseRepository.findById(id)
+        return result ?: throw IllegalArgumentException("No survey response with id $id")
     }
 }
