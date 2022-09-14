@@ -10,15 +10,15 @@ class StudentList(private var studentList: MutableList<Student>) {
     private var deleteStack = Stack<Int>()
 
     fun command(cmd: List<String>) {
-        when (cmd[0]) {
-            "move" -> try {
-                move(cmd[1], cmd[2].toInt())
-            } catch(e: IllegalArgumentException) {
-                println(e.message)
+        try {
+            when (cmd[0]) {
+                "move" -> move(cmd[1], cmd[2].toInt())
+                "delete" -> delete()
+                "restore" -> restore()
+                "list" -> list()
             }
-            "delete" -> delete()
-            "restore" -> restore()
-            "list" -> list()
+        } catch (e: IllegalArgumentException) {
+            println(e.message)
         }
     }
 
@@ -57,7 +57,7 @@ class StudentList(private var studentList: MutableList<Student>) {
             val currPosition = deleteStack.pop()
             studentList[currPosition].valid = true
         } catch (e: EmptyStackException) {
-            println("Error 200")
+            throw (IllegalArgumentException("Error 200"))
         }
     }
 
