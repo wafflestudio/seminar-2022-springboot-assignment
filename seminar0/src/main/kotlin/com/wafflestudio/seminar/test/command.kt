@@ -6,3 +6,8 @@ fun toStudentList(command: String): List<String> {
         it.isNotEmpty()
     }
 }
+
+// 이후 입력되는 명령어를 파싱해서 반환
+fun toCommand(command: String): List<String> {
+    return command.trim().split(' ')
+}
