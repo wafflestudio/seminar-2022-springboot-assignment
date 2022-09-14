@@ -2,13 +2,20 @@ package com.wafflestudio.seminar.test
 
 import java.util.*
 
-class StudentList(private var studentList: MutableList<Pair<String, Boolean>>) {
+data class Student(var name: String, var valid: Boolean)
+class StudentList(private var studentList: MutableList<Student>) {
+
     private val size = studentList.size
     private var currPosition = 0
     private var deleteStack = Stack<Int>()
+
     fun command(cmd: List<String>) {
         when (cmd[0]) {
-            "move" -> move(cmd[1], cmd[2].toInt())
+            "move" -> try {
+                move(cmd[1], cmd[2].toInt())
+            } catch(e: IllegalArgumentException) {
+                println(e.message)
+            }
             "delete" -> delete()
             "restore" -> restore()
             "list" -> list()
@@ -28,16 +35,15 @@ class StudentList(private var studentList: MutableList<Pair<String, Boolean>>) {
         while (count < number) {
             tempPosition += direction
             if (tempPosition >= size || tempPosition < 0) {
-                println("Error 100")
-                break
+                throw IllegalArgumentException("Error 100")
             }
-            if (studentList[tempPosition].second) count++
+            if (studentList[tempPosition].valid) count++
         }
         currPosition = tempPosition
     }
 
     fun delete() {
-        studentList[currPosition] = studentList[currPosition].copy(second = false)
+        studentList[currPosition].valid = false
         deleteStack.push(currPosition)
         try {
             move("-d", 1)
@@ -48,15 +54,15 @@ class StudentList(private var studentList: MutableList<Pair<String, Boolean>>) {
 
     fun restore() {
         try {
-            currPosition = deleteStack.pop()
-            studentList[currPosition] = studentList[currPosition].copy(second = true)
+            val currPosition = deleteStack.pop()
+            studentList[currPosition].valid = true
         } catch (e: EmptyStackException) {
             println("Error 200")
         }
     }
 
     fun list() {
-        studentList.filter { it.second }
-            .forEach { println(it.first) }
+        studentList.filter { it.valid }
+            .forEach { println(it.name) }
     }
 }
