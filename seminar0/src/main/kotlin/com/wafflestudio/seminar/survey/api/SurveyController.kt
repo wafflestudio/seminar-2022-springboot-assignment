@@ -6,6 +6,7 @@ import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -13,18 +14,6 @@ class SurveyController(
     private val osRepository: OsRepository,
     private val surveyResponseRepository: SurveyResponseRepository,
 ) {
-    @GetMapping("/os")
-    fun getOs(): List<OperatingSystem> {
-        return osRepository.findAll()
-    }
-
-    @GetMapping("/os/{userId}")
-    fun getOs(
-        @PathVariable userId: Long
-    ): OperatingSystem {
-        return osRepository.findById(userId)
-    }
-
     @GetMapping("/survey")
     fun getSurveyResponse(): List<SurveyResponse> {
         return surveyResponseRepository.findAll()
@@ -35,5 +24,19 @@ class SurveyController(
         @PathVariable userId: Long
     ): SurveyResponse {
         return surveyResponseRepository.findById(userId)
+    }
+
+    @GetMapping("/os/{osId}")
+    fun getOs(
+        @PathVariable osId: Long
+    ): OperatingSystem {
+        return osRepository.findById(osId)
+    }
+
+    @GetMapping("/os")
+    fun getOs(
+        @RequestParam osName: String
+    ): OperatingSystem {
+        return osRepository.findByName(osName)
     }
 }
