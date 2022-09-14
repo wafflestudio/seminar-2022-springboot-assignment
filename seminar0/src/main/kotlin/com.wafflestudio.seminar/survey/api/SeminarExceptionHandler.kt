@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import com.wafflestudio.seminar.survey.constants.ErrorCode;
 
 /**
  * ControllerAdvice 빈을 선언하고,
@@ -23,6 +24,9 @@ class SeminarExceptionHandler {
      */
     @ExceptionHandler(value = [SeminarException::class])
     fun handle(e: SeminarException): ResponseEntity<Any> {
-        return ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
+//        TODO("적절한 ResponseBody & HttpStatus 조합을 내려줄 수도 있을 것 같다.")
+        return e.errorCode.getResponseEntity()
     }
+
+    inner class SeminarException(val errorCode: ErrorCode) : RuntimeException()
 }
