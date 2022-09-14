@@ -10,16 +10,49 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Component
-class MemoryDB {
+class MemoryDB : SurveyResponseDB, OsDB {
     private val operatingSystems = mutableListOf<OperatingSystem>()
     private val surveyResponses = mutableListOf<SurveyResponse>()
-    
-    fun getOperatingSystems(): List<OperatingSystem> {
+
+    override fun getOperatingSystems(): List<OperatingSystem> {
         return operatingSystems
     }
-    
-    fun getSurveyResponses(): List<SurveyResponse> {
+
+    override fun getSurveyResponses(): List<SurveyResponse> {
         return surveyResponses
+    }
+
+    override fun getSurveyResponseById(id: Long): SurveyResponse {
+        var result: SurveyResponse? = null
+        for (surveyResponse in surveyResponses) {
+            if (surveyResponse.id == id) {
+                result = surveyResponse
+                break
+            }
+        }
+        return result ?: throw IllegalArgumentException("id#${id} NOT FOUND")
+    }
+
+    override fun getOperatingSystemById(id: Long): OperatingSystem {
+        var result: OperatingSystem? = null
+        for (operatingSystem in operatingSystems) {
+            if (operatingSystem.id == id) {
+                result = operatingSystem
+                break
+            }
+        }
+        return result ?: throw IllegalArgumentException("ID#${id} NOT FOUND")
+    }
+
+    override fun getOperatingSystemByOSName(osName: String): OperatingSystem {
+        var result: OperatingSystem? = null
+        for (operatingSystem in operatingSystems) {
+            if (operatingSystem.osName == osName) {
+                result = operatingSystem
+                break
+            }
+        }
+        return result ?: throw IllegalArgumentException("OS Name\"${osName}\" NOT FOUND")
     }
 
     /**
@@ -31,7 +64,7 @@ class MemoryDB {
         loadOS()
         loadSurveyResponses()
     }
-    
+
     private fun loadOS() = operatingSystems.addAll(
         listOf(
             OperatingSystem(1L, "MacOS", 300000L, "Most favorite OS of Seminar Instructors"),
@@ -39,7 +72,7 @@ class MemoryDB {
             OperatingSystem(3L, "Windows", 0L, "Window.."),
         )
     )
-    
+
     private fun loadSurveyResponses() {
         val responses = ClassPathResource("data/example_surveyresult.tsv")
             .file
@@ -48,7 +81,10 @@ class MemoryDB {
                 val rawSurveyResponse = it.split("\t")
                 SurveyResponse(
                     id = idx.toLong(),
-                    timestamp = LocalDateTime.parse(rawSurveyResponse[0], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    timestamp = LocalDateTime.parse(
+                        rawSurveyResponse[0],
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    ),
                     operatingSystem = operatingSystems.find { os -> os.osName == rawSurveyResponse[1] }!!,
                     springExp = rawSurveyResponse[2].toInt(),
                     rdbExp = rawSurveyResponse[3].toInt(),
@@ -57,7 +93,7 @@ class MemoryDB {
                     grade = rawSurveyResponse[6],
                 )
             }
-        
+
         surveyResponses.addAll(responses)
     }
 }
