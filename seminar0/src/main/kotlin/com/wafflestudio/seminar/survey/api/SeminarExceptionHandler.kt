@@ -26,5 +26,15 @@ class SeminarExceptionHandler {
         TODO("적절한 ResponseBody & HttpStatus 조합을 내려줄 수도 있을 것 같다.")
     }
 
+    @ExceptionHandler(value = [UserNotFoundException::class])
+    fun userNotFound(e: UserNotFoundException): ResponseEntity<Any> {
+        return ResponseEntity("유저를 찾을 수 없습니다",HttpStatus.NOT_FOUND)
+    }
+    @ExceptionHandler(value = [OsNotFoundException::class])
+    fun userNotFound(e: OsNotFoundException): ResponseEntity<Any> {
+        return ResponseEntity("OS를 찾을 수 없습니다",HttpStatus.NOT_FOUND)
+    }
     inner class SeminarException() : RuntimeException()
+    inner class UserNotFoundException(): RuntimeException()
+    inner class OsNotFoundException():RuntimeException()
 }
