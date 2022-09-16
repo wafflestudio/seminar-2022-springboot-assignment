@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class OsServiceImpl(private val osRepository: OsRepository) : OsService {
-    override fun findById(id: Long): OperatingSystem {
+    override fun findById(id: Long):List<OperatingSystem> {
         return osRepository.findById(id)
     }
 
-    override fun findByName(name: String): OperatingSystem {
+    override fun findByName(name: String): List<OperatingSystem> {
         return osRepository.findByName(name)
     }
 }

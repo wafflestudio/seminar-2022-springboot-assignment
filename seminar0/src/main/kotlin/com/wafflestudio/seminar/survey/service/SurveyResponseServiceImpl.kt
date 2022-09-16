@@ -11,7 +11,7 @@ class SurveyResponseServiceImpl(private val surveyResponseRepository: SurveyResp
         return surveyResponseRepository.findAll()
     }
 
-    override fun findBySurveyId(id: Long): SurveyResponse {
+    override fun findBySurveyId(id: Long): List<SurveyResponse> {
         return surveyResponseRepository.findById(id)
     }
 }

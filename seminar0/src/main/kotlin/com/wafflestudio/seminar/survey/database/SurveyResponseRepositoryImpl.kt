@@ -9,7 +9,7 @@ class SurveyResponseRepositoryImpl(private val memoryDB: MemoryDB) : SurveyRespo
         return memoryDB.getSurveyResponses()
     }
 
-    override fun findById(id: Long): SurveyResponse {
-        return memoryDB.getSurveyResponses().filter { it.id == id }[0]
+    override fun findById(id: Long): List<SurveyResponse> {
+        return memoryDB.getSurveyResponses().filter { it.id == id }
     }
 }
