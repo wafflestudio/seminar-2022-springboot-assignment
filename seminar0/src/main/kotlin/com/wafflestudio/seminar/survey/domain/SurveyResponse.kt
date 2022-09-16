@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.survey.domain
 
 import java.time.LocalDateTime
 
+
 data class SurveyResponse(
     val id: Long,
     val operatingSystem: OperatingSystem,
