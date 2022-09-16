@@ -14,8 +14,6 @@ import javax.print.attribute.IntegerSyntax
 
 class Student(val name: String)
 
-
-
 fun main() {
 
     val br = BufferedReader(InputStreamReader(System.`in`)) 
