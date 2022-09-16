@@ -1,5 +1,7 @@
 package com.wafflestudio.seminar.survey.database
 
+import com.wafflestudio.seminar.survey.exception.IDNotFoundException
+import com.wafflestudio.seminar.survey.exception.OSNameNotFoundException
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.boot.context.event.ApplicationStartedEvent
@@ -13,7 +15,7 @@ import java.time.format.DateTimeFormatter
 class MemoryDB : SurveyResponseDB, OsDB {
     private val operatingSystems = mutableListOf<OperatingSystem>()
     private val surveyResponses = mutableListOf<SurveyResponse>()
-
+    
     override fun getOperatingSystems(): List<OperatingSystem> {
         return operatingSystems
     }
@@ -30,7 +32,7 @@ class MemoryDB : SurveyResponseDB, OsDB {
                 break
             }
         }
-        return result ?: throw IllegalArgumentException("id#${id} NOT FOUND")
+        return result ?: throw IDNotFoundException()
     }
 
     override fun getOperatingSystemById(id: Long): OperatingSystem {
@@ -41,7 +43,7 @@ class MemoryDB : SurveyResponseDB, OsDB {
                 break
             }
         }
-        return result ?: throw IllegalArgumentException("ID#${id} NOT FOUND")
+        return result ?: throw OSNameNotFoundException()
     }
 
     override fun getOperatingSystemByOSName(osName: String): OperatingSystem {
@@ -52,7 +54,7 @@ class MemoryDB : SurveyResponseDB, OsDB {
                 break
             }
         }
-        return result ?: throw IllegalArgumentException("OS Name\"${osName}\" NOT FOUND")
+        return result ?: throw OSNameNotFoundException()
     }
 
     /**
