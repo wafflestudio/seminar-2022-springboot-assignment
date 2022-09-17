@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class SeminarExceptionHandler {
     @ExceptionHandler(value = [Exception::class])
     fun handle(e: Exception): ResponseEntity<Any> {
-        return ResponseEntity("오류가 발생했어요!", HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity("INTERNAL_SERVER_ERROR!", HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     /**
@@ -21,10 +21,9 @@ class SeminarExceptionHandler {
      * 예외들은 어느 패키지에 있는게 적절할까요?
      * 예외는 어떤 정보를 공통적으로 담고 있을까요?
      */
-    @ExceptionHandler(value = [SeminarException::class])
-    fun handle(e: SeminarException): ResponseEntity<Any> {
-        TODO("적절한 ResponseBody & HttpStatus 조합을 내려줄 수도 있을 것 같다.")
+    @ExceptionHandler(value = [SeminarApiException::class])
+    fun handle(e: SeminarApiException): ResponseEntity<Any> {
+        return ResponseEntity(e.exception.errorMessage, e.exception.httpstatus)
     }
-
-    inner class SeminarException() : RuntimeException()
+    
 }
