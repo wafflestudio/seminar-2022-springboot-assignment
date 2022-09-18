@@ -1,9 +1,10 @@
-package com.wafflestudio.seminar.survey.api
+package com.wafflestudio.seminar.survey.exception
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import java.lang.Exception
 
 /**
  * ControllerAdvice 빈을 선언하고,
@@ -23,8 +24,7 @@ class SeminarExceptionHandler {
      */
     @ExceptionHandler(value = [SeminarException::class])
     fun handle(e: SeminarException): ResponseEntity<Any> {
-        TODO("적절한 ResponseBody & HttpStatus 조합을 내려줄 수도 있을 것 같다.")
+        return ResponseEntity(e.seminarExceptionCode.message , e.seminarExceptionCode.status)
     }
 
-    inner class SeminarException() : RuntimeException()
 }
