@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.survey.api
+package com.wafflestudio.seminar.survey.service
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -23,8 +23,9 @@ class SeminarExceptionHandler {
      */
     @ExceptionHandler(value = [SeminarException::class])
     fun handle(e: SeminarException): ResponseEntity<Any> {
-        TODO("적절한 ResponseBody & HttpStatus 조합을 내려줄 수도 있을 것 같다.")
+        return ResponseEntity("찾는 조건이 존재하지 않습니다.", HttpStatus.BAD_REQUEST)
     }
-
+    
     inner class SeminarException() : RuntimeException()
+    
 }
