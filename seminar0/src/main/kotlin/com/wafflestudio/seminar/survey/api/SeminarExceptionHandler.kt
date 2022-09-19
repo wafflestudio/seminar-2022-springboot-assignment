@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class SeminarExceptionHandler {
     @ExceptionHandler(value = [Exception::class])
     fun handle(e: Exception): ResponseEntity<Any> {
-        return ResponseEntity("오류가 발생했어요!", HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity("잘못된 입력입니다!", HttpStatus.NOT_ACCEPTABLE)
     }
 
     @ExceptionHandler(value = [SeminarException::class])
