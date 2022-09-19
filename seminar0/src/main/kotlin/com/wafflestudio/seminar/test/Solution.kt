@@ -7,4 +7,8 @@ package com.wafflestudio.seminar.test
  */
 fun main() {
     // 여기를 채워 주세요!
+    var input = readLine()!!
+    println(input)
+    var studentList = ArrayList<String>()
+    
 }
