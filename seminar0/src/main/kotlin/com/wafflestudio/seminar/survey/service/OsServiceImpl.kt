@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.survey.service
 
 import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
@@ -13,10 +14,10 @@ class OsServiceImpl(
     }
 
     override fun findById(id: Long): OperatingSystem {
-        return osRepository.findById(id) ?: throw NoSuchElementException("해당하는 id의 os가 없습니다")
+        return osRepository.findById(id) ?: throw SeminarException("해당하는 id의 os가 없습니다!", HttpStatus.NOT_FOUND)
     }
 
     override fun findByName(name: String): OperatingSystem {
-        return osRepository.findByName(name) ?: throw NoSuchElementException("해당하는 이름의 os가 없습니다")
+        return osRepository.findByName(name) ?: throw SeminarException("해당하는 이름의 os가 없습니다!", HttpStatus.NOT_FOUND)
     }
 }
