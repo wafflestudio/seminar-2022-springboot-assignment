@@ -5,18 +5,23 @@ import com.wafflestudio.seminar.survey.service.OsService
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/os")
 class OsController(
     private val osService: OsService,
 ) {
-    @GetMapping("/os/{id}")
+    @GetMapping("/all")
+    fun getAllOperatingSystems(): List<OperatingSystem>{
+        return osService.getAllOperatingSystems()
+    }
+    
+    @GetMapping("/{id}")
     fun getOsById(
         @PathVariable id: Long,
     ): OperatingSystem{
         return osService.getOsById(id)
     }
     
-    @GetMapping("/os")
+    @GetMapping
     fun getOsByName(
         @RequestParam name: String,
     ): OperatingSystem{

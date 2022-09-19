@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service
 class OsServiceImpl(
     private val osRepository: OsRepository,
 ): OsService {
+    override fun getAllOperatingSystems(): List<OperatingSystem> {
+        return osRepository.findAll()
+    }
+    
     override fun getOsById(id: Long): OperatingSystem{
         return osRepository.findById(id) ?: throw NotFoundException("There is no operating system with the id.")
     }
