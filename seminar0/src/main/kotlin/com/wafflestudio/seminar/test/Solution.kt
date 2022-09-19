@@ -7,8 +7,18 @@ package com.wafflestudio.seminar.test
  */
 fun main() {
     // 여기를 채워 주세요!
-    var input = readLine()!!
-    println(input)
-    var studentList = ArrayList<String>()
-    
+    val initialInput = readLine()!!
+    val processedData = initialInput.substring(1, initialInput.length-1).split(',').map{ c -> c.replace("\"", "")}
+    val excel = Table(processedData)
+    while(true){
+        val commandInput = readLine()!!.split(" ")
+        when(commandInput[0]){
+            "move" -> excel.move(commandInput[1], commandInput[2].toInt())
+            "delete" -> excel.delete()
+            "restore" -> excel.restore()
+            "list" -> excel.list()
+            "q" -> break
+            else -> println("ERROR")
+        }
+    }
 }
