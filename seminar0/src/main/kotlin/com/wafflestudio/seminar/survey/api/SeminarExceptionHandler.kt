@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import kotlin.jvm.Throws
+
 
 /**
  * ControllerAdvice 빈을 선언하고,
@@ -21,10 +23,30 @@ class SeminarExceptionHandler {
      * 예외들은 어느 패키지에 있는게 적절할까요?
      * 예외는 어떤 정보를 공통적으로 담고 있을까요?
      */
+    
     @ExceptionHandler(value = [SeminarException::class])
-    fun handle(e: SeminarException): ResponseEntity<Any> {
-        TODO("적절한 ResponseBody & HttpStatus 조합을 내려줄 수도 있을 것 같다.")
+    fun handle(
+        e: SeminarException
+    ): ResponseEntity<Any> {
+       return ResponseEntity("DB에 없는 ID입니다", HttpStatus.BAD_REQUEST)
+    }
+    
+    @ExceptionHandler(value = [OsException::class])
+    fun osHandle(
+        e: OsException
+    ): ResponseEntity<Any>{
+        return ResponseEntity("OS DB에 없는 ID입니다", HttpStatus.BAD_REQUEST)
     }
 
-    inner class SeminarException() : RuntimeException()
+    @ExceptionHandler(value = [NameException::class])
+    fun osHandle(
+        e: NameException
+    ): ResponseEntity<Any>{
+        return ResponseEntity("OS DB에 없는 NAME입니다", HttpStatus.BAD_REQUEST)
+    }
+
+    class SeminarException() : RuntimeException()
+    class OsException() : RuntimeException()
+    class NameException() : RuntimeException()
+    
 }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/survey")
-class SeminarController(
+class SeminarController (
     private val surveyService : SurveyService,
     private val osService: OsService
 ) {
@@ -25,20 +25,20 @@ class SeminarController(
     fun findById(
         @PathVariable idx : Long
     ) : SurveyResponse?{
-        return surveyService.findById(idx)
+        return surveyService.findById(idx) ?: throw SeminarExceptionHandler.SeminarException()
     }
     
     @GetMapping("/os/{idx}")
     fun osFindById(
         @PathVariable idx : Long
     ) : OperatingSystem?{
-        return osService.findById(idx)
+        return osService.findById(idx) ?: throw SeminarExceptionHandler.OsException()
     }
     
     @GetMapping("/name")
     fun osFindByName(
         @RequestParam name: String
     ) : OperatingSystem?{
-        return osService.findByName(name)
+        return osService.findByName(name) ?: throw SeminarExceptionHandler.NameException()
     }
 }
