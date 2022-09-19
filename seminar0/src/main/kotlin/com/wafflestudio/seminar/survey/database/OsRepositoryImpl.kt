@@ -10,6 +10,7 @@ class OsRepositoryImpl(
     override fun findAll(): List<OperatingSystem> {
         return memoryDB.getOperatingSystems()
     }
+    
     override fun findById(id: Long): OperatingSystem? {
         return memoryDB.getOperatingSystems()
             .associateBy { it.id }[id]
