@@ -1,5 +1,7 @@
 package com.wafflestudio.seminar.survey.api
 
+import com.wafflestudio.seminar.exception.NoMatchingNameException
+import com.wafflestudio.seminar.exception.NoSuchIdException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -27,4 +29,14 @@ class SeminarExceptionHandler {
     }
 
     inner class SeminarException() : RuntimeException()
+
+    @ExceptionHandler(value = [NoSuchIdException::class])
+    fun handle(e: NoSuchIdException): ResponseEntity<Any> {
+        return ResponseEntity("ID가 존재하지 않습니다.", HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(value = [NoMatchingNameException::class])
+    fun handle(e: NoMatchingNameException): ResponseEntity<Any> {
+        return ResponseEntity("입력하신 이름에 해당하는 데이터가 존재하지 않습니다.", HttpStatus.BAD_REQUEST)
+    }
 }
