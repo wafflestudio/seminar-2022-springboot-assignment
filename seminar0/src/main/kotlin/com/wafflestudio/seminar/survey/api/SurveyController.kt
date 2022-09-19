@@ -17,9 +17,9 @@ class SurveyController (private val surveyResponseService: SurveyResponseService
     @GetMapping("/{id}")
     fun getSurveyResponseById(@PathVariable id: Long): SurveyResponse{
         val result = surveyResponseService.findById(id)
-        if (result.isEmpty()){
+        if (result == null){
             throw SeminarExceptionHandler().SeminarException("Error: Invalid Id", HttpStatus.NOT_FOUND)
         }
-        return result[0]
+        return result
     }
 }

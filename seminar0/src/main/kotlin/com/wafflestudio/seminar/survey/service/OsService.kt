@@ -4,6 +4,6 @@ import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 
 interface OsService {
-    fun findById(id: Long): List<OperatingSystem>
-    fun findByName(name: String): List<OperatingSystem>
+    fun findById(id: Long): OperatingSystem?
+    fun findByName(name: String): OperatingSystem?
 }

@@ -4,5 +4,5 @@ import com.wafflestudio.seminar.survey.domain.SurveyResponse
 
 interface SurveyResponseRepository {
     fun findAll(): List<SurveyResponse>
-    fun findById(id: Long): List<SurveyResponse>
+    fun findById(id: Long): SurveyResponse?
 }

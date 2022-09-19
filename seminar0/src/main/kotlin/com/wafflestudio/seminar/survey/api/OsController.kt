@@ -12,19 +12,19 @@ class OsController(private val osService: OsService) {
     @GetMapping("/{id}")
     fun getOsById(@PathVariable id: Long): OperatingSystem {
         val result = osService.findById(id)
-        if(result.isEmpty()) {
+        if(result == null) {
             throw SeminarExceptionHandler().SeminarException("Error: Invalid Id", HttpStatus.NOT_FOUND)
         }
-        return result[0]
+        return result
     }
 
     @GetMapping
     fun getOsByName(@RequestParam name: String): OperatingSystem {
         val result = osService.findByName(name)
-        if(result.isEmpty()) {
+        if(result == null) {
             throw SeminarExceptionHandler().SeminarException("Error: Invalid name", HttpStatus.NOT_FOUND)
         }
-        return result[0]
+        return result
     }
 
 }

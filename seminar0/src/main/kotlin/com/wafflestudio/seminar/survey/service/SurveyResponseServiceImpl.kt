@@ -9,7 +9,7 @@ class SurveyResponseServiceImpl(private val surveyResponseRepository: SurveyResp
     override fun findAll(): List<SurveyResponse> {
         return surveyResponseRepository.findAll()
     }
-    override fun findById(id: Long): List<SurveyResponse>{
+    override fun findById(id: Long): SurveyResponse? {
         return surveyResponseRepository.findById(id)
     }
 
