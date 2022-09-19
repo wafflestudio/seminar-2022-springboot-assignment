@@ -1,8 +1,8 @@
-package com.wafflestudio.seminar.survey.database
+package com.wafflestudio.seminar.survey.service
 
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 
-interface SurveyResponseRepository {
+interface SurveyResponseService {
     fun findAll(): List<SurveyResponse>
     fun findById(id: Long): SurveyResponse?
 }

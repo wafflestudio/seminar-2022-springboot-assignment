@@ -23,8 +23,8 @@ class SeminarExceptionHandler {
      */
     @ExceptionHandler(value = [SeminarException::class])
     fun handle(e: SeminarException): ResponseEntity<Any> {
-        TODO("적절한 ResponseBody & HttpStatus 조합을 내려줄 수도 있을 것 같다.")
+        return ResponseEntity(e.message, e.httpStatus)
     }
 
-    inner class SeminarException() : RuntimeException()
+    inner class SeminarException(override val message: String, val httpStatus: HttpStatus) : RuntimeException()
 }
