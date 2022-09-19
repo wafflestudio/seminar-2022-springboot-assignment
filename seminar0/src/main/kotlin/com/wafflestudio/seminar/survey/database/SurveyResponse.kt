@@ -1,11 +1,10 @@
 package com.wafflestudio.seminar.survey.database
 
-import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 
 data class SurveyResponse(
     val id: Long,
-    val operatingSystem: OperatingSystem,
+    val operatingSystem: String,
     val springExp: Int,
     val rdbExp: Int,
     val programmingExp: Int,
@@ -14,7 +13,7 @@ data class SurveyResponse(
 ) {
     constructor(surveyResponse: SurveyResponse) : this(
         id = surveyResponse.id,
-        operatingSystem = surveyResponse.operatingSystem,
+        operatingSystem = surveyResponse.operatingSystem.osName,
         springExp = surveyResponse.springExp,
         rdbExp = surveyResponse.rdbExp,
         programmingExp = surveyResponse.programmingExp,
