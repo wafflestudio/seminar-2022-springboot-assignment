@@ -11,9 +11,8 @@ class SurveyResponseRepositoryImpl(
         return memoryDB.getSurveyResponses()
     }
 
-    override fun findById(id: Long): SurveyResponse {
+    override fun findById(id: Long): SurveyResponse? {
         return memoryDB.getSurveyResponses()
             .associateBy { it.id }[id]
-            ?: throw NoSuchElementException()
     }
 }
