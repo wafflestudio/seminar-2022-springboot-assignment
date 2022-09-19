@@ -21,10 +21,21 @@ class SeminarExceptionHandler {
      * 예외들은 어느 패키지에 있는게 적절할까요?
      * 예외는 어떤 정보를 공통적으로 담고 있을까요?
      */
-    @ExceptionHandler(value = [SeminarException::class])
-    fun handle(e: SeminarException): ResponseEntity<Any> {
-        TODO("적절한 ResponseBody & HttpStatus 조합을 내려줄 수도 있을 것 같다.")
-    }
+//    @ExceptionHandler(value = [SeminarException::class])
+//    fun handle(e: SeminarException): ResponseEntity<Any> {
+//    }
 
     inner class SeminarException() : RuntimeException()
+    inner class NoSuchIdException : RuntimeException()
+    inner class NoMatchingNameException : RuntimeException()
+
+    @ExceptionHandler(value = [NoSuchIdException::class])
+    fun handle(e: NoSuchIdException): ResponseEntity<Any> {
+        return ResponseEntity("ID가 존재하지 않습니다.", HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(value = [NoMatchingNameException::class])
+    fun handle(e: NoMatchingNameException): ResponseEntity<Any> {
+        return ResponseEntity("입력하신 이름에 해당하는 데이터가 존재하지 않습니다.", HttpStatus.NOT_FOUND)
+    }
 }
