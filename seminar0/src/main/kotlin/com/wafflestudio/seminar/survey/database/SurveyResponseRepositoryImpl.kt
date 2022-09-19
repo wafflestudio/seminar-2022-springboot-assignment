@@ -1,6 +1,5 @@
 package com.wafflestudio.seminar.survey.database
 
-import com.wafflestudio.seminar.exception.NoSuchIdException
 import com.wafflestudio.seminar.survey.api.SeminarExceptionHandler
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.stereotype.Component
@@ -16,6 +15,6 @@ class SurveyResponseRepositoryImpl(
 
     override fun findById(id: Long): SurveyResponse {
         val responses = memoryDB.getSurveyResponses()
-        return responses.find{r -> r.id == id} ?: throw NoSuchIdException()
+        return responses.find{r -> r.id == id} ?: throw SeminarExceptionHandler().NoSuchIdException()
     }
 }
