@@ -1,8 +1,24 @@
 package com.wafflestudio.seminar.survey.database
 
+import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
+import org.springframework.stereotype.Component
 
 interface SurveyResponseRepository {
     fun findAll(): List<SurveyResponse>
     fun findById(id: Long): SurveyResponse
+}
+
+@Component
+class DefaultSurveyRepository(
+    db: MemoryDB
+): SurveyResponseRepository {
+    override fun findAll(): List<SurveyResponse> {
+        TODO("Not yet implemented")
+    }
+
+    override fun findById(id: Long): SurveyResponse {
+        TODO("Not yet implemented")
+    }
+
 }
