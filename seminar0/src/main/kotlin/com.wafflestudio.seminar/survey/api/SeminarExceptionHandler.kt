@@ -21,6 +21,7 @@ class SeminarExceptionHandler {
      * 예외들은 어느 패키지에 있는게 적절할까요?
      * 예외는 어떤 정보를 공통적으로 담고 있을까요?
      */
+<<<<<<< HEAD:seminar0/src/main/kotlin/com/wafflestudio/seminar/survey/api/SeminarExceptionHandler.kt
     @ExceptionHandler(value = [OsNameException::class])
     fun handle(e: OsNameException): ResponseEntity<Any> {
         return ResponseEntity("name이 존재하지 않습니다", HttpStatus.BAD_REQUEST)
@@ -28,4 +29,10 @@ class SeminarExceptionHandler {
 
     inner class OsIdException() : RuntimeException()
     inner class OsNameException() : RuntimeException()
+=======
+    @ExceptionHandler(value = [SeminarException::class])
+    fun handle(e: SeminarException): ResponseEntity<Any> {
+        return ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
+    }
+>>>>>>> 07ef91823c7021a8efff88137b9982ff643dc776:seminar0/src/main/kotlin/com.wafflestudio.seminar/survey/api/SeminarExceptionHandler.kt
 }
