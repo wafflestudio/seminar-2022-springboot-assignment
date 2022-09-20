@@ -23,8 +23,16 @@ class SeminarExceptionHandler {
      */
     @ExceptionHandler(value = [SeminarException::class])
     fun handle(e: SeminarException): ResponseEntity<Any> {
-        TODO("적절한 ResponseBody & HttpStatus 조합을 내려줄 수도 있을 것 같다.")
+        return ResponseEntity(e.type.message, HttpStatus.BAD_REQUEST)
     }
+}
 
-    inner class SeminarException() : RuntimeException()
+class SeminarException(val type: SeminarExceptionType) : RuntimeException()
+enum class SeminarExceptionType(val message: String) {
+    NotExistSurveyForId("해당 Id를 가진 설문조사가 존재하지 않습니다."),
+    
+    InputNeedsOSName("운영체제 이름을 입력해주세요."),
+
+    NotExistOSForId("해당 Id를 가진 운영체제가 존재하지 않습니다."),
+    NotExistOSForName("해당 이름을 가진 운영체제가 존재하지 않습니다.")
 }
