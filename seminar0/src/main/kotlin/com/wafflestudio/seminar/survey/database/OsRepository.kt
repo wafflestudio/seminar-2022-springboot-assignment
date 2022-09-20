@@ -4,7 +4,7 @@ import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import org.springframework.stereotype.Component
 
 interface OsRepository {
-    fun findAll(): List<OperatingSystem>
+    fun findByName(name: String): OperatingSystem
     fun findById(id: Long): OperatingSystem
 }
 
@@ -12,11 +12,16 @@ interface OsRepository {
 class DefaultOSRepository(
     db: MemoryDB
 ): OsRepository {
-    override fun findAll(): List<OperatingSystem> {
-        TODO("Not yet implemented")
+    private val osList = db.getOperatingSystems()
+    override fun findByName(name: String): OperatingSystem {
+        return osList.filter {
+            it.osName.equals(name)
+        }.first()
     }
 
     override fun findById(id: Long): OperatingSystem {
-        TODO("Not yet implemented")
+        return osList.filter {
+            it.id == id
+        }.first()
     }
 }

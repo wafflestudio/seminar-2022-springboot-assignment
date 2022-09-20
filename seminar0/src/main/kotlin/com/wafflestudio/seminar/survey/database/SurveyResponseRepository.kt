@@ -1,6 +1,5 @@
 package com.wafflestudio.seminar.survey.database
 
-import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.stereotype.Component
 
@@ -13,12 +12,14 @@ interface SurveyResponseRepository {
 class DefaultSurveyRepository(
     db: MemoryDB
 ): SurveyResponseRepository {
+    val surveyList = db.getSurveyResponses()
     override fun findAll(): List<SurveyResponse> {
-        TODO("Not yet implemented")
+        return surveyList
     }
 
     override fun findById(id: Long): SurveyResponse {
-        TODO("Not yet implemented")
+        return surveyList.filter {
+            it.id == id
+        }.first()
     }
-
 }
