@@ -1,7 +1,5 @@
 package com.wafflestudio.seminar.survey.database
 
-import com.wafflestudio.seminar.survey.domain.OperatingSystem
-import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.io.ClassPathResource
@@ -34,12 +32,12 @@ class DataLoader(
         if (osRepository.findAll().isNotEmpty()) {
             return
         }
-        
+
         osRepository.saveAll(
             listOf(
-                OperatingSystem("MacOS", 300000L, "Most favorite OS of Seminar Instructors"),
-                OperatingSystem("Linux", 0L, "Linus Benedict Torvalds"),
-                OperatingSystem("Windows", 0L, "Window.."),
+                OperatingSystemEntity("MacOS", 300000L, "Most favorite OS of Seminar Instructors"),
+                OperatingSystemEntity("Linux", 0L, "Linus Benedict Torvalds"),
+                OperatingSystemEntity("Windows", 0L, "Window.."),
             )
         )
     }
@@ -48,13 +46,13 @@ class DataLoader(
         if (surveyResponseRepository.findAll().isNotEmpty()) {
             return
         }
-        
+
         val responses = ClassPathResource("data/example_surveyresult.tsv")
             .file
             .readLines()
             .map {
                 val rawSurveyResponse = it.split("\t")
-                SurveyResponse(
+                SurveyResponseEntity(
                     timestamp = LocalDateTime.parse(rawSurveyResponse[0], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                     operatingSystem = osRepository.findByOsName(rawSurveyResponse[1])!!,
                     springExp = rawSurveyResponse[2].toInt(),
