@@ -1,6 +1,6 @@
 package com.wafflestudio.seminar.survey.database
 
-import com.wafflestudio.seminar.user.domain.User
+import com.wafflestudio.seminar.user.database.UserEntity
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -20,7 +20,7 @@ class SurveyResponseEntity(
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    val user : User? = null
+    val userEntity : UserEntity? = null
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

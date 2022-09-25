@@ -2,7 +2,7 @@ package com.wafflestudio.seminar.user.api
 
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
 import com.wafflestudio.seminar.user.api.request.LoginUserRequest
-import com.wafflestudio.seminar.user.api.response.UserResponse
+import com.wafflestudio.seminar.user.domain.User
 import com.wafflestudio.seminar.user.service.UserService
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
@@ -30,7 +30,7 @@ class UserController(
     @PostMapping("/v1/user")
     fun createUser(
         @Valid @RequestBody request: CreateUserRequest
-    ): UserResponse {
+    ): User {
         log.info("Create User request: $request")
         return userService.createUser(request)
     }
@@ -45,7 +45,7 @@ class UserController(
     @GetMapping("/v1/user/me")
     fun getLoginedUserMe(
         @RequestHeader(value = "X-User-ID", required = true) userId: Long
-    ): UserResponse {
+    ): User {
         return userService.getLoginedUserMe(userId)
     }
 }

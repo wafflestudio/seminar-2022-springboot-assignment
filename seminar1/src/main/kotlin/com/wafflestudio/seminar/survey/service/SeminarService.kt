@@ -10,7 +10,7 @@ import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.user.api.User404
 import com.wafflestudio.seminar.user.database.UserRepository
-import com.wafflestudio.seminar.user.domain.User
+import com.wafflestudio.seminar.user.database.UserEntity
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -70,7 +70,7 @@ class SeminarServiceImpl(
     }
 
     override fun createSurveyResponse(userId: Long, request: CreateSurveyRequest): String {
-        val user: User = validateExistedUserId(userId)
+        val userEntity: UserEntity = validateExistedUserId(userId)
         val osEntity: OperatingSystemEntity = validateExistedOsName(request.osName)
         
         val surveyResponse: SurveyResponseEntity = SurveyResponseEntity(
@@ -84,14 +84,14 @@ class SeminarServiceImpl(
             backendReason = request.backendReason,
             waffleReason = request.waffleReason,
             somethingToSay = request.somethingToSay,
-            user = user
+            userEntity = userEntity
         )
         
         surveyResponseRepository.save(surveyResponse)
         return "create survey response succeed"
     }
     
-    fun validateExistedUserId(userId: Long): User {
+    fun validateExistedUserId(userId: Long): UserEntity {
         return userRepository.findByIdOrNull(userId) ?: throw User404("해당 user id를 찾을 수 없습니다 - status 404")
     }
 
