@@ -54,6 +54,7 @@ class HomeController(private val studentService : StudentService) {
         return surveyResponse
     }
     
+    
     @GetMapping("/os/{osId}")
     fun findByOsId(@PathVariable osId:Long) : List<SurveyResponse> {
         var os: OperatingSystem = studentService.findByIdOs(osId)
@@ -64,6 +65,7 @@ class HomeController(private val studentService : StudentService) {
         return result
     }
     
+
     @GetMapping("/os")
     fun findByOsName(@RequestParam("osName") osName: String) :List<SurveyResponse> {
         lateinit var os: OperatingSystem
@@ -73,12 +75,16 @@ class HomeController(private val studentService : StudentService) {
             "Windows" -> os = studentService.findByIdOs(3)
            
         }
+      
+ 
 
         var list : List<SurveyResponse> = studentService.findAllSurvey()
         var result = list.filter { it.operatingSystem == os }
         
         return result
     }
+    
+ 
     
    
     

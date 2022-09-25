@@ -23,14 +23,19 @@ class StudentService {
     fun findByIdSurvey(id: Long) : SurveyResponse {
         return surveyRepositoryImpl.findById(id)
     }
+
+
     
     fun findAllOs(): List<OperatingSystem> {
         return osRepositoryImpl.findAll()
     }
     
+    
     fun findByIdOs(id: Long): OperatingSystem {
         return osRepositoryImpl.findById(id)
     }
+    
+     
 }
 
  

@@ -10,10 +10,12 @@ class OsRepositoryImpl(private val memoryDB: MemoryDB) : OsRepository{
         return memoryDB!!.getOperatingSystems()
     }
 
+    
     override fun findById(id: Long): OperatingSystem {
         
         var list = memoryDB.getOperatingSystems()
         
         return list[id.toInt()-1]
     }
+    
 }
