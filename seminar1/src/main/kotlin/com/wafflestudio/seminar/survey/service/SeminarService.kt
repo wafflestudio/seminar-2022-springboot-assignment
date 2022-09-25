@@ -2,25 +2,32 @@ package com.wafflestudio.seminar.survey.service
 
 import com.wafflestudio.seminar.survey.api.Seminar404
 import com.wafflestudio.seminar.survey.database.OperatingSystemEntity
+import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
 import com.wafflestudio.seminar.survey.database.SurveyResponseRepository
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
+import com.wafflestudio.seminar.user.api.User404
+import com.wafflestudio.seminar.user.database.UserRepository
+import com.wafflestudio.seminar.user.domain.User
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 interface SeminarService {
     fun os(name: String): OperatingSystem
     fun os(id: Long): OperatingSystem
     fun surveyResponseList(): List<SurveyResponse>
     fun surveyResponse(id: Long): SurveyResponse
+    fun createSurveyResponse(userId: Long, request: CreateSurveyRequest): String
 }
 
 @Service
 class SeminarServiceImpl(
     private val surveyResponseRepository: SurveyResponseRepository,
     private val osRepository: OsRepository,
+    private val userRepository: UserRepository
 ) : SeminarService {
     override fun os(id: Long): OperatingSystem {
         val entity = osRepository.findByIdOrNull(id) ?: throw Seminar404("OS를 찾을 수 없어요.")
@@ -61,4 +68,35 @@ class SeminarServiceImpl(
             somethingToSay = somethingToSay,
         )
     }
+
+    override fun createSurveyResponse(userId: Long, request: CreateSurveyRequest): String {
+        val user: User = validateExistedUserId(userId)
+        val osEntity: OperatingSystemEntity = validateExistedOsName(request.osName)
+        
+        val surveyResponse: SurveyResponseEntity = SurveyResponseEntity(
+            operatingSystem = osEntity,
+            springExp = request.springExp!!,
+            rdbExp = request.rdbExp!!,
+            programmingExp = request.programmingExp!!,
+            major = request.major,
+            grade = request.grade,
+            timestamp = LocalDateTime.now().withNano(0),
+            backendReason = request.backendReason,
+            waffleReason = request.waffleReason,
+            somethingToSay = request.somethingToSay,
+            user = user
+        )
+        
+        surveyResponseRepository.save(surveyResponse)
+        return "create survey response succeed"
+    }
+    
+    fun validateExistedUserId(userId: Long): User {
+        return userRepository.findByIdOrNull(userId) ?: throw User404("해당 user id를 찾을 수 없습니다 - status 404")
+    }
+
+    fun validateExistedOsName(osName: String): OperatingSystemEntity {
+        return osRepository.findByOsName(osName) ?: throw Seminar404("OS ${osName}을 찾을 수 없어요.")
+    } 
+    
 }
