@@ -1,6 +1,6 @@
 package com.wafflestudio.seminar.user.api.request
 
-import com.wafflestudio.seminar.user.domain.UserEntity
+import com.wafflestudio.seminar.user.database.UserEntity
 import org.springframework.security.crypto.password.PasswordEncoder
 import javax.validation.constraints.NotBlank
 

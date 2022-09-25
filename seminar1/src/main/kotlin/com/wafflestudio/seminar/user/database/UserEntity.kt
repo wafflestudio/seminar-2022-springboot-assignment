@@ -1,7 +1,7 @@
-package com.wafflestudio.seminar.user.domain
+package com.wafflestudio.seminar.user.database
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.wafflestudio.seminar.survey.domain.SurveyResponse
+import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
 import javax.persistence.*
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
@@ -18,8 +18,7 @@ class UserEntity(
     val id: Long = 0L
     
     @OneToOne(mappedBy = "userEntity")
-    @JsonIgnore
-    val surveyResponse: SurveyResponse? = null
+    val surveyResponse: SurveyResponseEntity? = null
     
     @NotNull
     val nickname: String = nickname

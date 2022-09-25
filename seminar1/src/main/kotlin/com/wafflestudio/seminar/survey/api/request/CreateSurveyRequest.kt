@@ -1,8 +1,8 @@
 package com.wafflestudio.seminar.survey.api.request
 
-import com.wafflestudio.seminar.survey.domain.OperatingSystem
-import com.wafflestudio.seminar.survey.domain.SurveyResponse
-import com.wafflestudio.seminar.user.domain.UserEntity
+import com.wafflestudio.seminar.survey.database.OperatingSystemEntity
+import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
+import com.wafflestudio.seminar.user.database.UserEntity
 import org.hibernate.validator.constraints.Range
 import java.time.LocalDateTime
 import javax.validation.constraints.NotBlank
@@ -26,19 +26,19 @@ data class CreateSurveyRequest(
     val waffleReason: String?,
     val somethingToSay: String?
 ) {
-    fun toEntity(user: UserEntity?, os: OperatingSystem, request: CreateSurveyRequest): SurveyResponse {
-        return SurveyResponse(
+    fun toEntity(user: UserEntity, os: OperatingSystemEntity): SurveyResponseEntity {
+        return SurveyResponseEntity(
             operatingSystem = os,
             userEntity = user,
-            springExp = request.springExp,
-            rdbExp = request.rdbExp,
-            programmingExp = request.programmingExp,
-            major = request.major,
-            grade = request.grade,
+            springExp = this.springExp,
+            rdbExp = this.rdbExp,
+            programmingExp = this.programmingExp,
+            major = this.major,
+            grade = this.grade,
             timestamp = LocalDateTime.now(),
-            backendReason = request.backendReason,
-            waffleReason = request.waffleReason,
-            somethingToSay = request.somethingToSay
+            backendReason = this.backendReason,
+            waffleReason = this.waffleReason,
+            somethingToSay = this.somethingToSay
         )
     }
 }

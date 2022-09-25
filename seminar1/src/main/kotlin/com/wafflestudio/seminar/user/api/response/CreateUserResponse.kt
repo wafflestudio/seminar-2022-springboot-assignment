@@ -1,6 +1,6 @@
 package com.wafflestudio.seminar.user.api.response
 
-import com.wafflestudio.seminar.user.domain.UserEntity
+import com.wafflestudio.seminar.user.database.UserEntity
 
 data class CreateUserResponse(
     val nickname: String,
