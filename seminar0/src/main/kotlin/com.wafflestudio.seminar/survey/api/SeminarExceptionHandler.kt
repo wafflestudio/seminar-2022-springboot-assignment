@@ -25,6 +25,7 @@ class SeminarExceptionHandler {
      */
     
     @ExceptionHandler(value = [SeminarException::class])
+<<<<<<< HEAD:seminar0/src/main/kotlin/com/wafflestudio/seminar/survey/api/SeminarExceptionHandler.kt
     fun handle(
         e: SeminarException
     ): ResponseEntity<Any> {
@@ -49,4 +50,9 @@ class SeminarExceptionHandler {
     class OsException() : RuntimeException()
     class NameException() : RuntimeException()
     
+=======
+    fun handle(e: SeminarException): ResponseEntity<Any> {
+        return ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
+    }
+>>>>>>> upstream/main:seminar0/src/main/kotlin/com.wafflestudio.seminar/survey/api/SeminarExceptionHandler.kt
 }
