@@ -33,10 +33,7 @@
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="b6d57ccb-f10d-4241-bf8b-0b36499becb1" object-ref="schemas/seminardb/tables/user" />
-      <object connection-id="b6d57ccb-f10d-4241-bf8b-0b36499becb1" object-ref="schemas/seminardb/tables/user2" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="b6d57ccb-f10d-4241-bf8b-0b36499becb1" />
@@ -64,6 +61,8 @@
       </filter>
     </filter-actions>
     <filter-actions connection-id="b6d57ccb-f10d-4241-bf8b-0b36499becb1" dataset="mysql.user" active-filter-id="" />
+    <filter-actions connection-id="b6d57ccb-f10d-4241-bf8b-0b36499becb1" dataset="seminardb.survey_response_entity" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="b6d57ccb-f10d-4241-bf8b-0b36499becb1" dataset="seminardb.user4" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="b6d57ccb-f10d-4241-bf8b-0b36499becb1" dataset="seminardb.user2" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">

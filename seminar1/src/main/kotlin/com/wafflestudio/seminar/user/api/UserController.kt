@@ -1,6 +1,8 @@
-/*package com.wafflestudio.seminar.user.api
+package com.wafflestudio.seminar.user.api
 
-import com.wafflestudio.seminar.user.domain.User1
+import com.wafflestudio.seminar.user.database.UserEntity
+import com.wafflestudio.seminar.user.domain.UserLogin
+import com.wafflestudio.seminar.user.domain.User
 import com.wafflestudio.seminar.user.service.UserService
 import org.springframework.web.bind.annotation.*
 
@@ -9,25 +11,31 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1")
 class UserController(private val service: UserService) {
     
-    @GetMapping("/abc")
+    @GetMapping("")
     fun index(){
         
     }
-    
+
     @GetMapping("/find")
-    fun find(user1: User1): List<User1>? {
-        var user1 :List<User1>? = service.findAll()
-        return user1
+    fun find(): List<UserEntity>? {
+        return service.findAll()
     }
     
     @PostMapping("/user")
-    fun user(
-    ) {
-        val user = User1(1, "abc", "dfe", "1234")
+    fun save( @RequestBody user: UserEntity
+    ):User {
+        
         return service.save(user)
+    }
+    
+    @PostMapping("/login")
+    fun login( @RequestBody user: UserLogin, @RequestHeader("X-User-Id") value: String ): User {
+        println(value)
+        return service.findByEmailAndPassword(user)
+        
     }
     
      
 }
-*/
+
 

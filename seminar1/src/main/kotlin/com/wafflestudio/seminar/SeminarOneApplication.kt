@@ -6,7 +6,7 @@ import org.springframework.boot.runApplication
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import org.springframework.web.bind.annotation.RestController
 
-@RestController
+
 @SpringBootApplication
 @EnableJpaAuditing
 class SeminarOneApplication

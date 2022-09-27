@@ -13,5 +13,6 @@ data class SurveyResponse(
     val timestamp: LocalDateTime,
     val backendReason: String? = null,
     val waffleReason: String? = null,
-    val somethingToSay: String? = null
+    val somethingToSay: String? = null,
+
 )
