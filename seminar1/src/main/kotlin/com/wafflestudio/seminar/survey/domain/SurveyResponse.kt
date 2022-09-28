@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.survey.domain
 
 import java.time.LocalDateTime
+import javax.persistence.Column
 
 data class SurveyResponse(
     val id: Long,
@@ -13,5 +14,7 @@ data class SurveyResponse(
     val timestamp: LocalDateTime,
     val backendReason: String? = null,
     val waffleReason: String? = null,
-    val somethingToSay: String? = null
+    val somethingToSay: String? = null,
+    @Column(nullable = true)
+    val user_id: String? = null
 )
