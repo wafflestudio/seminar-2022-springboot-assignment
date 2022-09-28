@@ -1,10 +1,11 @@
 package com.wafflestudio.seminar.user.service
 
-import com.wafflestudio.seminar.user.api.User409
+import com.wafflestudio.seminar.survey.api.*
 import com.wafflestudio.seminar.user.database.UserRepository
 import com.wafflestudio.seminar.user.database.UserEntity
 import com.wafflestudio.seminar.user.domain.UserLogin
 import com.wafflestudio.seminar.user.domain.User
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 interface UserService {
@@ -12,7 +13,9 @@ interface UserService {
     fun save(user: UserEntity) : User
     fun findAll() : List<UserEntity>?
     fun findByEmailAndPassword(user: UserLogin): User
-    fun findByEmail(user: UserEntity): UserEntity?
+    fun findByEmail(email: String): UserEntity?
+    
+    fun checkMe(value: Long): UserEntity?
 }
 
 @Service
@@ -21,13 +24,13 @@ class UserServiceImpl(
 ) : UserService {
     override fun save(user: UserEntity): User {
 
-        if (findByEmail(user) == null){
+        if (findByEmail(user.email) == null){
             val entity = userRepository.save(user)
             return User(entity)
         }
        
         else {
-            throw User409("이메일이 중복되었습니다")
+            throw Seminar409("이메일이 중복되었습니다")
         }
        
     }
@@ -36,15 +39,32 @@ class UserServiceImpl(
         return userRepository.findAll()
     }
 
-    override fun findByEmail(user: UserEntity): UserEntity? {
-        val entity = userRepository.findByEmail(user.email)
-        return entity
+    override fun findByEmail(email: String): UserEntity? {
+        return userRepository.findByEmail(email)
     }
+    
     override fun findByEmailAndPassword(user: UserLogin): User {
-        val entity = userRepository.findByEmailAndPassword(user.email, user.password)
         
-        return User(entity)
-    }    
+        
+        if(findByEmail(user.email)?.password != user.password){
+            
+            throw Seminar401("비밀번호가 틀렸습니다")
+        } else {
+            val entity = userRepository.findByEmailAndPassword(user.email, user.password)
+            return User(entity)
+        }
+        
+        
+    }
+
+    
+    
+    override fun checkMe(value: Long): UserEntity? {
+
+        
+        return userRepository.findByIdOrNull(value) ?: throw Seminar400("존재하지 않는 유저입니다")
+    }
+    
 
     private fun User(entity: UserEntity) = entity.run {
         User(
