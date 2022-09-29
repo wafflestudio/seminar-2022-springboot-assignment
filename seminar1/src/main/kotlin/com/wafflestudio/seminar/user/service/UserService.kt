@@ -12,4 +12,8 @@ class UserService (
         userRepository.signUpUser(newUser);
         return newUser
     }
+    fun getUserById(id:Long): UserEntity? {
+        val user=userRepository.getUserById(id);
+        return user;
+    }
 }
