@@ -5,9 +5,6 @@ import javax.persistence.*
 @Entity
 @Table(name="users")
 class UserEntity(
-
-    
-
     @Column(nullable = false, name="nickname")
     var nickname: String,
 
@@ -15,7 +12,7 @@ class UserEntity(
     val email: String,
 
     @Column(name="password")
-    val password: String,
+    var password: String,
     
 ) {
     @Id

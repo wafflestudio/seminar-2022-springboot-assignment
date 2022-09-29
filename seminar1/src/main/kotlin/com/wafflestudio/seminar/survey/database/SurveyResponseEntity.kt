@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.database
 
+import com.wafflestudio.seminar.user.database.UserEntity
 import com.wafflestudio.seminar.user.domain.User
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -18,7 +19,8 @@ class SurveyResponseEntity(
     val waffleReason: String? = null,
     val somethingToSay: String? = null,
 
-    val userId: Long? = null
+    @ManyToOne(fetch = FetchType.LAZY)
+    var user: UserEntity? = null
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

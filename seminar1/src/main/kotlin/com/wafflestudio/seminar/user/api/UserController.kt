@@ -3,9 +3,12 @@ package com.wafflestudio.seminar.user.api
 import com.wafflestudio.seminar.survey.api.Seminar400
 import com.wafflestudio.seminar.survey.api.Seminar403
 import com.wafflestudio.seminar.survey.api.Seminar404
+import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
+import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.user.database.UserEntity
 import com.wafflestudio.seminar.user.domain.UserLogin
 import com.wafflestudio.seminar.user.domain.User
+import com.wafflestudio.seminar.user.domain.UserSurvey
 import com.wafflestudio.seminar.user.service.UserService
 import org.springframework.web.bind.annotation.*
 import java.net.http.HttpHeaders
@@ -28,7 +31,6 @@ class UserController(private val service: UserService) {
     @PostMapping("/user")
     fun save( @RequestBody user: UserEntity
     ):User {
-        
         return service.save(user)
     }
     
@@ -45,10 +47,14 @@ class UserController(private val service: UserService) {
             throw Seminar403("접근할 수 없습니다")
         }
         
-        return service.checkMe(value)
+        return service.checkUser(value)
     }
     
-   
+    @PostMapping("survey")
+    fun survey(@RequestBody survey: UserSurvey, @RequestHeader("X-User-Id") value: Long): SurveyResponseEntity{
+        
+        return service.survey(survey, value)
+    }
     
      
 }
