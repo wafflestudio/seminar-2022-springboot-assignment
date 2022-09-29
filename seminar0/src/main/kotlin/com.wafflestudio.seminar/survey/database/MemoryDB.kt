@@ -13,11 +13,11 @@ import java.time.format.DateTimeFormatter
 class MemoryDB {
     private val operatingSystems = mutableListOf<OperatingSystem>()
     private val surveyResponses = mutableListOf<SurveyResponse>()
-
+    
     fun getOperatingSystems(): List<OperatingSystem> {
         return operatingSystems
     }
-
+    
     fun getSurveyResponses(): List<SurveyResponse> {
         return surveyResponses
     }
@@ -31,7 +31,7 @@ class MemoryDB {
         loadOS()
         loadSurveyResponses()
     }
-
+    
     private fun loadOS() = operatingSystems.addAll(
         listOf(
             OperatingSystem(1L, "MacOS", 300000L, "Most favorite OS of Seminar Instructors"),
@@ -39,7 +39,7 @@ class MemoryDB {
             OperatingSystem(3L, "Windows", 0L, "Window.."),
         )
     )
-
+    
     private fun loadSurveyResponses() {
         val responses = ClassPathResource("data/example_surveyresult.tsv")
             .file
@@ -57,7 +57,7 @@ class MemoryDB {
                     grade = rawSurveyResponse[6],
                 )
             }
-
+        
         surveyResponses.addAll(responses)
     }
 }
