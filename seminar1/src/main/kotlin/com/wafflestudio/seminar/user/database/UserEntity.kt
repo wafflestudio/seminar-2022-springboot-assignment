@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.user.database
 
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
 import com.wafflestudio.seminar.user.api.request.ReadUserRequest
+import com.wafflestudio.seminar.user.domain.User
 import javax.persistence.*
 
 @Entity
@@ -15,11 +16,7 @@ class UserEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
     
-    fun toCreateUserDTO(): CreateUserRequest {
-        return CreateUserRequest(nickname=userName, email=email, password=password)
-    }
-    
-    fun toReadUserDTO(): ReadUserRequest {
-        return ReadUserRequest(nickname = userName, email = email)
+    fun toUser(): User {
+        return User(userName=userName, email=email, password=password)
     }
 }

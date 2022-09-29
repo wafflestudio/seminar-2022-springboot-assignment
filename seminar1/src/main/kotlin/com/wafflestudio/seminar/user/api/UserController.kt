@@ -2,24 +2,21 @@ package com.wafflestudio.seminar.user.api
 
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
 import com.wafflestudio.seminar.user.api.request.LoginUserRequest
-import com.wafflestudio.seminar.user.api.request.ReadUserRequest
-import com.wafflestudio.seminar.user.service.UserService
-import org.springframework.http.HttpHeaders
+import com.wafflestudio.seminar.user.service.UserServiceImpl
 import org.springframework.http.ResponseEntity
-import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("api/v1/")
 class UserController(
-    private val service: UserService
+    private val service: UserServiceImpl
 ) {
     @PostMapping("/user")
     fun newUser(
         @RequestBody createUserRequest: CreateUserRequest
     ):ResponseEntity<Any> {
         val newUser = service.createUser(createUserRequest)
-        return ResponseEntity.ok().body(true)
+        return ResponseEntity.ok().body(newUser.userName + "님, 환영합니다")
     }
     
     @PostMapping("/login")
@@ -27,7 +24,7 @@ class UserController(
         @RequestBody loginUserRequest: LoginUserRequest
     ):ResponseEntity<Any> {
         val userId = service.loginUser(loginUserRequest)
-        return ResponseEntity.ok().body(userId)
+        return ResponseEntity.ok().body("아이디: " + userId)
     }
     
     @GetMapping("/user/me")
@@ -37,4 +34,5 @@ class UserController(
         val userInfo = service.readUser(userId)
         return ResponseEntity.ok().body(userInfo)
     }
+    
 }

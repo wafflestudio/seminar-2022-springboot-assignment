@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.ManyToOne
+import javax.validation.constraints.PositiveOrZero
 
 @Entity
 class SurveyResponseEntity(
@@ -20,7 +21,8 @@ class SurveyResponseEntity(
     val timestamp: LocalDateTime,
     val backendReason: String? = null,
     val waffleReason: String? = null,
-    val somethingToSay: String? = null
+    val somethingToSay: String? = null,
+    val userId: Long? = null
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
