@@ -64,8 +64,7 @@ class SeminarServiceImpl(
             timestamp = timestamp,
             backendReason = backendReason,
             waffleReason = waffleReason,
-            somethingToSay = somethingToSay,
-            user=User
+            somethingToSay = somethingToSay
         )
     }
 }

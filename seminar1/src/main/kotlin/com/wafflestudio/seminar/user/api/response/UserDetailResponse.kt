@@ -1,11 +1,10 @@
-package com.wafflestudio.seminar.user.domain
+package com.wafflestudio.seminar.user.api.response
 
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
-import java.time.LocalDateTime
 
-data class User(
+class UserDetailResponse(
     val nickname: String,
     val email: String,
     val password: String,
-    val survey: SurveyResponseEntity?=null
+    val survey: SurveyResponseEntity
 )

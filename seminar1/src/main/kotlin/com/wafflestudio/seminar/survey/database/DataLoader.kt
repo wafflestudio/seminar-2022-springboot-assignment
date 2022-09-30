@@ -59,8 +59,7 @@ class DataLoader(
                     rdbExp = rawSurveyResponse[3].toInt(),
                     programmingExp = rawSurveyResponse[4].toInt(),
                     major = rawSurveyResponse[5],
-                    grade = rawSurveyResponse[6],
-                    user = null
+                    grade = rawSurveyResponse[6]
                 )
             }
         surveyResponseRepository.saveAll(responses)

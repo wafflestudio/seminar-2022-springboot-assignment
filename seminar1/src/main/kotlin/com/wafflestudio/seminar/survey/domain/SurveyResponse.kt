@@ -4,7 +4,6 @@ import com.wafflestudio.seminar.user.domain.User
 import java.time.LocalDateTime
 
 data class SurveyResponse(
-    val id: Long,
     val operatingSystem: OperatingSystem,
     val springExp: Int,
     val rdbExp: Int,
@@ -15,5 +14,4 @@ data class SurveyResponse(
     val backendReason: String? = null,
     val waffleReason: String? = null,
     val somethingToSay: String? = null,
-    val user: User
 )

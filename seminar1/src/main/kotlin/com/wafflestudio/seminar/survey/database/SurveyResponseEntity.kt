@@ -17,8 +17,9 @@ class SurveyResponseEntity(
     val backendReason: String? = null,
     val waffleReason: String? = null,
     val somethingToSay: String? = null,
+    
     @OneToOne(fetch = FetchType.LAZY)
-    val user: UserEntity?
+    val user: UserEntity?=null
     // add user_id in the entity. 
     //Since we are using nested_json, might be better to add user entity class rather than user_id alone
 ) {
