@@ -60,9 +60,9 @@ class DataLoader(
                     programmingExp = rawSurveyResponse[4].toInt(),
                     major = rawSurveyResponse[5],
                     grade = rawSurveyResponse[6],
+                    user = null
                 )
             }
-
         surveyResponseRepository.saveAll(responses)
     }
 }

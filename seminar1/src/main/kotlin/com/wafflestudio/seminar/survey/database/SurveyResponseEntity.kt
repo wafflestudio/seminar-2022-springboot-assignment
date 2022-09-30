@@ -1,12 +1,8 @@
 package com.wafflestudio.seminar.survey.database
 
+import com.wafflestudio.seminar.user.database.UserEntity
 import java.time.LocalDateTime
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.ManyToOne
+import javax.persistence.*
 
 @Entity
 class SurveyResponseEntity(
@@ -20,7 +16,11 @@ class SurveyResponseEntity(
     val timestamp: LocalDateTime,
     val backendReason: String? = null,
     val waffleReason: String? = null,
-    val somethingToSay: String? = null
+    val somethingToSay: String? = null,
+    @OneToOne(fetch = FetchType.LAZY)
+    val user: UserEntity?
+    // add user_id in the entity. 
+    //Since we are using nested_json, might be better to add user entity class rather than user_id alone
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
