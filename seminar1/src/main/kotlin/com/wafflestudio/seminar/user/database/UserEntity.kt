@@ -26,7 +26,7 @@ class UserEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
     fun toUser() : User{
-        return User(this.nickname,this.email,this.password)
+        return User(this.id,this.nickname,this.email,this.password)
     }
     fun updateSurvey(surveyRequest: CreateSurveyRequest,os: OperatingSystemEntity){
         this.survey= SurveyResponseEntity(

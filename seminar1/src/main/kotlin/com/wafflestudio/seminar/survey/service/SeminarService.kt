@@ -22,7 +22,6 @@ interface SeminarService {
 class SeminarServiceImpl(
     private val surveyResponseRepository: SurveyResponseRepository,
     private val osRepository: OsRepository,
-    private val userRepository: UserRepository,
 ) : SeminarService {
     override fun os(id: Long): OperatingSystem {
         val entity = osRepository.findByIdOrNull(id) ?: throw Seminar404("OS를 찾을 수 없어요.")
@@ -45,9 +44,6 @@ class SeminarServiceImpl(
     }
 
     private fun OperatingSystem(entity: OperatingSystemEntity) = entity.run {
-        OperatingSystem(id, osName, price, desc)
-    }
-    private fun User(entity: OperatingSystemEntity) = entity.run {
         OperatingSystem(id, osName, price, desc)
     }
     
