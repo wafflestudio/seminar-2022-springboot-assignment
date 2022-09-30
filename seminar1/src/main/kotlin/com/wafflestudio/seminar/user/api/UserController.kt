@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.user.api
 
+import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
 import com.wafflestudio.seminar.user.api.request.LoginUserRequest
 import com.wafflestudio.seminar.user.api.response.UserResponse
@@ -26,5 +27,9 @@ class UserController(
     fun userInfo(@RequestHeader("X-User-ID") id: Long): UserDetailResponse? {
         val user= userService.findById(id)!!
         return user.survey?.let { UserDetailResponse(user.nickname,user.email,user.password, it) }
+    }
+    @PostMapping("/api/v1/survey")
+    fun participate(@RequestBody request: CreateSurveyRequest, @RequestHeader("X-User-ID") id: Long) {
+        userService.participate(id,request)
     }
 }

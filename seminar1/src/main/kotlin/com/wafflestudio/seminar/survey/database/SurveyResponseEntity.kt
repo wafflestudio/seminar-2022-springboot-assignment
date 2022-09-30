@@ -17,7 +17,6 @@ class SurveyResponseEntity(
     val backendReason: String? = null,
     val waffleReason: String? = null,
     val somethingToSay: String? = null,
-    
     @OneToOne(fetch = FetchType.LAZY)
     val user: UserEntity?=null
     // add user_id in the entity. 
