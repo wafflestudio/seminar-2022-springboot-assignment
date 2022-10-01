@@ -3,8 +3,8 @@ package com.wafflestudio.seminar.user.service
 import com.wafflestudio.seminar.config.AuthConfig
 import com.wafflestudio.seminar.user.api.*
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
-import com.wafflestudio.seminar.user.api.request.UserInfoDTO
-import com.wafflestudio.seminar.user.api.request.UserLoginDTO
+import com.wafflestudio.seminar.user.domain.UserInfoResponse
+import com.wafflestudio.seminar.user.api.request.UserLoginRequest
 import com.wafflestudio.seminar.user.database.UserEntity
 import com.wafflestudio.seminar.user.database.UserRepository
 import org.springframework.data.repository.findByIdOrNull
@@ -41,7 +41,7 @@ class UserServiceImpl(
         userRepository.save(user)
     }
 
-    override fun login(userLogin: UserLoginDTO): Long {
+    override fun login(userLogin: UserLoginRequest): Long {
         val user: UserEntity = userRepository.findByEmail(userLogin.email)
                 ?: throw LoginNoEmailException()
         
@@ -52,8 +52,8 @@ class UserServiceImpl(
         return user.id
     }
 
-    override fun getUserInfo(id: Long): UserInfoDTO {
+    override fun getUserInfo(id: Long): UserInfoResponse {
         val user: UserEntity = userRepository.findByIdOrNull(id) ?: throw GetUserNotFindException()
-        return UserInfoDTO(user.nickname, user.email)
+        return UserInfoResponse(user.nickname, user.email)
     }
 }
