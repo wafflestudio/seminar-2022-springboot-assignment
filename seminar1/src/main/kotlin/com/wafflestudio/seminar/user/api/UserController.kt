@@ -35,9 +35,9 @@ class UserController(private val service: UserService) {
     }
     
     @PostMapping("/login")
-    fun login( @RequestBody user: UserLogin ): User {
-        return service.findByEmailAndPassword(user)
-        
+    fun login( @RequestBody user: UserLogin ): Long {
+        val loginUser = service.findByEmailAndPassword(user)
+        return loginUser.id
     }
     
     @GetMapping("/user/me")
@@ -51,8 +51,12 @@ class UserController(private val service: UserService) {
     }
     
     @PostMapping("survey")
-    fun survey(@RequestBody survey: UserSurvey, @RequestHeader("X-User-Id") value: Long): SurveyResponseEntity{
-        
+    fun survey(@RequestBody survey: UserSurvey, @RequestHeader("X-User-Id") value: Long?): SurveyResponseEntity{
+        if(value == null) {
+            throw Seminar403("접근할 수 없습니다")
+        } else if(survey.os == "" || survey.springExp == 0 || survey.rdbExp == 0 || survey.programmingExp == 0) {
+            throw Seminar400("필수 입력 칸을 입력해야 합니다")
+        }
         return service.survey(survey, value)
     }
     

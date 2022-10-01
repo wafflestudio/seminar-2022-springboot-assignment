@@ -6,8 +6,7 @@ import com.wafflestudio.seminar.user.domain.UserLogin
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserRepository : JpaRepository<UserEntity, Long>{
-    fun findByEmailAndPassword(email: String, password: String) : UserEntity
+    fun findByEmailAndPassword(email: String, password: String?) : UserEntity
     fun findByEmail(email: String): UserEntity?
     fun save(user: UserEntity) : UserEntity
-    fun save(surveyResponse: SurveyResponseEntity): SurveyResponseEntity
 }

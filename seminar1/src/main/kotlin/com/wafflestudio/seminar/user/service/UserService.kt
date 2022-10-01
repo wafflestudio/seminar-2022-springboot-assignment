@@ -59,14 +59,14 @@ class UserServiceImpl(
     }
     
     override fun findByEmailAndPassword(user: UserLogin): User {
-        
-        
-        if(findByEmail(user.email)?.password != user.password){
-            
-            throw Seminar401("비밀번호가 틀렸습니다")
-        } else {
-            val entity = userRepository.findByEmailAndPassword(user.email, user.password)
+        val validateEmail = findByEmail(user.email) ?: throw Seminar401("해당하는 이메일이 존재하지 않습니다")
+        val passwordEncode = findByEmail(user.email)?.password
+        if(this.passwordEncoder.matches(user.password, passwordEncode)){
+            val entity = userRepository.findByEmailAndPassword(user.email, passwordEncode)
             return User(entity)
+           
+        } else {
+            throw Seminar401("비밀번호가 틀렸습니다")
         }
         
         
@@ -76,12 +76,12 @@ class UserServiceImpl(
     
     override fun checkUser(value: Long?): UserEntity? {
         
-        return userRepository.findByIdOrNull(value) ?: throw Seminar400("존재하지 않는 유저입니다")
+        return userRepository.findByIdOrNull(value) ?: throw Seminar404("존재하지 않는 유저입니다")
     }
 
 
     override fun survey(survey: UserSurvey, value: Long?): SurveyResponseEntity {
-        val operatingSystem = osRepository.findByOsName(survey.os) ?: throw Seminar400("os 이름이 잘못 입력되었습니다.")
+        val operatingSystem = osRepository.findByOsName(survey.os) ?: throw Seminar404("os 이름이 잘못 입력되었습니다.")
         val surveyResponse =
             SurveyResponseEntity(
             operatingSystem = operatingSystem,
@@ -110,9 +110,6 @@ class UserServiceImpl(
         )
     }
 
-    private fun OperatingSystem(entity: OperatingSystemEntity) = entity.run {
-        OperatingSystem(id, osName, price, desc)
-    }
 
     
 }
