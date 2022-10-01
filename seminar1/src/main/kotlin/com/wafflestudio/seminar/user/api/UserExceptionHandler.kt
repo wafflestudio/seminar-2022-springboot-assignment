@@ -10,4 +10,9 @@ class UserExceptionHandler {
     fun userCreationExceptionHandler(userException: UserException): ResponseEntity<String> {
         return ResponseEntity(userException.msg, userException.status)
     }
+    
+    @ExceptionHandler(value = [LoginException::class])
+    fun loginExceptionHandler(loginException: LoginException): ResponseEntity<String> {
+        return ResponseEntity(loginException.msg, loginException.status)
+    }
 }

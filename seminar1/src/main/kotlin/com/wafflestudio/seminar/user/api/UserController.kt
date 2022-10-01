@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.user.api
 
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
+import com.wafflestudio.seminar.user.api.request.UserLoginDTO
 import com.wafflestudio.seminar.user.database.UserEntity
 import com.wafflestudio.seminar.user.service.UserService
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,5 +20,13 @@ class UserController(
         // Can we customize it...??
         userService.createUser(userRequest)
     }
-
+    
+    @PostMapping("/api/v1/login")
+    fun login(@RequestBody userLogin: UserLoginDTO): String {
+        // TODO:
+        // When Field is not included, it throws 400 bad request...
+        // Can we customize it...??
+        return userService.login(userLogin)
+    }
+    
 }
