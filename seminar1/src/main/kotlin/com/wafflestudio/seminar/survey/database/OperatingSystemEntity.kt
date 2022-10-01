@@ -12,7 +12,7 @@ import javax.persistence.UniqueConstraint
 class OperatingSystemEntity(
     val osName: String,
     val price: Long,
-    val desc: String,
+    val description: String,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

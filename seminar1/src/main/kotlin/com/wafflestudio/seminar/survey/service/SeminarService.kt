@@ -58,7 +58,7 @@ class SeminarServiceImpl(
     }
 
     private fun OperatingSystem(entity: OperatingSystemEntity) = entity.run {
-        OperatingSystem(id, osName, price, desc)
+        OperatingSystem(id, osName, price, description)
     }
 
     private fun SurveyResponse(entity: SurveyResponseEntity) = entity.run {

@@ -38,6 +38,6 @@ class UserServiceImpl(
     }
     
     private fun User(entity: UserEntity) = entity.run {
-        User(userName, email, password)
+        User(userName, email, password, id)
     }
 }

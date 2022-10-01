@@ -17,6 +17,6 @@ class UserEntity(
     val id: Long = 0L
     
     fun toUser(): User {
-        return User(userName=userName, email=email, password=password)
+        return User(userName=userName, email=email, password=password, id=id)
     }
 }
