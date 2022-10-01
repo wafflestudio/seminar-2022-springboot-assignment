@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.user.service
 
+import com.wafflestudio.seminar.user.api.*
 import com.wafflestudio.seminar.user.api.request.*
 import com.wafflestudio.seminar.user.database.UserEntity
 import com.wafflestudio.seminar.user.database.UserRepository
@@ -26,7 +27,7 @@ class UserServiceImpl(
         try {
             userRepository.save(user)
         } catch (e: DataIntegrityViolationException) {
-            throw User409("이미 있는 이메일입니다")
+            throw User409(request.email + "은(는) 이미 있는 이메일입니다")
         }
     }
 
@@ -38,12 +39,12 @@ class UserServiceImpl(
             }
             return user.nickname
         } catch (e: EmptyResultDataAccessException) {
-            throw User404(request.email + "은 없는 이메일입니다")
+            throw User404(request.email + "은(는) 없는 이메일입니다")
         }
     }
 
     override fun getUser(xUserId: Long): User {
-        val user = userRepository.findByIdOrNull(xUserId) ?: throw User404(xUserId.toString() + "는 없는 아이디입니다")
+        val user = userRepository.findByIdOrNull(xUserId) ?: throw User404(xUserId.toString() + "은(는) 없는 아이디입니다")
         return User(user)
     }
 
