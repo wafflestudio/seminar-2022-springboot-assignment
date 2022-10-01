@@ -16,6 +16,6 @@ class UserController(
     @PostMapping("/api/v1/login")
     fun login(@Valid @RequestBody request: LoginRequest) = userService.login(request)
     
-    @GetMapping("/api/v1/user/me", headers = ["X-User-ID"])
+    @GetMapping("/api/v1/user/me")
     fun getUser(@RequestHeader("X-User-ID") xUserId: Long) = userService.getUser(xUserId)
 }
