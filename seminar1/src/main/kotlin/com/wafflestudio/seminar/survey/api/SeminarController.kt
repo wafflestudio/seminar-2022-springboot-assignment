@@ -1,32 +1,45 @@
 package com.wafflestudio.seminar.survey.api
 
-import com.wafflestudio.seminar.survey.service.SeminarService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import com.wafflestudio.seminar.survey.domain.OperatingSystem
+import com.wafflestudio.seminar.survey.domain.SurveyResponse
+import com.wafflestudio.seminar.survey.service.OSService
+import com.wafflestudio.seminar.survey.service.SurveyService
+import org.springframework.web.bind.annotation.*
 
 @RestController
-class SeminarController(
-    private val service: SeminarService
+@RequestMapping("/survey")
+public class SurveyController(
+    val service: SurveyService
 ) {
-    @GetMapping("/os/{osId}")
-    fun getOs(
-        @PathVariable osId: Long,
-    ) = service.os(osId)
+    @GetMapping("")
+    fun getAllSurveys(): List<SurveyResponse> {
+        return service.allSurveyList()
+    }
 
-    @GetMapping("/os")
-    fun getOs(
-        @RequestParam name: String
-    ) = service.os(name)
-
-    @GetMapping("/survey")
-    fun getSurveyList() =
-        service.surveyResponseList()
-
-    @GetMapping("/survey/{surveyId}")
-    fun getSurvey(
+    @GetMapping("/{surveyId}")
+    fun getSurveyById(
         @PathVariable surveyId: Long,
-    ) = service.surveyResponse(surveyId)
+    ): SurveyResponse {
+        return service.surveyForId(surveyId)
+    }
+}
 
+@RestController
+@RequestMapping("/os")
+public class OSController(
+    val service: OSService
+) {
+    @GetMapping("/{id}")
+    fun getOsById(
+        @PathVariable id: Long,
+    ): OperatingSystem {
+        return service.osForId(id)
+    }
+
+    @GetMapping("")
+    fun getOsByName(
+        @RequestParam name: String
+    ): OperatingSystem {
+        return service.osForName(name)
+    }
 }

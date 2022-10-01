@@ -1,49 +1,57 @@
 package com.wafflestudio.seminar.survey.service
 
 import com.wafflestudio.seminar.survey.api.Seminar404
+import com.wafflestudio.seminar.survey.api.SeminarExceptionType
 import com.wafflestudio.seminar.survey.database.OperatingSystemEntity
 import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
 import com.wafflestudio.seminar.survey.database.SurveyResponseRepository
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
-interface SeminarService {
-    fun os(name: String): OperatingSystem
-    fun os(id: Long): OperatingSystem
-    fun surveyResponseList(): List<SurveyResponse>
-    fun surveyResponse(id: Long): SurveyResponse
+interface OSService {
+    fun osForName(name: String): OperatingSystem
+    fun osForId(id: Long): OperatingSystem
+
 }
 
 @Service
-class SeminarServiceImpl(
-    private val surveyResponseRepository: SurveyResponseRepository,
-    private val osRepository: OsRepository,
-) : SeminarService {
-    override fun os(id: Long): OperatingSystem {
-        val entity = osRepository.findByIdOrNull(id) ?: throw Seminar404("OS를 찾을 수 없어요.")
+class DefaultOSService(
+    val repository: OsRepository
+): OSService {
+    override fun osForName(name: String): OperatingSystem {
+        val entity = repository.findByOsName(name) ?: throw Seminar404(SeminarExceptionType.NotExistOSForName)
         return OperatingSystem(entity)
     }
 
-    override fun os(name: String): OperatingSystem {
-        val entity = osRepository.findByOsName(name) ?: throw Seminar404("OS ${name}을 찾을 수 없어요.")
+    override fun osForId(id: Long): OperatingSystem {
+        val entity = repository.findById(id).orElseThrow() ?: throw Seminar404(SeminarExceptionType.NotExistOSForId)
         return OperatingSystem(entity)
-    }
-
-    override fun surveyResponseList(): List<SurveyResponse> {
-        val surveyEntityList = surveyResponseRepository.findAll()
-        return surveyEntityList.map(::SurveyResponse)
-    }
-
-    override fun surveyResponse(id: Long): SurveyResponse {
-        val surveyEntity = surveyResponseRepository.findByIdOrNull(id) ?: throw Seminar404("설문 결과를 찾을 수 없어요.")
-        return SurveyResponse(surveyEntity)
     }
 
     private fun OperatingSystem(entity: OperatingSystemEntity) = entity.run {
         OperatingSystem(id, osName, price, desc)
+    }
+}
+
+interface SurveyService {
+    fun allSurveyList(): List<SurveyResponse>
+    fun surveyForId(id: Long): SurveyResponse
+}
+
+@Service
+class DefaultSurveyService(
+    val repository: SurveyResponseRepository
+): SurveyService {
+    override fun allSurveyList(): List<SurveyResponse> {
+        val entityList = repository.findAll()
+        return entityList.map(::SurveyResponse)
+    }
+
+    override fun surveyForId(id: Long): SurveyResponse {
+        val entity = repository.findById(id).orElseThrow() ?: throw Seminar404(SeminarExceptionType.NotExistSurveyForId)
+        return SurveyResponse(entity)
     }
 
     private fun SurveyResponse(entity: SurveyResponseEntity) = entity.run {
@@ -60,5 +68,9 @@ class SeminarServiceImpl(
             waffleReason = waffleReason,
             somethingToSay = somethingToSay,
         )
+    }
+
+    private fun OperatingSystem(entity: OperatingSystemEntity) = entity.run {
+        OperatingSystem(id, osName, price, desc)
     }
 }
