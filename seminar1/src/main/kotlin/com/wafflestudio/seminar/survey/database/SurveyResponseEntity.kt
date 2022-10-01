@@ -7,18 +7,19 @@ import javax.persistence.*
 @Entity
 class SurveyResponseEntity(
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "osName")
     val operatingSystem: OperatingSystemEntity,
     val springExp: Int,
     val rdbExp: Int,
     val programmingExp: Int,
-    val major: String,
-    val grade: String,
+    val major: String?,
+    val grade: String?,
     val timestamp: LocalDateTime,
     val backendReason: String? = null,
     val waffleReason: String? = null,
     val somethingToSay: String? = null,
     @OneToOne(optional = true)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     val user: UserEntity? = null,
 ) {
     @Id
