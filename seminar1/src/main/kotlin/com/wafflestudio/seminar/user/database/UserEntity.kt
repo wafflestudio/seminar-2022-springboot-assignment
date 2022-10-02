@@ -30,9 +30,9 @@ class UserEntity(
     fun updateSurvey(surveyRequest: CreateSurveyRequest, os: OperatingSystemEntity){
         this.survey= SurveyResponseEntity(
             os,
-            surveyRequest.springExp,
-            surveyRequest.rdbExp,
-            surveyRequest.programmingExp,
+            surveyRequest.springExp!!,
+            surveyRequest.rdbExp!!,
+            surveyRequest.programmingExp!!,
             surveyRequest.major,
             surveyRequest.grade,
             surveyRequest.timestamp,

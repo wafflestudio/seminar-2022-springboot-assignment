@@ -56,11 +56,12 @@ class UserServiceImpl(
         if(result.isPresent){
             return result.get()
         }
-        throw UserNotFound()
+        throw NotFound()
     }
     
     @Transactional
     override fun participate(id: Long,request: CreateSurveyRequest) : CreateSurveyResponse? {
+       
         val user=userRepository.findById(id)
         if(user.isPresent){
             val os=osRepository.findByOsName(request.operatingSystem)
@@ -69,9 +70,9 @@ class UserServiceImpl(
                 surveyResponseRepository.save(
                     SurveyResponseEntity(
                         os,
-                        request.springExp,
-                        request.rdbExp,
-                        request.programmingExp,
+                        request.springExp!!,
+                        request.rdbExp!!,
+                        request.programmingExp!!,
                         request.major,
                         request.grade,
                         request.timestamp,
@@ -94,7 +95,7 @@ class UserServiceImpl(
                     request.backendReason,
                     request.waffleReason
                 )
-            }?:run{ throw Seminar404("OS ${os}을 찾을 수 없어요.")
+            }?:run{ throw Seminar404("OS를 찾을 수 없어요.")
             }
            
         }
