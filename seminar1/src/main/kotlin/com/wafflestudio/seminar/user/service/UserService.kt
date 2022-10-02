@@ -8,14 +8,16 @@ import com.wafflestudio.seminar.user.database.UserEntity
 import com.wafflestudio.seminar.user.database.UserRepository
 import com.wafflestudio.seminar.user.domain.SignInResponse
 import com.wafflestudio.seminar.user.domain.SignUpResponse
-import com.wafflestudio.seminar.user.domain.User
+import com.wafflestudio.seminar.user.domain.UserResponse
+import com.wafflestudio.seminar.user.domain.UserSurveyResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 interface UserService {
     fun signUp(request: CreateUserRequest): SignUpResponse
     fun signIn(request: SignInRequest): SignInResponse
-    fun getUserMe(id: Long?): User
+    fun getUserMe(id: Long?): UserResponse
+    fun getUserMeSurvey(id: Long?): UserSurveyResponse
 }
 
 @Service
@@ -40,17 +42,17 @@ class DefaultUserService(
     }
     
     @Transactional
-    override fun getUserMe(id: Long?): User {
+    override fun getUserMe(id: Long?): UserResponse {
         val id = id ?: throw Seminar404(SeminarExceptionType.NotExistOSForId)
         val entity = repository.findById(id).orElseThrow() { throw java.lang.RuntimeException() }
-        return User(entity)
+        return entity.toUserResponse()
     }
 
-    private fun User(entity: UserEntity) = entity.run {
-        User(
-            userId = id,
-            name = name,
-            email = email
-        )
+    @Transactional
+    override fun getUserMeSurvey(id: Long?): UserSurveyResponse {
+        val id = id ?: throw Seminar404(SeminarExceptionType.NotExistOSForId)
+        val entity = repository.findById(id).orElseThrow() { throw java.lang.RuntimeException() }
+        entity.surveyResponse ?: throw java.lang.RuntimeException()
+        return entity.toUserSurveyResponse()
     }
 }

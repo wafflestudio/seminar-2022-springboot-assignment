@@ -9,7 +9,6 @@ import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
 import com.wafflestudio.seminar.survey.database.SurveyResponseRepository
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
-import com.wafflestudio.seminar.user.database.UserEntity
 import com.wafflestudio.seminar.user.database.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -48,7 +47,7 @@ class DefaultSurveyService(
     private fun SurveyResponse(entity: SurveyResponseEntity) = entity.run {
         SurveyResponse(
             id = id,
-            user = user?.toUser(),
+            user = user?.toUserResponse(),
             operatingSystem = OperatingSystem(operatingSystem),
             springExp = springExp,
             rdbExp = rdbExp,

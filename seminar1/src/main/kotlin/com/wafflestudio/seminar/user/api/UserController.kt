@@ -2,8 +2,6 @@ package com.wafflestudio.seminar.user
 
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
 import com.wafflestudio.seminar.user.api.request.SignInRequest
-import com.wafflestudio.seminar.user.domain.SignInResponse
-import com.wafflestudio.seminar.user.domain.User
 import com.wafflestudio.seminar.user.service.UserService
 import org.springframework.web.bind.annotation.*
 
@@ -27,4 +25,9 @@ class UserController(
     fun getUserMe(
         @RequestHeader("X-User-Id") id: Long?
     ) = userService.getUserMe(id)
+
+    @GetMapping("/user/me/survey")
+    fun getUserMeSurvey(
+        @RequestHeader("X-User-Id") id: Long?
+    ) = userService.getUserMeSurvey(id)
 }

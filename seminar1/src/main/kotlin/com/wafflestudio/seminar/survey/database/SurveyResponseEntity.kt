@@ -2,7 +2,7 @@ package com.wafflestudio.seminar.survey.database
 
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.user.database.UserEntity
-import com.wafflestudio.seminar.user.domain.User
+import com.wafflestudio.seminar.user.domain.UserSurvey
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -33,7 +33,23 @@ class SurveyResponseEntity(
     fun toSurveyResponse(): SurveyResponse {
         return SurveyResponse(
             id = id,
-            user = user?.toUser(),
+            user = user?.toUserResponse(),
+            operatingSystem = operatingSystem.toOperationgSystem(),
+            springExp,
+            rdbExp,
+            programmingExp,
+            major,
+            grade,
+            timestamp,
+            backendReason,
+            waffleReason,
+            somethingToSay
+        )
+    }
+    
+    fun toSurveyForUser(): UserSurvey {
+        return UserSurvey(
+            id = id,
             operatingSystem = operatingSystem.toOperationgSystem(),
             springExp,
             rdbExp,
