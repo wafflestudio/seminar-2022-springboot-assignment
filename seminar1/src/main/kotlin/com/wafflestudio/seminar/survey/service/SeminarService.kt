@@ -13,6 +13,7 @@ import com.wafflestudio.seminar.user.database.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 interface SeminarService {
     fun os(name: String): OperatingSystem
@@ -71,7 +72,9 @@ class SeminarServiceImpl(
                 programmingExp = req.programmingExp!!,
                 major = req.major,
                 grade = req.grade,
-                timestamp = LocalDateTime.now(),
+                timestamp = LocalDateTime.parse(
+                    LocalDateTime.now().toString()
+                    , DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 backendReason = req.backendReason,
                 waffleReason = req.waffleReason,
                 somethingToSay = req.somethingToSay
