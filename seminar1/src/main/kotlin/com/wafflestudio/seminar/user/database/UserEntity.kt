@@ -3,6 +3,7 @@ package com.wafflestudio.seminar.user.database
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
 import com.wafflestudio.seminar.user.domain.SignInResponse
 import com.wafflestudio.seminar.user.domain.SignUpResponse
+import com.wafflestudio.seminar.user.domain.User
 import javax.persistence.*
 
 @Entity
@@ -10,9 +11,9 @@ import javax.persistence.*
     name = "users"
 )
 class UserEntity(
-    @OneToMany(fetch = FetchType.LAZY)
-    @Column(nullable = true)
-    val surveyResponses: List<SurveyResponseEntity>,
+    
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    val surveyResponse: SurveyResponseEntity?,
 
     @Column(nullable = false)
     val name: String,
@@ -33,5 +34,9 @@ class UserEntity(
     
     fun toSignInResponse(): SignInResponse {
         return SignInResponse(id)
+    }
+    
+    fun toUser(): User {
+        return User(id, name, email)
     }
 }

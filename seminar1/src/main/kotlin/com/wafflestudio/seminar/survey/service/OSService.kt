@@ -6,6 +6,7 @@ import com.wafflestudio.seminar.survey.database.OperatingSystemEntity
 import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 interface OSService {
     fun osForName(name: String): OperatingSystem
@@ -16,11 +17,12 @@ interface OSService {
 class DefaultOSService(
     val repository: OsRepository
 ): OSService {
+    @Transactional
     override fun osForName(name: String): OperatingSystem {
         val entity = repository.findByOsName(name) ?: throw Seminar404(SeminarExceptionType.NotExistOSForName)
         return OperatingSystem(entity)
     }
-
+    @Transactional
     override fun osForId(id: Long): OperatingSystem {
         val entity = repository.findById(id).orElseThrow { throw Seminar404(SeminarExceptionType.NotExistOSForId) }
         return OperatingSystem(entity)

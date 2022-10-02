@@ -10,6 +10,7 @@ import com.wafflestudio.seminar.user.domain.SignInResponse
 import com.wafflestudio.seminar.user.domain.SignUpResponse
 import com.wafflestudio.seminar.user.domain.User
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 interface UserService {
     fun signUp(request: CreateUserRequest): SignUpResponse
@@ -21,13 +22,15 @@ interface UserService {
 class DefaultUserService(
     val repository: UserRepository
 ): UserService {
+    @Transactional
     override fun signUp(request: CreateUserRequest): SignUpResponse {
         when (repository.existsByEmail(request.email)) {
             true -> throw RuntimeException()
-            false -> return repository.save(request.toDomain()).toSignUpResponse()
+            false -> return repository.save(request.toEntity()).toSignUpResponse()
         }
     }
-
+    
+    @Transactional
     override fun signIn(request: SignInRequest): SignInResponse {
         val user = repository.findByEmail(request.email) ?: throw java.lang.RuntimeException()
         when (user.password == request.password) {
@@ -35,7 +38,8 @@ class DefaultUserService(
             false -> throw java.lang.RuntimeException()
         } 
     }
-
+    
+    @Transactional
     override fun getUserMe(id: Long?): User {
         val id = id ?: throw Seminar404(SeminarExceptionType.NotExistOSForId)
         val entity = repository.findById(id).orElseThrow() { throw java.lang.RuntimeException() }

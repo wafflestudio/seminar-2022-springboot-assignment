@@ -7,7 +7,7 @@ data class CreateUserRequest(
     val email: String,
     val password: String,
 ) {
-    fun toDomain(): UserEntity {
-        return UserEntity(emptyList(), name, email, password)
+    fun toEntity(): UserEntity {
+        return UserEntity(null, name, email, password)
     }
 }
