@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.user.database
 
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
+import com.wafflestudio.seminar.user.domain.SignInResponse
 import com.wafflestudio.seminar.user.domain.SignUpResponse
 import javax.persistence.*
 
@@ -28,5 +29,9 @@ class UserEntity(
     
     fun toSignUpResponse(): SignUpResponse {
         return SignUpResponse(id, name, email)
+    }
+    
+    fun toSignInResponse(): SignInResponse {
+        return SignInResponse(id)
     }
 }

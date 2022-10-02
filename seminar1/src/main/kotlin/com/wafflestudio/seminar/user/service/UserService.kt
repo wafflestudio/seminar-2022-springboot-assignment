@@ -29,7 +29,11 @@ class DefaultUserService(
     }
 
     override fun signIn(request: SignInRequest): SignInResponse {
-        TODO("Not yet implemented")
+        val user = repository.findByEmail(request.email) ?: throw java.lang.RuntimeException()
+        when (user.password == request.password) {
+            true -> return user.toSignInResponse()
+            false -> throw java.lang.RuntimeException()
+        } 
     }
 
     override fun getUserMe(id: Long?): User {
