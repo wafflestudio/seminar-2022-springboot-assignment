@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.database
 
+import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.user.database.UserEntity
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -17,7 +18,7 @@ class SurveyResponseEntity(
     val backendReason: String? = null,
     val waffleReason: String? = null,
     val somethingToSay: String? = null,
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = [CascadeType.ALL])
     val user: UserEntity?=null
     // add user_id in the entity. 
     //Since we are using nested_json, might be better to add user entity class rather than user_id alone
@@ -25,4 +26,19 @@ class SurveyResponseEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
+    fun toSurveyResponse(): SurveyResponse{
+        return SurveyResponse(
+            this.id,
+            this.operatingSystem.toOperatingSystem(),
+            this.springExp,
+            this.rdbExp,
+            this.programmingExp,
+            this.major,
+            this.grade,
+            this.timestamp,
+            this.backendReason,
+            this.waffleReason,
+            this.somethingToSay
+        )
+    }
 }

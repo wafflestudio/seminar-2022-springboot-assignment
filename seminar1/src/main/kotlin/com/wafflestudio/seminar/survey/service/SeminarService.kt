@@ -8,6 +8,7 @@ import com.wafflestudio.seminar.survey.database.SurveyResponseRepository
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.user.database.UserRepository
+import com.wafflestudio.seminar.user.domain.User
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -22,6 +23,7 @@ interface SeminarService {
 class SeminarServiceImpl(
     private val surveyResponseRepository: SurveyResponseRepository,
     private val osRepository: OsRepository,
+    
 ) : SeminarService {
     override fun os(id: Long): OperatingSystem {
         val entity = osRepository.findByIdOrNull(id) ?: throw Seminar404("OS를 찾을 수 없어요.")
@@ -47,6 +49,7 @@ class SeminarServiceImpl(
         OperatingSystem(id, osName, price, desc)
     }
     
+    
 
     private fun SurveyResponse(entity: SurveyResponseEntity) = entity.run {
         SurveyResponse(
@@ -60,7 +63,8 @@ class SeminarServiceImpl(
             timestamp = timestamp,
             backendReason = backendReason,
             waffleReason = waffleReason,
-            somethingToSay = somethingToSay
+            somethingToSay = somethingToSay,
+            user= user?.toUser()
         )
     }
 }

@@ -1,19 +1,18 @@
 package com.wafflestudio.seminar.user.service
 
-import com.wafflestudio.seminar.survey.api.Seminar400
 import com.wafflestudio.seminar.survey.api.Seminar404
 import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
+import com.wafflestudio.seminar.survey.api.response.CreateSurveyResponse
 import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
+import com.wafflestudio.seminar.survey.database.SurveyResponseRepository
 import com.wafflestudio.seminar.user.api.*
 import com.wafflestudio.seminar.user.database.UserRepository
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
 import com.wafflestudio.seminar.user.api.request.LoginUserRequest
-import com.wafflestudio.seminar.user.api.response.UserDetailResponse
 import com.wafflestudio.seminar.user.api.response.UserResponse
 import com.wafflestudio.seminar.user.database.UserEntity
 import com.wafflestudio.seminar.user.domain.User
-import org.springframework.data.repository.findByIdOrNull
 
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -25,6 +24,7 @@ class UserServiceImpl(
     private val userRepository: UserRepository,
     private val passwordEncoder : PasswordEncoder,
     private val osRepository: OsRepository,
+    private val surveyResponseRepository: SurveyResponseRepository
 ):UserService
 {
     @Transactional /**make it nullable and then implement at the controller*/
@@ -53,18 +53,50 @@ class UserServiceImpl(
 
     override fun findById(id : Long) : UserEntity? {
         val result=userRepository.findById(id)
-        result.ifPresent(throw UserNotFound())
-        return result.get()
+        result.ifPresent(return result.get())
+        throw UserNotFound()
     }
     
     @Transactional
-    override fun participate(id: Long,request: CreateSurveyRequest) {
+    override fun participate(id: Long,request: CreateSurveyRequest) : CreateSurveyResponse? {
         val user=userRepository.findById(id)
-        user.ifPresent(throw UserNotFound())
-        val os=osRepository.findByOsName(request.operatingSystem)
-        os?.let{
-            user.get().updateSurvey(request,os)
-        }?:run{throw throw Seminar404("OS ${os}을 찾을 수 없어요.") }
+        if(user.isPresent){
+            val os=osRepository.findByOsName(request.operatingSystem)
+            os?.let{
+                user.get().updateSurvey(request,os)
+                surveyResponseRepository.save(
+                    SurveyResponseEntity(
+                        os,
+                        request.springExp,
+                        request.rdbExp,
+                        request.programmingExp,
+                        request.major,
+                        request.grade,
+                        request.timestamp,
+                        request.backendReason,
+                        request.waffleReason,
+                        request.somethingToSay,
+                        user.get()!!
+                    )
+                )
+                return CreateSurveyResponse(
+                    id,
+                    request.operatingSystem,
+                    request.springExp,
+                    request.rdbExp,
+                    request.programmingExp,
+                    request.major,
+                    request.grade,
+                    request.timestamp,
+                    request.backendReason,
+                    request.backendReason,
+                    request.waffleReason
+                )
+            }?:run{ throw Seminar404("OS ${os}을 찾을 수 없어요.")
+            }
+           
+        }
+        throw UserNotFound()
     }
     
 

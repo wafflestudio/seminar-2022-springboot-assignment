@@ -15,4 +15,5 @@ data class SurveyResponse(
     val backendReason: String? = null,
     val waffleReason: String? = null,
     val somethingToSay: String? = null,
+    val user: User?=null
 )
