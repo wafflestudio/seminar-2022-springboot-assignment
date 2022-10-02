@@ -20,15 +20,11 @@ class DefaultOSService(
     @Transactional
     override fun osForName(name: String): OperatingSystem {
         val entity = repository.findByOsName(name) ?: throw Seminar404(SeminarExceptionType.NotExistOSForName)
-        return OperatingSystem(entity)
+        return entity.toOperationgSystem()
     }
     @Transactional
     override fun osForId(id: Long): OperatingSystem {
         val entity = repository.findById(id).orElseThrow { throw Seminar404(SeminarExceptionType.NotExistOSForId) }
-        return OperatingSystem(entity)
-    }
-
-    private fun OperatingSystem(entity: OperatingSystemEntity) = entity.run {
-        OperatingSystem(id, osName, price, desc)
+        return entity.toOperationgSystem()
     }
 }

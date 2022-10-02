@@ -1,10 +1,8 @@
 package com.wafflestudio.seminar.user.service
 
-import com.wafflestudio.seminar.survey.api.Seminar404
-import com.wafflestudio.seminar.survey.api.SeminarExceptionType
+import com.wafflestudio.seminar.user.api.*
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
 import com.wafflestudio.seminar.user.api.request.SignInRequest
-import com.wafflestudio.seminar.user.database.UserEntity
 import com.wafflestudio.seminar.user.database.UserRepository
 import com.wafflestudio.seminar.user.domain.SignInResponse
 import com.wafflestudio.seminar.user.domain.SignUpResponse
@@ -27,8 +25,11 @@ class DefaultUserService(
     @Transactional
     override fun signUp(request: CreateUserRequest): SignUpResponse {
         when (repository.existsByEmail(request.email)) {
-            true -> throw RuntimeException()
-            false -> return repository.save(request.toEntity()).toSignUpResponse()
+            true -> throw User409(UserExceptionType.ExistUserEmail)
+            false -> {
+                
+                return repository.save(request.toEntity()).toSignUpResponse()
+            } 
         }
     }
     
@@ -43,16 +44,16 @@ class DefaultUserService(
     
     @Transactional
     override fun getUserMe(id: Long?): UserResponse {
-        val id = id ?: throw Seminar404(SeminarExceptionType.NotExistOSForId)
-        val entity = repository.findById(id).orElseThrow() { throw java.lang.RuntimeException() }
+        val id = id ?: throw User403(UserExceptionType.NeedsAuthetication)
+        val entity = repository.findById(id).orElseThrow() { throw User404(UserExceptionType.NotExistUserId) }
         return entity.toUserResponse()
     }
 
     @Transactional
     override fun getUserMeSurvey(id: Long?): UserSurveyResponse {
-        val id = id ?: throw Seminar404(SeminarExceptionType.NotExistOSForId)
-        val entity = repository.findById(id).orElseThrow() { throw java.lang.RuntimeException() }
-        entity.surveyResponse ?: throw java.lang.RuntimeException()
+        val id = id ?: throw User403(UserExceptionType.NeedsAuthetication)
+        val entity = repository.findById(id).orElseThrow() { throw User404(UserExceptionType.NotExistUserId) }
+        entity.surveyResponse ?: throw User404(UserExceptionType.NotExistSurvey)
         return entity.toUserSurveyResponse()
     }
 }

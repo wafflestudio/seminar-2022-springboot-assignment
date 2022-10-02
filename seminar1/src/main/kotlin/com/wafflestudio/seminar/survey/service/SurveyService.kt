@@ -1,5 +1,7 @@
 package com.wafflestudio.seminar.survey.service
 
+import com.wafflestudio.seminar.survey.api.Seminar400
+import com.wafflestudio.seminar.survey.api.Seminar403
 import com.wafflestudio.seminar.survey.api.Seminar404
 import com.wafflestudio.seminar.survey.api.SeminarExceptionType
 import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
@@ -28,40 +30,22 @@ class DefaultSurveyService(
     @Transactional
     override fun allSurveyList(): List<SurveyResponse> {
         val entityList = surveyRepository.findAll()
-        return entityList.map(::SurveyResponse)
+        return entityList.map { it.toSurveyResponse() }
     }
     @Transactional
     override fun surveyForId(id: Long): SurveyResponse {
         val entity = surveyRepository.findById(id).orElseThrow() { throw Seminar404(SeminarExceptionType.NotExistSurveyForId) }
-        return SurveyResponse(entity)
+        return entity.toSurveyResponse()
     }
     @Transactional
     override fun createSurvey(id: Long?, request: CreateSurveyRequest): SurveyResponse {
-        val existId = id ?: throw java.lang.RuntimeException()
-        val userEntity = userRepository.findById(existId).orElseThrow { java.lang.RuntimeException() }
-        if (surveyRepository.existsByUser(userEntity)) { throw java.lang.RuntimeException() }
+        val existId = id ?: throw Seminar403(SeminarExceptionType.NeedsAuthetication)
+        val userEntity = userRepository.findById(existId).orElseThrow { throw Seminar404(SeminarExceptionType.NotExistUserId) }
+        if (surveyRepository.existsByUser(userEntity)) { throw Seminar400(SeminarExceptionType.ExistUserSurvey) }
+        if ((request.osName == null) || (request.rdbExp == null) || (request.programmingExp == null) || (request.springExp == null)) {
+            throw Seminar404(SeminarExceptionType.InputNeedsSurvey)
+        }
         val osEntity = osRepository.findByOsName(request.osName) ?: throw Seminar404(SeminarExceptionType.NotExistOSForName)
         return surveyRepository.save(request.toEntity(osEntity, userEntity)).toSurveyResponse()
-    }
-
-    private fun SurveyResponse(entity: SurveyResponseEntity) = entity.run {
-        SurveyResponse(
-            id = id,
-            user = user?.toUserResponse(),
-            operatingSystem = OperatingSystem(operatingSystem),
-            springExp = springExp,
-            rdbExp = rdbExp,
-            programmingExp = programmingExp,
-            major = major,
-            grade = grade,
-            timestamp = timestamp,
-            backendReason = backendReason,
-            waffleReason = waffleReason,
-            somethingToSay = somethingToSay,
-        )
-    }
-
-    private fun OperatingSystem(entity: OperatingSystemEntity) = entity.run {
-        OperatingSystem(id, osName, price, desc)
     }
 }
