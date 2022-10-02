@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.user.api
 
+import com.wafflestudio.seminar.survey.api.Seminar404
 import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
 import com.wafflestudio.seminar.user.api.request.LoginUserRequest
@@ -26,15 +27,13 @@ class UserController(
 
     @GetMapping("/user/me")
     fun userInfo(@RequestHeader("X-User-ID") id: Long): UserDetailResponse? {
-        if(id==null){throw Forbidden()}
-        val user = userService.findById(id)
+        val user = userService.findById(id) ?: throw Seminar404("존재하지 않는 사용자입니다")
         user?.let {
             user.survey?.let { it1 -> return UserDetailResponse(user.nickname, user.email, user.password, it1.toSurveyResponse()) }?:run{
                 return UserDetailResponse(user.nickname, user.email, user.password,null)
             }
-        } ?: run {
-            throw UserNotFound()
         }
+        
     }
     
     @PostMapping("/user/survey")

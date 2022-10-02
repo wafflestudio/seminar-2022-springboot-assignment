@@ -53,7 +53,9 @@ class UserServiceImpl(
 
     override fun findById(id : Long) : UserEntity? {
         val result=userRepository.findById(id)
-        result.ifPresent(return result.get())
+        if(result.isPresent){
+            return result.get()
+        }
         throw UserNotFound()
     }
     
