@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.service
 
+import com.wafflestudio.seminar.survey.api.Seminar403
 import com.wafflestudio.seminar.survey.api.Seminar404
 import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.database.OperatingSystemEntity
@@ -76,6 +77,7 @@ class SeminarServiceImpl(
     override fun createSurvey(xUserId: Long, request: CreateSurveyRequest) {
         val os = osRepository.findByOsName(request.os) ?: throw Seminar404(request.os + "은(는) 서버에 존재하지 않는 운영체제입니다")
         val user = userRepository.findByIdOrNull(xUserId) ?: throw User404(xUserId.toString() + "은(는) 없는 아이디입니다")
+        if (surveyResponseRepository.findByUser(user) != null) throw Seminar403(xUserId.toString() + "은(는) 이미 설문조사에 참여하셨습니다")
         val survey = SurveyResponseEntity(
             operatingSystem = os,
             springExp = request.springExp,
