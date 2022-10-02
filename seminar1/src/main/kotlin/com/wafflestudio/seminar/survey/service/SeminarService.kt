@@ -1,6 +1,6 @@
 package com.wafflestudio.seminar.survey.service
 
-import com.wafflestudio.seminar.survey.api.Seminar404
+import com.wafflestudio.seminar.exception.Seminar404
 import com.wafflestudio.seminar.survey.database.OperatingSystemEntity
 import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
@@ -15,6 +15,10 @@ interface SeminarService {
     fun os(id: Long): OperatingSystem
     fun surveyResponseList(): List<SurveyResponse>
     fun surveyResponse(id: Long): SurveyResponse
+
+    fun osEntity(name: String): OperatingSystemEntity
+    
+    fun createSurveyResponse(responseEntity: SurveyResponseEntity)
 }
 
 @Service
@@ -25,6 +29,10 @@ class SeminarServiceImpl(
     override fun os(id: Long): OperatingSystem {
         val entity = osRepository.findByIdOrNull(id) ?: throw Seminar404("OS를 찾을 수 없어요.")
         return OperatingSystem(entity)
+    }
+    
+    override fun osEntity(name: String): OperatingSystemEntity{
+        return osRepository.findByOsName(name) ?: throw Seminar404("OS ${name}을 찾을 수 없어요.")
     }
 
     override fun os(name: String): OperatingSystem {
@@ -59,6 +67,12 @@ class SeminarServiceImpl(
             backendReason = backendReason,
             waffleReason = waffleReason,
             somethingToSay = somethingToSay,
+            userEntity = userEntity
         )
+    }
+
+    override fun createSurveyResponse(responseEntity: SurveyResponseEntity)
+    {
+        surveyResponseRepository.save(responseEntity)
     }
 }

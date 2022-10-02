@@ -1,5 +1,7 @@
-package com.wafflestudio.seminar.survey.database
+package com.wafflestudio.seminar.user.database
 
+import com.wafflestudio.seminar.survey.domain.OperatingSystem
+import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.io.ClassPathResource
@@ -7,16 +9,18 @@ import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-/**
- * MemoryDB는 이제, DataLoader 라는 이름으로 바뀌었어요.
- * 이제는 메모리가 아닌 원격 저장소를 사용할 거에요.
- * 데이터 로더는, 엑셀 결과를 데이터베이스로 옮기는 역할을 수행해요.
- */
 @Component
-class DataLoader(
-    private val osRepository: OsRepository,
-    private val surveyResponseRepository: SurveyResponseRepository,
-) {
+class MemoryDB {
+    private val operatingSystems = mutableListOf<OperatingSystem>()
+    private val surveyResponses = mutableListOf<SurveyResponse>()
+
+    fun getOperatingSystems(): List<OperatingSystem> {
+        return operatingSystems
+    }
+
+    fun getSurveyResponses(): List<SurveyResponse> {
+        return surveyResponses
+    }
 
     /**
      * 서버가 시작하면, 엑셀 파일을 메모리로 불러오는 역할을 수행해요
@@ -28,42 +32,32 @@ class DataLoader(
         loadSurveyResponses()
     }
 
-    private fun loadOS() {
-        if (osRepository.findAll().isNotEmpty()) {
-            return
-        }
-
-        osRepository.saveAll(
-            listOf(
-                OperatingSystemEntity("MacOS", 300000L, "Most favorite OS of Seminar Instructors"),
-                OperatingSystemEntity("Linux", 0L, "Linus Benedict Torvalds"),
-                OperatingSystemEntity("Windows", 0L, "Window.."),
-            )
+    private fun loadOS() = operatingSystems.addAll(
+        listOf(
+            OperatingSystem(1L, "MacOS", 300000L, "Most favorite OS of Seminar Instructors"),
+            OperatingSystem(2L, "Linux", 0L, "Linus Benedict Torvalds"),
+            OperatingSystem(3L, "Windows", 0L, "Window.."),
         )
-    }
+    )
 
     private fun loadSurveyResponses() {
-        if (surveyResponseRepository.findAll().isNotEmpty()) {
-            return
-        }
-
         val responses = ClassPathResource("data/example_surveyresult.tsv")
             .file
             .readLines()
-            .map {
+            .mapIndexed { idx, it ->
                 val rawSurveyResponse = it.split("\t")
-                SurveyResponseEntity(
+                SurveyResponse(
+                    id = idx.toLong(),
                     timestamp = LocalDateTime.parse(rawSurveyResponse[0], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                    operatingSystem = osRepository.findByOsName(rawSurveyResponse[1])!!,
+                    operatingSystem = operatingSystems.find { os -> os.osName == rawSurveyResponse[1] }!!,
                     springExp = rawSurveyResponse[2].toInt(),
                     rdbExp = rawSurveyResponse[3].toInt(),
                     programmingExp = rawSurveyResponse[4].toInt(),
                     major = rawSurveyResponse[5],
                     grade = rawSurveyResponse[6],
-                    userEntity = null
                 )
             }
 
-        surveyResponseRepository.saveAll(responses)
+        surveyResponses.addAll(responses)
     }
 }
