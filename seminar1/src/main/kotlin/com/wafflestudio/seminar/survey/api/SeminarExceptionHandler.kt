@@ -2,8 +2,12 @@ package com.wafflestudio.seminar.survey.api
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.server.ResponseStatusException
+import javax.validation.ConstraintViolationException
 
 @RestControllerAdvice
 class SeminarExceptionHandler {
@@ -14,6 +18,17 @@ class SeminarExceptionHandler {
 //
     @ExceptionHandler(value = [SeminarException::class])
     fun handle(e: SeminarException): ResponseEntity<Any> {
-        return ResponseEntity(e.message, e.status)
+        when (e) {
+            is SurveyRequestBodyException ->
+                return ResponseEntity(
+                        object {
+                            val message = e.message
+                            val errors = e.errors.map{it.defaultMessage}
+                        },
+                        e.status
+                )
+            else ->
+                return ResponseEntity(e.message, e.status)
+        }
     }
 }

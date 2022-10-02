@@ -79,11 +79,11 @@ class SeminarServiceImpl(
         val surveyResponseEntity = surveyRequest.run{
             SurveyResponseEntity(
                     userId = id,
-                    operatingSystem = osRepository.findByOsName(os)
+                    operatingSystem = osRepository.findByOsName(os!!)
                             ?: throw Seminar404("OS name not found"),
-                    springExp = spring_exp,
-                    rdbExp = rdb_exp,
-                    programmingExp = programming_exp,
+                    springExp = spring_exp!!,
+                    rdbExp = rdb_exp!!,
+                    programmingExp = programming_exp!!,
                     major = major,
                     grade = grade,
                     timestamp = LocalDateTime.now().minusNanos(LocalDateTime.now().nano.toLong()),

@@ -3,6 +3,7 @@ package com.wafflestudio.seminar.survey.api
 import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.service.SeminarService
 import com.wafflestudio.seminar.user.api.GetUserUnauthorizedException
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -32,9 +33,12 @@ class SeminarController(
     @PostMapping("/api/v1/survey")
     fun createSurvey(
             @Valid @RequestBody surveyRequest: CreateSurveyRequest,
+            bindingResult: BindingResult,
             @RequestHeader(name="X-User-ID") id: Long?,
     ) {
-        // FIXME: for int value, validation check doesn't work (initialize as 0)
+        if (bindingResult.hasErrors()) {
+            throw SurveyRequestBodyException(bindingResult.fieldErrors)
+        }
         if (id == null) { throw GetUserUnauthorizedException() }
         service.createSurvey(surveyRequest, id)
     } 

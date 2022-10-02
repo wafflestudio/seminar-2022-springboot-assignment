@@ -18,34 +18,23 @@ class UserServiceImpl(
 ): UserService {
     
     override fun createUser(userRequest: CreateUserRequest) {
-        // Assumes that blank (only whitespaces) input are not allowed.
-        when {
-            userRequest.nickname.isBlank() ->
-                throw CreateUserEmptyNicknameException()
-
-            userRequest.email.isBlank() ->
-                throw CreateUserEmptyEmailException()
-
-            userRequest.password.isBlank() ->
-                throw CreateUserEmptyPasswordException()
-
-            userRepository.existsByEmail(userRequest.email) ->
-                throw CreateUserNotUniqueEmailException()
+        if (userRepository.existsByEmail(userRequest.email!!)) {
+            throw CreateUserNotUniqueEmailException()
         }
         
         val user = UserEntity(
-                userRequest.nickname,
-                userRequest.email,
-                encoder.encode(userRequest.password)
+                userRequest.nickname!!,
+                userRequest.email!!,
+                encoder.encode(userRequest.password!!)
         )
         userRepository.save(user)
     }
 
     override fun login(userLogin: UserLoginRequest): Long {
-        val user: UserEntity = userRepository.findByEmail(userLogin.email)
+        val user: UserEntity = userRepository.findByEmail(userLogin.email!!)
                 ?: throw LoginNoEmailException()
         
-        if (!encoder.matches(userLogin.password, user.password)) {
+        if (!encoder.matches(userLogin.password, user.password!!)) {
             throw LoginWrongPasswordException()
         }
         

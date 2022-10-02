@@ -4,25 +4,38 @@ import com.wafflestudio.seminar.user.api.request.CreateUserRequest
 import com.wafflestudio.seminar.user.domain.UserInfoResponse
 import com.wafflestudio.seminar.user.api.request.UserLoginRequest
 import com.wafflestudio.seminar.user.service.UserService
+import org.springframework.validation.BindingResult
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 class UserController(
         private val userService: UserService
 ) {
     @PostMapping("/api/v1/user")
-    fun createUser(@RequestBody userRequest: CreateUserRequest) {
-        // TODO:
-        // When Field is not included, it throws 400 bad request...
-        // Can we customize it...??
+    fun createUser(
+        @RequestBody @Valid userRequest: CreateUserRequest,
+        bindingResult: BindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            throw CreateUserRequestBodyException(
+                    bindingResult.fieldErrors
+            )
+        }
         userService.createUser(userRequest)
     }
     
     @PostMapping("/api/v1/login")
-    fun login(@RequestBody userLogin: UserLoginRequest): Long {
-        // TODO:
-        // When Field is not included, it throws 400 bad request...
-        // Can we customize it...??
+    fun login(
+        @RequestBody @Valid userLogin: UserLoginRequest,
+        bindingResult: BindingResult
+    ): Long {
+        if (bindingResult.hasErrors()) {
+            throw CreateUserRequestBodyException(
+                    bindingResult.fieldErrors
+            )
+        }
         return userService.login(userLogin)
     }
     
@@ -30,7 +43,6 @@ class UserController(
     fun getUserInfo(
             @RequestHeader(name="X-User-ID") id: Long?,
     ): UserInfoResponse {
-        // TODO: 403 Forbidden when header is not given
         return userService.getUserInfo(id ?: throw GetUserUnauthorizedException())
     }
     
