@@ -19,8 +19,9 @@ class UserController(
     }
 
     @PostMapping("/user/login")
-    fun login(@RequestBody request: LoginUserRequest): UserResponse{
-        return userService.login(request)!!
+    fun login(@RequestBody request: LoginUserRequest): Long{
+        val UserResponse =userService.login(request)!!
+        return UserResponse.id
     }
 
     @GetMapping("/user/me")
