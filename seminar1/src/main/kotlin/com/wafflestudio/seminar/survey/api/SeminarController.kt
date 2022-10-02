@@ -1,10 +1,17 @@
 package com.wafflestudio.seminar.survey.api
 
+import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.service.SeminarService
+import com.wafflestudio.seminar.user.api.request.CreateUserRequest
+import com.wafflestudio.seminar.user.api.request.LoginUserRequest
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import javax.validation.Valid
 
 @RestController
 class SeminarController(
@@ -28,5 +35,25 @@ class SeminarController(
     fun getSurvey(
         @PathVariable surveyId: Long,
     ) = service.surveyResponse(surveyId)
+    
+    @PostMapping("/api/v1/user")
+    fun createUser (
+        @RequestBody @Valid createUserRequest: CreateUserRequest,
+    ) = service.createUser(createUserRequest)
 
+    @PostMapping("/api/v1/login")
+    fun loginUser (
+        @RequestBody @Valid loginUserRequest: LoginUserRequest,
+    ) = service.loginUser(loginUserRequest)
+    
+    @GetMapping("/api/v1/user/me")
+    fun getUser (
+        @RequestHeader("X-User-ID") userId: Long,
+    ) = service.user(userId)
+
+    @PostMapping("/api/v1/survey")
+    fun createSurvey(
+        @RequestBody @Valid createSurveyRequest: CreateSurveyRequest,
+        @RequestHeader("X-User-ID") userId: Long,
+    ) = service.createSurvey(createSurveyRequest, userId)
 }
