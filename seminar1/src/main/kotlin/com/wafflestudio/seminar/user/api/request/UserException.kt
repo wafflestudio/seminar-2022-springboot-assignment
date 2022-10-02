@@ -8,7 +8,7 @@ class DuplicatedEmailException(msg: String) : UserException(msg, HttpStatus.CONF
 
 class UnAuthorizedException(msg: String) : UserException(msg, HttpStatus.UNAUTHORIZED)
 
-class UserNotFoundException(msg: String) : UserException(msg, HttpStatus.NOT_FOUND)
+class NotFoundException(msg: String) : UserException(msg, HttpStatus.NOT_FOUND)
 
 class BadRequestException(msg: String) : UserException(msg, HttpStatus.BAD_REQUEST)
 

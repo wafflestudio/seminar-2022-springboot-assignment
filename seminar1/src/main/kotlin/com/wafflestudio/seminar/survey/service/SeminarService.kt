@@ -7,6 +7,8 @@ import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
 import com.wafflestudio.seminar.survey.database.SurveyResponseRepository
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
+import com.wafflestudio.seminar.user.database.UserEntity
+import com.wafflestudio.seminar.user.domain.User
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -46,6 +48,10 @@ class SeminarServiceImpl(
         OperatingSystem(id, osName, price, desc)
     }
 
+    private fun User(entity: UserEntity?) = entity?.run {
+        User(id,nickname,email,password)
+    }
+
     private fun SurveyResponse(entity: SurveyResponseEntity) = entity.run {
         SurveyResponse(
             id = id,
@@ -59,6 +65,7 @@ class SeminarServiceImpl(
             backendReason = backendReason,
             waffleReason = waffleReason,
             somethingToSay = somethingToSay,
+            user = User(user)
         )
     }
 }
