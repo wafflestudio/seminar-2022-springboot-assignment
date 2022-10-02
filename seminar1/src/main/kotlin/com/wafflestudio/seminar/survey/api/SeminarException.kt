@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.survey.api
 
 import org.springframework.http.HttpStatus
+import java.net.BindException
 
 open class SeminarException(val type: SeminarExceptionType, val status: HttpStatus) : RuntimeException()
 enum class SeminarExceptionType(val message: String) {
@@ -21,4 +22,5 @@ class Seminar400(val excType: SeminarExceptionType) : SeminarException(excType, 
 class Seminar403(val excType: SeminarExceptionType) : SeminarException(excType, HttpStatus.FORBIDDEN)
 class Seminar404(val excType: SeminarExceptionType) : SeminarException(excType, HttpStatus.NOT_FOUND)
 
+class SurveyInputException: BindException()
 

@@ -5,7 +5,10 @@ import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.survey.service.OSService
 import com.wafflestudio.seminar.survey.service.SurveyService
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
+import java.net.BindException
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("api/v1/survey")
@@ -26,10 +29,14 @@ public class SurveyController(
     
     @PostMapping
     fun createSurvey(
-        @RequestBody request: CreateSurveyRequest,
-        @RequestHeader("X-User-Id") id: Long?
+        @RequestBody @Valid request: CreateSurveyRequest,
+        @RequestHeader("X-User-Id") id: Long?,
+        bindingResult: BindingResult
     ): SurveyResponse {
-      return service.createSurvey(id, request)  
+        if (bindingResult.hasErrors()) {
+            throw BindException()
+        }
+        return service.createSurvey(id, request)  
     } 
 }
 

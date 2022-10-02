@@ -10,4 +10,8 @@ data class CreateUserRequest(
     fun toEntity(): UserEntity {
         return UserEntity(null, name, email, password)
     }
+
+    fun toEntity(password: String): UserEntity {
+        return UserEntity(null, name, email, password)
+    }
 }

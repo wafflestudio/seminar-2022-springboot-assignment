@@ -42,9 +42,6 @@ class DefaultSurveyService(
         val existId = id ?: throw Seminar403(SeminarExceptionType.NeedsAuthetication)
         val userEntity = userRepository.findById(existId).orElseThrow { throw Seminar404(SeminarExceptionType.NotExistUserId) }
         if (surveyRepository.existsByUser(userEntity)) { throw Seminar400(SeminarExceptionType.ExistUserSurvey) }
-        if ((request.osName == null) || (request.rdbExp == null) || (request.programmingExp == null) || (request.springExp == null)) {
-            throw Seminar404(SeminarExceptionType.InputNeedsSurvey)
-        }
         val osEntity = osRepository.findByOsName(request.osName) ?: throw Seminar404(SeminarExceptionType.NotExistOSForName)
         return surveyRepository.save(request.toEntity(osEntity, userEntity)).toSurveyResponse()
     }

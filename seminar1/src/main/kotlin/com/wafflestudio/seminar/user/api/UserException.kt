@@ -6,7 +6,8 @@ enum class UserExceptionType(val message: String) {
     NeedsAuthetication("로그인이 필요합니다."),
     NotExistUserId("존재하지 않는 UserId 입니다."),
     ExistUserEmail("이미 존재하는 이메일입니다."),
-    NotExistSurvey("설문조사를 진행하지 않은 유저입니다.")
+    NotExistSurvey("설문조사를 진행하지 않은 유저입니다."),
+    InvalidPassword("잘못된 비밀번호입니다.")
 }
 
 

@@ -8,6 +8,7 @@ import com.wafflestudio.seminar.user.domain.SignInResponse
 import com.wafflestudio.seminar.user.domain.SignUpResponse
 import com.wafflestudio.seminar.user.domain.UserResponse
 import com.wafflestudio.seminar.user.domain.UserSurveyResponse
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -20,15 +21,16 @@ interface UserService {
 
 @Service
 class DefaultUserService(
-    val repository: UserRepository
+    val repository: UserRepository,
+    val passwordEncoder: PasswordEncoder
 ): UserService {
     @Transactional
     override fun signUp(request: CreateUserRequest): SignUpResponse {
         when (repository.existsByEmail(request.email)) {
             true -> throw User409(UserExceptionType.ExistUserEmail)
             false -> {
-                
-                return repository.save(request.toEntity()).toSignUpResponse()
+                val encodedPassword = passwordEncoder.encode(request.password)
+                return repository.save(request.toEntity(encodedPassword)).toSignUpResponse()
             } 
         }
     }
@@ -36,9 +38,9 @@ class DefaultUserService(
     @Transactional
     override fun signIn(request: SignInRequest): SignInResponse {
         val user = repository.findByEmail(request.email) ?: throw java.lang.RuntimeException()
-        when (user.password == request.password) {
+        when (passwordEncoder.matches(request.password, user.password)) {
             true -> return user.toSignInResponse()
-            false -> throw java.lang.RuntimeException()
+            false -> throw User401(UserExceptionType.InvalidPassword)
         } 
     }
     
