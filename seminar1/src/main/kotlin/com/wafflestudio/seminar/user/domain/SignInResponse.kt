@@ -1,4 +1,5 @@
 package com.wafflestudio.seminar.user.domain
 
-class SignInResponse {
-}
+data class SignInResponse(
+    val userId: Long
+)

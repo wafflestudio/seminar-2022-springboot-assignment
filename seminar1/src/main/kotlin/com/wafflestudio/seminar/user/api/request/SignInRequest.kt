@@ -1,4 +1,6 @@
 package com.wafflestudio.seminar.user.api.request
 
-class SignInRequest {
-}
+data class SignInRequest(
+    val email: String,
+    val password: String
+)
