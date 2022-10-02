@@ -27,7 +27,7 @@ class UserController(
 
     @GetMapping("/user/me")
     fun userInfo(@RequestHeader("X-User-ID") id: Long): UserDetailResponse? {
-        val user = userService.findById(id) ?: throw Seminar404("존재하지 않는 사용자입니다")
+        val user = userService.findById(id) ?: throw UserNotFound()
         user?.let {
             user.survey?.let { it1 -> return UserDetailResponse(user.nickname, user.email, user.password, it1.toSurveyResponse()) }?:run{
                 return UserDetailResponse(user.nickname, user.email, user.password,null)
