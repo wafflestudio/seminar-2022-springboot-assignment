@@ -1,5 +1,9 @@
 package com.wafflestudio.seminar.user.service
 
+import com.wafflestudio.seminar.survey.api.Seminar404
+import com.wafflestudio.seminar.survey.database.OsRepository
+import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
+import com.wafflestudio.seminar.survey.database.SurveyResponseRepository
 import com.wafflestudio.seminar.user.domain.UserEntity
 import com.wafflestudio.seminar.user.dto.CreateUserDTO
 import com.wafflestudio.seminar.user.dto.LoginUserDTO
@@ -12,6 +16,8 @@ import org.springframework.stereotype.Service
 @Service
 class UserService(
     val userRepository: UserRepository,
+    val osRepository: OsRepository,
+    val surveyResponseRepository: SurveyResponseRepository,
     val passwordEncoder: PasswordEncoder
 ) {
     fun createUser(user: CreateUserDTO) : UserEntity {
@@ -32,4 +38,15 @@ class UserService(
         return userRepository.findByIdOrNull(id) ?: throw User404("존재하지 않는 계정입니다.")
     }
 
+    fun postSurvey(id:Long, surveyResponseEntity: SurveyResponseEntity): SurveyResponseEntity{
+        osRepository.findByOsName(surveyResponseEntity.operatingSystem.osName) ?: throw Seminar404("OS ID가 없습니다.")
+        val user = userRepository.findByIdOrNull(id) ?: throw User404("존재하지 않는 계정입니다.")
+        
+        return surveyResponseRepository.save(SurveyResponseEntity(
+            operatingSystem = surveyResponseEntity.operatingSystem,
+            springExp = surveyResponseEntity.springExp,
+            rdbExp = surveyResponseEntity.rdbExp,
+            programmingExp = surveyResponseEntity.programmingExp,
+            user = user))
+    }
 }

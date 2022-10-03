@@ -3,6 +3,7 @@ package com.wafflestudio.seminar.user.domain
 import javax.persistence.*
 
 @Entity
+@Table(name="seminarUser")
 class UserEntity(
 
     @Column(nullable = false)
