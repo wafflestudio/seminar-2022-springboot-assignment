@@ -3,6 +3,9 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
       <module name="com.wafflestudio.seminar-2022" target="11" />
+      <module name="com.wafflestudio.seminar1" target="11" />
+      <module name="com.wafflestudio.seminar1.main" target="11" />
+      <module name="com.wafflestudio.seminar1.test" target="11" />
       <module name="seminar0" target="11" />
       <module name="seminar0.main" target="11" />
       <module name="seminar0.test" target="11" />
