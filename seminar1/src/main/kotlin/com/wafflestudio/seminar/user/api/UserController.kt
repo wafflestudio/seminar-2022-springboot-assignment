@@ -21,7 +21,7 @@ class UserController(
         return userService.login(user)
     }
 
-    @GetMapping("/me")
+    @GetMapping("/user/me")
     fun getUser(
             @RequestHeader("X-User-ID") id: Long?
     ): String{

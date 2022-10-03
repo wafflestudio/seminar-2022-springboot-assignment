@@ -35,9 +35,9 @@ class SeminarController(
     ): String{
         userId ?: throw Seminar403("id를 확인하세요.")
         req.operatingSystem ?: throw Seminar400("os를 확인하세요.")
+        req.programmingExp ?: throw Seminar400("programmingExp를 확인하세요.")
         req.springExp ?: throw Seminar400("springExp를 확인하세요.")
-        req.rdbExp ?: throw Seminar400("os를 확인하세요.")
-        req.programmingExp ?: throw Seminar400("os를 확인하세요.")
+        req.rdbExp ?: throw Seminar400("rdbExp를 확인하세요.")
         
         return service.postSurvey(req, userId)
     }
