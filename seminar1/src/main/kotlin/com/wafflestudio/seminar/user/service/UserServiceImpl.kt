@@ -18,7 +18,7 @@ class UserServiceImpl(
 ) : UserService {
     @Autowired
     lateinit var passwordEncoder: PasswordEncoder
-    override fun createUser(request: CreateUserRequest) {
+    override fun createUser(request: CreateUserRequest): User {
         val user = UserEntity(
             nickname = request.nickname,
             email = request.email,
@@ -26,18 +26,19 @@ class UserServiceImpl(
         )
         try {
             userRepository.save(user)
+            return User(user)
         } catch (e: DataIntegrityViolationException) {
             throw User409(request.email + "은(는) 이미 있는 이메일입니다")
         }
     }
 
-    override fun login(request: LoginRequest): String {
+    override fun login(request: LoginRequest): Long {
         try {
             val user = userRepository.findByEmail(request.email)
             if (!passwordEncoder.matches(request.password, user.encodedPassword)) {
                 throw User401("비밀번호가 틀렸습니다")
             }
-            return user.nickname
+            return user.id
         } catch (e: EmptyResultDataAccessException) {
             throw User404(request.email + "은(는) 없는 이메일입니다")
         }
@@ -49,6 +50,6 @@ class UserServiceImpl(
     }
 
     private fun User(entity: UserEntity) = entity.run {
-        User(id, nickname, email, encodedPassword)
+        User(id, nickname, email)
     }
 }

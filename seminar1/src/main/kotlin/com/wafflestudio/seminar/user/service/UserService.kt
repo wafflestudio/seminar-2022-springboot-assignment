@@ -5,7 +5,7 @@ import com.wafflestudio.seminar.user.api.request.LoginRequest
 import com.wafflestudio.seminar.user.domain.User
 
 interface UserService {
-    fun createUser(request: CreateUserRequest)
-    fun login(request: LoginRequest): String
+    fun createUser(request: CreateUserRequest): User
+    fun login(request: LoginRequest): Long
     fun getUser(xUserId: Long): User
 }
