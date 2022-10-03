@@ -1,16 +1,12 @@
 package com.wafflestudio.seminar.user.database
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 
-@Entity
+@Entity(name = "user")
 class UserEntity(
     @Column(nullable = false)
     val nickname: String,
-    
+
     @Column(nullable = false, unique = true)
     val email: String,
 

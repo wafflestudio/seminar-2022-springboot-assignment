@@ -1,7 +1,5 @@
 package com.wafflestudio.seminar.survey.api
 
-import com.fasterxml.jackson.core.JsonParseException
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException

@@ -108,7 +108,7 @@ class SeminarServiceImpl(
     }
 
     private fun OperatingSystem(entity: OperatingSystemEntity) = entity.run {
-        OperatingSystem(id, osName, price, desc)
+        OperatingSystem(id, osName, price, des)
     }
 
     private fun SurveyResponse(entity: SurveyResponseEntity) = entity.run {
@@ -123,7 +123,11 @@ class SeminarServiceImpl(
             backendReason = backendReason,
             waffleReason = waffleReason,
             somethingToSay = somethingToSay,
-            user = userRepository.findByIdOrNull(userId)?.run { User(id, nickname, email, encodedPassword) })
+            user = if (userId == null) {
+                null
+            } else {
+                userRepository.findByIdOrNull(userId)?.run { User(id, nickname, email, encodedPassword) }
+            })
     }
 
     private fun User(entity: UserEntity) = entity.run {
