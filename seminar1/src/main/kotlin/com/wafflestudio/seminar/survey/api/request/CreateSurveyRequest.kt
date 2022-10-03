@@ -2,12 +2,12 @@ package com.wafflestudio.seminar.survey.api.request
 
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
-import javax.validation.constraints.NotNull
+import javax.validation.constraints.NotBlank
 
 data class CreateSurveyRequest(
     val major: String? = null,
     
-    @field:NotNull(message = "os 이름을 입력하세요")
+    @field:NotBlank(message = "os 이름을 입력하세요")
     val os: String,
 
     @field:Min(1, message = "springExp는 1 이상 5 이하의 정수입니다")

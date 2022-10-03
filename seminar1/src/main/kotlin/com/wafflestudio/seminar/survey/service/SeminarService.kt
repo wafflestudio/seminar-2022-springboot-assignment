@@ -22,7 +22,7 @@ interface SeminarService {
     fun os(id: Long): OperatingSystem
     fun surveyResponseList(): List<SurveyResponse>
     fun surveyResponse(id: Long): SurveyResponse
-    fun createSurvey(xUserId: Long, request: CreateSurveyRequest)
+    fun createSurvey(xUserId: Long, request: CreateSurveyRequest): SurveyResponse
 }
 
 @Service
@@ -69,12 +69,12 @@ class SeminarServiceImpl(
             waffleReason = waffleReason,
             somethingToSay = somethingToSay,
             user = user?.run {
-                User(id, nickname, email, encodedPassword)
+                User(id, nickname, email)
             }
         )
     }
 
-    override fun createSurvey(xUserId: Long, request: CreateSurveyRequest) {
+    override fun createSurvey(xUserId: Long, request: CreateSurveyRequest): SurveyResponse {
         val os = osRepository.findByOsName(request.os) ?: throw Seminar404(request.os + "은(는) 서버에 존재하지 않는 운영체제입니다")
         val user = userRepository.findByIdOrNull(xUserId) ?: throw User404(xUserId.toString() + "은(는) 없는 아이디입니다")
         if (surveyResponseRepository.findByUser(user) != null) throw Seminar403(xUserId.toString() + "은(는) 이미 설문조사에 참여하셨습니다")
@@ -92,5 +92,6 @@ class SeminarServiceImpl(
             user = user
         )
         surveyResponseRepository.save(survey)
+        return SurveyResponse(survey)
     }
 }
