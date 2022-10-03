@@ -1,10 +1,7 @@
 package com.wafflestudio.seminar.user.service
 
 
-import com.wafflestudio.seminar.survey.api.Seminar400
-import com.wafflestudio.seminar.survey.api.Seminar401
-import com.wafflestudio.seminar.survey.api.Seminar404
-import com.wafflestudio.seminar.survey.api.Seminar409
+import com.wafflestudio.seminar.survey.api.*
 import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
@@ -21,9 +18,9 @@ import java.time.LocalDateTime
 
 interface UserService {
     fun doLogin(req: DoLoginRequest):Long
-    fun getUser(userId:Long): User
+    fun getUser(userId:Long?): User
     fun saveUser(req: CreateUserRequest)
-    fun createSurveyResponse(createSurveyRequest: CreateSurveyRequest, userId: Long):SurveyResponseEntity
+    fun createSurveyResponse(createSurveyRequest: CreateSurveyRequest, userId: Long?):SurveyResponseEntity
 }
 
 @Service
@@ -34,12 +31,14 @@ class UserServiceImpl(
     private val pwEncoder: PasswordEncoder,
 ): UserService {
     override fun doLogin(req: DoLoginRequest):Long {
-        val user = userRepository.findByEmail(req.email) ?: throw Seminar400("Email or password is not correct.")
+        val user = userRepository.findByEmail(req.email) ?: throw Seminar401("Email or password is not correct.")
         if (pwEncoder.matches(req.pw, user.pw)) return user.id
         else throw Seminar401("Email or password is not correct")
     }
-    override fun getUser(userId:Long): User {
-        val user =  userRepository.findByIdOrNull(userId) ?: throw Seminar400("User does not exist.")
+    override fun getUser(userId:Long?): User {
+        val user =  userRepository.findByIdOrNull(
+            userId ?: throw Seminar403("Header does not exist")
+        ) ?: throw Seminar400("User does not exist.")
         return user.toUser()
     }
         
@@ -49,7 +48,7 @@ class UserServiceImpl(
     }
 
 
-    override fun createSurveyResponse(req: CreateSurveyRequest, userId: Long):SurveyResponseEntity {
+    override fun createSurveyResponse(req: CreateSurveyRequest, userId: Long?):SurveyResponseEntity {
         return surveyResponseRepository.save(
             SurveyResponseEntity(
             operatingSystem = osRepository.findByOsName(req.os) ?: throw Seminar400("This OS doesn't exist."),
@@ -62,7 +61,7 @@ class UserServiceImpl(
             backendReason = req.backendReason,
             waffleReason = req.waffleReason,
             somethingToSay = req.somethingToSay,
-            user = userRepository.findById(userId).get() //?: throw Seminar404("This User doesn't exist")
+            user = userRepository.findById(userId ?: throw  Seminar403("Header does not exist")).get() //?: throw Seminar404("This User doesn't exist")
         )
         )
     }

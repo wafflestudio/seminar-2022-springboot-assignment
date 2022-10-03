@@ -23,14 +23,14 @@ class UserController(
 
     @GetMapping("/user/me")
     fun getThisUser(
-        @RequestHeader(value = "X-User-ID", required = true) userId: Long
+        @RequestHeader(value = "X-User-ID") userId: Long?
     ): User = service.getUser(userId)
     
 
 
     @PostMapping("/survey")
     fun createSurvey(
-        @RequestHeader(value = "X-User-ID", required = true) userId: Long,
+        @RequestHeader(value = "X-User-ID") userId: Long,
         @RequestBody createSurveyRequest: CreateSurveyRequest
     ) = service.createSurveyResponse(createSurveyRequest, userId)
     
