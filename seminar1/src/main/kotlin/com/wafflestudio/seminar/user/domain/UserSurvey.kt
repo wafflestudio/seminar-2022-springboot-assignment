@@ -1,10 +1,9 @@
-package com.wafflestudio.seminar.survey.domain
+package com.wafflestudio.seminar.user.domain
 
-import com.wafflestudio.seminar.user.database.UserEntity
-import com.wafflestudio.seminar.user.domain.User
+import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import java.time.LocalDateTime
 
-data class SurveyResponse(
+data class UserSurvey(
     val id: Long,
     val operatingSystem: OperatingSystem,
     val springExp: Int,
