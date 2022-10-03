@@ -8,10 +8,10 @@ import javax.persistence.*
 @Entity
 class SurveyResponseEntity(
     @ManyToOne(fetch = FetchType.LAZY)
-    val operatingSystem: OperatingSystemEntity,
-    val springExp: Int,
-    val rdbExp: Int,
-    val programmingExp: Int,
+    val operatingSystem: OperatingSystemEntity?,
+    val springExp: Int?,
+    val rdbExp: Int?,
+    val programmingExp: Int?,
     val major: String? = null,
     val grade: String? = null,
     val timestamp: LocalDateTime? = null,

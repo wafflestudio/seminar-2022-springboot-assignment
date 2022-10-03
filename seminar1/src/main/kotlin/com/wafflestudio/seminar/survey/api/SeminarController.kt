@@ -30,28 +30,28 @@ class SeminarController(
     
     @PostMapping("/api/v1/survey")
     fun takeSurvey (
-//            @RequestBody survey: CreateSurveyRequest,
+            @RequestBody survey: CreateSurveyRequest,
 
-            @RequestParam operatingSystem: String?,
-            @RequestParam springExp: Int?,
-            @RequestParam rdbExp: Int?,
-            @RequestParam programmingExp: Int?,
-            @RequestParam major: String?,
-            @RequestParam grade: String?,
-            @RequestParam timestamp: LocalDateTime?,
-            @RequestParam backendReason: String?,
-            @RequestParam waffleReason: String?,
-            @RequestParam somethingToSay: String?,
+//            @RequestParam operatingSystem: String?,
+//            @RequestParam springExp: Int?,
+//            @RequestParam rdbExp: Int?,
+//            @RequestParam programmingExp: Int?,
+//            @RequestParam major: String?,
+//            @RequestParam grade: String?,
+//            @RequestParam timestamp: LocalDateTime?,
+//            @RequestParam backendReason: String?,
+//            @RequestParam waffleReason: String?,
+//            @RequestParam somethingToSay: String?,
             @RequestHeader("X-User-ID") id: Long?
     ): String{
         id ?: throw Seminar403("id를 입력해주세요.")
         
-        operatingSystem ?: throw Seminar400("os를 입력해주세요.")
-        springExp ?: throw Seminar400("springExp를 입력해주세요.")
-        rdbExp ?: throw Seminar400("rdbExp를 입력해주세요.")
-        programmingExp ?: throw Seminar400("programmingExp를 입력해주세요.")
+//        survey.operatingSystem ?: throw Seminar400("os를 입력해주세요.")
+//        survey.springExp ?: throw Seminar400("springExp를 입력해주세요.")
+//        survey.rdbExp ?: throw Seminar400("rdbExp를 입력해주세요.")
+//        survey.programmingExp ?: throw Seminar400("programmingExp를 입력해주세요.")
         
-        val survey = CreateSurveyRequest(operatingSystem, springExp, rdbExp, programmingExp, major, grade, timestamp, backendReason, waffleReason, somethingToSay)
+//        val survey = CreateSurveyRequest(operatingSystem, springExp, rdbExp, programmingExp, major, grade, timestamp, backendReason, waffleReason, somethingToSay)
         return service.takeSurvey(survey, id)
     }
     

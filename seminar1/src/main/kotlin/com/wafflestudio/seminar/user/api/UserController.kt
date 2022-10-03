@@ -14,21 +14,23 @@ class UserController(
     
     @PostMapping("api/v1/user")
     fun postUser(
-            // @RequestBody user: CreateUserRequest
-            @RequestParam nickname: String,
-            @RequestParam email: String,
-            @RequestParam password: String,
+             @RequestBody user: CreateUserRequest
+//            @RequestParam nickname: String,
+//            @RequestParam email: String,
+//            @RequestParam password: String,
     ): String{
-        return userService.register(CreateUserRequest(nickname, email, password))
+        return userService.register(user)
+//        return userService.register(CreateUserRequest(nickname, email, password))
     }
     
     @PostMapping("api/v1/login")
     fun login(
-            // @RequestBody user: LoginUserRequest
-            @RequestParam email: String,
-            @RequestParam password: String,
+             @RequestBody user: LoginUserRequest
+//            @RequestParam email: String,
+//            @RequestParam password: String,
     ): String{
-        return userService.login(LoginUserRequest(email, password))
+        return userService.login(user)
+//        return userService.login(LoginUserRequest(email, password))
     }
     
     @GetMapping("api/v1/user/me")
@@ -38,5 +40,4 @@ class UserController(
         id ?: throw Seminar403("id를 입력해주세요.")
         return userService.getUser(id)
     }
-    
 }

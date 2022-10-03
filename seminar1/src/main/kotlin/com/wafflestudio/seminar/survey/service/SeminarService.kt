@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.service
 
+import com.wafflestudio.seminar.survey.api.Seminar400
 import com.wafflestudio.seminar.survey.api.Seminar404
 import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.database.OperatingSystemEntity
@@ -49,6 +50,11 @@ class SeminarServiceImpl(
     }
 
     override fun takeSurvey(survey: CreateSurveyRequest, id: Long): String {
+
+        survey.operatingSystem ?: throw Seminar400("os를 입력해주세요.")
+        survey.springExp ?: throw Seminar400("springExp를 입력해주세요.")
+        survey.rdbExp ?: throw Seminar400("rdbExp를 입력해주세요.")
+        survey.programmingExp ?: throw Seminar400("programmingExp를 입력해주세요.")
         
         val osEntity = osRepository.findByOsName(survey.operatingSystem) ?: throw Seminar404("OS ${survey.operatingSystem}을 찾을 수 없어요.")
         val userEntity = userRepository.findByIdOrNull(id) ?: throw Seminar404("존재하지 않는 계정입니다.")
@@ -81,9 +87,10 @@ class SeminarServiceImpl(
     }
 
     private fun SurveyResponse(entity: SurveyResponseEntity) = entity.run {
+
         SurveyResponse(
             id = id,
-            operatingSystem = OperatingSystem(operatingSystem),
+            operatingSystem = OperatingSystem(operatingSystem!!),
             springExp = springExp,
             rdbExp = rdbExp,
             programmingExp = programmingExp,
