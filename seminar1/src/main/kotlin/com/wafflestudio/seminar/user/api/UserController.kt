@@ -19,7 +19,7 @@ class UserController(
         // 유저의 이름과 이메일이 공란이거나 빈칸(공백)으로만 이루어질 수 없음
         if (req.nickname.run { this.isEmpty() || this.isBlank() }
             || req.email.run { this.isEmpty() || this.isBlank() }
-        ) throw Exception()
+        ) throw SeminarException(ErrorCode.INVALID_PARAMETER)
         else return userService.register(req.nickname, req.email, req.password)
     }
     
