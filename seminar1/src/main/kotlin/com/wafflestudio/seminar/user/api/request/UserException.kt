@@ -1,7 +1,9 @@
 package com.wafflestudio.seminar.user.api.request
 
 import com.wafflestudio.seminar.survey.api.SeminarException
+import org.springframework.core.MethodParameter
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.MissingRequestHeaderException
 
 open class UserException(msg: String, val status: HttpStatus) : RuntimeException(msg){
     class Seminar409(msg: String) : UserException(msg, HttpStatus.CONFLICT)
