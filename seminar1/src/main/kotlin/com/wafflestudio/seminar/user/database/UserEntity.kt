@@ -3,7 +3,6 @@ package com.wafflestudio.seminar.user.database
 import javax.persistence.*
 
 @Entity
-@Table(name = "user")
 class UserEntity(
     val name: String,
     val email: String,
