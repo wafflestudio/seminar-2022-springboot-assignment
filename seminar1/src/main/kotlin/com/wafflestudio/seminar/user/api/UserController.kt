@@ -12,13 +12,15 @@ import org.springframework.web.bind.annotation.*
 class UserController(private val userService: UserService) {
     
     @PostMapping("/user")
-    fun createUser(@RequestBody createUserRequest:CreateUserRequest){
+    fun createUser(@RequestBody createUserRequest:CreateUserRequest):String{
         userService.createUser(createUserRequest.nickname,createUserRequest.email,createUserRequest.password)
+        return "User Created"
     }
     
     @PostMapping("/login")
-    fun login(@RequestBody loginUserRequest: LoginUserRequest):Long{
-        return userService.login(loginUserRequest.email,loginUserRequest.password)
+    fun login(@RequestBody loginUserRequest: LoginUserRequest):String{
+        val userId = userService.login(loginUserRequest.email, loginUserRequest.password)
+        return "Login Success, User Id: ${userId}"
     }
     
     @GetMapping("/user/me")
@@ -27,7 +29,8 @@ class UserController(private val userService: UserService) {
     }
     
     @PostMapping("/survey")
-    fun survey(@RequestHeader("X-User-ID") id:Long, @RequestBody surveyRequest: SurveyRequest){
+    fun survey(@RequestHeader("X-User-ID") id:Long, @RequestBody surveyRequest: SurveyRequest):String{
         userService.survey(surveyRequest, id)
+        return "Survey Created"
     }
 }
