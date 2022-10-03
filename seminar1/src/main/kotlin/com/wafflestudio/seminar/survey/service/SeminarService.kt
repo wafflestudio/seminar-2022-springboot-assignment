@@ -11,6 +11,7 @@ import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.user.api.User404
 import com.wafflestudio.seminar.user.database.UserRepository
 import com.wafflestudio.seminar.user.database.UserEntity
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -29,13 +30,14 @@ class SeminarServiceImpl(
     private val osRepository: OsRepository,
     private val userRepository: UserRepository
 ) : SeminarService {
+    
     override fun os(id: Long): OperatingSystem {
-        val entity = osRepository.findByIdOrNull(id) ?: throw Seminar404("OS를 찾을 수 없어요.")
+        val entity = osRepository.findByIdOrNull(id) ?: throw Seminar404("OS를 찾을 수 없어요. - status 404")
         return OperatingSystem(entity)
     }
 
     override fun os(name: String): OperatingSystem {
-        val entity = osRepository.findByOsName(name) ?: throw Seminar404("OS ${name}을 찾을 수 없어요.")
+        val entity = osRepository.findByOsName(name) ?: throw Seminar404("OS ${name}을 찾을 수 없어요. - status 404")
         return OperatingSystem(entity)
     }
 
@@ -45,7 +47,7 @@ class SeminarServiceImpl(
     }
 
     override fun surveyResponse(id: Long): SurveyResponse {
-        val surveyEntity = surveyResponseRepository.findByIdOrNull(id) ?: throw Seminar404("설문 결과를 찾을 수 없어요.")
+        val surveyEntity = surveyResponseRepository.findByIdOrNull(id) ?: throw Seminar404("설문 결과를 찾을 수 없어요. - status 404")
         return SurveyResponse(surveyEntity)
     }
 
@@ -96,7 +98,7 @@ class SeminarServiceImpl(
     }
 
     fun validateExistedOsName(osName: String): OperatingSystemEntity {
-        return osRepository.findByOsName(osName) ?: throw Seminar404("OS ${osName}을 찾을 수 없어요.")
+        return osRepository.findByOsName(osName) ?: throw Seminar404("OS ${osName}을 찾을 수 없어요. - status 404")
     } 
     
 }
