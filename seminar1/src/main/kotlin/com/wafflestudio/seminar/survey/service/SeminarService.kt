@@ -73,8 +73,9 @@ class SeminarServiceImpl(
                 major = req.major,
                 grade = req.grade,
                 timestamp = LocalDateTime.parse(
-                    LocalDateTime.now().toString()
-                    , DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                ),
                 backendReason = req.backendReason,
                 waffleReason = req.waffleReason,
                 somethingToSay = req.somethingToSay
