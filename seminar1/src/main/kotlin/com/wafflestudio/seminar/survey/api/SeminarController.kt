@@ -1,10 +1,10 @@
 package com.wafflestudio.seminar.survey.api
 
+import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
+import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.survey.service.SeminarService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 class SeminarController(
@@ -28,5 +28,12 @@ class SeminarController(
     fun getSurvey(
         @PathVariable surveyId: Long,
     ) = service.surveyResponse(surveyId)
-
+    
+    @PostMapping("/api/v1/survey")
+    fun createSurvey(
+        @Valid @RequestBody createSurveyRequest: CreateSurveyRequest,
+        @RequestHeader("X-User-ID") xUserId : Long,
+    ): SurveyResponse {
+        return service.createSurveyResponse(createSurveyRequest, xUserId)
+    }
 }

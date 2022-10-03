@@ -20,7 +20,8 @@ class SurveyResponseEntity(
     val timestamp: LocalDateTime,
     val backendReason: String? = null,
     val waffleReason: String? = null,
-    val somethingToSay: String? = null
+    val somethingToSay: String? = null,
+    val userId: Long? = null
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
