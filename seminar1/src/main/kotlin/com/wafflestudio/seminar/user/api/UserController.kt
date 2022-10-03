@@ -1,10 +1,14 @@
 package com.wafflestudio.seminar.user.api
 
+import com.wafflestudio.seminar.user.api.exception.UserException403
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
 import com.wafflestudio.seminar.user.api.request.LoginRequest
+import com.wafflestudio.seminar.user.domain.UserInfo
 import com.wafflestudio.seminar.user.service.UserService
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -29,4 +33,9 @@ class UserController (
         service.login(request.email, request.password)
         return "login successful"
     }
+    
+    @GetMapping("/me")
+    fun myInfo(
+        @RequestHeader("X-User-Id") id: Long?
+    ) = service.myInfo(id ?: throw UserException403("cannot identify user"))
 }

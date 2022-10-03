@@ -4,6 +4,7 @@ import com.wafflestudio.seminar.config.AuthConfig
 import com.wafflestudio.seminar.user.api.exception.*
 import com.wafflestudio.seminar.user.database.UserEntity
 import com.wafflestudio.seminar.user.database.UserRepository
+import com.wafflestudio.seminar.user.domain.UserInfo
 import org.springframework.stereotype.Service
 
 @Service
@@ -30,5 +31,10 @@ class UserServiceImpl (
             throw UserException401("wrong email or password")
         }
     }
+
+    override fun myInfo(id: Long) =
+        userRepository.findById(id)
+            .orElseThrow { UserException404("no user with given id") }
+            .info()
 
 }
