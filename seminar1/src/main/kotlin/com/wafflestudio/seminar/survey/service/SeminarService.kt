@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.service
 
+import com.wafflestudio.seminar.survey.api.Seminar400
 import com.wafflestudio.seminar.survey.api.Seminar404
 import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.database.OperatingSystemEntity
@@ -64,9 +65,9 @@ class SeminarServiceImpl(
             backendReason = backendReason,
             waffleReason = waffleReason,
             somethingToSay = somethingToSay,
-            user = if(userId != null){
+            user = if (userId != null) {
                 userRepository.findByIdOrNull(userId)!!.toUser()
-            }else{
+            } else {
                 null
             }
         )
@@ -75,6 +76,12 @@ class SeminarServiceImpl(
     override fun createSurveyResponse(createSurveyRequest: CreateSurveyRequest, xUserId: Long): SurveyResponse{
         val operatingSystem = osRepository.findByOsName(createSurveyRequest.operatingSystem) ?: throw Seminar404("서버에 존재하지 않는 운영체제입니다.")
         val userEntity = userRepository.findByIdOrNull(xUserId) ?: throw Seminar404("등록되지 않은 아이디입니다.")
+        val springExpCond = (createSurveyRequest.springExp in 1..5)
+        val rdbExpCond = (createSurveyRequest.rdbExp in 1..5)
+        val programmingExpCond = (createSurveyRequest.programmingExp in 1..5)
+        if(!springExpCond || !rdbExpCond || !programmingExpCond){
+            throw Seminar400("유효하지 않은 응답입니다. 필수 문항에 대한 응답을 다시 확인해주세요.")
+        }
         val surveyResponseEntity = SurveyResponseEntity(
             operatingSystem = operatingSystem,
             springExp = createSurveyRequest.springExp,
