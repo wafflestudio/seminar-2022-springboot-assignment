@@ -1,5 +1,7 @@
 package com.wafflestudio.seminar.survey.api
 
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
@@ -13,4 +15,8 @@ class SeminarExceptionHandler {
 //    fun handle(e: SeminarException): ResponseEntity<Any> {
 //        return ResponseEntity(e.message, e.status)
 //    }
+    @ExceptionHandler(value = [SeminarException::class])
+        fun handle(e: SeminarException): ResponseEntity<Any> {
+        return ResponseEntity(e.message, e.status)
+    }
 }

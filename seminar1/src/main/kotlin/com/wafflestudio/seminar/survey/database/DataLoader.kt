@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.database
 
+import com.wafflestudio.seminar.user.database.UserRepository
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.io.ClassPathResource
@@ -53,7 +54,10 @@ class DataLoader(
             .map {
                 val rawSurveyResponse = it.split("\t")
                 SurveyResponseEntity(
-                    timestamp = LocalDateTime.parse(rawSurveyResponse[0], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    timestamp = LocalDateTime.parse(
+                        rawSurveyResponse[0],
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    ),
                     operatingSystem = osRepository.findByOsName(rawSurveyResponse[1])!!,
                     springExp = rawSurveyResponse[2].toInt(),
                     rdbExp = rawSurveyResponse[3].toInt(),

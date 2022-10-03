@@ -6,7 +6,7 @@
     <file type="web" url="file://$PROJECT_DIR$/seminar1" />
     <file type="web" url="file://$PROJECT_DIR$/seminar_0" />
   </component>
-  <component name="ProjectRootManager">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="ProjectType">
