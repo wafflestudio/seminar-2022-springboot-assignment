@@ -10,17 +10,18 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotNull
 
 @Entity
 class SurveyResponseEntity(
     @ManyToOne(fetch = FetchType.LAZY)
-    @NotEmpty
+    @field:NotNull(message = "OS는 필수 입력값입니다.")
     val operatingSystem: OperatingSystemEntity,
-    @NotEmpty
+    @field:NotNull(message = "springExp는 필수 입력값입니다.")
     val springExp: Int,
-    @NotEmpty
+    @field:NotNull(message = "rdbExp는 필수 입력값입니다.")
     val rdbExp: Int,
-    @NotEmpty
+    @field:NotNull(message = "programmingExp는 필수 입력값입니다.")
     val programmingExp: Int,
     val major: String? = null,
     val grade: String? = null,

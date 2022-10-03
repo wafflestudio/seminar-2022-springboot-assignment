@@ -1,7 +1,6 @@
 package com.wafflestudio.seminar.user.api.request
 
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
-import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import com.wafflestudio.seminar.user.domain.UserEntity
 import com.wafflestudio.seminar.user.dto.CreateUserDTO
 import com.wafflestudio.seminar.user.dto.LoginUserDTO
@@ -18,7 +17,7 @@ class UserController(
     @PostMapping("/api/v1/user")
     @ResponseBody
     fun createUser(
-        @RequestBody createUserDTO: CreateUserDTO
+        @RequestBody @Valid createUserDTO: CreateUserDTO
     ): UserEntity {
         return userService.createUser(createUserDTO)
     }
