@@ -27,5 +27,9 @@ class AuthConfig {
             .authorizeRequests()
             .anyRequest().permitAll()
             .and()
+            .headers()
+            .frameOptions()
+            .disable()
+            .and()
             .build()
 }
