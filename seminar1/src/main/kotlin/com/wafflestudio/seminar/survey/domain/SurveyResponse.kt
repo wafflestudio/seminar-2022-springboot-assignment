@@ -8,10 +8,11 @@ data class SurveyResponse(
     val springExp: Int,
     val rdbExp: Int,
     val programmingExp: Int,
-    val major: String,
-    val grade: String,
+    val major: String?,
+    val grade: String?,
     val timestamp: LocalDateTime,
     val backendReason: String? = null,
     val waffleReason: String? = null,
-    val somethingToSay: String? = null
+    val somethingToSay: String? = null,
+    val user_id: Long?,
 )
