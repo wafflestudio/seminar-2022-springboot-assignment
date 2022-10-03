@@ -3,7 +3,6 @@ package com.wafflestudio.seminar.user.api
 import com.wafflestudio.seminar.user.api.exception.UserException403
 import com.wafflestudio.seminar.user.api.request.CreateUserRequest
 import com.wafflestudio.seminar.user.api.request.LoginRequest
-import com.wafflestudio.seminar.user.domain.UserInfo
 import com.wafflestudio.seminar.user.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping

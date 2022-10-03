@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class UserExceptionHandler {
     @ExceptionHandler(value = [Exception::class])
     fun handle(e: Exception): ResponseEntity<Any> {
-        return ResponseEntity("Internal Server Error" + ": " + e.message, HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity("Internal Server Error: " + e.message, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @ExceptionHandler(value = [UserException::class])

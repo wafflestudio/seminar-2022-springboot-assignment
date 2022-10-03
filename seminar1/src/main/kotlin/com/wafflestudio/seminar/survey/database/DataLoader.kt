@@ -53,6 +53,7 @@ class DataLoader(
             .map {
                 val rawSurveyResponse = it.split("\t")
                 SurveyResponseEntity(
+                    user = null,
                     timestamp = LocalDateTime.parse(rawSurveyResponse[0], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                     operatingSystem = osRepository.findByOsName(rawSurveyResponse[1])!!,
                     springExp = rawSurveyResponse[2].toInt(),
