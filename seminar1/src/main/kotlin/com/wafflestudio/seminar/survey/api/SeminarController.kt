@@ -1,10 +1,11 @@
 package com.wafflestudio.seminar.survey.api
 
+import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.service.SeminarService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import com.wafflestudio.seminar.user.api.request.CreateUserRequest
+import com.wafflestudio.seminar.user.api.request.DoLoginRequest
+import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 class SeminarController(

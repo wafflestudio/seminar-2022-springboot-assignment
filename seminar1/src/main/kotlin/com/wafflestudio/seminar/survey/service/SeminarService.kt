@@ -1,6 +1,8 @@
 package com.wafflestudio.seminar.survey.service
 
+import com.wafflestudio.seminar.survey.api.Seminar400
 import com.wafflestudio.seminar.survey.api.Seminar404
+import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.database.OperatingSystemEntity
 import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
@@ -9,6 +11,7 @@ import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 interface SeminarService {
     fun os(name: String): OperatingSystem
@@ -59,6 +62,9 @@ class SeminarServiceImpl(
             backendReason = backendReason,
             waffleReason = waffleReason,
             somethingToSay = somethingToSay,
+            user = user?.toUser(),
         )
     }
+    
+    
 }
