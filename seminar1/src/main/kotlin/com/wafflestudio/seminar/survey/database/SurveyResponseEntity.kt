@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.database
 
+import com.wafflestudio.seminar.user.database.UserEntity
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -10,6 +11,8 @@ import javax.persistence.ManyToOne
 
 @Entity
 class SurveyResponseEntity(
+    @ManyToOne(fetch = FetchType.LAZY)
+    val user: UserEntity? = null,
     @ManyToOne(fetch = FetchType.LAZY)
     val operatingSystem: OperatingSystemEntity,
     val springExp: Int,
