@@ -49,12 +49,13 @@ class SeminarServiceImpl(
     private fun SurveyResponse(entity: SurveyResponseEntity) = entity.run {
         SurveyResponse(
             id = id,
+            userID = userID,
             operatingSystem = OperatingSystem(operatingSystem),
             springExp = springExp,
             rdbExp = rdbExp,
             programmingExp = programmingExp,
-            major = major,
-            grade = grade,
+            major = major!!,
+            grade = grade!!,
             timestamp = timestamp,
             backendReason = backendReason,
             waffleReason = waffleReason,

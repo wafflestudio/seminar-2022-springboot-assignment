@@ -10,13 +10,14 @@ import javax.persistence.ManyToOne
 
 @Entity
 class SurveyResponseEntity(
+    val userID: Long? = null,
     @ManyToOne(fetch = FetchType.LAZY)
     val operatingSystem: OperatingSystemEntity,
     val springExp: Int,
     val rdbExp: Int,
     val programmingExp: Int,
-    val major: String,
-    val grade: String,
+    val major: String = "unknown",
+    val grade: String = "unknown",
     val timestamp: LocalDateTime,
     val backendReason: String? = null,
     val waffleReason: String? = null,
