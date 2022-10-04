@@ -9,3 +9,5 @@ class UserNotFoundException: UserException("User not found", HttpStatus.NOT_FOUN
 class UserEmailAlreadyExistsException: UserException("User email already exists", HttpStatus.CONFLICT)
 
 class UserPasswordIncorrectException: UserException("User password incorrect", HttpStatus.UNAUTHORIZED)
+
+class UserNotAuthorizedException: UserException("User not authorized", HttpStatus.FORBIDDEN)
