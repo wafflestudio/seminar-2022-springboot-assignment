@@ -1,9 +1,6 @@
 package com.wafflestudio.seminar.user.service
 
-import com.wafflestudio.seminar.survey.api.Seminar400
-import com.wafflestudio.seminar.survey.api.Seminar401
-import com.wafflestudio.seminar.survey.api.Seminar404
-import com.wafflestudio.seminar.survey.api.Seminar409
+import com.wafflestudio.seminar.survey.api.*
 import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
@@ -24,8 +21,8 @@ import java.time.LocalDateTime
 interface UserService {
     fun CreateUser(request: CreateUserRequest) : CreateUserResponse
     fun Login(request: LoginRequest) : LoginResponse
-    fun GetUser(id: Long) : UserResponse
-    fun GetUserSurvey(id: Long, request: CreateSurveyRequest)
+    fun GetUser(id: Long?) : UserResponse
+    fun GetUserSurvey(id: Long?, request: CreateSurveyRequest)
 }
 
 @Service
@@ -65,45 +62,52 @@ class UserServiceImpl(
         }
     }
 
-    override fun GetUser(id: Long): UserResponse {
-        val user = userRepository.findByIdOrNull(id)
-        if(user==null) {
-            throw Seminar404("존재하지 않는 유저입니다.")
+    override fun GetUser(id: Long?): UserResponse {
+        if(id==null) {
+            throw Seminar403("로그인되어 있지 않습니다.")
         }
         else {
-            return user.UserResponse()
+            val user = userRepository.findByIdOrNull(id)
+            if (user == null) {
+                throw Seminar404("존재하지 않는 유저입니다.")
+            } else {
+                return user.UserResponse()
+            }
         }
     }
 
-    override fun GetUserSurvey(id: Long, request: CreateSurveyRequest) {
-        if(request.springExp==null || request.rdbExp==null || request.programmingExp==null || request.operatingSystem=="") {
-            throw Seminar400("정보를 입력해주세요.")
+    override fun GetUserSurvey(id: Long?, request: CreateSurveyRequest) {
+        if(id==null) {
+            throw Seminar403("로그인되어 있지 않습니다.")
         }
         else {
-            val os=osRepository.findByOsName(request.operatingSystem!!)
-            if(os==null) {
-                throw Seminar404("Operating System이 존재하지 않습니다.")
+            if(request.springExp==null || request.rdbExp==null || request.programmingExp==null || request.operatingSystem=="") {
+                throw Seminar400("정보를 입력해주세요.")
             }
             else {
-                val user = userRepository.findByIdOrNull(id)
-                if(user==null) {
-                    throw Seminar404("존재하지 않는 유저입니다.")
-                }
-                else {
-                    val t = SurveyResponseEntity(
-                        os,
-                        request.springExp,
-                        request.rdbExp,
-                        request.programmingExp,
-                        request.major,
-                        request.grade,
-                        LocalDateTime.now(),
-                        request.backendReason,
-                        request.waffleReason,
-                        request.somethingToSay,
-                        user
-                    )
-                    surveyResponseRepository.save(t)
+                val os = osRepository.findByOsName(request.operatingSystem!!)
+                if (os == null) {
+                    throw Seminar404("Operating System이 존재하지 않습니다.")
+                } else {
+                    val user = userRepository.findByIdOrNull(id)
+                    if (user == null) {
+                        throw Seminar404("존재하지 않는 유저입니다.")
+                    } else {
+                        val t = SurveyResponseEntity(
+                            os,
+                            request.springExp,
+                            request.rdbExp,
+                            request.programmingExp,
+                            request.major,
+                            request.grade,
+                            LocalDateTime.now(),
+                            request.backendReason,
+                            request.waffleReason,
+                            request.somethingToSay,
+                            user
+                        )
+                        surveyResponseRepository.save(t)
+                    }
                 }
             }
         }

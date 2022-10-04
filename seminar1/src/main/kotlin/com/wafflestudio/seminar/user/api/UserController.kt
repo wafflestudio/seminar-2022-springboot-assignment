@@ -19,8 +19,8 @@ class UserController (
     fun Login(@RequestBody request: LoginRequest) = userService.Login(request)
     
     @GetMapping("/user/me")
-    fun getUser(@RequestHeader("X-User-Id") id: Long) = userService.GetUser(id)
+    fun getUser(@RequestHeader("X-User-Id") id: Long?) = userService.GetUser(id)
     
     @PostMapping("/survey")
-    fun getUserSurvey(@RequestHeader("X-User-Id") id: Long, @RequestBody request: CreateSurveyRequest) = userService.GetUserSurvey(id, request)
+    fun getUserSurvey(@RequestHeader("X-User-Id") id: Long?, @RequestBody request: CreateSurveyRequest) = userService.GetUserSurvey(id, request)
 }
