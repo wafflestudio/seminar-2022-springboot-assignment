@@ -59,6 +59,7 @@ class SeminarServiceImpl(
             backendReason = backendReason,
             waffleReason = waffleReason,
             somethingToSay = somethingToSay,
+            user = user?.UserResponse()
         )
     }
 }
