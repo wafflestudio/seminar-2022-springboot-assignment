@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.api
 
+import com.wafflestudio.seminar.survey.exception.SeminarException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -21,9 +22,9 @@ class SeminarExceptionHandler {
      * 예외들은 어느 패키지에 있는게 적절할까요?
      * 예외는 어떤 정보를 공통적으로 담고 있을까요?
      */
-    @ExceptionHandler(value = [SeminarApiException::class])
-    fun handle(e: SeminarApiException): ResponseEntity<Any> {
-        return ResponseEntity(e.exception.errorMessage, e.exception.httpstatus)
+    @ExceptionHandler(value = [SeminarException::class])
+    fun handle(e: SeminarException): ResponseEntity<Any> {
+        return ResponseEntity(e.errorMessage, e.httpstatus)
     }
-    
+
 }

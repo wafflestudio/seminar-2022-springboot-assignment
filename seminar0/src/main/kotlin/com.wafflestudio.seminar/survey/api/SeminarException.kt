@@ -1,3 +1,7 @@
-package com.wafflestudio.seminar.survey.api
+package com.wafflestudio.seminar.survey.exception
 
-class SeminarException(msg: String) : RuntimeException(msg)
+import org.springframework.http.HttpStatus
+
+class SeminarException(val errorMessage: String,val httpstatus:HttpStatus) : RuntimeException() {
+
+}

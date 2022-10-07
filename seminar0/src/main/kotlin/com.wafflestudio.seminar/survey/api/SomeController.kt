@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/os")
 class OsController(private val service: Service) {
-    
+
     @GetMapping("/{id}")
     fun getOsById(@PathVariable id: Long)= service.findByOsId(id)?:throw
-            Exception("")
+    Exception("")
 
-    /** need to be implemented**/ 
+    /** need to be implemented**/
     @GetMapping()
     fun getOsById(@RequestParam("name") name: String)= service.findByOsName(name)
 }
@@ -28,7 +28,7 @@ class SurveyController(private val service: Service) {
 
     @GetMapping("/all")
     fun getAllSurveyResponse()=service.findAllSurveyResponse()
-    
+
     @GetMapping("/{id}")
     fun getSurveyResponseById(@PathVariable id: Long)=service.findBySurveyResponseId(id)
 }
