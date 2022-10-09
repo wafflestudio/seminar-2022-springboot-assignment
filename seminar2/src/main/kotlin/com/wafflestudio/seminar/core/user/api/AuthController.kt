@@ -1,16 +1,21 @@
 package com.wafflestudio.seminar.core.user.api
 
 import com.wafflestudio.seminar.common.Authenticated
+import com.wafflestudio.seminar.core.user.database.UserEntity
+import com.wafflestudio.seminar.core.user.service.AuthService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class AuthController {
+class AuthController(
+    private var authService: AuthService 
+) {
     
     @PostMapping("/api/v1/signup")
-    fun signUp() {
-        TODO("회원가입을 구현해주세요.")
+    fun signUp(@RequestBody user: UserEntity) {
+        authService.save(user)
     }
     
     @PostMapping("/api/v1/signin")

@@ -2,9 +2,9 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3308/seminar?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3308/seminar2?serverTimezone=UTC
     username: root
-    password: seminar
+    password: 1234
   jpa:
     properties:
       hibernate:
@@ -14,4 +14,5 @@ spring:
       
 auth.jwt:
   jwtSecret: SEMINAR_SECRET_KEY
+  
   # TODO 누락된 정보를 추가해 주세요.
