@@ -14,11 +14,6 @@ class UserEntity(
     @Column
     var password: String,
     
-    @Column
-    var lastLogin: String,
-    
-    @Column
-    var dateJoined: String
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

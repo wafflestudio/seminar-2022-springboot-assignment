@@ -3,35 +3,22 @@ package com.wafflestudio.seminar.core.user.service;
 import com.wafflestudio.seminar.core.user.database.AuthRepository;
 import com.wafflestudio.seminar.core.user.database.UserEntity;
 import com.wafflestudio.seminar.core.user.domain.User;
+import com.wafflestudio.seminar.core.user.domain.UserLogin
 import org.springframework.stereotype.Service;
 
-interface AuthService {
-
-    fun save(user:UserEntity) : User
-
-
-
-
-}
 
 @Service
-class AuthServiceImpl(
+class AuthService(
     private val authRepository:AuthRepository
-) : AuthService {
-    override fun save(user: UserEntity): User {
-        val entity = authRepository.save(user)
-        return User(entity)
+)  {
+    fun save(user: User): UserEntity {
+        return authRepository.save(UserEntity(user.username, user.email, user.password))
+    }
+    
+    fun login(userLogin: UserLogin): UserEntity{
+        return authRepository.findByUsername(userLogin.username)
     }
 
-    private fun User(entity: UserEntity) = entity.run {
-        User(
-            id = id,
-            username = username,
-            email = email,
-            password = password,
-            lastLogin = lastLogin,
-            dateJoined = dateJoined
-        )
-    }
+   
     
 }

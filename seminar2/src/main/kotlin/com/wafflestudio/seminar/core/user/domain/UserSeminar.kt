@@ -1,4 +1,7 @@
 package com.wafflestudio.seminar.core.user.domain
 
-class UserSeminar {
-}
+data class UserSeminar(
+    val seminarName: String,
+    val professor: String,
+    val grade: Int
+)

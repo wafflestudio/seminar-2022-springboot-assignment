@@ -1,7 +1,8 @@
 package com.wafflestudio.seminar.core.user.domain
 
-data class User(
+data class UserLogin(
+    
     val username: String,
-    val email: String,
     val password: String
-)
+) {
+}

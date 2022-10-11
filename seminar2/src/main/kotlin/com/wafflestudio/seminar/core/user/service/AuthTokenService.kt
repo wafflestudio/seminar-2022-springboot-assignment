@@ -1,12 +1,12 @@
 package com.wafflestudio.seminar.core.user.service
 
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jws
-import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
+import java.time.Duration
 import java.util.*
+import kotlin.collections.HashMap
 
 @Service
 @EnableConfigurationProperties(AuthProperties::class)
@@ -21,9 +21,16 @@ class AuthTokenService(
    *   검증할지, 또 만료는 어떻게 시킬 수 있을지 고민해보아요.
    */
   fun generateTokenByUsername(username: String): AuthToken {
-    val claims: MutableMap<String, Any>
-    val expiryDate: Date
-    val resultToken = Jwts.builder().compact() 
+    val claims: MutableMap<String, Any> = Jwts.claims().setSubject("access")
+
+    claims["username"] = username
+    val now = System.currentTimeMillis()
+    val nowDate = Date(now) 
+    val expiryDate: Date = Date(nowDate.time+Duration.ofDays(1).toMillis())
+    val resultToken = Jwts.builder().setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+      .setClaims(claims)
+      .setIssuer("test").setIssuedAt(nowDate).setExpiration(expiryDate)
+      .signWith(signingKey, SignatureAlgorithm.HS256).compact()
 
     return AuthToken(resultToken)
   }
