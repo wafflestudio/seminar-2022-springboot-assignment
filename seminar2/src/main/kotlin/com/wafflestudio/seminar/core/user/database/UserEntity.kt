@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.database
 
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
@@ -13,6 +14,9 @@ class UserEntity(
     
     @Column
     var password: String,
+    
+    @Column
+    var dateJoined: LocalDateTime
     
 ) {
     @Id

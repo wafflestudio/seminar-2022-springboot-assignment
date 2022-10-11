@@ -5,22 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b627be3-bd4e-4f08-9f81-2b348427fa8f" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../seminar1/src/main/kotlin/com/wafflestudio/seminar/user/api/UserController.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../seminar1/src/main/kotlin/com/wafflestudio/seminar/user/database/UserRepository.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../seminar1/src/main/kotlin/com/wafflestudio/seminar/user/domain/User.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../seminar1/src/main/kotlin/com/wafflestudio/seminar/user/service/UserService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/wafflestudio/seminar/survey/api/HomeController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/wafflestudio/seminar/survey/api/HomeController.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/wafflestudio/seminar/survey/database/OsRepositoryImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/wafflestudio/seminar/survey/database/OsRepositoryImpl.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/wafflestudio/seminar/survey/service/StudentService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/wafflestudio/seminar/survey/service/StudentService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../seminar1/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar1/settings.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../seminar1/src/main/kotlin/com/wafflestudio/seminar/SeminarOneApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar1/src/main/kotlin/com/wafflestudio/seminar/SeminarOneApplication.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/AuthController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/AuthController.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/UserEntity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/UserEntity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/UserSeminarEntity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserSignup.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserSeminar.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthTokenService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthTokenService.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +23,18 @@
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -49,6 +53,21 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../seminar-2022/spring/seminar1" />
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="seminar0" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="seminar0" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
