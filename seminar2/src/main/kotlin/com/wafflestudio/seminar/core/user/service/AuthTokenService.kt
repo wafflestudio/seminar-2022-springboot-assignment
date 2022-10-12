@@ -22,10 +22,10 @@ class AuthTokenService(
    * TODO Jwts.builder() 라이브러리를 통해서, 어떻게 필요한 정보를 토큰에 넣어 발급하고,
    *   검증할지, 또 만료는 어떻게 시킬 수 있을지 고민해보아요.
    */
-  fun generateTokenByUsername(username: String): AuthToken {
+  fun generateTokenByEmail(email: String): AuthToken {
     val claims: MutableMap<String, Any> = Jwts.claims().setSubject("access")
 
-    claims["username"] = username
+    claims["email"] = email
     
     val now = System.currentTimeMillis()
     val nowDate = Date(now) 
@@ -43,7 +43,7 @@ class AuthTokenService(
   }
 
   fun getCurrentUserId(authToken: String) :Long{
-    //parse(authToken)에 저장된 username을 findByUsername에 적용하여 id를 구하나?
+    //parse(authToken)에 저장된 email을 findByEmail에 적용하여 id를 구하나?
     parse(authToken)
     return 0
   }

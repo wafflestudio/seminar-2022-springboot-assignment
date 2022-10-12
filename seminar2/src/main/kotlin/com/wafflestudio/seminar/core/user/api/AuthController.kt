@@ -13,6 +13,7 @@ import java.util.*
 
 @RestController
 class AuthController(
+    // valid도 추가하기
     private var authService: AuthService,
     private var authTokenService: AuthTokenService
 ) {
@@ -24,7 +25,7 @@ class AuthController(
         // 비밀번호 powerEncoder 추가해야함, 아이디 중복된거 회원가입 못하게 해야함
         // 비밀번호 규칙도 걸어두면 참~ 좋겠네
        
-        return authTokenService.generateTokenByUsername(user.username)
+        return authTokenService.generateTokenByEmail(user.email)
     }
     
     
@@ -33,7 +34,7 @@ class AuthController(
         
         // 이메일 없으면 오류, 이메일 있지만 비번 틀렸으면 오류
        authService.login(userLogin)
-        return authTokenService.generateTokenByUsername(userLogin.username)
+        return authTokenService.generateTokenByEmail(userLogin.email)
     }
     
     @Authenticated

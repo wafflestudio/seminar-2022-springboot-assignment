@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface AuthRepository :JpaRepository<UserEntity, Long>{
     fun save(userEntity: UserEntity) : UserEntity
-    fun findByUsername(username: String): UserEntity
+    fun findByEmail(email: String): UserEntity
 }

@@ -3,14 +3,14 @@ package com.wafflestudio.seminar.core.user.database
 import javax.persistence.*
 
 @Entity
-@Table(name="ParticipantProfile")
-class ParticipantProfileEntity(
+@Table(name="InstructorProfile")
+class InstructorProfileEntity(
     @Column
-    var university: String = "",
+    var company: String = "",
     
     @Column
-    var isRegistered: Boolean = true,
-){
+    var year: Int? = null,
+) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L

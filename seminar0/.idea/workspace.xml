@@ -5,12 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b627be3-bd4e-4f08-9f81-2b348427fa8f" name="변경" comment="">
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/InstructorProfileEntity.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/InstructorProfile.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/AuthController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/AuthController.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/AuthRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/AuthRepository.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/UserEntity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/UserEntity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/UserSeminarEntity.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserSignup.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserSeminar.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/ParticipantProfile.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/ParticipantProfile.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserLogin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserLogin.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserSignup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserSignup.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthService.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthTokenService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthTokenService.kt" afterDir="false" />
     </list>

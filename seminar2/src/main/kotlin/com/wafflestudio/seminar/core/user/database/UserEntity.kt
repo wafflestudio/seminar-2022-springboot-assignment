@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.database
 
+import com.wafflestudio.seminar.core.user.domain.ParticipantProfile
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -16,7 +17,16 @@ class UserEntity(
     var password: String,
     
     @Column
-    var dateJoined: LocalDateTime
+    var dateJoined: LocalDateTime,
+    
+    @OneToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name="participant_id")
+    var participantProfileEntity: ParticipantProfileEntity? = null,
+
+    @OneToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name="instructor_id")
+    var instructorProfileEntity: InstructorProfileEntity? = null
+
     
 ) {
     @Id
