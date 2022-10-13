@@ -3,9 +3,11 @@ package com.wafflestudio.seminar.core.user.api
 import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.core.user.domain.UserSignup
 import com.wafflestudio.seminar.core.user.domain.UserLogin
+import com.wafflestudio.seminar.core.user.domain.UserProfile
 import com.wafflestudio.seminar.core.user.service.AuthService
 import com.wafflestudio.seminar.core.user.service.AuthToken
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
+import com.wafflestudio.seminar.core.user.service.UserService
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import org.springframework.web.bind.annotation.*
@@ -15,7 +17,8 @@ import java.util.*
 class AuthController(
     // valid도 추가하기
     private var authService: AuthService,
-    private var authTokenService: AuthTokenService
+    private var authTokenService: AuthTokenService,
+    private var userService: UserService
 ) {
     
     @PostMapping("/api/v1/signup")
@@ -44,5 +47,12 @@ class AuthController(
         
         return "인증되었습니다"
     }
+    
+    @Authenticated
+    @GetMapping("/api/v1/user/{email}")
+    fun getProfile(@PathVariable email: String, @RequestHeader("Authentication") token: String): UserProfile{
+        return userService.getProfile(email, token)
+    }
+    
     
 }

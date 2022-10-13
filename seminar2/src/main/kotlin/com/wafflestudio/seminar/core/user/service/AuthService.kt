@@ -1,7 +1,7 @@
 package com.wafflestudio.seminar.core.user.service;
 
 import com.wafflestudio.seminar.common.Seminar400
-import com.wafflestudio.seminar.core.user.database.AuthRepository;
+import com.wafflestudio.seminar.core.user.database.JpaRepository;
 import com.wafflestudio.seminar.core.user.database.InstructorProfileEntity
 import com.wafflestudio.seminar.core.user.database.ParticipantProfileEntity
 import com.wafflestudio.seminar.core.user.database.UserEntity;
@@ -14,19 +14,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 class AuthService(
-    private val authRepository:AuthRepository
+    private val jpaRepository:JpaRepository
 )  {
     fun signup(user: UserSignup): UserEntity {
         return if(user.role == "participant"){
             println(1)
-            authRepository.save(userParEntity(user))
+            jpaRepository.save(userParEntity(user))
         } else if(user.role == "instructor"){
-            authRepository.save(userInsEntity(user))
+            jpaRepository.save(userInsEntity(user))
         } else throw Seminar400("오류")
     }
     
     fun login(userLogin: UserLogin): UserEntity{
-        return authRepository.findByEmail(userLogin.email)
+        return jpaRepository.findByEmail(userLogin.email)
     }
     
     

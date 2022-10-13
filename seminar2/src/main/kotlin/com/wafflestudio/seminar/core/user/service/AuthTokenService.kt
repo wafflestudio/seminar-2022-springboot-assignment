@@ -1,19 +1,20 @@
 package com.wafflestudio.seminar.core.user.service
 
-import com.wafflestudio.seminar.core.user.database.AuthRepository
+import com.wafflestudio.seminar.core.user.database.JpaRepository
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
 import java.time.Duration
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
-import kotlin.collections.HashMap
 
 @Service
 @EnableConfigurationProperties(AuthProperties::class)
 class AuthTokenService(
   private val authProperties: AuthProperties,
-  private val authRepository: AuthRepository
+  private val jpaRepository: JpaRepository
 ) {
   private val tokenPrefix = "Bearer "
   private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
@@ -44,8 +45,18 @@ class AuthTokenService(
 
   fun getCurrentUserId(authToken: String) :Long{
     //parse(authToken)에 저장된 email을 findByEmail에 적용하여 id를 구하나?
-    parse(authToken)
-    return 0
+    
+    val email : String = parse(authToken).body["email"].toString()
+    println(jpaRepository.findByEmail(email).id)
+    return jpaRepository.findByEmail(email).id
+    
+  }
+
+  fun getCurrentLastLogin(authToken: String) :LocalDateTime{
+    //parse(authToken)에 저장된 email을 findByEmail에 적용하여 id를 구하나?
+
+    return parse(authToken).body.issuedAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime() // Date -> LocalDateTime
+    
   }
 
   /**
