@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.database
 
+import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -17,4 +18,13 @@ class OperatingSystemEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
+    
+    fun toOperationgSystem(): OperatingSystem {
+        return OperatingSystem(
+            id,
+            osName,
+            price,
+            desc
+        )
+    }
 }

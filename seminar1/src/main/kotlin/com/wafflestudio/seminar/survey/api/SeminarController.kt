@@ -1,32 +1,61 @@
 package com.wafflestudio.seminar.survey.api
 
-import com.wafflestudio.seminar.survey.service.SeminarService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
+import com.wafflestudio.seminar.survey.domain.OperatingSystem
+import com.wafflestudio.seminar.survey.domain.SurveyResponse
+import com.wafflestudio.seminar.survey.service.OSService
+import com.wafflestudio.seminar.survey.service.SurveyService
+import org.springframework.validation.BindingResult
+import org.springframework.web.bind.annotation.*
+import java.net.BindException
+import javax.validation.Valid
 
 @RestController
-class SeminarController(
-    private val service: SeminarService
+@RequestMapping("api/v1/survey")
+public class SurveyController(
+    val service: SurveyService
 ) {
-    @GetMapping("/os/{osId}")
-    fun getOs(
-        @PathVariable osId: Long,
-    ) = service.os(osId)
+    @GetMapping
+    fun getAllSurveys(): List<SurveyResponse> {
+        return service.allSurveyList()
+    }
 
-    @GetMapping("/os")
-    fun getOs(
-        @RequestParam name: String
-    ) = service.os(name)
-
-    @GetMapping("/survey")
-    fun getSurveyList() =
-        service.surveyResponseList()
-
-    @GetMapping("/survey/{surveyId}")
-    fun getSurvey(
+    @GetMapping("/{surveyId}")
+    fun getSurveyById(
         @PathVariable surveyId: Long,
-    ) = service.surveyResponse(surveyId)
+    ): SurveyResponse {
+        return service.surveyForId(surveyId)
+    }
+    
+    @PostMapping
+    fun createSurvey(
+        @RequestBody @Valid request: CreateSurveyRequest,
+        @RequestHeader("X-User-Id") id: Long?,
+        bindingResult: BindingResult
+    ): SurveyResponse {
+        if (bindingResult.hasErrors()) {
+            throw BindException()
+        }
+        return service.createSurvey(id, request)  
+    } 
+}
 
+@RestController
+@RequestMapping("api/v1/os")
+public class OSController(
+    val service: OSService
+) {
+    @GetMapping("/{id}")
+    fun getOsById(
+        @PathVariable id: Long,
+    ): OperatingSystem {
+        return service.osForId(id)
+    }
+
+    @GetMapping
+    fun getOsByName(
+        @RequestParam name: String
+    ): OperatingSystem {
+        return service.osForName(name)
+    }
 }
