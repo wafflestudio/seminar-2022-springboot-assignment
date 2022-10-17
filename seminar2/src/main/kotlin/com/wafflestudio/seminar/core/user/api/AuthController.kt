@@ -54,5 +54,9 @@ class AuthController(
         return userService.getProfile(email, token)
     }
     
-    
+    @Authenticated
+    @PutMapping("/api/v1/user/me")
+    fun updateMe(@RequestBody userProfile: UserProfile, @RequestHeader("Authentication") token: String): UserProfile{
+        return userService.updateMe(userProfile, token)
+    }
 }

@@ -1,6 +1,6 @@
 package com.wafflestudio.seminar.core.user.service
 
-import com.wafflestudio.seminar.core.user.database.JpaRepository
+import com.wafflestudio.seminar.core.user.database.UserRepository
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -14,7 +14,7 @@ import java.util.*
 @EnableConfigurationProperties(AuthProperties::class)
 class AuthTokenService(
   private val authProperties: AuthProperties,
-  private val jpaRepository: JpaRepository
+  private val userRepository: UserRepository
 ) {
   private val tokenPrefix = "Bearer "
   private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
@@ -47,8 +47,8 @@ class AuthTokenService(
     //parse(authToken)에 저장된 email을 findByEmail에 적용하여 id를 구하나?
     
     val email : String = parse(authToken).body["email"].toString()
-    println(jpaRepository.findByEmail(email).id)
-    return jpaRepository.findByEmail(email).id
+    println(userRepository.findByEmail(email).id)
+    return userRepository.findByEmail(email).id
     
   }
 
