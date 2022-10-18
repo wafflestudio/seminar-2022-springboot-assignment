@@ -51,7 +51,10 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    
+
+    // ModelMapper
+    implementation("org.modelmapper:modelmapper:2.4.4")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
