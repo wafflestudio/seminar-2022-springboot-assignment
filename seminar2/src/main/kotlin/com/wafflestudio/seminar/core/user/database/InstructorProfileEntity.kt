@@ -8,11 +8,11 @@ import javax.persistence.OneToOne
 
 @Entity
 class InstructorProfileEntity(
-    private val company: String = "",
-    private val year: Int? = null,
+    val company: String = "",
+    val year: Int? = null,
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private val user: UserEntity
+    val user: UserEntity
 ) : BaseTimeEntity() {
 
 }

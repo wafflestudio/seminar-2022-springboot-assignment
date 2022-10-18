@@ -5,14 +5,14 @@ import javax.persistence.*
 
 @Entity
 class UserEntity(
-    private val email: String,
-    private val username: String,
-    private val password: String,
+    val email: String,
+    val username: String,
+    val password: String,
     @OneToOne(mappedBy = "user")
-    private val participantProfile: ParticipantProfileEntity?,
+    val participantProfile: ParticipantProfileEntity?,
     @OneToOne(mappedBy = "user")
-    private val instructorProfile: InstructorProfileEntity?
+    val instructorProfile: InstructorProfileEntity?
 ) : BaseTimeEntity() {
     @OneToMany(mappedBy = "user", cascade = [CascadeType.REMOVE])
-    private val userSeminars: List<UserSeminarEntity> = ArrayList()
+    val userSeminars: List<UserSeminarEntity> = ArrayList()
 }
