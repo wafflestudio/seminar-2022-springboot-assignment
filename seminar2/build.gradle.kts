@@ -22,6 +22,7 @@ allOpen {
 
 noArg {
     annotation("javax.persistence.Entity")
+    annotation("com.wafflestudio.seminar.common.NoArg")
 }
 
 group = "com.wafflestudio"
