@@ -1,43 +1,28 @@
 package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
-import com.wafflestudio.seminar.core.user.database.InstructorProfileEntity
-import com.wafflestudio.seminar.core.user.database.ParticipantProfileEntity
-import com.wafflestudio.seminar.core.user.database.UserEntity
-import com.wafflestudio.seminar.core.user.domain.Role
-import com.wafflestudio.seminar.core.user.domain.User
+import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.repository.UserRepository
-import org.modelmapper.ModelMapper
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+
 @Service
 class UserServiceImpl(
-    private val userRepository: UserRepository,
-    private val modelMapper: ModelMapper
+    private val userRepository: UserRepository
 ) : UserService {
 
     @Transactional
     override fun register(signUpRequest: SignUpRequest): Long {
-        val userEntity = modelMapper.map(signUpRequest, UserEntity::class.java)
-        if (signUpRequest.role == Role.PARTICIPANT) {
-            val participantProfileEntity = ParticipantProfileEntity(
-                signUpRequest.university, signUpRequest.isRegistered
-            )
-            participantProfileEntity.addUser(userEntity)
-        } else {
-            val instructorProfileEntity = InstructorProfileEntity(
-                signUpRequest.company, signUpRequest.year
-            )
-            instructorProfileEntity.addUser(userEntity)
-        }
+        val userEntity = signUpRequest.toUserEntity()
         userRepository.save(userEntity)
         return userEntity.id
     }
 
     @Transactional(readOnly = true)
     override fun findOne(userId: Long): User {
-        TODO()
+        val userEntity = userRepository.findById(userId).get()
+        return userEntity.toDTO()
     }
 
     override fun update(): Long {
