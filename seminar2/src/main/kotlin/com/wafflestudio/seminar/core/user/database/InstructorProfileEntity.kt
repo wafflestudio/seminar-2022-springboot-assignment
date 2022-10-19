@@ -1,6 +1,10 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.user.domain.InstructorProfile
+import com.wafflestudio.seminar.core.user.domain.ParticipantProfile
+import com.wafflestudio.seminar.core.user.domain.Role
+import com.wafflestudio.seminar.core.user.domain.UserSeminar
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.JoinColumn
@@ -21,4 +25,18 @@ class InstructorProfileEntity(
         user.instructorProfile = this
     }
 
+    //==Mapping DTO==//
+    fun toDTO(): InstructorProfile {
+        val seminars = ArrayList<UserSeminar>()
+        for (seminar in user?.userSeminars!!) {
+            if (seminar.role == Role.INSTRUCTOR && seminar.user == user)
+                seminars.add(seminar.toDTO())
+        }
+        return InstructorProfile(
+            id = id,
+            company = company,
+            year = year,
+            seminars = seminars
+        )
+    }
 }
