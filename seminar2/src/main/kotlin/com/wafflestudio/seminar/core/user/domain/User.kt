@@ -1,10 +1,16 @@
 package com.wafflestudio.seminar.core.user.domain
 
-import com.wafflestudio.seminar.core.user.database.UserSeminarEntity
+import com.wafflestudio.seminar.common.NoArg
+import java.time.LocalDateTime
 
+@NoArg
 data class User(
-    private val email: String,
-    private val username: String,
-    private val password: String,
-    private val userSeminars: List<UserSeminar>
-)
+    var id: Long,
+    var username: String,
+    var email: String,
+    var lastLogin: LocalDateTime,
+    var createdAt: LocalDateTime,
+    var participant: List<UserSeminar>? = null,
+    var instructor: List<UserSeminar>? = null
+) {
+}
