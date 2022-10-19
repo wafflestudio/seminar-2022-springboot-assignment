@@ -10,9 +10,15 @@ import javax.persistence.OneToOne
 class InstructorProfileEntity(
     val company: String = "",
     val year: Int? = null,
+) : BaseTimeEntity() {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    val user: UserEntity
-) : BaseTimeEntity() {
+    var user: UserEntity? = null
+
+    //==연관관계 메서드==//
+    fun addUser(user: UserEntity) {
+        this.user = user
+        user.instructorProfile = this
+    }
 
 }

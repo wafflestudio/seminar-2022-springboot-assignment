@@ -9,9 +9,15 @@ import javax.persistence.OneToOne
 @Entity
 class ParticipantProfileEntity(
     val university: String = "",
-    val isRegistered: Boolean = true,
+    val isRegistered: Boolean = true
+) : BaseTimeEntity() {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    val user: UserEntity
-) : BaseTimeEntity() {
+    var user: UserEntity? = null
+
+    //==연관관계 메서드==//
+    fun addUser(user: UserEntity) {
+        this.user = user
+        user.participantProfile = this
+    }
 }
