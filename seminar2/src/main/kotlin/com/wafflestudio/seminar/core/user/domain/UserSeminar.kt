@@ -1,8 +1,12 @@
 package com.wafflestudio.seminar.core.user.domain
 
+import java.time.LocalDateTime
+
 data class UserSeminar(
-    private val user: User,
-    private val seminar: Seminar,
-    private val role: Role
+    val seminarId: Long,
+    val seminarName: String,
+    val joinedAt: LocalDateTime?,
+    val isActive: Boolean,
+    val droppedAt: LocalDateTime? = null
 ) {
 }
