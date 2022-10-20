@@ -1,18 +1,17 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.common.Seminar409
 import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
 import com.wafflestudio.seminar.core.user.api.request.ParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.api.response.SeminarResponse
 import com.wafflestudio.seminar.core.user.database.ParticipantProfileEntity
 import com.wafflestudio.seminar.core.user.database.SeminarEntity
 import com.wafflestudio.seminar.core.user.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.*
-import com.wafflestudio.seminar.core.user.repository.ParticipantProfileRepository
-import com.wafflestudio.seminar.core.user.repository.SeminarRepository
-import com.wafflestudio.seminar.core.user.repository.UserRepository
-import com.wafflestudio.seminar.core.user.repository.UserSeminarRepository
+import com.wafflestudio.seminar.core.user.repository.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -23,7 +22,8 @@ class UserServiceImpl(
     private val userRepository: UserRepository,
     private val participantProfileRepository: ParticipantProfileRepository,
     private val seminarRepository: SeminarRepository,
-    private val userSeminarRepository: UserSeminarRepository
+    private val userSeminarRepository: UserSeminarRepository,
+    private val customSeminarRepository: CustomSeminarRepository
 ) : UserService {
 
     override fun signUp(signUpRequest: SignUpRequest): Long {
@@ -87,6 +87,20 @@ class UserServiceImpl(
         seminarEntity.time = seminarRequest.time
         seminarEntity.online = seminarRequest.online
         return seminarEntity.toDTO()
+    }
+
+    override fun getSeminar(seminarId: Long): Seminar {
+        val seminarEntity = seminarRepository.findById(seminarId).get()
+        return seminarEntity.toDTO()
+    }
+
+    override fun getSeminars(name: String, order: String): List<SeminarResponse> {
+        val seminarEntities = customSeminarRepository.findByNameWithOrder("pr", "earliest")
+        val seminars = ArrayList<SeminarResponse>()
+        for (seminarEntity in seminarEntities) {
+            seminars.add(seminarEntity.toSeminarResponse())
+        }
+        return seminars
     }
 
 }

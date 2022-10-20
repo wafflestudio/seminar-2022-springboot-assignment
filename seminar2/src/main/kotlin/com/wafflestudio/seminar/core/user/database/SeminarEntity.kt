@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.user.api.response.SeminarResponse
 import com.wafflestudio.seminar.core.user.domain.Role
 import com.wafflestudio.seminar.core.user.domain.Seminar
 import com.wafflestudio.seminar.core.user.domain.SeminarInstructor
@@ -56,6 +57,28 @@ class SeminarEntity(
             online = online,
             instructors = instructors,
             participants = participants
+        )
+    }
+
+    fun toSeminarResponse(): SeminarResponse {
+        val instructors = ArrayList<SeminarInstructor>()
+        var participantCount = 0
+        for (userSeminar in userSeminars) {
+            if (userSeminar.role == Role.INSTRUCTOR) {
+                instructors.add(
+                    SeminarInstructor(
+                        userSeminar.user.id, userSeminar.user.username, userSeminar.user.email, userSeminar.createdAt
+                    )
+                )
+            } else {
+                participantCount++
+            }
+        }
+        return SeminarResponse(
+            id = id,
+            name = name,
+            instructors = instructors,
+            participantCount = participantCount
         )
     }
 }
