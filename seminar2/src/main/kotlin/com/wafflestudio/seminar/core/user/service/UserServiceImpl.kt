@@ -1,8 +1,12 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.common.Seminar409
 import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
+import com.wafflestudio.seminar.core.user.api.request.ParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.database.ParticipantProfileEntity
 import com.wafflestudio.seminar.core.user.domain.*
+import com.wafflestudio.seminar.core.user.repository.ParticipantProfileRepository
 import com.wafflestudio.seminar.core.user.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class UserServiceImpl(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val participantProfileRepository: ParticipantProfileRepository
 ) : UserService {
 
     override fun signUp(signUpRequest: SignUpRequest): Long {
@@ -39,5 +44,15 @@ class UserServiceImpl(
             userEntity.instructorProfile!!.year = editProfileRequest.year
         }
     }
-    
+
+    override fun beParticipant(userId: Long, participantRequest: ParticipantRequest) {
+        val userEntity = userRepository.findById(userId).get()
+        if (userEntity.participantProfile != null) {
+            throw Seminar409("You have participant profile already")
+        }
+        val participantProfileEntity =
+            ParticipantProfileEntity(participantRequest.university, participantRequest.isRegisterd)
+        participantProfileEntity.addUser(userEntity)
+        participantProfileRepository.save(participantProfileEntity)
+    }
 }
