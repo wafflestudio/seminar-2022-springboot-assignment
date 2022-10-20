@@ -9,6 +9,7 @@ plugins {
     kotlin("plugin.allopen") version "1.3.71"
     kotlin("plugin.noarg") version "1.3.71"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+    kotlin("kapt") version "1.7.10"
 }
 
 apply {
@@ -32,13 +33,16 @@ repositories {
     mavenCentral()
 }
 
+sourceSets["main"].withConvention(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet::class) {
+    kotlin.srcDir("$buildDir/generated/source/kapt/main")
+}
+
 dependencies {
     // Web & DB
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
-
 
     // Auth
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -52,8 +56,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    // ModelMapper
-    implementation("org.modelmapper:modelmapper:2.4.4")
+    //QueryDsl
+    val querydslVersion = "5.0.0"
+    implementation("com.querydsl:querydsl-jpa:$querydslVersion")
+    kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa")
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
