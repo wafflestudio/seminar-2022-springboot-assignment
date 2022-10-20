@@ -1,7 +1,6 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
-import com.wafflestudio.seminar.core.user.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.user.domain.Role
 import com.wafflestudio.seminar.core.user.domain.Seminar
 import com.wafflestudio.seminar.core.user.domain.SeminarInstructor
