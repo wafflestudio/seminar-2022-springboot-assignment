@@ -4,6 +4,6 @@ data class ParticipantProfile(
     val id: Long,
     val university: String = "",
     val isRegistered: Boolean = true,
-    val seminars: List<UserSeminar> = ArrayList()
+    val seminars: List<UserParticipantSeminar> = ArrayList()
 ) {
 }

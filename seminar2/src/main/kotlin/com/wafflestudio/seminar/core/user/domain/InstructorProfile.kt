@@ -4,6 +4,6 @@ data class InstructorProfile(
     val id: Long,
     val company: String = "",
     val year: Int? = null,
-    val seminars: List<UserSeminar> = ArrayList()
+    val seminars: List<UserInstructorSeminar> = ArrayList()
 ) {
 }
