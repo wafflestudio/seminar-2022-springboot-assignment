@@ -11,7 +11,7 @@ import javax.persistence.OneToOne
 
 @Entity
 class ParticipantProfileEntity(
-    val university: String = "",
+    var university: String = "",
     val isRegistered: Boolean = true
 ) : BaseTimeEntity() {
     @OneToOne(fetch = FetchType.LAZY)

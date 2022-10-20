@@ -7,9 +7,9 @@ import javax.persistence.*
 
 @Entity
 class UserEntity(
-    val email: String,
-    val username: String,
-    val password: String,
+    var email: String,
+    var username: String,
+    var password: String,
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
     var participantProfile: ParticipantProfileEntity? = null,
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])

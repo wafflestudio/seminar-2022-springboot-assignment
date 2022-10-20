@@ -12,8 +12,8 @@ import javax.persistence.OneToOne
 
 @Entity
 class InstructorProfileEntity(
-    val company: String = "",
-    val year: Int? = null,
+    var company: String = "",
+    var year: Int? = null,
 ) : BaseTimeEntity() {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
