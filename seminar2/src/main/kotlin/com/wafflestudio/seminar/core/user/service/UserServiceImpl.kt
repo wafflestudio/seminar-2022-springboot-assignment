@@ -1,13 +1,18 @@
 package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.common.Seminar409
+import com.wafflestudio.seminar.core.user.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
 import com.wafflestudio.seminar.core.user.api.request.ParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.ParticipantProfileEntity
+import com.wafflestudio.seminar.core.user.database.SeminarEntity
+import com.wafflestudio.seminar.core.user.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.repository.ParticipantProfileRepository
+import com.wafflestudio.seminar.core.user.repository.SeminarRepository
 import com.wafflestudio.seminar.core.user.repository.UserRepository
+import com.wafflestudio.seminar.core.user.repository.UserSeminarRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class UserServiceImpl(
     private val userRepository: UserRepository,
-    private val participantProfileRepository: ParticipantProfileRepository
+    private val participantProfileRepository: ParticipantProfileRepository,
+    private val seminarRepository: SeminarRepository,
+    private val userSeminarRepository: UserSeminarRepository
 ) : UserService {
 
     override fun signUp(signUpRequest: SignUpRequest): Long {
@@ -26,7 +33,7 @@ class UserServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findOne(userId: Long): User {
+    override fun getMyProfile(userId: Long): User {
         val userEntity = userRepository.findById(userId).get()
         return userEntity.toDTO()
     }
@@ -54,5 +61,21 @@ class UserServiceImpl(
             ParticipantProfileEntity(participantRequest.university, participantRequest.isRegisterd)
         participantProfileEntity.addUser(userEntity)
         participantProfileRepository.save(participantProfileEntity)
+    }
+
+    override fun createSeminar(userId: Long, createSeminarRequest: CreateSeminarRequest): Seminar {
+        val userEntity = userRepository.findById(userId).get()
+        val seminarEntity = SeminarEntity(
+            createSeminarRequest.name,
+            createSeminarRequest.capacity,
+            createSeminarRequest.count,
+            createSeminarRequest.time,
+            createSeminarRequest.online
+        )
+        val userSeminarEntity = UserSeminarEntity(userEntity, seminarEntity, Role.INSTRUCTOR)
+        seminarEntity.addUserSeminar(userSeminarEntity)
+        seminarRepository.save(seminarEntity)
+        userSeminarRepository.save(userSeminarEntity)
+        return seminarEntity.toDTO()
     }
 }

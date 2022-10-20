@@ -2,7 +2,9 @@ package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.user.domain.Role
-import com.wafflestudio.seminar.core.user.domain.UserSeminar
+import com.wafflestudio.seminar.core.user.domain.SeminarInstructor
+import com.wafflestudio.seminar.core.user.domain.UserInstructorSeminar
+import com.wafflestudio.seminar.core.user.domain.UserParticipantSeminar
 import javax.persistence.*
 
 @Entity
@@ -13,7 +15,7 @@ class UserSeminarEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seminar_id")
-    val seminar: SeminarEntity,
+    var seminar: SeminarEntity,
 
     @Enumerated(EnumType.STRING)
     val role: Role,
@@ -21,13 +23,22 @@ class UserSeminarEntity(
     val isActive: Boolean = true
 ) : BaseTimeEntity() {
 
-    fun toDTO(): UserSeminar {
-        return UserSeminar(
+    //==Mapping DTO==//
+    fun toUserParticipantSeminar(): UserParticipantSeminar {
+        return UserParticipantSeminar(
             seminarId = seminar.id,
             seminarName = seminar.name,
             joinedAt = createdAt,
             isActive = isActive,
             droppedAt = null
+        )
+    }
+
+    fun toUserInstructorSeminar(): UserInstructorSeminar {
+        return UserInstructorSeminar(
+            seminarId = seminar.id,
+            seminarName = seminar.name,
+            joinedAt = createdAt
         )
     }
 }
