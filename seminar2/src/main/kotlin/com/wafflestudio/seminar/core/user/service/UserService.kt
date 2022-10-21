@@ -19,4 +19,5 @@ interface UserService {
     fun getSeminar(seminarId: Long): Seminar
     fun getSeminars(name: String, order: String): List<SeminarResponse>
     fun joinSeminar(userId: Long, seminarId: Long, role: Role): Seminar
+    fun dropSeminar(userId: Long, seminarId: Long): Seminar
 }

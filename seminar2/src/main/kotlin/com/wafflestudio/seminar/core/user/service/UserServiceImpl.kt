@@ -1,10 +1,7 @@
 package com.wafflestudio.seminar.core.user.service
 
 import com.querydsl.jpa.impl.JPAQueryFactory
-import com.wafflestudio.seminar.common.Seminar400
-import com.wafflestudio.seminar.common.Seminar403
-import com.wafflestudio.seminar.common.Seminar404
-import com.wafflestudio.seminar.common.Seminar409
+import com.wafflestudio.seminar.common.*
 import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
 import com.wafflestudio.seminar.core.user.api.request.ParticipantRequest
@@ -18,6 +15,7 @@ import com.wafflestudio.seminar.core.user.repository.*
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 
 @Service
@@ -27,7 +25,8 @@ class UserServiceImpl(
     private val participantProfileRepository: ParticipantProfileRepository,
     private val seminarRepository: SeminarRepository,
     private val userSeminarRepository: UserSeminarRepository,
-    private val customSeminarRepository: CustomSeminarRepository
+    private val customSeminarRepository: CustomSeminarRepository,
+    private val customUserSeminarRepository: CustomUserSeminarRepository
 ) : UserService {
 
     override fun signUp(signUpRequest: SignUpRequest): Long {
@@ -135,8 +134,10 @@ class UserServiceImpl(
             else -> throw Seminar400("No Such Role")
         }
         for (userSeminar in userEntity.userSeminars) {
-            if (userSeminar.seminar == seminarEntity) {
+            if (userSeminar.seminar == seminarEntity && userSeminar.isActive) {
                 throw Seminar400("You already joined this seminar")
+            } else if (userSeminar.seminar == seminarEntity && !userSeminar.isActive) {
+                throw Seminar400("You cannot join again after dropping seminar")
             }
         }
         val userSeminar = UserSeminarEntity(userEntity, seminarEntity, role)
@@ -146,4 +147,12 @@ class UserServiceImpl(
         return seminarEntity.toDTO()
     }
 
+    override fun dropSeminar(userId: Long, seminarId: Long): Seminar {
+        val seminarEntity = seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("Seminar Not Found")
+        val userSeminarEntity =
+            customUserSeminarRepository.findByUserIdAndSeminarId(userId, seminarId) ?: throw Seminar200("")
+        userSeminarEntity.isActive = false
+        userSeminarEntity.droppedAt = LocalDateTime.now()
+        return seminarEntity.toDTO()
+    }
 }

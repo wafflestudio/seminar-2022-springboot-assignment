@@ -5,6 +5,8 @@ import com.wafflestudio.seminar.core.user.domain.Role
 import com.wafflestudio.seminar.core.user.domain.SeminarInstructor
 import com.wafflestudio.seminar.core.user.domain.UserInstructorSeminar
 import com.wafflestudio.seminar.core.user.domain.UserParticipantSeminar
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
@@ -20,7 +22,8 @@ class UserSeminarEntity(
     @Enumerated(EnumType.STRING)
     val role: Role,
 
-    val isActive: Boolean = true
+    var isActive: Boolean = true,
+    var droppedAt: LocalDateTime? = null
 ) : BaseTimeEntity() {
 
     //==Mapping DTO==//
