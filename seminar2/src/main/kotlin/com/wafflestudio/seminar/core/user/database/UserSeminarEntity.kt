@@ -11,7 +11,7 @@ import javax.persistence.*
 class UserSeminarEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    val user: UserEntity,
+    var user: UserEntity,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seminar_id")

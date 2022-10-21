@@ -16,7 +16,13 @@ class UserEntity(
     var instructorProfile: InstructorProfileEntity? = null
 ) : BaseTimeEntity() {
     @OneToMany(mappedBy = "user", cascade = [CascadeType.REMOVE])
-    val userSeminars: List<UserSeminarEntity> = ArrayList()
+    val userSeminars: MutableList<UserSeminarEntity> = ArrayList()
+
+    //==연관관계 메서드==//
+    fun addUserSeminar(userSeminarEntity: UserSeminarEntity) {
+        userSeminars.add(userSeminarEntity)
+        userSeminarEntity.user = this
+    }
 
     //==Mapping DTO==//
     fun toDTO(): User {

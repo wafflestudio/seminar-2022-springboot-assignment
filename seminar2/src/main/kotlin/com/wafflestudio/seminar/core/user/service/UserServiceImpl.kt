@@ -1,6 +1,9 @@
 package com.wafflestudio.seminar.core.user.service
 
 import com.querydsl.jpa.impl.JPAQueryFactory
+import com.wafflestudio.seminar.common.Seminar400
+import com.wafflestudio.seminar.common.Seminar403
+import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.common.Seminar409
 import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
@@ -12,6 +15,7 @@ import com.wafflestudio.seminar.core.user.database.SeminarEntity
 import com.wafflestudio.seminar.core.user.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.repository.*
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -52,7 +56,7 @@ class UserServiceImpl(
         }
     }
 
-    override fun beParticipant(userId: Long, participantRequest: ParticipantRequest) {
+    override fun registerParticipantProfile(userId: Long, participantRequest: ParticipantRequest) {
         val userEntity = userRepository.findById(userId).get()
         if (userEntity.participantProfile != null) {
             throw Seminar409("You have participant profile already")
@@ -101,6 +105,45 @@ class UserServiceImpl(
             seminars.add(seminarEntity.toSeminarResponse())
         }
         return seminars
+    }
+
+    override fun joinSeminar(userId: Long, seminarId: Long, role: Role): Seminar {
+        val seminarEntity = seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("Seminar Not Found")
+        val userEntity = userRepository.findById(userId).get()
+        when (role) {
+            Role.PARTICIPANT -> {
+                if (userEntity.participantProfile == null) {
+                    throw Seminar403("You don't have participant profile")
+                }
+                if (!userEntity.participantProfile!!.isRegistered) {
+                    throw Seminar403("You are not registered")
+                }
+                if (seminarEntity.capacity == seminarEntity.userSeminars.size) {
+                    throw Seminar400("Sorry, this seminar is full")
+                }
+            }
+            Role.INSTRUCTOR -> {
+                if (userEntity.instructorProfile == null) {
+                    throw Seminar403("You don't have instructor profile")
+                }
+                for (userSeminar in userEntity.userSeminars) {
+                    if (userSeminar.role == Role.INSTRUCTOR) {
+                        throw Seminar400("You are already instructing other seminar")
+                    }
+                }
+            }
+            else -> throw Seminar400("No Such Role")
+        }
+        for (userSeminar in userEntity.userSeminars) {
+            if (userSeminar.seminar == seminarEntity) {
+                throw Seminar400("You already joined this seminar")
+            }
+        }
+        val userSeminar = UserSeminarEntity(userEntity, seminarEntity, role)
+        seminarEntity.addUserSeminar(userSeminar)
+        userEntity.addUserSeminar(userSeminar)
+        userSeminarRepository.save(userSeminar)
+        return seminarEntity.toDTO()
     }
 
 }
