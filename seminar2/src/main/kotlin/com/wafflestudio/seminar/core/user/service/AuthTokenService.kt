@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
@@ -50,6 +51,10 @@ class AuthTokenService(
     println(userRepository.findByEmail(email).id)
     return userRepository.findByEmail(email).id
     
+  }
+  
+  fun getCurrentEmail(authToken: String) : String{
+    return parse(authToken).body["email"].toString()
   }
 
   fun getCurrentLastLogin(authToken: String) :LocalDateTime{

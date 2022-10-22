@@ -65,7 +65,7 @@ class UserService(
        
     }
     private fun UserProfile(user: UserEntity, token: String) = user.run { 
-        println(authTokenService.getCurrentLastLogin(token))
+
         UserProfile(
             id = authTokenService.getCurrentUserId(token),
             username = user.username,

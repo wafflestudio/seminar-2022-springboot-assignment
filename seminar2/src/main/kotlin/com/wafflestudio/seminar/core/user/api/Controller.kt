@@ -1,24 +1,21 @@
 package com.wafflestudio.seminar.core.user.api
 
 import com.wafflestudio.seminar.common.Authenticated
+import com.wafflestudio.seminar.core.user.database.SeminarEntity
+import com.wafflestudio.seminar.core.user.domain.Seminar
 import com.wafflestudio.seminar.core.user.domain.UserSignup
 import com.wafflestudio.seminar.core.user.domain.UserLogin
 import com.wafflestudio.seminar.core.user.domain.UserProfile
-import com.wafflestudio.seminar.core.user.service.AuthService
-import com.wafflestudio.seminar.core.user.service.AuthToken
-import com.wafflestudio.seminar.core.user.service.AuthTokenService
-import com.wafflestudio.seminar.core.user.service.UserService
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jws
+import com.wafflestudio.seminar.core.user.service.*
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 @RestController
-class AuthController(
+class Controller(
     // valid도 추가하기
     private var authService: AuthService,
     private var authTokenService: AuthTokenService,
-    private var userService: UserService
+    private var userService: UserService,
+    private var seminarService: SeminarService
 ) {
     
     @PostMapping("/api/v1/signup")
@@ -58,5 +55,11 @@ class AuthController(
     @PutMapping("/api/v1/user/me")
     fun updateMe(@RequestBody userProfile: UserProfile, @RequestHeader("Authentication") token: String): UserProfile{
         return userService.updateMe(userProfile, token)
+    }
+
+    @GetMapping("/api/v1/seminar")
+    fun seminar(@RequestBody seminar: Seminar, @RequestHeader("Authentication") token: String): SeminarEntity {
+        
+        return seminarService.createSeminar(seminar, token)
     }
 }

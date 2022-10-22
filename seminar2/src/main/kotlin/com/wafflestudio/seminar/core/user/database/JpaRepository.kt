@@ -16,3 +16,7 @@ interface ParticipantProfileRepository: JpaRepository<ParticipantProfileEntity,L
 interface InstructorProfileRepository: JpaRepository<InstructorProfileEntity,Long>{
     fun findByEmailInstructor(emailInstructor: String) : InstructorProfileEntity
 }
+
+interface SeminarRepository : JpaRepository<SeminarEntity, Long> {
+    fun save(seminarEntity: SeminarEntity) : SeminarEntity
+}
