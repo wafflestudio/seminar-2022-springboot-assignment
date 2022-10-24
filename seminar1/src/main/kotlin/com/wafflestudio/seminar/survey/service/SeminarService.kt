@@ -7,8 +7,10 @@ import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
 import com.wafflestudio.seminar.survey.database.SurveyResponseRepository
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
+import com.wafflestudio.seminar.user.dto.ResponseUserDTO
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 interface SeminarService {
     fun os(name: String): OperatingSystem
@@ -59,6 +61,7 @@ class SeminarServiceImpl(
             backendReason = backendReason,
             waffleReason = waffleReason,
             somethingToSay = somethingToSay,
+            user = user?.let { ResponseUserDTO(user!!.id, user!!.email, user!!.nickname) }
         )
     }
 }
