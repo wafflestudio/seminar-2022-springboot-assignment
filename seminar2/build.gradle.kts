@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 plugins {
     id("org.springframework.boot") version "2.7.2"
@@ -9,6 +10,9 @@ plugins {
     kotlin("plugin.allopen") version "1.3.71"
     kotlin("plugin.noarg") version "1.3.71"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+    kotlin("kapt") version "1.7.10"
+    
+    idea
 }
 
 apply {
@@ -52,6 +56,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     
+    
+    // QueryDsl
+    implementation("com.querydsl:querydsl-jpa:5.0.0")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
@@ -65,4 +74,13 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+
+idea {
+    module {
+        val kaptMain = file("build/generated/source/kapt/main")
+        sourceDirs.add(kaptMain)
+        generatedSourceDirs.add(kaptMain)
+    }
 }

@@ -57,9 +57,21 @@ class Controller(
         return userService.updateMe(userProfile, token)
     }
 
-    @GetMapping("/api/v1/seminar")
-    fun seminar(@RequestBody seminar: Seminar, @RequestHeader("Authentication") token: String): SeminarEntity {
+    @PostMapping("/api/v1/seminar")
+    fun createSeminar(@RequestBody seminar: Seminar, @RequestHeader("Authentication") token: String): SeminarEntity {
         
         return seminarService.createSeminar(seminar, token)
     }
+
+
+    @GetMapping("/api/v1/seminar/{seminarId}")
+    fun getSeminarById(@PathVariable seminarId: Long):SeminarEntity?{
+        return seminarService.getSeminarById(seminarId)
+    }
+    @PostMapping("/api/v1/seminar/{seminarId}/user")
+    fun joinSeminar(@PathVariable seminarId: Long, @RequestHeader("Authentication") token: String): String{
+        return seminarService.joinSeminar(seminarId, token)
+    }
+    
+    
 }

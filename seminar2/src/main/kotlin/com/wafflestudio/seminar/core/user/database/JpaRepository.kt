@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.user.database
 
 import org.springframework.data.jpa.repository.JpaRepository
+import java.util.*
 
 
 interface UserRepository : JpaRepository<UserEntity, Long> {
@@ -19,4 +20,10 @@ interface InstructorProfileRepository: JpaRepository<InstructorProfileEntity,Lon
 
 interface SeminarRepository : JpaRepository<SeminarEntity, Long> {
     fun save(seminarEntity: SeminarEntity) : SeminarEntity
+  override fun findById(id: Long): Optional<SeminarEntity>
+}
+
+interface ParticipantSeminarRepository: JpaRepository<ParticipantSeminarEntity, Long>{
+    fun save(participantSeminarEntity: ParticipantSeminarEntity): ParticipantSeminarEntity
+
 }
