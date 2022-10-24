@@ -1,12 +1,17 @@
 package com.wafflestudio.seminar.core.user.service
 
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jws
+import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.io.DecodingException
 import io.jsonwebtoken.security.Keys
+import io.jsonwebtoken.security.SignatureException
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
 import java.util.*
+import javax.servlet.http.HttpServletRequest
 
 @Service
 @EnableConfigurationProperties(AuthProperties::class)
@@ -15,33 +20,44 @@ class AuthTokenService(
 ) {
   private val tokenPrefix = "Bearer "
   private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
-
-  /**
-   * TODO Jwts.builder() 라이브러리를 통해서, 어떻게 필요한 정보를 토큰에 넣어 발급하고,
-   *   검증할지, 또 만료는 어떻게 시킬 수 있을지 고민해보아요.
-   */
-  fun generateTokenByUsername(username: String): AuthToken {
-    val claims: MutableMap<String, Any>
-    val expiryDate: Date
-    val resultToken = Jwts.builder().compact() 
-
-    return AuthToken(resultToken)
+  
+  public val AUTHORIZATION_HEADER_KEY = "Authorization"
+  
+  fun generateTokenByEmail(email: String) : AuthToken {
+    val claims: Claims = Jwts.claims().setSubject(email)
+    val currentTime = Date()
+    val token: String = Jwts.builder()
+      .setHeaderParam("typ", "JWT")
+      .setClaims(claims)
+      .setIssuedAt(currentTime)
+      .setExpiration(Date(currentTime.time + authProperties.jwtExpiration))
+      .signWith(signingKey)
+      .compact()
+    return AuthToken(tokenPrefix + token)
   }
 
-  fun verifyToken(authToken: String) {
-    TODO()
+  fun verifyToken(authToken: String) : Claims {
+    try {
+      val claims = parse(authToken).body
+      claims.expiration.after(Date())
+      return claims
+    } catch (e: ExpiredJwtException) {
+      throw AuthException("토큰이 만료됐습니다")
+    } catch (e: SignatureException) {
+      throw AuthException("잘못된 토큰입니다")
+    } catch (e: DecodingException) {
+      throw AuthException("토큰 형식이 잘못됐습니다. 띄어쓰기나 JWT prefix 형식이 잘못됐는지 확인하세요")
+    } catch (e: JwtException) {
+      throw AuthException("예상하지 못한 JWT 에러입니다")
+    }
   }
-
-  fun getCurrentUserId(authToken: String): Long {
-    TODO()
+  
+  fun getCurrentUserEmail(authToken: String): String {
+    return verifyToken(authToken).subject
   }
-
-  /**
-   * TODO Jwts.parserBuilder() 빌더 패턴을 통해 토큰을 읽어올 수도 있습니다.
-   *   적절한 인증 처리가 가능하도록 구현해주세요!
-   */
+  
   private fun parse(authToken: String): Jws<Claims> {
     val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
-    return Jwts.parserBuilder().build().parseClaimsJws(prefixRemoved)
+    return Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(prefixRemoved)
   }
 }
