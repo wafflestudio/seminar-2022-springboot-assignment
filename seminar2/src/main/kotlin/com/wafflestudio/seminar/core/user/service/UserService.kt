@@ -1,10 +1,10 @@
 package com.wafflestudio.seminar.core.user.service
 
-import com.wafflestudio.seminar.core.user.database.InstructorProfileRepository
-import com.wafflestudio.seminar.core.user.database.ParticipantProfileRepository
-import com.wafflestudio.seminar.core.user.database.UserEntity
-import com.wafflestudio.seminar.core.user.database.UserRepository
+import com.querydsl.core.types.Projections
+import com.querydsl.jpa.impl.JPAQueryFactory
+import com.wafflestudio.seminar.core.user.database.*
 import com.wafflestudio.seminar.core.user.domain.UserProfile
+import com.wafflestudio.seminar.core.user.dto.UserProfileDto
 import org.springframework.stereotype.Service
 
 @Service
@@ -12,11 +12,24 @@ class UserService(
     private val userRepository: UserRepository,
     private val participantProfileRepository: ParticipantProfileRepository,
     private val instructorProfileRepository: InstructorProfileRepository,
-    private val authTokenService: AuthTokenService
+    private val authTokenService: AuthTokenService,
+    private val queryFactory: JPAQueryFactory
 ) {
-    fun getProfile(email : String, token: String): UserProfile{
-        val userEntity = userRepository.findByEmail(email)
-        return UserProfile(userEntity, token)
+    fun getProfile(email : String, token: String): List<UserProfileDto> {
+   
+        
+        val userEntity: QUserEntity = QUserEntity.userEntity
+     val participantProfileEntity1 = QParticipantProfileEntity("participantProfileEntity1")
+       val instructorProfileEntity1 = QInstructorProfileEntity("instructorProfileEntity1")
+        val participantProfileEntity: QParticipantProfileEntity = QParticipantProfileEntity.participantProfileEntity
+        val instructorProfileEntity: QInstructorProfileEntity = QInstructorProfileEntity.instructorProfileEntity
+        return queryFactory.select(Projections.constructor(UserProfileDto::class.java, userEntity.id, userEntity.username,
+        userEntity.email, userEntity.dateJoined, participantProfileEntity,instructorProfileEntity))
+            .from(userEntity)
+            .leftJoin(userEntity.participant, participantProfileEntity).on(userEntity.email.eq(participantProfileEntity.emailParticipant))
+            .leftJoin(userEntity.instructor, instructorProfileEntity).on(userEntity.email.eq(instructorProfileEntity.emailInstructor))
+            .where(userEntity.email.eq(email))
+            .fetch()
         
     }
     
@@ -27,12 +40,12 @@ class UserService(
         println(userEntity)
         
        
-        if(userEntity.participantProfileEntity != null){
+        if(userEntity.participant != null){
             val participantProfileEntity = participantProfileRepository.findByEmailParticipant(user.email)
             println(participantProfileEntity)
             userEntity.let {
                 it.username = user.username
-                it.participantProfileEntity?.university = user.participant?.university.toString()
+                it.participant?.university = user.participant?.university.toString()
 
             }
             participantProfileEntity.let {
@@ -42,14 +55,14 @@ class UserService(
             participantProfileRepository.save(participantProfileEntity)
         }
        
-        if(userEntity.instructorProfileEntity != null){
+        if(userEntity.instructor != null){
             val instructorProfileEntity = instructorProfileRepository.findByEmailInstructor(user.email)
             println(instructorProfileEntity)
             userEntity.let {
                 it.username = user.username
 
-                it.instructorProfileEntity?.company = user.instructor?.company.toString()
-                it.instructorProfileEntity?.year = user.instructor?.year
+                it.instructor?.company = user.instructor?.company.toString()
+                it.instructor?.year = user.instructor?.year
             }
             instructorProfileEntity.let { 
                 it.company = user.instructor?.company ?: ""
@@ -72,8 +85,8 @@ class UserService(
             email = user.email,
             lastLogin = authTokenService.getCurrentLastLogin(token),
             dateJoined = user.dateJoined,
-            participant = user.participantProfileEntity,
-            instructor = user.instructorProfileEntity
+            participant = user.participant,
+            instructor = user.instructor
             
             
         )

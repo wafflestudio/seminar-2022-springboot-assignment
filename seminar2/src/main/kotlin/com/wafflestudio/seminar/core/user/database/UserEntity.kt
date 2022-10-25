@@ -7,6 +7,9 @@ import javax.persistence.*
 @Entity
 @Table(name="user")
 class UserEntity(
+
+
+        
     @Column
     var username: String,
     
@@ -21,11 +24,11 @@ class UserEntity(
     
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name="participant_id")
-    var participantProfileEntity: ParticipantProfileEntity? = null,
+    var participant: ParticipantProfileEntity? = null,
 
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name="instructor_id")
-    var instructorProfileEntity: InstructorProfileEntity? = null
+    var instructor: InstructorProfileEntity? = null
 
     
 ) {

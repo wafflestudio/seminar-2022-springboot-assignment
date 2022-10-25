@@ -4,7 +4,7 @@ import java.time.LocalTime
 import javax.persistence.*
 
 @Entity
-@Table(name="Seminar")
+@Table(name="seminar")
 class SeminarEntity(
     
     @Column
@@ -24,8 +24,7 @@ class SeminarEntity(
     
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name="instructor_id")
-    var instructorProfileEntity: InstructorProfileEntity
-    
+    var instructors: UserEntity
 
 ) {
     @Id

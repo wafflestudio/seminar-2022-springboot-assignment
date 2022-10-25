@@ -1,12 +1,13 @@
 package com.wafflestudio.seminar.core.user.api
 
+import com.querydsl.core.Tuple
 import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.core.user.database.SeminarEntity
-import com.wafflestudio.seminar.core.user.domain.Seminar
-import com.wafflestudio.seminar.core.user.domain.UserSignup
-import com.wafflestudio.seminar.core.user.domain.UserLogin
-import com.wafflestudio.seminar.core.user.domain.UserProfile
+import com.wafflestudio.seminar.core.user.database.UserEntity
+import com.wafflestudio.seminar.core.user.domain.*
+import com.wafflestudio.seminar.core.user.dto.UserProfileDto
 import com.wafflestudio.seminar.core.user.service.*
+import org.springframework.security.core.userdetails.User
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -47,7 +48,7 @@ class Controller(
     
     @Authenticated
     @GetMapping("/api/v1/user/{email}")
-    fun getProfile(@PathVariable email: String, @RequestHeader("Authentication") token: String): UserProfile{
+    fun getProfile(@PathVariable email: String, @RequestHeader("Authentication") token: String): List<UserProfileDto>{
         return userService.getProfile(email, token)
     }
     
@@ -58,14 +59,14 @@ class Controller(
     }
 
     @PostMapping("/api/v1/seminar")
-    fun createSeminar(@RequestBody seminar: Seminar, @RequestHeader("Authentication") token: String): SeminarEntity {
+    fun createSeminar(@RequestBody seminar: Seminar, @RequestHeader("Authentication") token: String): List<SeminarEntity>{
         
         return seminarService.createSeminar(seminar, token)
     }
 
 
     @GetMapping("/api/v1/seminar/{seminarId}")
-    fun getSeminarById(@PathVariable seminarId: Long):SeminarEntity?{
+    fun getSeminarById(@PathVariable seminarId: Long):List<Any>{
         return seminarService.getSeminarById(seminarId)
     }
     @PostMapping("/api/v1/seminar/{seminarId}/user")
@@ -73,5 +74,10 @@ class Controller(
         return seminarService.joinSeminar(seminarId, token)
     }
     
+    
+    @GetMapping("/api/v1/profile")
+    fun profile(@RequestHeader("Authentication") token: String): List<QueryProjection> {
+        return seminarService.profile(token)
+    }
     
 }

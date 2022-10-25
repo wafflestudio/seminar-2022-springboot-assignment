@@ -6,6 +6,7 @@ import com.wafflestudio.seminar.core.user.domain.InstructorProfile
 import com.wafflestudio.seminar.core.user.domain.ParticipantProfile
 import com.wafflestudio.seminar.core.user.domain.UserSignup;
 import com.wafflestudio.seminar.core.user.domain.UserLogin
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service;
 import javax.persistence.Entity
 
