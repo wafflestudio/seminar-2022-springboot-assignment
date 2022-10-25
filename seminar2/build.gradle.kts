@@ -40,6 +40,7 @@ dependencies {
     runtimeOnly("mysql:mysql-connector-java")
 
 
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // Auth
     implementation("org.springframework.boot:spring-boot-starter-security")
 
