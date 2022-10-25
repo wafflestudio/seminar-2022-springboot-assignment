@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.api
 
+<<<<<<< HEAD
 import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.service.SeminarService
 import com.wafflestudio.seminar.exception.Seminar403
@@ -7,6 +8,15 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1")
+=======
+import com.wafflestudio.seminar.survey.service.SeminarService
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+>>>>>>> 70abd32c4e04fc14d4120c219eb493f4add948bc
 class SeminarController(
     private val service: SeminarService
 ) {
@@ -28,6 +38,7 @@ class SeminarController(
     fun getSurvey(
         @PathVariable surveyId: Long,
     ) = service.surveyResponse(surveyId)
+<<<<<<< HEAD
     
     @PostMapping("/survey")
     fun postSurvey(
@@ -41,5 +52,7 @@ class SeminarController(
         }
     }
     
+=======
+>>>>>>> 70abd32c4e04fc14d4120c219eb493f4add948bc
 
 }

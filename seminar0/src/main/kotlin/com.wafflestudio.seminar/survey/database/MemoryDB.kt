@@ -14,6 +14,7 @@ class MemoryDB : SurveyResponseDB, OsDB {
     private val operatingSystems = mutableListOf<OperatingSystem>()
     private val surveyResponses = mutableListOf<SurveyResponse>()
 
+<<<<<<< HEAD
     
 
     override fun getOperatingSystems(): List<OperatingSystem> {
@@ -21,6 +22,13 @@ class MemoryDB : SurveyResponseDB, OsDB {
     }
 
     override fun getSurveyResponses(): List<SurveyResponse> {
+=======
+    fun getOperatingSystems(): List<OperatingSystem> {
+        return operatingSystems
+    }
+
+    fun getSurveyResponses(): List<SurveyResponse> {
+>>>>>>> 70abd32c4e04fc14d4120c219eb493f4add948bc
         return surveyResponses
     }
 
