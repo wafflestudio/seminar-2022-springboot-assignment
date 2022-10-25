@@ -1,18 +1,13 @@
 package com.wafflestudio.seminar.survey.service
 
-<<<<<<< HEAD
 
 import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
-=======
-import com.wafflestudio.seminar.survey.api.Seminar404
->>>>>>> 70abd32c4e04fc14d4120c219eb493f4add948bc
 import com.wafflestudio.seminar.survey.database.OperatingSystemEntity
 import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
 import com.wafflestudio.seminar.survey.database.SurveyResponseRepository
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
-<<<<<<< HEAD
 import com.wafflestudio.seminar.exception.Seminar400
 import com.wafflestudio.seminar.exception.Seminar404
 import com.wafflestudio.seminar.user.database.UserRepository
@@ -20,30 +15,20 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-=======
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.stereotype.Service
->>>>>>> 70abd32c4e04fc14d4120c219eb493f4add948bc
 
 interface SeminarService {
     fun os(name: String): OperatingSystem
     fun os(id: Long): OperatingSystem
     fun surveyResponseList(): List<SurveyResponse>
     fun surveyResponse(id: Long): SurveyResponse
-<<<<<<< HEAD
     fun postSurvey(id: Long, req : CreateSurveyRequest): String
-=======
->>>>>>> 70abd32c4e04fc14d4120c219eb493f4add948bc
 }
 
 @Service
 class SeminarServiceImpl(
     private val surveyResponseRepository: SurveyResponseRepository,
     private val osRepository: OsRepository,
-<<<<<<< HEAD
     private val userRepository: UserRepository
-=======
->>>>>>> 70abd32c4e04fc14d4120c219eb493f4add948bc
 ) : SeminarService {
     override fun os(id: Long): OperatingSystem {
         val entity = osRepository.findByIdOrNull(id) ?: throw Seminar404("OS를 찾을 수 없어요.")
@@ -82,11 +67,10 @@ class SeminarServiceImpl(
             backendReason = backendReason,
             waffleReason = waffleReason,
             somethingToSay = somethingToSay,
-<<<<<<< HEAD
             user = userEntity?.toUser()
         )
     }
-    
+
     @Transactional
     override fun postSurvey(id: Long, req : CreateSurveyRequest): String {
         if (req.springExp == null || req.rdbExp == null || req.programmingExp == null || req.osName.isNullOrEmpty()) {
@@ -111,10 +95,6 @@ class SeminarServiceImpl(
             )
             return "설문조사가 완료되었습니다."
         }
-        
+
     }
-=======
-        )
-    }
->>>>>>> 70abd32c4e04fc14d4120c219eb493f4add948bc
 }
