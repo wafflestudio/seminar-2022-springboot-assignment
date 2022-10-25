@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.database
 
+import com.wafflestudio.seminar.core.user.dto.ParticipantProfileDto
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -29,4 +30,5 @@ class ParticipantSeminarEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
+    
 }

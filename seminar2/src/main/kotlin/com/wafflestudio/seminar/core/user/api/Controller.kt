@@ -6,6 +6,7 @@ import com.wafflestudio.seminar.core.user.database.SeminarEntity
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.dto.ParticipantProfileDto
+import com.wafflestudio.seminar.core.user.dto.SeminarDto
 import com.wafflestudio.seminar.core.user.dto.UserProfileDto
 import com.wafflestudio.seminar.core.user.service.*
 import org.springframework.security.core.userdetails.User
@@ -84,6 +85,11 @@ class Controller(
     @PostMapping("/api/v1/makeProfile/{email}")
     fun makeProfile(@PathVariable email: String): List<ParticipantProfileDto>{
         return userService.makeParticipantProfileDto(email)
+    }
+
+    @PostMapping("/api/v1/makeSeminar/{seminarId}")
+    fun makeSeminar(@PathVariable seminarId: Long,email: String): List<SeminarDto>{
+        return userService.makeSeminarDto(seminarId,email)
     }
     
 }

@@ -1,12 +1,16 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.querydsl.core.types.Path
 import com.querydsl.core.types.Projections
+import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.core.user.database.*
 import com.wafflestudio.seminar.core.user.domain.UserProfile
 import com.wafflestudio.seminar.core.user.dto.ParticipantProfileDto
+import com.wafflestudio.seminar.core.user.dto.SeminarDto
 import com.wafflestudio.seminar.core.user.dto.UserProfileDto
 import org.springframework.stereotype.Service
+
 
 @Service
 class UserService(
@@ -88,11 +92,15 @@ class UserService(
         val userEntity: QUserEntity = QUserEntity.userEntity
         val participantProfileEntity: QParticipantProfileEntity = QParticipantProfileEntity.participantProfileEntity
         val instructorProfileEntity: QInstructorProfileEntity = QInstructorProfileEntity.instructorProfileEntity
-        return queryFactory.select(Projections.constructor(UserProfileDto::class.java, userEntity.id, userEntity.username,
-            userEntity.email, userEntity.dateJoined, participantProfileEntity,instructorProfileEntity))
+
+        val personFirstName: Path<ParticipantProfileDto> = Expressions.path(ParticipantProfileDto::class.java, participantProfileEntity,"f")
+        return queryFactory.select(Projections.constructor(
+            UserProfileDto::class.java, userEntity.id, userEntity.username,
+            userEntity.email, userEntity.dateJoined,userEntity.participant
+        ))
             .from(userEntity)
             .leftJoin(userEntity.participant, participantProfileEntity).on(userEntity.email.eq(participantProfileEntity.emailParticipant))
-            .leftJoin(userEntity.instructor, instructorProfileEntity).on(userEntity.email.eq(instructorProfileEntity.emailInstructor))
+            //.leftJoin(userEntity.instructor, instructorProfileEntity).on(userEntity.email.eq(instructorProfileEntity.emailInstructor))
             .where(userEntity.email.eq(email))
             .fetch()
     }
@@ -107,6 +115,18 @@ class UserService(
             .where(participantProfileEntity.id.eq(participantSeminarEntity.user.id))
             .where(participantSeminarEntity.user.id.eq(seminarEntity.id))
             .where(participantProfileEntity.emailParticipant.eq(email)).fetch()
+            
+    }
+    
+    fun makeSeminarDto(seminarId: Long, email: String): List<SeminarDto>{
+        val seminarEntity: QSeminarEntity = QSeminarEntity.seminarEntity
+        val participantSeminarEntity: QParticipantSeminarEntity = QParticipantSeminarEntity.participantSeminarEntity
+        return queryFactory.select(Projections.constructor(SeminarDto::class.java, seminarEntity.id,seminarEntity.name
+        ,participantSeminarEntity.joinedAt, participantSeminarEntity.isActive, participantSeminarEntity.droppedAt))
+            .from(seminarEntity, participantSeminarEntity)
+            .where(seminarEntity.id.eq(participantSeminarEntity.seminar.id))
+            .where(seminarEntity.id.eq(seminarId))
+            .where().fetch()
             
     }
 }
