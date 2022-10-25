@@ -14,6 +14,9 @@ class ParticipantProfileEntity(
     
     @Column
     var isRegistered: Boolean = true,
+
+   
+    
 ){
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

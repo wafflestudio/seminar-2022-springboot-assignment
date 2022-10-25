@@ -5,6 +5,7 @@ import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.core.user.database.SeminarEntity
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.domain.*
+import com.wafflestudio.seminar.core.user.dto.ParticipantProfileDto
 import com.wafflestudio.seminar.core.user.dto.UserProfileDto
 import com.wafflestudio.seminar.core.user.service.*
 import org.springframework.security.core.userdetails.User
@@ -78,6 +79,11 @@ class Controller(
     @GetMapping("/api/v1/profile")
     fun profile(@RequestHeader("Authentication") token: String): List<QueryProjection> {
         return seminarService.profile(token)
+    }
+    
+    @PostMapping("/api/v1/makeProfile/{email}")
+    fun makeProfile(@PathVariable email: String): List<ParticipantProfileDto>{
+        return userService.makeParticipantProfileDto(email)
     }
     
 }

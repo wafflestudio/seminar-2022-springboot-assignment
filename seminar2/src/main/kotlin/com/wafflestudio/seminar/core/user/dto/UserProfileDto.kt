@@ -9,7 +9,7 @@ data class UserProfileDto(
     val username: String,
     val email: String,
     val dateJoined: LocalDateTime,
-    val participant: ParticipantProfileEntity?,
+    val participant: ParticipantProfileDto,
     val instructor: InstructorProfileEntity?
 ) {
 }

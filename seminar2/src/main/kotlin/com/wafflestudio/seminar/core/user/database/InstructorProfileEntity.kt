@@ -14,6 +14,8 @@ class InstructorProfileEntity(
     
     @Column
     var year: Int? = null,
+    
+   
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

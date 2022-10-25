@@ -4,6 +4,7 @@ import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.core.user.database.*
 import com.wafflestudio.seminar.core.user.domain.UserProfile
+import com.wafflestudio.seminar.core.user.dto.ParticipantProfileDto
 import com.wafflestudio.seminar.core.user.dto.UserProfileDto
 import org.springframework.stereotype.Service
 
@@ -17,22 +18,13 @@ class UserService(
 ) {
     fun getProfile(email : String, token: String): List<UserProfileDto> {
    
-        
-        val userEntity: QUserEntity = QUserEntity.userEntity
-     val participantProfileEntity1 = QParticipantProfileEntity("participantProfileEntity1")
-       val instructorProfileEntity1 = QInstructorProfileEntity("instructorProfileEntity1")
-        val participantProfileEntity: QParticipantProfileEntity = QParticipantProfileEntity.participantProfileEntity
-        val instructorProfileEntity: QInstructorProfileEntity = QInstructorProfileEntity.instructorProfileEntity
-        return queryFactory.select(Projections.constructor(UserProfileDto::class.java, userEntity.id, userEntity.username,
-        userEntity.email, userEntity.dateJoined, participantProfileEntity,instructorProfileEntity))
-            .from(userEntity)
-            .leftJoin(userEntity.participant, participantProfileEntity).on(userEntity.email.eq(participantProfileEntity.emailParticipant))
-            .leftJoin(userEntity.instructor, instructorProfileEntity).on(userEntity.email.eq(instructorProfileEntity.emailInstructor))
-            .where(userEntity.email.eq(email))
-            .fetch()
+       return makeUserProfileDto(email)
+       
         
     }
+
     
+
     fun updateMe(user: UserProfile, token: String): UserProfile{
         //todo: email 못찾았으면 예외 제공
         //todo: year 음수이면 예외 제공
@@ -90,5 +82,31 @@ class UserService(
             
             
         )
+    }
+
+    private fun makeUserProfileDto(email: String):List<UserProfileDto> {
+        val userEntity: QUserEntity = QUserEntity.userEntity
+        val participantProfileEntity: QParticipantProfileEntity = QParticipantProfileEntity.participantProfileEntity
+        val instructorProfileEntity: QInstructorProfileEntity = QInstructorProfileEntity.instructorProfileEntity
+        return queryFactory.select(Projections.constructor(UserProfileDto::class.java, userEntity.id, userEntity.username,
+            userEntity.email, userEntity.dateJoined, participantProfileEntity,instructorProfileEntity))
+            .from(userEntity)
+            .leftJoin(userEntity.participant, participantProfileEntity).on(userEntity.email.eq(participantProfileEntity.emailParticipant))
+            .leftJoin(userEntity.instructor, instructorProfileEntity).on(userEntity.email.eq(instructorProfileEntity.emailInstructor))
+            .where(userEntity.email.eq(email))
+            .fetch()
+    }
+    
+    fun makeParticipantProfileDto(email: String):List<ParticipantProfileDto> {
+            val participantProfileEntity: QParticipantProfileEntity = QParticipantProfileEntity.participantProfileEntity
+        val seminarEntity: QSeminarEntity = QSeminarEntity.seminarEntity
+        val participantSeminarEntity: QParticipantSeminarEntity = QParticipantSeminarEntity.participantSeminarEntity
+        return queryFactory.select(Projections.constructor(ParticipantProfileDto::class.java, participantProfileEntity.id,
+            participantProfileEntity.university, participantProfileEntity.isRegistered, seminarEntity))
+            .from(participantProfileEntity, participantSeminarEntity, seminarEntity)
+            .where(participantProfileEntity.id.eq(participantSeminarEntity.user.id))
+            .where(participantSeminarEntity.user.id.eq(seminarEntity.id))
+            .where(participantProfileEntity.emailParticipant.eq(email)).fetch()
+            
     }
 }
