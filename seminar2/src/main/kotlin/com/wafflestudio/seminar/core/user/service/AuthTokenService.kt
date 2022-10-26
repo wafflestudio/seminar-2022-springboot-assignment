@@ -29,11 +29,12 @@ class AuthTokenService(
   }
 
   fun verifyToken(authToken: String) {
-    TODO()
+    // TODO()
   }
 
   fun getCurrentUserId(authToken: String): Long {
-    TODO()
+    // TODO()
+    return 0
   }
 
   /**
