@@ -1,7 +1,6 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
-import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.type.UserRole
 import java.time.LocalDateTime
@@ -10,7 +9,6 @@ import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
-
 
 
 @Entity

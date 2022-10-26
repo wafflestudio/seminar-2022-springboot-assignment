@@ -10,6 +10,7 @@ interface UserSeminarRepository : JpaRepository<UserSeminarEntity, Long>, UserSe
     fun findUserSeminarsByUserId(userId: Long) : List<UserSeminarEntity>
     fun findUserSeminarByUserIdAndSeminarId(userId: Long, seminarId: Long) : UserSeminarEntity?
     fun findAllByUserId(userId: Long) : List<UserSeminarEntity>
+    fun findUserSeminarByUserIdAndIsParticipantAndIsActive(userId: Long, isParticipant: Boolean, isActive:Boolean) : UserSeminarEntity?
 }
 
 interface UserSeminarRepositoryCustom

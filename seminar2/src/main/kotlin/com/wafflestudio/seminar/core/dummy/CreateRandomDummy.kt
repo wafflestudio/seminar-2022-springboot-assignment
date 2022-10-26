@@ -21,11 +21,11 @@ class CreateRandomDummy(
     private val seminarService: SeminarService
 ) {
     
-    @EventListener(ApplicationStartedEvent::class)
+//    @EventListener(ApplicationStartedEvent::class)
     fun createDummyData() {
         val startIndex: Long = userRepository.findTopByOrderByIdDesc()?.id ?: 0
         val seminarIdList : MutableList<Long> = mutableListOf()
-        (1 .. 100).forEach { 
+        (1 .. 30).forEach { 
             val index = it + startIndex
             var role = if (Random.nextDouble() <= 0.33) {
                 UserRole.INSTRUCTOR

@@ -6,16 +6,13 @@ import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.seminar.api.request.ParticipateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.response.SeminarInfo
-import com.wafflestudio.seminar.core.seminar.api.response.SeminarResponse
 import com.wafflestudio.seminar.core.seminar.api.response.SeminarsQueryResponse
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.service.AuthException
-import org.apache.coyote.Response
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter
-import java.util.Optional
+import java.util.*
 import javax.validation.Valid
 
 @RestController
@@ -35,6 +32,19 @@ class SeminarController(
         }
         return ResponseEntity.ok(seminarService.createSeminar(user.get(), seminarRequest))
     }
+
+    @LogExecutionTime
+    @Authenticated
+    @PutMapping("/api/v1/seminar")
+    fun updateSeminar(
+        @UserContext user: Optional<UserEntity>,
+        @Valid @RequestBody seminarRequest: SeminarRequest
+    ) : ResponseEntity<SeminarInfo> {
+        if (user.isEmpty) {
+            throw AuthException("유저를 찾을 수 없습니다")
+        }
+        return ResponseEntity.ok(seminarService.updateSeminar(user.get(), seminarRequest))
+    }
     
     @LogExecutionTime
     @Authenticated
@@ -43,7 +53,7 @@ class SeminarController(
         @UserContext user: Optional<UserEntity>,
         @PathVariable seminarId: Long,
         @Valid @RequestBody request: ParticipateSeminarRequest
-    ) : ResponseEntity<SeminarResponse> {
+    ) : ResponseEntity<SeminarInfo> {
         if (user.isEmpty) {
             throw AuthException("유저를 찾을 수 없습니다")
         }
@@ -56,7 +66,7 @@ class SeminarController(
     fun dropSeminar(
         @UserContext user: Optional<UserEntity>,
         @PathVariable seminarId: Long,
-    ) : ResponseEntity<SeminarResponse> {
+    ) : ResponseEntity<SeminarInfo?> {
         if (user.isEmpty) {
             throw AuthException("유저를 찾을 수 없습니다")
         }
@@ -64,13 +74,15 @@ class SeminarController(
     }
     
     @LogExecutionTime
+    @Authenticated
     @GetMapping("/api/v1/seminar/{seminarId}")
-    fun getSeminar(@PathVariable seminarId: Long) : ResponseEntity<SeminarResponse> {
+    fun getSeminar(@PathVariable seminarId: Long) : ResponseEntity<SeminarInfo> {
         // TODO : Authentiacation이 필요한지 질문
         return ResponseEntity.ok(seminarService.getSeminar(seminarId));
     }
     
     @LogExecutionTime
+    @Authenticated
     @GetMapping("/api/v1/seminar/")
     fun getSeminars(
         @RequestParam(required = false, value = "name") name: String?,

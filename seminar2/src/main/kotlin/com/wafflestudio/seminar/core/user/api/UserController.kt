@@ -4,7 +4,6 @@ import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.LogExecutionTime
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.user.api.request.RegisterParticipantRequest
-import com.wafflestudio.seminar.core.user.api.request.UpdateUserRequest
 import com.wafflestudio.seminar.core.user.api.response.UserProfile
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.service.AuthException
@@ -20,12 +19,14 @@ class UserController(
 ) {
     
     @LogExecutionTime
+    @Authenticated
     @GetMapping("/api/v1/user/{userId}")
     fun getUser(
         @PathVariable userId: Long
     ) = ResponseEntity.ok(userService.getUser(userId))
     
     @LogExecutionTime
+    @Authenticated
     @GetMapping("/api/v1/users")
     fun getUsers() = ResponseEntity.ok(userService.getAllUsers())
     

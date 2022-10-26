@@ -1,21 +1,18 @@
 package com.wafflestudio.seminar.core.seminar.database
 
-import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
-import com.querydsl.jpa.hibernate.HibernateQueryFactory
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.core.seminar.api.response.InstructorInfo
 import com.wafflestudio.seminar.core.seminar.api.response.SeminarsQueryResponse
 import com.wafflestudio.seminar.core.seminar.database.QSeminarEntity.seminarEntity
 import com.wafflestudio.seminar.core.seminar.database.QUserSeminarEntity.userSeminarEntity
 import com.wafflestudio.seminar.core.user.database.QUserEntity.userEntity
-//import com.wafflestudio.seminar.core.user.database.QUserEntity.userEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
-import java.util.Optional
+import java.util.*
 
 
 interface SeminarRepository : JpaRepository<SeminarEntity, Long>, SeminarRepositoryCustom {
@@ -37,12 +34,11 @@ class SeminarRepositoryImpl(
         } else {
             seminarEntity.createdAt.desc()
         }
-        println("hi")
-        
         var whereCondition : BooleanExpression = userSeminarEntity.isParticipant.isFalse
         if (name != null) {
             whereCondition = whereCondition.and(seminarEntity.name.contains(name))
         }
+        // TODO: 이렇게 entity들을 일일히 select 하지 않고 DTO를 만들어 mapping을 통해 가져올 수 있다.
         val result = queryFactory
             .select(seminarEntity, userEntity, userSeminarEntity.createdAt)
             .from(seminarEntity)

@@ -1,17 +1,12 @@
 package com.wafflestudio.seminar.core.user.service
 
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.ExpiredJwtException
-import io.jsonwebtoken.Jws
-import io.jsonwebtoken.JwtException
-import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.*
 import io.jsonwebtoken.io.DecodingException
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
 import java.util.*
-import javax.servlet.http.HttpServletRequest
 
 @Service
 @EnableConfigurationProperties(AuthProperties::class)
