@@ -16,8 +16,6 @@ import javax.validation.constraints.NotNull
 @Entity
 @Table(name = "seminar_user")
 class UserEntity(
-    override var createdAt: LocalDateTime? = null,
-    override var modifiedAt: LocalDateTime? = null,
     var loginedAt: LocalDateTime,
     @field:NotBlank var username: String,
     @field:NotEmpty @Column(unique = true) @Email var email: String,

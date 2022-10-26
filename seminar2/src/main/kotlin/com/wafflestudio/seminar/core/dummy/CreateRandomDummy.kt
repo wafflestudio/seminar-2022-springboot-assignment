@@ -25,7 +25,7 @@ class CreateRandomDummy(
     fun createDummyData() {
         val startIndex: Long = userRepository.findTopByOrderByIdDesc()?.id ?: 0
         val seminarIdList : MutableList<Long> = mutableListOf()
-        (1 .. 20).forEach { 
+        (1 .. 100).forEach { 
             val index = it + startIndex
             var role = if (Random.nextDouble() <= 0.33) {
                 UserRole.INSTRUCTOR
@@ -58,9 +58,6 @@ class CreateRandomDummy(
                     )
                 )
                 role = UserRole.BOTH
-//                println("user.id: ${user.get().id}")
-//                throw Exception("BOTH로 바뀌어야함!")
-
             }
             
             var newSeminarId: Long = -1

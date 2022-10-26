@@ -39,7 +39,6 @@ class UserService(
         when (request.role) {
             UserRole.PARTICIPANT -> {
                 val newUser = UserEntity(
-                    createdAt = now,
                     loginedAt = now,
                     username = request.username,
                     email = request.email,
@@ -51,14 +50,12 @@ class UserService(
                 userRepository.save(newUser)
                 participantProfileRepository.save(
                     ParticipantProfileEntity(
-                        createdAt = now,
                         user = newUser
                     )
                 )
             }
             UserRole.INSTRUCTOR -> {
                 val newUser = UserEntity(
-                    createdAt = now,
                     loginedAt = now,
                     username = request.username,
                     email = request.email,
@@ -71,14 +68,12 @@ class UserService(
                 userRepository.save(newUser)
                 instructorProfileRepository.save(
                     InstructorProfileEntity(
-                        createdAt = now,
                         user = newUser
                     )
                 )
             }
             UserRole.BOTH -> {
                 val newUser = UserEntity(
-                    createdAt = now,
                     loginedAt = now,
                     username = request.username,
                     email = request.email,
@@ -92,13 +87,11 @@ class UserService(
                 userRepository.save(newUser)
                 instructorProfileRepository.save(
                     InstructorProfileEntity(
-                        createdAt = now,
                         user = newUser
                     )
                 )
                 participantProfileRepository.save(
                     ParticipantProfileEntity(
-                        createdAt = LocalDateTime.now(),
                         user = newUser
                     )
                 )
@@ -229,7 +222,6 @@ class UserService(
         request.username?.let { 
             user.username = request.username
         }
-        user.modifiedAt = LocalDateTime.now()
         return when (user.role) {
             UserRole.PARTICIPANT -> {
                 user.university = request.university
@@ -259,15 +251,12 @@ class UserService(
         if (user.role == UserRole.PARTICIPANT || user.role == UserRole.BOTH) {
             throw Seminar409("이미 참여자입니다")
         }
-        val now = LocalDateTime.now()
         user.role = UserRole.BOTH
         user.university = request.university
         user.isRegistered = request.isRegistered
-        user.modifiedAt = now
         userRepository.save(user)
         val participantProfileEntity = participantProfileRepository.save(
             ParticipantProfileEntity(
-                createdAt = now,
                 user = user
             )
         )
@@ -282,8 +271,6 @@ class UserService(
     
     @Transactional
     fun deleteUser(user: UserEntity) {
-//        val participantProfile = participantProfileRepository.findByUserId(user.id)
-//        participantProfileRepository.delete(participantProfile!!)
         println("Try delete user id : ${user.id}")
         when (user.role) {
             UserRole.PARTICIPANT -> {

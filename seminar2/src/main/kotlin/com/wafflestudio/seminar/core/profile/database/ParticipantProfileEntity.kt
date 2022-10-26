@@ -14,9 +14,6 @@ import javax.persistence.Table
 @Entity
 @Table(name = "participant_profile")
 class ParticipantProfileEntity(
-    override var createdAt: LocalDateTime? = null,
-    override var modifiedAt: LocalDateTime? = null,
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seminar_user_id")
     val user: UserEntity? = null

@@ -10,10 +10,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "instructor_profile")
 class InstructorProfileEntity(
-    override var createdAt: LocalDateTime? = null,
-    override var modifiedAt: LocalDateTime? = null,
-    
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seminar_user_id")
     val user: UserEntity? = null
 ) : BaseTimeEntity() {}

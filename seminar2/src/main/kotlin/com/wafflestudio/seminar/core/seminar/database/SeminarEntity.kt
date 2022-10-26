@@ -12,8 +12,6 @@ import javax.validation.constraints.Size
 @Entity
 @Table(name="seminar")
 class SeminarEntity(
-    override var createdAt: LocalDateTime? = null,
-    override var modifiedAt: LocalDateTime? = null,
     @field:NotBlank @field:NotEmpty @Column(unique = true) var name: String,
     @field:Min(1) var capacity: Int,
     @field:Min(1) var count: Int,

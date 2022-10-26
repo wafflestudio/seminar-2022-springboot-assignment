@@ -35,7 +35,6 @@ class SeminarService(
         val now = LocalDateTime.now()
         val seminarEntity = seminarRepository.save(
             SeminarEntity(
-                createdAt = now,
                 name = seminarRequest.name,
                 capacity = seminarRequest.capacity,
                 count = seminarRequest.count,
@@ -45,7 +44,6 @@ class SeminarService(
         )
         userSeminarRepository.save(
             UserSeminarEntity(
-                createdAt = now, 
                 user=user, 
                 seminar = seminarEntity,
                 isActive = true,
@@ -87,7 +85,6 @@ class SeminarService(
             }
             userSeminarRepository.save(
                 UserSeminarEntity(
-                    createdAt = LocalDateTime.now(),
                     user=user,
                     seminar = seminar,
                     isActive = true,
@@ -101,7 +98,6 @@ class SeminarService(
             }
             userSeminarRepository.save(
                 UserSeminarEntity(
-                    createdAt = LocalDateTime.now(),
                     user=user,
                     seminar = seminar,
                     isActive = true,
@@ -120,7 +116,6 @@ class SeminarService(
         if (!userSeminarEntity.isParticipant) throw Seminar403("세미나 진행자는 세미나를 드랍할 수 없습니다")
         val now = LocalDateTime.now()
         userSeminarEntity.isActive = false
-        userSeminarEntity.modifiedAt = now
         userSeminarEntity.droppedAt = now
         return SeminarResponse.from(seminar)
     }

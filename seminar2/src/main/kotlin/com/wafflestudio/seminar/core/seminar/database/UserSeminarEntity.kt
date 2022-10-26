@@ -12,15 +12,13 @@ import javax.persistence.Table
 @Entity
 @Table(name="user_seminar")
 class UserSeminarEntity(
-    override var createdAt: LocalDateTime? = null,
-    override var modifiedAt: LocalDateTime? = null,
     var droppedAt: LocalDateTime? = null,
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="seminar_user_id")
     val user: UserEntity? = null,
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seminar_id")
     val seminar: SeminarEntity? = null,
     var isActive: Boolean = true,
