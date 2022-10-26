@@ -1,26 +1,35 @@
 package com.wafflestudio.seminar.survey.service
 
+import com.wafflestudio.seminar.survey.api.Seminar403
 import com.wafflestudio.seminar.survey.api.Seminar404
+import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.database.OperatingSystemEntity
 import com.wafflestudio.seminar.survey.database.OsRepository
 import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
 import com.wafflestudio.seminar.survey.database.SurveyResponseRepository
 import com.wafflestudio.seminar.survey.domain.OperatingSystem
 import com.wafflestudio.seminar.survey.domain.SurveyResponse
+import com.wafflestudio.seminar.user.api.User404
+import com.wafflestudio.seminar.user.database.UserRepository
+import com.wafflestudio.seminar.user.domain.User
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 interface SeminarService {
     fun os(name: String): OperatingSystem
     fun os(id: Long): OperatingSystem
     fun surveyResponseList(): List<SurveyResponse>
     fun surveyResponse(id: Long): SurveyResponse
+    fun createSurvey(xUserId: Long, request: CreateSurveyRequest): SurveyResponse
 }
 
 @Service
 class SeminarServiceImpl(
     private val surveyResponseRepository: SurveyResponseRepository,
     private val osRepository: OsRepository,
+    private val userRepository: UserRepository
 ) : SeminarService {
     override fun os(id: Long): OperatingSystem {
         val entity = osRepository.findByIdOrNull(id) ?: throw Seminar404("OS를 찾을 수 없어요.")
@@ -59,6 +68,30 @@ class SeminarServiceImpl(
             backendReason = backendReason,
             waffleReason = waffleReason,
             somethingToSay = somethingToSay,
+            user = user?.run {
+                User(id, nickname, email)
+            }
         )
+    }
+
+    override fun createSurvey(xUserId: Long, request: CreateSurveyRequest): SurveyResponse {
+        val os = osRepository.findByOsName(request.os) ?: throw Seminar404(request.os + "은(는) 서버에 존재하지 않는 운영체제입니다")
+        val user = userRepository.findByIdOrNull(xUserId) ?: throw User404(xUserId.toString() + "은(는) 없는 아이디입니다")
+        if (surveyResponseRepository.findByUser(user) != null) throw Seminar403(xUserId.toString() + "은(는) 이미 설문조사에 참여하셨습니다")
+        val survey = SurveyResponseEntity(
+            operatingSystem = os,
+            springExp = request.springExp,
+            rdbExp = request.rdbExp,
+            programmingExp = request.programmingExp,
+            major = request.major,
+            grade = request.grade,
+            timestamp = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
+            backendReason = request.backendReason,
+            waffleReason = request.waffleReason,
+            somethingToSay = request.somethingToSay,
+            user = user
+        )
+        surveyResponseRepository.save(survey)
+        return SurveyResponse(survey)
     }
 }
