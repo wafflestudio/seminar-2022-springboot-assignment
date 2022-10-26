@@ -78,7 +78,6 @@ class SeminarController(
     @Authenticated
     @GetMapping("/api/v1/seminar/{seminarId}")
     fun getSeminar(@PathVariable seminarId: Long) : ResponseEntity<SeminarInfo> {
-        // TODO : Authentiacation이 필요한지 질문
         return ResponseEntity.ok(seminarService.getSeminar(seminarId));
     }
     

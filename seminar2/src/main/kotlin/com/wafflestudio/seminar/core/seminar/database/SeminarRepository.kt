@@ -1,7 +1,9 @@
 package com.wafflestudio.seminar.core.seminar.database
 
 import com.querydsl.core.Tuple
+import com.querydsl.core.annotations.QueryProjection
 import com.querydsl.core.types.OrderSpecifier
+import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.core.seminar.api.response.InstructorInfo
@@ -27,6 +29,15 @@ interface SeminarRepositoryCustom {
     fun findSeminarsByNameAndOrder(name: String?, earliest: Boolean, pageable: Pageable): Page<SeminarsQueryResponse>
 }
 
+class SeminarQueryVO @QueryProjection constructor(
+    val seminarId: Long? = null,
+    val name: String? = null,
+    val seminarUserId: Long? = null,
+    val username: String? = null,
+    val email: String? = null,
+    val createdAt: LocalDateTime? = null
+)
+
 @Component
 class SeminarRepositoryImpl(
     private val queryFactory: JPAQueryFactory
@@ -44,9 +55,17 @@ class SeminarRepositoryImpl(
         if (name != null) {
             whereCondition = whereCondition.and(seminarEntity.name.contains(name))
         }
-        // TODO: 이렇게 entity들을 일일히 select 하지 않고 DTO를 만들어 mapping을 통해 가져올 수 있다.
         val result = queryFactory
-            .select(seminarEntity, userEntity, userSeminarEntity.createdAt)
+            .select(
+                QSeminarQueryVO(
+                    seminarEntity.id,
+                    seminarEntity.name,
+                    userEntity.id,
+                    userEntity.username,
+                    userEntity.email,
+                    userSeminarEntity.createdAt
+                )
+            )
             .from(seminarEntity)
             .innerJoin(userSeminarEntity)
             .on(seminarEntity.id.eq(userSeminarEntity.seminar.id))
@@ -56,16 +75,6 @@ class SeminarRepositoryImpl(
             .orderBy(orderSpecifier)
             .fetch()
         
-        
-        
-//        val seminars = queryFactory.select(seminarEntity)
-//            .from(seminarEntity).fetch()
-//
-//        Pag
-//        
-////        PageImpl(seminars, PageRequest.of(page, size), seminars.size.toLong())
-//        
-//        
         val elements = createSeminarsQueryResponseFromQueryResult(result)
         var start = pageable.offset.toInt()
         val end = min(start + pageable.pageSize, elements.size)
@@ -88,32 +97,32 @@ class SeminarRepositoryImpl(
             it.get(userSeminarEntity.seminar.id)!! to it.get(userSeminarEntity.seminar.id.count())!!.toInt()
         }
     }
-    fun createSeminarsQueryResponseFromQueryResult(result: List<Tuple>): MutableList<SeminarsQueryResponse> {
+
+    fun createSeminarsQueryResponseFromQueryResult(result: List<SeminarQueryVO>): MutableList<SeminarsQueryResponse> {
         val participantCountMap = getParticipantCountMap()
         val seminarsQueryResponseList: MutableList<SeminarsQueryResponse> = mutableListOf()
 
         var lastPushedSeminarId : Long = -1
         result.forEach {
-            val seminar = it.get(seminarEntity)!!
             val instructorInfo = InstructorInfo(
-                id = it.get(userEntity)!!.id,
-                username = it.get(userEntity)!!.username,
-                email = it.get(userEntity)!!.email,
-                joinedAt = it.get(userSeminarEntity.createdAt)
+                id = it.seminarUserId!!,
+                username = it.username!!,
+                email = it.email!!,
+                joinedAt = it.createdAt
             )
-            if (seminar.id != lastPushedSeminarId) {
+            if (it.seminarId != lastPushedSeminarId) {
                 seminarsQueryResponseList.add(
                     SeminarsQueryResponse(
-                        id = seminar.id,
-                        name = seminar.name,
+                        id = it.seminarId!!,
+                        name = it.name!!,
                         instructors = mutableListOf(instructorInfo),
-                        participantCount = participantCountMap.get(seminar.id) ?: 0
+                        participantCount = participantCountMap.get(it.seminarId) ?: 0
                     )
                 )
             } else {
                 seminarsQueryResponseList.last().instructors.add(instructorInfo)
             }
-            lastPushedSeminarId = seminar.id
+            lastPushedSeminarId = it.seminarId
         }
         return seminarsQueryResponseList
     }
