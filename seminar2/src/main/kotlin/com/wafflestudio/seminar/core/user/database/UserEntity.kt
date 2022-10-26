@@ -3,7 +3,7 @@ import javax.persistence.*
 
 @Entity
 class UserEntity(
-    val nickname: String,
+    val username: String,
     val email: String,
     val password: String,
 ) {

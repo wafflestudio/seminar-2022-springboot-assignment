@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     private val userService: UserService,
 ) {
-    
     @PostMapping("/api/v1/signup")
     fun signUp(@RequestBody request: SignUpRequest): User  {
         return userService.createUser(request)

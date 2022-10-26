@@ -15,11 +15,14 @@ interface UserService {
 @Service
 class UserServiceImpl(
     private val userRepository: UserRepository,
+    private val authTokenService: AuthTokenService,
 ): UserService {
     override fun getUser(id: Long?): User {
+        // TODO: error 구분해서 처리하기
         if (id == null) throw Error()
         val entity = userRepository.findById(id)
         if (entity.isEmpty) throw Error()
+        
         return User(entity.get())
     }
 
@@ -28,7 +31,7 @@ class UserServiceImpl(
         if (entityByEmail.isPresent) throw Error()
 
         val newUser = UserEntity(
-            nickname = user.username,
+            username = user.username,
             email = user.email,
             password = user.password
         )
@@ -37,6 +40,6 @@ class UserServiceImpl(
     }
     
     private fun User(entity: UserEntity) = entity.run {
-        User(id, nickname, email, password)
+        User(id, username, email, password)
     }
 }
