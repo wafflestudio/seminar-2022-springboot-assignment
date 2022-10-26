@@ -14,4 +14,6 @@ spring:
       
 auth.jwt:
   jwtSecret: n+MbQeThWmZ%DG-@S&#H($@ER2r5u8x/A$B&E(HaPdSgVkYp3s6v9yq4
+  jwtExpirationMs: 864000
+  issuer: seminar_issuer
   # TODO 누락된 정보를 추가해 주세요.
