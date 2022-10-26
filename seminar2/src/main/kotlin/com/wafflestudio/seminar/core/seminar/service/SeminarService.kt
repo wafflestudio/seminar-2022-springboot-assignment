@@ -16,6 +16,8 @@ import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarRepository
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.type.UserRole
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -173,13 +175,15 @@ class SeminarService(
         return SeminarInfo.from(seminar, userSeminarsEntity)
     }
     
-    fun getSeminarsByQueryParam(name: String?, order: String?) : MutableList<SeminarsQueryResponse> {
+    fun getSeminarsByQueryParam(
+        name: String?, order: String?, page: Int, size: Int
+    ) : Page<SeminarsQueryResponse> {
         val orderBool: Boolean = if (order == null) {
             false
         } else {
             order == "earliest"
         }
-        return seminarRepository.findSeminarsByNameAndOrder(name, orderBool)
+        return seminarRepository.findSeminarsByNameAndOrder(name, orderBool, PageRequest.of(page, size))
     }
     
     fun validateSeminarRequest(user: UserEntity, seminarRequest: SeminarRequest) {

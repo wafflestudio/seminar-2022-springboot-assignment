@@ -2,8 +2,6 @@ package com.wafflestudio.seminar.core.seminar.api.response
 
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
-import com.wafflestudio.seminar.core.user.database.UserEntity
-import org.hibernate.tool.schema.spi.SchemaDropper
 import java.time.LocalDateTime
 
 data class SeminarInfo(

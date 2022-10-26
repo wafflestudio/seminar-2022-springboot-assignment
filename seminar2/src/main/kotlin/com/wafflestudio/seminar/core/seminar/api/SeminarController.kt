@@ -10,6 +10,7 @@ import com.wafflestudio.seminar.core.seminar.api.response.SeminarsQueryResponse
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.service.AuthException
+import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -86,9 +87,11 @@ class SeminarController(
     @GetMapping("/api/v1/seminar/")
     fun getSeminars(
         @RequestParam(required = false, value = "name") name: String?,
-        @RequestParam(required = false, value = "order") order: String?
-    ) : ResponseEntity<MutableList<SeminarsQueryResponse>> {
-        return ResponseEntity.ok(seminarService.getSeminarsByQueryParam(name, order))
+        @RequestParam(required = false, value = "order") order: String?,
+        @RequestParam(required = false, value = "page", defaultValue = "0") page: Int,
+        @RequestParam(required = false, value = "size", defaultValue = "50") size: Int
+    ) : ResponseEntity<Page<SeminarsQueryResponse>> {
+        return ResponseEntity.ok(seminarService.getSeminarsByQueryParam(name, order, page, size))
     }
     
     @LogExecutionTime

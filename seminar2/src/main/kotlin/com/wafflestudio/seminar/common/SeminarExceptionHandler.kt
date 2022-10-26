@@ -12,13 +12,13 @@ import java.time.LocalDateTime
 @RestControllerAdvice
 class SeminarExceptionHandler {
     
-//    @ExceptionHandler(value = [Exception::class])
-//    fun handle(e: Exception) : ResponseEntity<Map<String, Any>> {
-//        return createErrorInfo(
-//            HttpStatus.INTERNAL_SERVER_ERROR,
-//            e.message!!
-//        )
-//    }
+    @ExceptionHandler(value = [Exception::class])
+    fun handle(e: Exception) : ResponseEntity<Map<String, Any>> {
+        return createErrorInfo(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            e.message!!
+        )
+    }
 
     @ExceptionHandler(value = [MethodArgumentNotValidException::class])
     fun handle(e: MethodArgumentNotValidException): ResponseEntity<Map<String, Any>> {

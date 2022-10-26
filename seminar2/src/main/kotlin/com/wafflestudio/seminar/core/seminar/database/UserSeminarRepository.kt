@@ -1,6 +1,5 @@
 package com.wafflestudio.seminar.core.seminar.database
 
-import com.querydsl.core.QueryFactory
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component

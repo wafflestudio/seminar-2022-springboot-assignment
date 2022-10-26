@@ -14,6 +14,9 @@ import com.wafflestudio.seminar.core.user.api.response.*
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.type.UserRole
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -117,8 +120,10 @@ class UserService(
         }
     }
     
-    fun getAllUsers() : List<UserProfile> {
-      return userRepository.findAll().map { createUserProfileFromUser(it) }  
+    fun getAllUsers(page: Int, size: Int) : Page<UserProfile> {
+        return userRepository.findAll(PageRequest.of(page, size, Sort.by("id").descending())).map { 
+            createUserProfileFromUser(it)
+        }
     } 
 
     fun createUserProfileFromUser(user: UserEntity) : UserProfile {

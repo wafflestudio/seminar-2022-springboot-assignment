@@ -8,6 +8,7 @@ import com.wafflestudio.seminar.core.user.api.response.UserProfile
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.service.AuthException
 import com.wafflestudio.seminar.core.user.service.UserService
+import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -28,7 +29,12 @@ class UserController(
     @LogExecutionTime
     @Authenticated
     @GetMapping("/api/v1/users")
-    fun getUsers() = ResponseEntity.ok(userService.getAllUsers())
+    fun getUsers(
+        @RequestParam("page", defaultValue = "0") page: Int,
+        @RequestParam("size", defaultValue = "50") size: Int
+    ) : ResponseEntity<Page<UserProfile>> {
+        return ResponseEntity.ok(userService.getAllUsers(page, size))
+    } 
     
     @LogExecutionTime
     @Authenticated

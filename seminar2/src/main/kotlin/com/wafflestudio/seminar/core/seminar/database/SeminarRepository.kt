@@ -9,10 +9,14 @@ import com.wafflestudio.seminar.core.seminar.api.response.SeminarsQueryResponse
 import com.wafflestudio.seminar.core.seminar.database.QSeminarEntity.seminarEntity
 import com.wafflestudio.seminar.core.seminar.database.QUserSeminarEntity.userSeminarEntity
 import com.wafflestudio.seminar.core.user.database.QUserEntity.userEntity
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.math.min
 
 
 interface SeminarRepository : JpaRepository<SeminarEntity, Long>, SeminarRepositoryCustom {
@@ -20,7 +24,7 @@ interface SeminarRepository : JpaRepository<SeminarEntity, Long>, SeminarReposit
 }
 
 interface SeminarRepositoryCustom {
-    fun findSeminarsByNameAndOrder(name: String?, earliest: Boolean): MutableList<SeminarsQueryResponse>
+    fun findSeminarsByNameAndOrder(name: String?, earliest: Boolean, pageable: Pageable): Page<SeminarsQueryResponse>
 }
 
 @Component
@@ -28,7 +32,9 @@ class SeminarRepositoryImpl(
     private val queryFactory: JPAQueryFactory
 ) : SeminarRepositoryCustom {
     
-    override fun findSeminarsByNameAndOrder(name: String?, earliest: Boolean): MutableList<SeminarsQueryResponse> {
+    override fun findSeminarsByNameAndOrder(
+        name: String?, earliest: Boolean, pageable: Pageable
+    ): Page<SeminarsQueryResponse> {
         val orderSpecifier: OrderSpecifier<LocalDateTime> = if (earliest) {
             seminarEntity.createdAt.asc()
         } else {
@@ -49,7 +55,25 @@ class SeminarRepositoryImpl(
             .where(whereCondition)
             .orderBy(orderSpecifier)
             .fetch()
-        return createSeminarsQueryResponseFromQueryResult(result)
+        
+        
+        
+//        val seminars = queryFactory.select(seminarEntity)
+//            .from(seminarEntity).fetch()
+//
+//        Pag
+//        
+////        PageImpl(seminars, PageRequest.of(page, size), seminars.size.toLong())
+//        
+//        
+        val elements = createSeminarsQueryResponseFromQueryResult(result)
+        var start = pageable.offset.toInt()
+        val end = min(start + pageable.pageSize, elements.size)
+        
+        if (start > end) {
+            start = end
+        }
+        return PageImpl(elements.subList(start, end), pageable, elements.size.toLong())
     }
     
     fun getParticipantCountMap() : Map<Long, Int> {
