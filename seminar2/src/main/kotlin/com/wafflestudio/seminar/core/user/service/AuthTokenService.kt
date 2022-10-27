@@ -16,14 +16,21 @@ class AuthTokenService(
   private val tokenPrefix = "Bearer "
   private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
 
-  /**
-   * TODO Jwts.builder() 라이브러리를 통해서, 어떻게 필요한 정보를 토큰에 넣어 발급하고,
-   *   검증할지, 또 만료는 어떻게 시킬 수 있을지 고민해보아요.
-   */
   fun generateTokenByUsername(username: String): AuthToken {
-    val claims: MutableMap<String, Any>
-    val expiryDate: Date
-    val resultToken = Jwts.builder().compact() 
+    println(username)
+    val claims: MutableMap<String, Any> = HashMap()
+    claims["username"] = username
+    val now = Date()
+    val expiryDate = Date(now.time + authProperties.jwtExpiration)
+    println(expiryDate)
+    
+    val resultToken = Jwts.builder()
+      .setClaims(claims)
+      .setIssuedAt(now)
+      .setExpiration(expiryDate)
+      .signWith(signingKey)
+      .compact()
+    println(resultToken)
 
     return AuthToken(resultToken)
   }

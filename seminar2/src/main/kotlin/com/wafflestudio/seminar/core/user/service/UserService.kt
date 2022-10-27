@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service
 interface UserService {
     fun getUser(id: Long?): User
     fun createUser(user: SignUpRequest): User
-//    fun loginUser(user: LoginUserRequest): Long
+    fun loginUser(user: SignInRequest): AuthToken
 }
 
 @Service
@@ -37,6 +38,18 @@ class UserServiceImpl(
         )
         val entity = userRepository.save(newUser)
         return User(entity)
+    }
+    
+    override fun loginUser(user: SignInRequest): AuthToken {
+        println("first")
+        val entity = userRepository.findByEmail(user.email)
+        println(entity)
+        if (entity.isEmpty) throw Error()
+        if (entity.get().password != user.password) throw Error()
+        println("second")
+        println(entity.get().username)
+        
+        return authTokenService.generateTokenByUsername(entity.get().username)
     }
     
     private fun User(entity: UserEntity) = entity.run {

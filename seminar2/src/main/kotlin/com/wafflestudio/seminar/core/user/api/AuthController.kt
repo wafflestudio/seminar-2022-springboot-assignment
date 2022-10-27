@@ -1,8 +1,10 @@
 package com.wafflestudio.seminar.core.user.api
 
 import com.wafflestudio.seminar.common.Authenticated
+import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.domain.User
+import com.wafflestudio.seminar.core.user.service.AuthToken
 import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,8 +21,8 @@ class AuthController(
     }
     
     @PostMapping("/api/v1/signin")
-    fun logIn() {
-        // TODO("회원가입을 진행한 유저가 로그인할 경우, JWT를 생성해서 내려주세요.")
+    fun logIn(@RequestBody request: SignInRequest): AuthToken {
+        return userService.loginUser(request)
     }
     
     @Authenticated
