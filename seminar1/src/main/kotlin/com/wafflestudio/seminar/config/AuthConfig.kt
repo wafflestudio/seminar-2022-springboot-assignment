@@ -22,10 +22,13 @@ class AuthConfig {
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain =
         httpSecurity
             .csrf().disable()
+            .headers().frameOptions().disable()
+            .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
             .anyRequest().permitAll()
+            
             .and()
             .build()
 }
