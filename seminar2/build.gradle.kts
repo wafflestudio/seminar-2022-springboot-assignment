@@ -61,6 +61,10 @@ dependencies {
     implementation("com.querydsl:querydsl-jpa:5.0.0")
     kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
+    
+    // ModelMapper
+    implementation("org.modelmapper:modelmapper:2.1.1")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

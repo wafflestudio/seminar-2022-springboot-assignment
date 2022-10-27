@@ -6,7 +6,6 @@ data class UserSignup(
     val username: String,
     val email: String,
     val password: String,
-    val dateJoined: LocalDateTime,
     val role: String,
     
     val participant: ParticipantProfile?,

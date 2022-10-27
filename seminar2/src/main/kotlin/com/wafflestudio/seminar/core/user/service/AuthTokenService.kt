@@ -57,7 +57,7 @@ class AuthTokenService(
     return parse(authToken).body["email"].toString()
   }
 
-  fun getCurrentLastLogin(authToken: String) :LocalDateTime{
+  fun getCurrentIssuedAt(authToken: String) :LocalDateTime{
     //parse(authToken)에 저장된 email을 findByEmail에 적용하여 id를 구하나?
 
     return parse(authToken).body.issuedAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime() // Date -> LocalDateTime

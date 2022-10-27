@@ -20,10 +20,11 @@ interface InstructorProfileRepository: JpaRepository<InstructorProfileEntity,Lon
 
 interface SeminarRepository : JpaRepository<SeminarEntity, Long> {
     fun save(seminarEntity: SeminarEntity) : SeminarEntity
+    fun findByName(name: String?) : SeminarEntity
   override fun findById(id: Long): Optional<SeminarEntity>
 }
 
-interface ParticipantSeminarRepository: JpaRepository<ParticipantSeminarEntity, Long>{
-    fun save(participantSeminarEntity: ParticipantSeminarEntity): ParticipantSeminarEntity
+interface UserSeminarRepository: JpaRepository<UserSeminarEntity, Long>{
+    fun save(userSeminarEntity: UserSeminarEntity): UserSeminarEntity
 
 }

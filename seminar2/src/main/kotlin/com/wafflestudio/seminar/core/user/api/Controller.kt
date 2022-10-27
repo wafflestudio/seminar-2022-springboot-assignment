@@ -5,9 +5,7 @@ import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.core.user.database.SeminarEntity
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.domain.*
-import com.wafflestudio.seminar.core.user.dto.ParticipantProfileDto
-import com.wafflestudio.seminar.core.user.dto.SeminarDto
-import com.wafflestudio.seminar.core.user.dto.UserProfileDto
+import com.wafflestudio.seminar.core.user.dto.*
 import com.wafflestudio.seminar.core.user.service.*
 import org.springframework.security.core.userdetails.User
 import org.springframework.web.bind.annotation.*
@@ -36,21 +34,16 @@ class Controller(
     fun login(@RequestBody userLogin: UserLogin) : AuthToken {
         
         // 이메일 없으면 오류, 이메일 있지만 비번 틀렸으면 오류
-       authService.login(userLogin)
-        return authTokenService.generateTokenByEmail(userLogin.email)
+      return  authService.login(userLogin)
     }
     
-    @Authenticated
-    @GetMapping("/api/v1/me")
-    fun getMe(@RequestHeader("Authentication") token: String) : String  {
-        authTokenService.getCurrentUserId(token)
-        
-        return "인증되었습니다"
-    }
     
     @Authenticated
     @GetMapping("/api/v1/user/{email}")
-    fun getProfile(@PathVariable email: String, @RequestHeader("Authentication") token: String): List<UserProfileDto>{
+    fun getProfile(@PathVariable email: String, @RequestHeader("Authentication") token: String): GetProfileDto{
+        
+        
+        
         return userService.getProfile(email, token)
     }
     
@@ -59,14 +52,16 @@ class Controller(
     fun updateMe(@RequestBody userProfile: UserProfile, @RequestHeader("Authentication") token: String): UserProfile{
         return userService.updateMe(userProfile, token)
     }
+    
+     
 
     @PostMapping("/api/v1/seminar")
-    fun createSeminar(@RequestBody seminar: Seminar, @RequestHeader("Authentication") token: String): List<SeminarEntity>{
+    fun createSeminar(@RequestBody seminar: Seminar, @RequestHeader("Authentication") token: String): CreateSeminarDto{
         
         return seminarService.createSeminar(seminar, token)
     }
 
-
+/*
     @GetMapping("/api/v1/seminar/{seminarId}")
     fun getSeminarById(@PathVariable seminarId: Long):List<Any>{
         return seminarService.getSeminarById(seminarId)
@@ -82,14 +77,16 @@ class Controller(
         return seminarService.profile(token)
     }
     
-    @PostMapping("/api/v1/makeProfile/{email}")
-    fun makeProfile(@PathVariable email: String): List<ParticipantProfileDto>{
-        return userService.makeParticipantProfileDto(email)
+    @PostMapping("/api/v1/makeProfile/{seminarId}/{email}")
+    fun makeProfile(@PathVariable seminarId: Long, @PathVariable email: String): List<ParticipantProfileDto>{
+        return userService.makeParticipantProfileDto(seminarId, email)
     }
-
+    
+ */
+/*
     @PostMapping("/api/v1/makeSeminar/{seminarId}")
     fun makeSeminar(@PathVariable seminarId: Long,email: String): List<SeminarDto>{
         return userService.makeSeminarDto(seminarId,email)
     }
-    
+    */
 }

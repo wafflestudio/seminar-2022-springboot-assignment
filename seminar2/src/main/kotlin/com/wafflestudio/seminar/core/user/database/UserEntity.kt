@@ -1,6 +1,8 @@
 package com.wafflestudio.seminar.core.user.database
 
+import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.user.domain.ParticipantProfile
+import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -8,20 +10,21 @@ import javax.persistence.*
 @Table(name="user")
 class UserEntity(
 
+    @Column
+    var username: String?,
 
-        
     @Column
-    var username: String,
-    
-    @Column
-    var email: String,
-    
+    var email: String?,
+
     @Column
     var password: String,
-    
+
     @Column
-    var dateJoined: LocalDateTime,
-    
+    var dateJoined: LocalDate?,
+
+    @Column
+    var lastLogin: LocalDate? = null,
+
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name="participant_id")
     var participant: ParticipantProfileEntity? = null,
@@ -31,10 +34,6 @@ class UserEntity(
     var instructor: InstructorProfileEntity? = null
 
     
-) {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0L
-    
-    
+):BaseTimeEntity() {
+   
 }

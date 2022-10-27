@@ -1,13 +1,11 @@
 package com.wafflestudio.seminar.core.user.database
 
-import com.wafflestudio.seminar.core.user.dto.ParticipantProfileDto
 import java.time.LocalDateTime
-import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name="ParticipantSeminar")
-class ParticipantSeminarEntity(
+@Table(name="UserSeminar")
+class UserSeminarEntity(
 
     @ManyToOne
     @JoinColumn(name="user_id")
@@ -15,10 +13,13 @@ class ParticipantSeminarEntity(
 
     @ManyToOne
     @JoinColumn(name="seminar_id")
-    val seminar: SeminarEntity,
+    val seminar: SeminarEntity?,
 
     @Column
-    val joinedAt: LocalDateTime,
+    val role: String,
+    
+    @Column
+    val joinedAt: String,
 
     @Column
     val isActive: Boolean = true,

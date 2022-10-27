@@ -5,9 +5,9 @@ import java.time.LocalDateTime
 data class SeminarDto(
     val id: Long,
     val name: String,
-    val joinedAt: LocalDateTime?,
+//    val joinedAt: LocalDateTime?,
     val isActive: Boolean?,
-    val droppedAt: LocalDateTime?
+//    val droppedAt: LocalDateTime?
     
 ) {
 }

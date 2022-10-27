@@ -1,10 +1,16 @@
 package com.wafflestudio.seminar.core.user.database
 
+import com.wafflestudio.seminar.common.BaseTimeEntity
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
+@EntityListeners(AuditingEntityListener::class)
 @Table(name="ParticipantProfile")
-class ParticipantProfileEntity(
+class ParticipantProfileEntity (
     
     @Column
     var emailParticipant: String,
@@ -15,10 +21,12 @@ class ParticipantProfileEntity(
     @Column
     var isRegistered: Boolean = true,
 
-   
+
     
-){
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0L
+
+
+): BaseTimeEntity(){
+   
+
+   
 }

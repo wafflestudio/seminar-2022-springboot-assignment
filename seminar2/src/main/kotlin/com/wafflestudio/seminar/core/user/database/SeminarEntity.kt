@@ -7,21 +7,22 @@ import javax.persistence.*
 @Table(name="seminar")
 class SeminarEntity(
     
+ 
     @Column
-    var name: String,
+    var name: String?,
     
     @Column
     var capacity: Int,
     
     @Column
     var count: Int,
-    
+
     @Column
-    var time: LocalTime,
-    
+    var time: String,
+
     @Column
     var online: Boolean = true,
-    
+
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name="instructor_id")
     var instructors: UserEntity

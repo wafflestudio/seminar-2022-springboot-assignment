@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.database
 
+import com.wafflestudio.seminar.common.BaseTimeEntity
 import javax.persistence.*
 
 @Entity
@@ -14,10 +15,7 @@ class InstructorProfileEntity(
     
     @Column
     var year: Int? = null,
-    
+
    
-) {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0L
+) :BaseTimeEntity(){
 }

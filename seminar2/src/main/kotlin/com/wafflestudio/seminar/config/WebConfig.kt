@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.config
 
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.modelmapper.ModelMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import javax.persistence.EntityManager
@@ -22,5 +23,13 @@ class WebConfig {
     @Bean
     fun jpaQueryFactory(): JPAQueryFactory? {
         return JPAQueryFactory(em)
+    }
+
+    @Bean
+    fun modelMapper(): ModelMapper {
+        val modelMapper = ModelMapper()
+        modelMapper.configuration.isFieldMatchingEnabled = true
+        modelMapper.configuration.fieldAccessLevel = org.modelmapper.config.Configuration.AccessLevel.PRIVATE
+        return modelMapper
     }
 }
