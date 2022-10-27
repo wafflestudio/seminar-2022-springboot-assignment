@@ -41,13 +41,9 @@ class UserServiceImpl(
     }
     
     override fun loginUser(user: SignInRequest): AuthToken {
-        println("first")
         val entity = userRepository.findByEmail(user.email)
-        println(entity)
         if (entity.isEmpty) throw Error()
         if (entity.get().password != user.password) throw Error()
-        println("second")
-        println(entity.get().username)
         
         return authTokenService.generateTokenByUsername(entity.get().username)
     }
