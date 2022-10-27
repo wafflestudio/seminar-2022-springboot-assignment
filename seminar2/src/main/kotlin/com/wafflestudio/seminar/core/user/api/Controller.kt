@@ -1,13 +1,15 @@
 package com.wafflestudio.seminar.core.user.api
 
-import com.querydsl.core.Tuple
 import com.wafflestudio.seminar.common.Authenticated
-import com.wafflestudio.seminar.core.user.database.SeminarEntity
-import com.wafflestudio.seminar.core.user.database.UserEntity
+import com.wafflestudio.seminar.core.user.api.request.LoginRequest
+import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
+import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.api.request.UpdateProfileRequest
+import com.wafflestudio.seminar.core.user.api.response.CreateSeminar
+import com.wafflestudio.seminar.core.user.api.response.GetProfile
 import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.dto.*
 import com.wafflestudio.seminar.core.user.service.*
-import org.springframework.security.core.userdetails.User
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -20,7 +22,7 @@ class Controller(
 ) {
     
     @PostMapping("/api/v1/signup")
-    fun signup(@RequestBody user: UserSignup) : AuthToken {
+    fun signup(@RequestBody user: SignUpRequest) : AuthToken {
         
         authService.signup(user)
         // 비밀번호 powerEncoder 추가해야함, 아이디 중복된거 회원가입 못하게 해야함
@@ -29,34 +31,29 @@ class Controller(
         return authTokenService.generateTokenByEmail(user.email)
     }
     
-    
-    @PostMapping("/api/v1/signin")
-    fun login(@RequestBody userLogin: UserLogin) : AuthToken {
+    @PostMapping("/api/v1/login")
+    fun login(@RequestBody userLogin: LoginRequest) : AuthToken {
         
         // 이메일 없으면 오류, 이메일 있지만 비번 틀렸으면 오류
       return  authService.login(userLogin)
     }
     
-    
     @Authenticated
     @GetMapping("/api/v1/user/{email}")
-    fun getProfile(@PathVariable email: String, @RequestHeader("Authentication") token: String): GetProfileDto{
+    fun getProfile(@PathVariable email: String, @RequestHeader("Authentication") token: String): GetProfile {
         
-        
-        
-        return userService.getProfile(email, token)
+        return userService.getProfile(email,token)
+
     }
     
     @Authenticated
     @PutMapping("/api/v1/user/me")
-    fun updateMe(@RequestBody userProfile: UserProfile, @RequestHeader("Authentication") token: String): UserProfile{
-        return userService.updateMe(userProfile, token)
+    fun updateProfile(@RequestBody userProfile: UpdateProfileRequest, @RequestHeader("Authentication") token: String): GetProfile{
+        return userService.updateProfile(userProfile, token)
     }
-    
-     
 
     @PostMapping("/api/v1/seminar")
-    fun createSeminar(@RequestBody seminar: Seminar, @RequestHeader("Authentication") token: String): CreateSeminarDto{
+    fun createSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authentication") token: String): CreateSeminar {
         
         return seminarService.createSeminar(seminar, token)
     }

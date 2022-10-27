@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.database
 
+import com.wafflestudio.seminar.core.user.domain.*
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 

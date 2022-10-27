@@ -1,6 +1,5 @@
-package com.wafflestudio.seminar.core.user.database
+package com.wafflestudio.seminar.core.user.domain
 
-import java.time.LocalTime
 import javax.persistence.*
 
 @Entity

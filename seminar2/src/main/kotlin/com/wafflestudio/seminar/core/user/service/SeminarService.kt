@@ -2,9 +2,13 @@ package com.wafflestudio.seminar.core.user.service
 
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
+import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
+import com.wafflestudio.seminar.core.user.api.response.CreateSeminar
 import com.wafflestudio.seminar.core.user.database.*
-import com.wafflestudio.seminar.core.user.domain.Seminar
-import com.wafflestudio.seminar.core.user.dto.CreateSeminarDto
+import com.wafflestudio.seminar.core.user.domain.QSeminarEntity
+import com.wafflestudio.seminar.core.user.domain.QUserEntity
+import com.wafflestudio.seminar.core.user.domain.QUserSeminarEntity
+import com.wafflestudio.seminar.core.user.domain.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.dto.CreateSeminarInstructorDto
 import com.wafflestudio.seminar.core.user.dto.SeminarInstructorDto
 import org.springframework.stereotype.Service
@@ -12,15 +16,13 @@ import org.springframework.stereotype.Service
 @Service
 class SeminarService(
     private val authTokenService: AuthTokenService,
-    private val instructorProfileRepository: InstructorProfileRepository,
     private val seminarRepository: SeminarRepository,
     private val userSeminarRepository: UserSeminarRepository,
     private val userRepository: UserRepository,
     private val queryFactory: JPAQueryFactory,
-    private val participantProfileRepository: ParticipantProfileRepository
     ) {
 
-    fun createSeminar(seminar: Seminar, token: String): CreateSeminarDto {
+    fun createSeminar(seminar: SeminarRequest, token: String): CreateSeminar {
         //todo: online 여부 외에는 하나라도 빠지면 400으로 응답하며, 적절한 에러 메시지를 포함합니다.
         //todo: name에 0글자가 오는 경우, capacity와 count에 양의 정수가 아닌 값이 오는 경우는 400으로 응답합니다.
         //todo: 세미나 진행자 자격을 가진 User만 요청할 수 있으며, 그렇지 않은 경우 403으로 응답
@@ -38,7 +40,7 @@ class SeminarService(
         val userSeminarEntity = seminarInstructorDto[0].userSeminarEntity
         
         
-        return CreateSeminarDto(
+        return CreateSeminar(
             seminarEntity?.id,
             seminarEntity?.name,
             seminarEntity?.capacity,
@@ -119,7 +121,7 @@ class SeminarService(
     
      */
     
-    private fun makeSeminarInstructorDto(seminar: Seminar, token: String, qSeminarEntity: QSeminarEntity, qUserEntity: QUserEntity, qUserSeminarEntity: QUserSeminarEntity):List<SeminarInstructorDto>{
+    private fun makeSeminarInstructorDto(seminar: SeminarRequest, token: String, qSeminarEntity: QSeminarEntity, qUserEntity: QUserEntity, qUserSeminarEntity: QUserSeminarEntity):List<SeminarInstructorDto>{
         return queryFactory.select(Projections.constructor(
             SeminarInstructorDto::class.java,
             qSeminarEntity,
@@ -134,20 +136,21 @@ class SeminarService(
             .where(qUserEntity.email.eq(authTokenService.getCurrentEmail(token)))
             .fetch()
     }
-    private fun SeminarEntity(seminar: Seminar, token: String) = seminar.run{
-        SeminarEntity(
-          
+    
+    private fun SeminarEntity(seminar: SeminarRequest, token: String) = seminar.run{
+        com.wafflestudio.seminar.core.user.domain.SeminarEntity(
+
             name = seminar.name,
             capacity = seminar.capacity,
             count = seminar.count,
             time = seminar.time,//LocalTime.parse(seminar.time, DateTimeFormatter.ISO_TIME),
             online = true,
             instructors = userRepository.findByEmail(authTokenService.getCurrentEmail(token))
-          
+
         )
     }
 
-    private fun UserSeminarInstructorEntity(seminar: Seminar, token: String) :UserSeminarEntity{
+    private fun UserSeminarInstructorEntity(seminar: SeminarRequest, token: String) : UserSeminarEntity {
         return UserSeminarEntity(
             user = userRepository.findByEmail(authTokenService.getCurrentEmail(token)),
             seminar= seminarRepository.findByName(seminar.name),

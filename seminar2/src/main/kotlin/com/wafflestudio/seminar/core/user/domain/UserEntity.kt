@@ -1,9 +1,7 @@
-package com.wafflestudio.seminar.core.user.database
+package com.wafflestudio.seminar.core.user.domain
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
-import com.wafflestudio.seminar.core.user.domain.ParticipantProfile
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity

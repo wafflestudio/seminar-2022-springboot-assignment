@@ -1,8 +1,8 @@
-package com.wafflestudio.seminar.core.user.dto
+package com.wafflestudio.seminar.core.user.api.response
 
+import com.wafflestudio.seminar.core.user.dto.CreateSeminarInstructorDto
 
-
-data class CreateSeminarDto(
+data class CreateSeminar(
     val id:Long?,
     val name: String?,
     val capacity: Int?,
@@ -10,5 +10,4 @@ data class CreateSeminarDto(
     val time: String?,
     val online: Boolean? = true,
     val instructors: CreateSeminarInstructorDto?
-) {
-}
+)

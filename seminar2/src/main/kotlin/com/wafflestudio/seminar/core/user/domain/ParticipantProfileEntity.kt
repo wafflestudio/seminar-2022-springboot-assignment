@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.user.database
+package com.wafflestudio.seminar.core.user.domain
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import org.springframework.data.annotation.CreatedDate
@@ -16,7 +16,7 @@ class ParticipantProfileEntity (
     var emailParticipant: String,
     
     @Column
-    var university: String = "",
+    var university: String? = "",
     
     @Column
     var isRegistered: Boolean = true,

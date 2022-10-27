@@ -1,7 +1,6 @@
-package com.wafflestudio.seminar.core.user.domain
+package com.wafflestudio.seminar.core.user.api.request
 
-
-data class Seminar (
+data class SeminarRequest (
     val name: String?,
     val capacity: Int,
     val count: Int,

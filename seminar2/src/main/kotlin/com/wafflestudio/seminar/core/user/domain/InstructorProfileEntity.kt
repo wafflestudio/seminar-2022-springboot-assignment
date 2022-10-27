@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.user.database
+package com.wafflestudio.seminar.core.user.domain
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import javax.persistence.*
@@ -11,7 +11,7 @@ class InstructorProfileEntity(
     var emailInstructor: String,
     
     @Column
-    var company: String = "",
+    var company: String? = "",
     
     @Column
     var year: Int? = null,

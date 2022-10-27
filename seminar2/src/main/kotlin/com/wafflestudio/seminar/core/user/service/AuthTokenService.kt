@@ -1,6 +1,5 @@
 package com.wafflestudio.seminar.core.user.service
 
-import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys

@@ -1,17 +1,15 @@
 package com.wafflestudio.seminar.core.user.service;
 
 import com.wafflestudio.seminar.common.Seminar400
+import com.wafflestudio.seminar.core.user.api.request.LoginRequest
+import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.*
-import com.wafflestudio.seminar.core.user.domain.InstructorProfile
-import com.wafflestudio.seminar.core.user.domain.ParticipantProfile
-import com.wafflestudio.seminar.core.user.domain.UserSignup;
-import com.wafflestudio.seminar.core.user.domain.UserLogin
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
+import com.wafflestudio.seminar.core.user.domain.UserEntity
+import com.wafflestudio.seminar.core.user.dto.InstructorProfileDto
+import com.wafflestudio.seminar.core.user.dto.ParticipantProfileDto
 import org.springframework.stereotype.Service;
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import javax.persistence.Entity
+
 
 
 @Service
@@ -20,7 +18,7 @@ class AuthService(
     private val authTokenService: AuthTokenService,
     private val seminarRepository: SeminarRepository
 )  {
-    fun signup(user: UserSignup): UserEntity {
+    fun signup(user: SignUpRequest): UserEntity {
         return if(user.role == "participant"){
              userRepository.save(signupParticipantEntity(user))
             
@@ -31,7 +29,7 @@ class AuthService(
         } else throw Seminar400("오류")
     }
     
-    fun login(userLogin: UserLogin): AuthToken {
+    fun login(userLogin: LoginRequest): AuthToken {
         
         userRepository.findByEmail(userLogin.email)
         val token = authTokenService.generateTokenByEmail(userLogin.email)
@@ -41,11 +39,11 @@ class AuthService(
     }
     
     
-    private fun signupParticipantEntity(user: UserSignup) = user.run {
+    private fun signupParticipantEntity(user: SignUpRequest) = user.run {
         UserEntity(username, email, password, LocalDate.now(), null, ParticipantProfileEntity(email, participant), null)
     }
     
-    private fun signupInstructorEntity(user: UserSignup) = user.run {
+    private fun signupInstructorEntity(user: SignUpRequest) = user.run {
         UserEntity(username, email, password, LocalDate.now(), null, null, InstructorProfileEntity(email, instructor))
 
     }
@@ -56,12 +54,12 @@ class AuthService(
         userRepository.save(userEntity)
     }
     
-    private fun ParticipantProfileEntity(email: String, par: ParticipantProfile?) = par?.run {
-        ParticipantProfileEntity(email, university,isRegistered)
+    private fun ParticipantProfileEntity(email: String, par: ParticipantProfileDto?) = par?.run {
+        com.wafflestudio.seminar.core.user.domain.ParticipantProfileEntity(email, university, isRegistered)
     }
     
-    private fun InstructorProfileEntity(email: String, ins: InstructorProfile?) = ins?.run { 
-        InstructorProfileEntity(email, company, year)
+    private fun InstructorProfileEntity(email: String, ins: InstructorProfileDto?) = ins?.run {
+        com.wafflestudio.seminar.core.user.domain.InstructorProfileEntity(email, company, year)
     }
     
 

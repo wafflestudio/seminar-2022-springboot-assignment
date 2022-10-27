@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.user.database
+package com.wafflestudio.seminar.core.user.domain
 
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -17,7 +17,7 @@ class UserSeminarEntity(
 
     @Column
     val role: String,
-    
+
     @Column
     val joinedAt: String,
 

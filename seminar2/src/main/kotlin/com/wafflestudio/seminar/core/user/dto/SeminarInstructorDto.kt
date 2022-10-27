@@ -1,9 +1,9 @@
 package com.wafflestudio.seminar.core.user.dto
 
 
-import com.wafflestudio.seminar.core.user.database.SeminarEntity
-import com.wafflestudio.seminar.core.user.database.UserEntity
-import com.wafflestudio.seminar.core.user.database.UserSeminarEntity
+import com.wafflestudio.seminar.core.user.domain.SeminarEntity
+import com.wafflestudio.seminar.core.user.domain.UserEntity
+import com.wafflestudio.seminar.core.user.domain.UserSeminarEntity
 
 data class SeminarInstructorDto(
 

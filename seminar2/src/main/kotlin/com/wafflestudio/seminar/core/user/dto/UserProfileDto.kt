@@ -1,9 +1,8 @@
 package com.wafflestudio.seminar.core.user.dto
 
-import com.wafflestudio.seminar.core.user.database.InstructorProfileEntity
-import com.wafflestudio.seminar.core.user.database.ParticipantProfileEntity
-import com.wafflestudio.seminar.core.user.database.UserEntity
-import java.time.LocalDateTime
+import com.wafflestudio.seminar.core.user.domain.InstructorProfileEntity
+import com.wafflestudio.seminar.core.user.domain.ParticipantProfileEntity
+import com.wafflestudio.seminar.core.user.domain.UserEntity
 
 data class UserProfileDto(
     val userEntity: UserEntity?,
