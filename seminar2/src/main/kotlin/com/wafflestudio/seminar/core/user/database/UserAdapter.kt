@@ -1,10 +1,12 @@
 package com.wafflestudio.seminar.core.user.database
 
+import com.wafflestudio.seminar.common.Seminar401
+import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.common.Seminar409
+import com.wafflestudio.seminar.core.user.api.request.LoginRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.domain.User
 import com.wafflestudio.seminar.core.user.domain.UserPort
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 
@@ -13,11 +15,6 @@ class UserAdapter(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder
 ) : UserPort {
-    override fun getUser(id: Long): User {
-        val entity = userRepository.findByIdOrNull(id.toLong()) ?: throw IllegalArgumentException("USER#$id NOT FOUND!")
-        return entity.toUser()
-    }
-
     override fun createUser(signUpRequest: SignUpRequest): User {
         val username = signUpRequest.username
         val email = signUpRequest.email
@@ -26,5 +23,17 @@ class UserAdapter(
 
         val userEntity = UserEntity(email, username, encodedPassword)
         return userRepository.save(userEntity).toUser()
+    }
+
+    override fun getUser(loginRequest: LoginRequest): User {
+        val email = loginRequest.email
+        val password = loginRequest.password
+        val userEntity = userRepository.findByEmail(email) ?: throw Seminar404("해당 이메일(${email})로 등록된 사용자가 없어요.")
+
+        return if (passwordEncoder.matches(
+                password,
+                userEntity.encodedPassword
+            )
+        ) userEntity.toUser() else throw Seminar401("비밀번호가 잘못되었습니다.")
     }
 }
