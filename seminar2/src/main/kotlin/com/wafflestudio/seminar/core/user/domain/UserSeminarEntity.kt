@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.domain
 
+import com.wafflestudio.seminar.common.BaseTimeEntity
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -19,7 +20,7 @@ class UserSeminarEntity(
     val role: String,
 
     @Column
-    val joinedAt: String,
+    val joinedAt: LocalDateTime?,
 
     @Column
     val isActive: Boolean = true,
@@ -27,9 +28,7 @@ class UserSeminarEntity(
     @Column
     val droppedAt: LocalDateTime? = null
     
-) {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0L
+):BaseTimeEntity() {
+
     
 }

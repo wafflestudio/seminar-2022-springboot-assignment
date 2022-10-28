@@ -5,10 +5,8 @@ import com.wafflestudio.seminar.core.user.api.request.LoginRequest
 import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.api.request.UpdateProfileRequest
-import com.wafflestudio.seminar.core.user.api.response.CreateSeminar
 import com.wafflestudio.seminar.core.user.api.response.GetProfile
-import com.wafflestudio.seminar.core.user.domain.*
-import com.wafflestudio.seminar.core.user.dto.*
+import com.wafflestudio.seminar.core.user.api.response.SeminarInfo
 import com.wafflestudio.seminar.core.user.service.*
 import org.springframework.web.bind.annotation.*
 
@@ -53,16 +51,19 @@ class Controller(
     }
 
     @PostMapping("/api/v1/seminar")
-    fun createSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authentication") token: String): CreateSeminar {
+    fun createSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authentication") token: String): SeminarInfo {
         
         return seminarService.createSeminar(seminar, token)
     }
 
-/*
-    @GetMapping("/api/v1/seminar/{seminarId}")
-    fun getSeminarById(@PathVariable seminarId: Long):List<Any>{
-        return seminarService.getSeminarById(seminarId)
+
+    @GetMapping("/api/v1/seminar/{seminar_id}")
+    fun getSeminarById(@PathVariable seminar_id: Long, @RequestHeader("Authentication") token: String):SeminarInfo{
+        return seminarService.getSeminarById(seminar_id,token)
     }
+    
+ 
+    /*
     @PostMapping("/api/v1/seminar/{seminarId}/user")
     fun joinSeminar(@PathVariable seminarId: Long, @RequestHeader("Authentication") token: String): String{
         return seminarService.joinSeminar(seminarId, token)
