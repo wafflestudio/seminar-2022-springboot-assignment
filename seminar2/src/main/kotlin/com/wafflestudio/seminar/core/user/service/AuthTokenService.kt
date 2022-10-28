@@ -10,6 +10,7 @@ import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
@@ -43,23 +44,31 @@ class AuthTokenService(
         return AuthToken(resultToken)
     }
 
-    fun verifyToken(authToken: String) {
-        TODO()
+    fun verifyToken(authToken: String): Boolean {
+        val email = getEmailFromToken(authToken)
+        val expiryDateInMillisecond = parse(authToken).body.expiration.time
+        return userPort.getUserIdByEmail(email).let { return expiryDateInMillisecond > System.currentTimeMillis() }
     }
 
     fun getCurrentUserId(authToken: String): Long {
-        TODO()
+        val email = getEmailFromToken(authToken)
+        return userPort.getUserIdByEmail(email)
     }
 
-    /**
-     * TODO Jwts.parserBuilder() 빌더 패턴을 통해 토큰을 읽어올 수도 있습니다.
-     *   적절한 인증 처리가 가능하도록 구현해주세요!
-     */
+    fun getEmailFromToken(authToken: String): String {
+        return parse(authToken).body["email"] as String
+    }
+
     private fun parse(authToken: String): Jws<Claims> {
         val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
-        return Jwts.parserBuilder().build().parseClaimsJws(prefixRemoved)
+        return Jwts
+            .parserBuilder()
+            .setSigningKey(signingKey)
+            .build()
+            .parseClaimsJws(prefixRemoved)
     }
 
+    @Transactional
     fun signUp(signUpRequest: SignUpRequest): AuthToken {
         val user = userPort.createUser(signUpRequest)
         return generateTokenByEmail(user.email)

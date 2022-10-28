@@ -36,4 +36,9 @@ class UserAdapter(
             )
         ) userEntity.toUser() else throw Seminar401("비밀번호가 잘못되었습니다.")
     }
+
+    override fun getUserIdByEmail(email: String): Long {
+        val userEntity = userRepository.findByEmail(email) ?: throw Seminar404("해당 이메일(${email})로 등록된 사용자가 없어요.")
+        return userEntity.id
+    }
 }

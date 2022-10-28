@@ -7,4 +7,6 @@ interface UserPort {
     fun createUser(signUpRequest: SignUpRequest): User
 
     fun getUser(signInRequest: SignInRequest): User
+
+    fun getUserIdByEmail(email: String): Long
 }
