@@ -62,6 +62,12 @@ class Controller(
         return seminarService.getSeminarById(seminar_id,token)
     }
     
+    @GetMapping("/api/v1/seminar")
+    fun getSeminars(@RequestHeader("Authentication") token: String): List<SeminarInfo>{
+        return seminarService.getSeminars(token)
+    }
+    
+     
  
     /*
     @PostMapping("/api/v1/seminar/{seminarId}/user")

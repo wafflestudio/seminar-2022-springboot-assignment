@@ -38,7 +38,7 @@ class SeminarService(
         
         
         val seminarInstructorDto = makeSeminarInstructorDto(seminar, token, qSeminarEntity, qUserEntity, qUserSeminarEntity)
-           
+
         return makeSeminarInfo(seminarInstructorDto)
         
         
@@ -70,12 +70,38 @@ class SeminarService(
 
     fun getSeminarById(id: Long, token: String):SeminarInfo{
 
-       val seminarInstructorDto = getSeminarInstructorDto(id, qSeminarEntity, qUserEntity, qUserSeminarEntity)
+       val seminarInstructorDto = getSeminarInstructorDtoById(id, qSeminarEntity, qUserEntity, qUserSeminarEntity)
 
        return makeSeminarInfo(seminarInstructorDto)
        
    }
    
+    fun getSeminars(token: String):List<SeminarInfo> {
+        val seminarInstructorDtoList = getSeminarInstructorDtoList(qSeminarEntity, qUserEntity, qUserSeminarEntity)
+        
+        return seminarInstructorDtoList.mapIndexed { _, seminarInstructorDto ->
+            SeminarInfo(
+                seminarInstructorDto.seminarEntity?.id,
+                seminarInstructorDto.seminarEntity?.name,
+                seminarInstructorDto.seminarEntity?.capacity,
+                seminarInstructorDto.seminarEntity?.count,
+                seminarInstructorDto.seminarEntity?.time,
+                seminarInstructorDto.seminarEntity?.online,
+                CreateSeminarInstructorDto(
+                    seminarInstructorDto.userEntity?.id,
+                    seminarInstructorDto.userEntity?.username,
+                    seminarInstructorDto.userEntity?.email,
+                    seminarInstructorDto.userSeminarEntity?.joinedAt
+                )
+            )
+        }
+
+
+         
+            
+        
+        
+    }
     
     /*
    fun joinSeminar(seminarId: Long, token: String): String {
@@ -136,7 +162,7 @@ class SeminarService(
         )
     }
     
-    private fun getSeminarInstructorDto(id:Long, qSeminarEntity: QSeminarEntity, qUserEntity: QUserEntity, qUserSeminarEntity: QUserSeminarEntity):List<SeminarInstructorDto>{
+    private fun getSeminarInstructorDtoById(id:Long, qSeminarEntity: QSeminarEntity, qUserEntity: QUserEntity, qUserSeminarEntity: QUserSeminarEntity):List<SeminarInstructorDto>{
         return queryFactory.select(Projections.constructor(
             SeminarInstructorDto::class.java,
             qSeminarEntity,
@@ -147,6 +173,20 @@ class SeminarService(
             .leftJoin(qUserEntity).on(qSeminarEntity.instructors.email.eq(qUserEntity.email))
             .leftJoin(qUserSeminarEntity).on(qUserEntity.id.eq(qUserSeminarEntity.user.id))
             .where(qSeminarEntity.id.eq(id))
+            .where(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
+            .fetch()
+    }
+
+    private fun getSeminarInstructorDtoList(qSeminarEntity: QSeminarEntity, qUserEntity: QUserEntity, qUserSeminarEntity: QUserSeminarEntity):List<SeminarInstructorDto>{
+        return queryFactory.select(Projections.constructor(
+            SeminarInstructorDto::class.java,
+            qSeminarEntity,
+            qUserEntity,
+            qUserSeminarEntity
+        ))
+            .from(qSeminarEntity)
+            .leftJoin(qUserEntity).on(qSeminarEntity.instructors.email.eq(qUserEntity.email))
+            .leftJoin(qUserSeminarEntity).on(qUserEntity.id.eq(qUserSeminarEntity.user.id))
             .where(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
             .fetch()
     }
