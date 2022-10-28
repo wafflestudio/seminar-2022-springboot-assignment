@@ -5,9 +5,12 @@ import com.wafflestudio.seminar.core.user.domain.UserPort
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 
 @Service
@@ -19,14 +22,22 @@ class AuthTokenService(
     private val tokenPrefix = "Bearer "
     private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
 
-    /**
-     * TODO Jwts.builder() 라이브러리를 통해서, 어떻게 필요한 정보를 토큰에 넣어 발급하고,
-     *   검증할지, 또 만료는 어떻게 시킬 수 있을지 고민해보아요.
-     */
-    fun generateTokenByUsername(username: String): AuthToken {
-        val claims: MutableMap<String, Any>
-        val expiryDate: Date
-        val resultToken = Jwts.builder().compact()
+    fun generateTokenByEmail(email: String): AuthToken {
+        val claims: MutableMap<String, Any> = mutableMapOf("email" to email)
+        val issuer = authProperties.issuer
+        val expiryDate: Date = Date.from(
+            LocalDateTime
+                .now()
+                .plusSeconds(authProperties.jwtExpiration)
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+        )
+        val resultToken = Jwts.builder()
+            .setClaims(claims)
+            .setIssuer(issuer)
+            .setExpiration(expiryDate)
+            .signWith(signingKey, SignatureAlgorithm.HS256)
+            .compact()
 
         return AuthToken(resultToken)
     }
@@ -50,6 +61,6 @@ class AuthTokenService(
 
     fun signUp(signUpRequest: SignUpRequest): AuthToken {
         val user = userPort.createUser(signUpRequest)
-        return generateTokenByUsername(user.username)
+        return generateTokenByEmail(user.email)
     }
 }
