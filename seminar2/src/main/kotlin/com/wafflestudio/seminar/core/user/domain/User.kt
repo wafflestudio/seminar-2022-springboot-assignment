@@ -6,7 +6,6 @@ data class User(
     val id: Long,
     val email: String,
     val username: String,
-    val password: String,
     val dateJoined: LocalDateTime? = null,
     val lastLogin: LocalDateTime? = null,
     val participantProfile: ParticipantProfile? = null,

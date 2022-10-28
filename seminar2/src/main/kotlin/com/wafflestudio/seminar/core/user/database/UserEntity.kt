@@ -37,7 +37,6 @@ class UserEntity(
             id = id,
             email = email,
             username = username,
-            password = password,
             lastLogin = modifiedAt,
             dateJoined = createdAt,
 
