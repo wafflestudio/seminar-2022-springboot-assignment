@@ -1,6 +1,6 @@
 package com.wafflestudio.seminar.core.user.service
 
-import com.wafflestudio.seminar.core.user.api.request.LoginRequest
+import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.domain.UserPort
 import io.jsonwebtoken.Claims
@@ -65,8 +65,8 @@ class AuthTokenService(
         return generateTokenByEmail(user.email)
     }
 
-    fun login(loginRequest: LoginRequest): AuthToken {
-        val user = userPort.getUser(loginRequest)
+    fun signIn(signInRequest: SignInRequest): AuthToken {
+        val user = userPort.getUser(signInRequest)
         return generateTokenByEmail(user.email)
     }
 }

@@ -1,7 +1,7 @@
 package com.wafflestudio.seminar.core.user.api
 
 import com.wafflestudio.seminar.common.Authenticated
-import com.wafflestudio.seminar.core.user.api.request.LoginRequest
+import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.service.AuthToken
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
@@ -22,10 +22,10 @@ class AuthController(
     }
 
     @PostMapping("/api/v1/signin")
-    fun logIn(
-        @RequestBody loginRequest: LoginRequest
+    fun signIn(
+        @RequestBody signInRequest: SignInRequest
     ): AuthToken {
-        return authTokenService.login(loginRequest)
+        return authTokenService.signIn(signInRequest)
     }
 
     @Authenticated

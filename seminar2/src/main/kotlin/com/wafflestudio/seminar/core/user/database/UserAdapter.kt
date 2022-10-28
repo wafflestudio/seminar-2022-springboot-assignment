@@ -3,7 +3,7 @@ package com.wafflestudio.seminar.core.user.database
 import com.wafflestudio.seminar.common.Seminar401
 import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.common.Seminar409
-import com.wafflestudio.seminar.core.user.api.request.LoginRequest
+import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.domain.User
 import com.wafflestudio.seminar.core.user.domain.UserPort
@@ -25,9 +25,9 @@ class UserAdapter(
         return userRepository.save(userEntity).toUser()
     }
 
-    override fun getUser(loginRequest: LoginRequest): User {
-        val email = loginRequest.email
-        val password = loginRequest.password
+    override fun getUser(signInRequest: SignInRequest): User {
+        val email = signInRequest.email
+        val password = signInRequest.password
         val userEntity = userRepository.findByEmail(email) ?: throw Seminar404("해당 이메일(${email})로 등록된 사용자가 없어요.")
 
         return if (passwordEncoder.matches(

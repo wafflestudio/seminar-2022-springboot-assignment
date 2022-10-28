@@ -1,6 +1,6 @@
 package com.wafflestudio.seminar.core.user.api.request
 
-data class LoginRequest(
+data class SignInRequest(
     val email: String,
     val password: String,
 )
