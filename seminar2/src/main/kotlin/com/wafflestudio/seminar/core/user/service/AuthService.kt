@@ -40,11 +40,11 @@ class AuthService(
     
     
     private fun signupParticipantEntity(user: SignUpRequest) = user.run {
-        UserEntity(username, email, password, LocalDate.now(), null, ParticipantProfileEntity(email, participant), null)
+        UserEntity(username, email, password, LocalDate.now(), null, ParticipantProfileEntity(participant), null)
     }
     
     private fun signupInstructorEntity(user: SignUpRequest) = user.run {
-        UserEntity(username, email, password, LocalDate.now(), null, null, InstructorProfileEntity(email, instructor))
+        UserEntity(username, email, password, LocalDate.now(), null, null, InstructorProfileEntity(instructor))
 
     }
     
@@ -54,12 +54,12 @@ class AuthService(
         userRepository.save(userEntity)
     }
     
-    private fun ParticipantProfileEntity(email: String, par: ParticipantProfileDto?) = par?.run {
-        com.wafflestudio.seminar.core.user.domain.ParticipantProfileEntity(email, university, isRegistered)
+    private fun ParticipantProfileEntity(par: ParticipantProfileDto?) = par?.run {
+        com.wafflestudio.seminar.core.user.domain.ParticipantProfileEntity(university, isRegistered)
     }
     
-    private fun InstructorProfileEntity(email: String, ins: InstructorProfileDto?) = ins?.run {
-        com.wafflestudio.seminar.core.user.domain.InstructorProfileEntity(email, company, year)
+    private fun InstructorProfileEntity(ins: InstructorProfileDto?) = ins?.run {
+        com.wafflestudio.seminar.core.user.domain.InstructorProfileEntity(company, year)
     }
     
 

@@ -12,11 +12,11 @@ interface UserRepository : JpaRepository<UserEntity, Long> {
 }
 
 interface ParticipantProfileRepository: JpaRepository<ParticipantProfileEntity,Long>{
-    fun findByEmailParticipant(emailParticipant: String) : ParticipantProfileEntity
+
 }
 
 interface InstructorProfileRepository: JpaRepository<InstructorProfileEntity,Long>{
-    fun findByEmailInstructor(emailInstructor: String) : InstructorProfileEntity
+
 }
 
 interface SeminarRepository : JpaRepository<SeminarEntity, Long> {

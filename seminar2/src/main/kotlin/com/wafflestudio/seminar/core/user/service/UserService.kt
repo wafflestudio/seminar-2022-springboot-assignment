@@ -24,20 +24,21 @@ class UserService(
     private val queryFactory: JPAQueryFactory,
     private val modelMapper: ModelMapper
 ) {
-    fun getProfile(email : String, token: String): GetProfile {
-        val findByEmailEntity = userRepository.findByEmail(email)
+    fun getProfile(id : Long, token: String): GetProfile {
+        //todo: token 인증
+        val findByEmailEntity = userRepository.findById(id)
 
         val qUserEntity: QUserEntity = QUserEntity.userEntity
         val qParticipantProfileEntity: QParticipantProfileEntity? = QParticipantProfileEntity.participantProfileEntity
         val qInstructorProfileEntity: QInstructorProfileEntity? = QInstructorProfileEntity.instructorProfileEntity
 
-        val userProfileDto =makeUserProfileDto(email, qUserEntity, qParticipantProfileEntity, qInstructorProfileEntity)
+        val userProfileDto =makeUserProfileDto(id, qUserEntity, qParticipantProfileEntity, qInstructorProfileEntity)
 
         val userEntity = userProfileDto[0].userEntity
         val participantProfileEntity = userProfileDto[0].participantProfileEntity
         val instructorProfileEntity = userProfileDto[0].instructorProfileEntity
         
-        return if(findByEmailEntity.participant != null && findByEmailEntity.instructor == null) {
+        return if(findByEmailEntity.get().participant != null && findByEmailEntity.get().instructor == null) {
             GetProfile(
                 userEntity?.id, 
                 userEntity?.username, 
@@ -48,7 +49,7 @@ class UserService(
                null
             )
             
-        } else if(findByEmailEntity.participant == null && findByEmailEntity.instructor != null){
+        } else if(findByEmailEntity.get().participant == null && findByEmailEntity.get().instructor != null){
             GetProfile(
                 userEntity?.id, 
                 userEntity?.username, 
@@ -58,7 +59,7 @@ class UserService(
                null,
                 GetProfileInstructorDto(instructorProfileEntity?.id, instructorProfileEntity?.company, instructorProfileEntity?.year)
             )
-        } else if(findByEmailEntity.participant != null && findByEmailEntity.instructor != null){
+        } else if(findByEmailEntity.get().participant != null && findByEmailEntity.get().instructor != null){
             GetProfile(
                 userEntity?.id, 
                 userEntity?.username, 
@@ -83,7 +84,7 @@ class UserService(
 
         
         if(userEntity.participant != null && userEntity.instructor == null){
-            val participantProfileEntity = participantProfileRepository.findByEmailParticipant(authTokenService.getCurrentEmail(token))
+            val participantProfileEntity = participantProfileRepository.findById(authTokenService.getCurrentUserId(token)).get()
 
             userEntity.let {
                 it.username = user.username
@@ -106,7 +107,7 @@ class UserService(
                 GetProfileParticipantDto(participantProfileEntity.id,participantProfileEntity.university, participantProfileEntity.isRegistered),
                 null)
         } else if(userEntity.participant == null && userEntity.instructor != null){
-            val instructorProfileEntity = instructorProfileRepository.findByEmailInstructor(authTokenService.getCurrentEmail(token))
+            val instructorProfileEntity = instructorProfileRepository.findById(authTokenService.getCurrentUserId(token)).get()
            
             userEntity.let {
                 it.username = user.username
@@ -131,8 +132,8 @@ class UserService(
                 GetProfileInstructorDto(instructorProfileEntity.id, instructorProfileEntity.company, instructorProfileEntity.year)
             )
         } else if(userEntity.participant != null && userEntity.instructor != null){
-            val participantProfileEntity = participantProfileRepository.findByEmailParticipant(authTokenService.getCurrentEmail(token))
-            val instructorProfileEntity = instructorProfileRepository.findByEmailInstructor(authTokenService.getCurrentEmail(token))
+            val participantProfileEntity = participantProfileRepository.findById(authTokenService.getCurrentUserId(token)).get()
+            val instructorProfileEntity = instructorProfileRepository.findById(authTokenService.getCurrentUserId(token)).get()
             userEntity.let {
                 it.username = user.username
                 it.password = user.password
@@ -180,7 +181,7 @@ class UserService(
     }
 
     
-    private fun makeUserProfileDto(email: String, qUserEntity: QUserEntity, qParticipantProfileEntity: QParticipantProfileEntity?, qInstructorProfileEntity: QInstructorProfileEntity?):List<UserProfileDto>{
+    private fun makeUserProfileDto(id: Long, qUserEntity: QUserEntity, qParticipantProfileEntity: QParticipantProfileEntity?, qInstructorProfileEntity: QInstructorProfileEntity?):List<UserProfileDto>{
         return queryFactory.select(Projections.constructor(
             UserProfileDto::class.java,
             qUserEntity,
@@ -190,7 +191,7 @@ class UserService(
             .from(qUserEntity)
             .leftJoin(qParticipantProfileEntity).on(qUserEntity.participant.id.eq(qParticipantProfileEntity?.id))
             .leftJoin(qInstructorProfileEntity).on(qUserEntity.instructor.id.eq(qInstructorProfileEntity?.id))
-            .where(qUserEntity.email.eq(email))
+            .where(qUserEntity.id.eq(id))
             .fetch()
     }
   

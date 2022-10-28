@@ -7,8 +7,6 @@ import javax.persistence.*
 @Table(name="InstructorProfile")
 class InstructorProfileEntity(
     
-    @Column
-    var emailInstructor: String,
     
     @Column
     var company: String? = "",

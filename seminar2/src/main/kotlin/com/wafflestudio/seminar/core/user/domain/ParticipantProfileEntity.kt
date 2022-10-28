@@ -12,8 +12,6 @@ import javax.persistence.*
 @Table(name="ParticipantProfile")
 class ParticipantProfileEntity (
     
-    @Column
-    var emailParticipant: String,
     
     @Column
     var university: String? = "",

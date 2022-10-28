@@ -39,10 +39,10 @@ class Controller(
     }
     
     @Authenticated
-    @GetMapping("/api/v1/user/{email}")
-    fun getProfile(@PathVariable email: String, @RequestHeader("Authentication") token: String): GetProfile {
+    @GetMapping("/api/v1/user/{user_id}")
+    fun getProfile(@PathVariable user_id: Long, @RequestHeader("Authentication") token: String): GetProfile {
         
-        return userService.getProfile(email,token)
+        return userService.getProfile(user_id,token)
 
     }
     
@@ -68,22 +68,7 @@ class Controller(
         return seminarService.joinSeminar(seminarId, token)
     }
     
-    
-    @GetMapping("/api/v1/profile")
-    fun profile(@RequestHeader("Authentication") token: String): List<QueryProjection> {
-        return seminarService.profile(token)
-    }
-    
-    @PostMapping("/api/v1/makeProfile/{seminarId}/{email}")
-    fun makeProfile(@PathVariable seminarId: Long, @PathVariable email: String): List<ParticipantProfileDto>{
-        return userService.makeParticipantProfileDto(seminarId, email)
-    }
-    
- */
-/*
-    @PostMapping("/api/v1/makeSeminar/{seminarId}")
-    fun makeSeminar(@PathVariable seminarId: Long,email: String): List<SeminarDto>{
-        return userService.makeSeminarDto(seminarId,email)
-    }
     */
+    
+
 }
