@@ -4,5 +4,5 @@ data class OperatingSystem(
     val id: Long,
     val osName: String,
     val price: Long,
-    val desc: String,
+    val description: String,
 )
