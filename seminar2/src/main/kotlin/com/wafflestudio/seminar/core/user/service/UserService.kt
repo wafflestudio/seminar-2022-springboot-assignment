@@ -3,13 +3,11 @@ package com.wafflestudio.seminar.core.user.service
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.common.Seminar400
+import com.wafflestudio.seminar.core.user.api.request.BeParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.UpdateProfileRequest
 import com.wafflestudio.seminar.core.user.api.response.GetProfile
 import com.wafflestudio.seminar.core.user.database.*
-import com.wafflestudio.seminar.core.user.domain.QInstructorProfileEntity
-import com.wafflestudio.seminar.core.user.domain.QParticipantProfileEntity
-import com.wafflestudio.seminar.core.user.domain.QUserEntity
-import com.wafflestudio.seminar.core.user.domain.UserEntity
+import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.dto.seminar.UserProfileDto
 import com.wafflestudio.seminar.core.user.dto.user.GetProfileInstructorDto
 import com.wafflestudio.seminar.core.user.dto.user.GetProfileParticipantDto
@@ -169,6 +167,37 @@ class UserService(
         } else{
             throw Seminar400("오류입니다")
         }
+    }
+    
+    
+    fun beParticipant(participant: BeParticipantRequest, token: String):GetProfile {
+        
+        val participantEntity = participantProfileRepository.save(ParticipantProfileEntity(participant.university, participant.isRegistered))
+        
+        val userEntity = userRepository.findByEmail(authTokenService.getCurrentEmail(token))
+        
+        userRepository.save(
+            UserEntity(
+                userEntity.username,
+                userEntity.email,
+                userEntity.password,
+                userEntity.dateJoined,
+                userEntity.lastLogin,
+                participantEntity,
+                userEntity.instructor
+            )
+        )
+
+
+        return GetProfile(
+            userEntity.id,
+            userEntity.username,
+            userEntity.email,
+            userEntity.lastLogin,
+            userEntity.dateJoined,
+            GetProfileParticipantDto(participantEntity.id,participantEntity.university, participantEntity.isRegistered),
+            GetProfileInstructorDto(userEntity.instructor?.id, userEntity.instructor?.company, userEntity.instructor?.year)
+        )
     }
     
     private fun UserProfile(user: UserEntity, token: String) = user.run {

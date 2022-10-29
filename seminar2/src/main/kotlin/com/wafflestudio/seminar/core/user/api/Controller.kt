@@ -1,10 +1,7 @@
 package com.wafflestudio.seminar.core.user.api
 
 import com.wafflestudio.seminar.common.Authenticated
-import com.wafflestudio.seminar.core.user.api.request.LoginRequest
-import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
-import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
-import com.wafflestudio.seminar.core.user.api.request.UpdateProfileRequest
+import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.api.response.*
 import com.wafflestudio.seminar.core.user.service.*
 import org.springframework.web.bind.annotation.*
@@ -49,6 +46,11 @@ class Controller(
         return userService.updateProfile(userProfile, token)
     }
 
+    @PostMapping("/api/v1/user/participant")
+    fun beParticipant(@RequestBody participant: BeParticipantRequest, @RequestHeader("Authentication") token: String): GetProfile{
+        return userService.beParticipant(participant, token)
+    }
+    
     @PostMapping("/api/v1/seminar")
     fun createSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authentication") token: String): SeminarInfo {
         
