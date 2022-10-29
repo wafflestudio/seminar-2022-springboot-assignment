@@ -7,9 +7,11 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
-class AuthConfig {
+class AuthConfig(
+) {
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
@@ -18,10 +20,11 @@ class AuthConfig {
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain =
         httpSecurity
             .csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .authorizeRequests()
-            .anyRequest().permitAll()
+//            .authorizeRequests() // 요청에 대한 사용권한 체크
+//            .antMatchers("/api/v1/signin", "/api/v1/signup").permitAll() // 로그인 회원가입 페이지 인증없이 가능
+//            .anyRequest().authenticated()
+//            .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용하지 않도록 설정
             .and()
             .build()
 }
