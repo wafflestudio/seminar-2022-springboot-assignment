@@ -5,5 +5,6 @@ import com.wafflestudio.seminar.core.user.dto.seminar.TeacherDto
 data class SeminarInfoByName(
     val id:Long?,
     val name: String?,
-    val instructors: List<TeacherDto>?
+    val instructors: List<TeacherDto>?,
+    val participantsCount: Int
 )

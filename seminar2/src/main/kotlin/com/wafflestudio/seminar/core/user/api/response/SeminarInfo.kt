@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.api.response
 
+import com.wafflestudio.seminar.core.user.dto.seminar.StudentDto
 import com.wafflestudio.seminar.core.user.dto.seminar.TeacherDto
 
 data class SeminarInfo(
@@ -9,5 +10,6 @@ data class SeminarInfo(
     val count: Int?,
     val time: String?,
     val online: Boolean? = true,
-    val instructors: List<TeacherDto>?
+    val instructors: List<TeacherDto>?,
+    val participants: List<StudentDto>?
 )

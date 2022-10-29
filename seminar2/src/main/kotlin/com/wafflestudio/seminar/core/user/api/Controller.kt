@@ -60,17 +60,18 @@ class Controller(
 
         return seminarService.updateSeminar(seminar, token)
     }
-
-
+    
     @GetMapping("/api/v1/seminar/{seminar_id}")
     fun getSeminarById(@PathVariable seminar_id: Long, @RequestHeader("Authentication") token: String):SeminarInfo{
         return seminarService.getSeminarById(seminar_id,token)
     }
-    
+    /*
     @GetMapping("/api/v1/seminar/")
     fun getSeminars(@RequestHeader("Authentication") token: String): List<SeminarInfo>?{
         return seminarService.getSeminars(token)
     }
+    
+     */
     
     @GetMapping("/api/v1/seminar")
     fun getSeminarByName(@RequestParam name: String, @RequestParam order: String, @RequestHeader("Authentication") token: String): SeminarInfoByName {
@@ -78,6 +79,8 @@ class Controller(
         return seminarService.getSeminarByName(name, order, token)
     }
     
+    
+ 
  
     @PostMapping("/api/v1/seminar/{seminar_id}/user")
     fun joinSeminar(@PathVariable seminar_id: Long, @RequestHeader("Authentication") token: String): JoinSeminarInfo{
