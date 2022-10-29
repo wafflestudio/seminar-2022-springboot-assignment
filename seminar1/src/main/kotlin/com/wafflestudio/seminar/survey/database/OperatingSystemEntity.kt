@@ -7,8 +7,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 import javax.persistence.UniqueConstraint
 
-@Entity
-@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["osName"])])
+@Entity(name = "operating_system")
 class OperatingSystemEntity(
     val osName: String,
     val price: Long,

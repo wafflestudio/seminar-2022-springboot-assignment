@@ -1,12 +1,16 @@
 package com.wafflestudio.seminar.survey.api
 
+import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
+import com.wafflestudio.seminar.survey.api.response.surveyInfo
+import com.wafflestudio.seminar.survey.database.SurveyResponseEntity
 import com.wafflestudio.seminar.survey.service.SeminarService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import com.wafflestudio.seminar.user.exception.ErrorCode
+import com.wafflestudio.seminar.user.exception.UserException
+import com.wafflestudio.seminar.user.exception.UserUnauthorized
+import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("/api/v1")
 class SeminarController(
     private val service: SeminarService
 ) {
@@ -28,5 +32,13 @@ class SeminarController(
     fun getSurvey(
         @PathVariable surveyId: Long,
     ) = service.surveyResponse(surveyId)
-
+    
+    @PostMapping("/survey")
+    fun postSurvey(
+        @RequestHeader("X-User-ID") userId: Long?,
+        @RequestBody createSurveyRequest: CreateSurveyRequest
+    ): surveyInfo {
+        userId ?: throw UserUnauthorized()
+        return service.doSurvey(userId, createSurveyRequest)
+    }
 }
