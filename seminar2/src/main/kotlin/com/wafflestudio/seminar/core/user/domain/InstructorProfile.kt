@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.seminar.domain
+package com.wafflestudio.seminar.core.user.domain
 
 import com.wafflestudio.seminar.core.user.database.UserEntity
 

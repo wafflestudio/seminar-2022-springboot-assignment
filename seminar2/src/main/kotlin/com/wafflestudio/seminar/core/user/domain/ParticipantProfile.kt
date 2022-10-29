@@ -1,6 +1,4 @@
-package com.wafflestudio.seminar.core.seminar.domain
-
-import com.wafflestudio.seminar.core.user.domain.User
+package com.wafflestudio.seminar.core.user.domain
 
 data class ParticipantProfile(
     val user: User,

@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.seminar.database
+package com.wafflestudio.seminar.core.user.database
 
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.jpa.repository.JpaRepository

@@ -4,10 +4,6 @@ import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar401
 import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.common.Seminar409
-import com.wafflestudio.seminar.core.seminar.database.InstructorProfileEntity
-import com.wafflestudio.seminar.core.seminar.database.InstructorProfileRepository
-import com.wafflestudio.seminar.core.seminar.database.ParticipantProfileEntity
-import com.wafflestudio.seminar.core.seminar.database.ParticipantProfileRepository
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.domain.User

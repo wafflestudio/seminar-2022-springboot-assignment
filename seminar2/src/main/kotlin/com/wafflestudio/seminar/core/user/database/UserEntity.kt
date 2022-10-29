@@ -1,8 +1,6 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
-import com.wafflestudio.seminar.core.seminar.database.InstructorProfileEntity
-import com.wafflestudio.seminar.core.seminar.database.ParticipantProfileEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.User
 import javax.persistence.*
