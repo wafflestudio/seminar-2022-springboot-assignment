@@ -4,6 +4,7 @@
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/seminar0" />
     <file type="web" url="file://$PROJECT_DIR$/seminar1" />
+    <file type="web" url="file://$PROJECT_DIR$/seminar2" />
     <file type="web" url="file://$PROJECT_DIR$/seminar_0" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_18" project-jdk-name="11" project-jdk-type="JavaSDK">
