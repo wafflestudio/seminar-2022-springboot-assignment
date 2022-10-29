@@ -7,19 +7,21 @@ import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.service.AuthToken
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
+@RequestMapping("/api/v1")
 class AuthController(
     private val authTokenService: AuthTokenService
 ) {
-    @PostMapping("/api/v1/signup")
+    @PostMapping("/signup")
     fun signUp(
-        @RequestBody signUpRequest: SignUpRequest
+        @RequestBody @Valid signUpRequest: SignUpRequest
     ): AuthToken {
         return authTokenService.signUp(signUpRequest)
     }
 
-    @PostMapping("/api/v1/signin")
+    @PostMapping("/signin")
     fun signIn(
         @RequestBody signInRequest: SignInRequest
     ): AuthToken {
@@ -27,7 +29,7 @@ class AuthController(
     }
 
     @Authenticated
-    @GetMapping("/api/v1/me")
+    @GetMapping("/me")
     fun getMe(
         @RequestHeader("Authorization") authHeader: String,
         @UserContext userId: Long

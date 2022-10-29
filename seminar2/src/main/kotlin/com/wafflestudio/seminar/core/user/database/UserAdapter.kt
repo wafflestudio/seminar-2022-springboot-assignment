@@ -1,8 +1,13 @@
 package com.wafflestudio.seminar.core.user.database
 
+import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar401
 import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.common.Seminar409
+import com.wafflestudio.seminar.core.seminar.database.InstructorProfileEntity
+import com.wafflestudio.seminar.core.seminar.database.InstructorProfileRepository
+import com.wafflestudio.seminar.core.seminar.database.ParticipantProfileEntity
+import com.wafflestudio.seminar.core.seminar.database.ParticipantProfileRepository
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.domain.User
@@ -13,17 +18,50 @@ import org.springframework.stereotype.Component
 @Component
 class UserAdapter(
     private val userRepository: UserRepository,
+    private val participantProfileRepository: ParticipantProfileRepository,
+    private val instructorProfileRepository: InstructorProfileRepository,
     private val passwordEncoder: PasswordEncoder
 ) : UserPort {
-    override fun createUser(signUpRequest: SignUpRequest): User {
-        val username = signUpRequest.username
-        val email = signUpRequest.email
+    override fun createUser(signUpRequest: SignUpRequest) = signUpRequest.run {
         val encodedPassword = passwordEncoder.encode(signUpRequest.password)
-        userRepository.findByEmail(email)?.let { throw Seminar409("${email}: 중복된 이메일입니다.") }
+        userRepository.findByEmail(email!!)?.let { throw Seminar409("${email}: 중복된 이메일입니다.") }
+        try {
+            User.Role.valueOf(role!!)
+        } catch (e: IllegalArgumentException) {
+            throw Seminar400("${role}: 잘못된 수강생/진행자 형식입니다.")
+        }
+        val userEntity = UserEntity(
+            email = email,
+            username = username!!,
+            encodedPassword = encodedPassword,
+            userSeminars = null,
+            participantProfile = null,
+            instructorProfile = null
+        )
 
-        val userEntity = UserEntity(email, username, encodedPassword)
-        return userRepository.save(userEntity).toUser()
+        if (User.Role.valueOf(role) == User.Role.PARTICIPANT) {
+            participantProfileRepository.save(
+                ParticipantProfileEntity(
+                    user = userEntity,
+                    university = university!!,
+                    isRegistered = isRegistered!!,
+                )
+            )
+        } else if (User.Role.valueOf(role) == User.Role.INSTRUCTOR) {
+            instructorProfileRepository.save(
+                InstructorProfileEntity(
+                    user = userEntity,
+                    company = company!!,
+                    year = year
+                )
+            )
+        }
+
+        userRepository.save(
+            userEntity
+        ).toUser()
     }
+
 
     override fun getUser(signInRequest: SignInRequest): User {
         val email = signInRequest.email
