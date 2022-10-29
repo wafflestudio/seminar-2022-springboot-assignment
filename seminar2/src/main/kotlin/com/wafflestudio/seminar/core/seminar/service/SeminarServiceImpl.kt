@@ -20,6 +20,8 @@ class SeminarServiceImpl(
     private val userSeminarRepository: UserSeminarRepository,
     private val authTokenService: AuthTokenService,
 ) : SeminarService {
+    
+    @LogExecutionTime
     override fun createSeminar(authToken: String, createSeminarRequest: CreateSeminarRequest): Seminar {
         val instructorId = authTokenService.getCurrentUserId(authToken)
         val instructor = userRepository.findByIdOrNull(instructorId)
@@ -50,7 +52,8 @@ class SeminarServiceImpl(
             mutableListOf()
         )
     }
-
+    
+    @LogExecutionTime
     override fun modifySeminar(authToken: String, modifySeminarRequest: ModifySeminarRequest): Seminar {
         if (modifySeminarRequest.id == null) {
             throw Seminar400("변경할 세미나의 id를 입력해주세요.")
@@ -98,7 +101,8 @@ class SeminarServiceImpl(
 
         return seminar.toDTO(instructors, participants)
     }
-
+    
+    @LogExecutionTime
     override fun getAllSeminar(seminarName: String?, order: String?): List<SeminarForList> {
         var seminars = if (seminarName != null) {
             seminarRepository.findSeminarByName(seminarName)
@@ -118,6 +122,7 @@ class SeminarServiceImpl(
         return seminarList
     }
 
+    @LogExecutionTime
     override fun readSeminar(seminarId: Long): Seminar {
         val seminar = seminarRepository.findByIdOrNull(seminarId)
         seminar ?: throw Seminar404("존재하지 않는 세미나입니다.")
@@ -128,6 +133,7 @@ class SeminarServiceImpl(
         return seminar.toDTO(instructors, participants)
     }
 
+    @LogExecutionTime
     override fun applySeminar(authToken: String, seminarId: Long, applySeminarRequest: ApplySeminarRequest): Seminar {
         val userId = authTokenService.getCurrentUserId(authToken)
         val user = userRepository.findByIdOrNull(userId)
@@ -173,7 +179,8 @@ class SeminarServiceImpl(
 
         return seminar.toDTO(instructors, participants)
     }
-
+    
+    @LogExecutionTime
     override fun deleteParticipantFromSeminar(authToken: String, seminarId: Long): String {
         val userId = authTokenService.getCurrentUserId(authToken)
         val user = userRepository.findByIdOrNull(userId) ?: throw Seminar400("올바른 유저 Id가 아닙니다")

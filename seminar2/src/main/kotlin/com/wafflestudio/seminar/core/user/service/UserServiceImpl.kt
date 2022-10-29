@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.common.LogExecutionTime
 import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
 import com.wafflestudio.seminar.core.user.api.*
 import com.wafflestudio.seminar.core.user.api.request.*
@@ -20,6 +21,8 @@ class UserServiceImpl(
     private val participantProfileRepository: ParticipantProfileRepository,
     private val seminarRepository: SeminarRepository
 ) : UserService {
+    
+    @LogExecutionTime
     override fun createUser(signUpRequest: SignUpRequest): AuthToken {
         if (signUpRequest.email == null || signUpRequest.username == null || signUpRequest.password == null) {
             throw User400("필수 사항을 입력해주세요.")
@@ -61,7 +64,8 @@ class UserServiceImpl(
             return authTokenService.generateTokenByUsername(newUserEntity.email)
         }
     }
-
+    
+    @LogExecutionTime
     override fun loginUser(loginRequest: LoginRequest): AuthToken {
         if (loginRequest.email == null || loginRequest.password == null) {
             throw User400("필수 사항을 입력해주세요.")
@@ -74,11 +78,13 @@ class UserServiceImpl(
         userRepository.save(user)
         return authTokenService.generateTokenByUsername(user.email)
     }
-
+    
+    @LogExecutionTime
     override fun getUser(authToken: String): String {
         return "인증에 성공하였습니다."
     }
-
+    
+    @LogExecutionTime
     override fun getProfile(userId: Long): User {
         val userInfo = userRepository.findByIdOrNull(userId) ?: throw User404("존재하지 않는 유저입니다.")
         if (userInfo.participantProfileEntity != null && userInfo.instructorProfileEntity != null) {
@@ -93,7 +99,8 @@ class UserServiceImpl(
             return userInfo.toDTO(seminars, null)
         }
     }
-
+    
+    @LogExecutionTime
     override fun modifyProfile(authToken: String, modifyRequest: ModifyRequest): User {
         val userId = authTokenService.getCurrentUserId(authToken)
         val user = userRepository.findByIdOrNull(userId)
@@ -130,6 +137,7 @@ class UserServiceImpl(
         }
     }
 
+    @LogExecutionTime
     override fun addNewParticipant(authToken: String, registerParticipantRequest: RegisterParticipantRequest): User {
         val userId = authTokenService.getCurrentUserId(authToken)
         val user = userRepository.findByIdOrNull(userId)
