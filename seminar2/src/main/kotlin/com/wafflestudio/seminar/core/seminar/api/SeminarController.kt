@@ -1,9 +1,7 @@
 package com.wafflestudio.seminar.core.seminar.api
 
 import com.wafflestudio.seminar.common.Authenticated
-import com.wafflestudio.seminar.core.seminar.api.request.ApplySeminarRequest
-import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
-import com.wafflestudio.seminar.core.seminar.api.request.ModifySeminarRequest
+import com.wafflestudio.seminar.core.seminar.api.request.*
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -37,6 +35,7 @@ class SeminarController(
     @Authenticated
     @GetMapping("/api/v1/seminar/{seminar_id}/")
     fun seminarRead(
+        @RequestHeader("Authorization") authToken: String,
         @PathVariable("seminar_id") seminarId: Long
     ) = ResponseEntity.ok().body(service.readSeminar(seminarId))
     

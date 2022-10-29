@@ -17,6 +17,6 @@ class WebConfig(
      */
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(authInterceptor).addPathPatterns("/api/v1/*")
+        registry.addInterceptor(authInterceptor).addPathPatterns("/api/v1/**")
     }
 }
