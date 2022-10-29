@@ -1,5 +1,7 @@
 package com.wafflestudio.seminar.survey.api
 
+import com.wafflestudio.seminar.survey.api.exception.SeminarException
+import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -21,8 +23,10 @@ class SeminarExceptionHandler {
      * 예외들은 어느 패키지에 있는게 적절할까요?
      * 예외는 어떤 정보를 공통적으로 담고 있을까요?
      */
-    @ExceptionHandler(value = [SeminarException::class])
+    @ExceptionHandler(SeminarException::class)
     fun handle(e: SeminarException): ResponseEntity<Any> {
-        return ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
+        
+        // 선택의 근거 : 요청한 Resource(즉, 요청한 값을 기준으로 데이터를 찾으려했는데 없는 경우니까)
+        return ResponseEntity("404 Error : ${e.errorCode.message} ${e.data}", HttpStatus.NOT_FOUND)
     }
 }
