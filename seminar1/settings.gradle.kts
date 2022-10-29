@@ -1,1 +1,3 @@
-rootProject.name = "seminar1"
+
+
+//rootProject.name = "seminar1"
