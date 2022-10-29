@@ -2,8 +2,7 @@ package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
-import com.wafflestudio.seminar.core.seminar.domain.SeminarForInstructorProfile
-import com.wafflestudio.seminar.core.seminar.domain.SeminarForParticipantProfile
+import com.wafflestudio.seminar.core.seminar.domain.*
 import com.wafflestudio.seminar.core.user.domain.*
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -69,12 +68,4 @@ class UserEntity(
         )
     }
     
-    fun toParticipantDTO(joinedAt: LocalDateTime): Participant = this.run {
-        Participant(
-            id = id,
-            username = username,
-            email = email,
-            joinedAt = joinedAt
-        )
-    }
 }

@@ -1,9 +1,7 @@
 package com.wafflestudio.seminar.core.user.api
 
 import com.wafflestudio.seminar.common.Authenticated
-import com.wafflestudio.seminar.core.user.api.request.LoginRequest
-import com.wafflestudio.seminar.core.user.api.request.ModifyRequest
-import com.wafflestudio.seminar.core.user.api.request.RegisterParticipantRequest
+import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.service.AuthToken
 import com.wafflestudio.seminar.core.user.service.UserService

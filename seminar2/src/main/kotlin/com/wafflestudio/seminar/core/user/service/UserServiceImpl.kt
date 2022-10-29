@@ -5,7 +5,6 @@ import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
 import com.wafflestudio.seminar.core.user.api.*
 import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.database.*
-import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.domain.User
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder

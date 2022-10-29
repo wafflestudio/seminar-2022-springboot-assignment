@@ -1,9 +1,7 @@
 package com.wafflestudio.seminar.core.seminar.service
 
 import com.wafflestudio.seminar.common.*
-import com.wafflestudio.seminar.core.seminar.api.request.ApplySeminarRequest
-import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
-import com.wafflestudio.seminar.core.seminar.api.request.ModifySeminarRequest
+import com.wafflestudio.seminar.core.seminar.api.request.*
 import com.wafflestudio.seminar.core.seminar.database.*
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
 import com.wafflestudio.seminar.core.seminar.domain.SeminarForList

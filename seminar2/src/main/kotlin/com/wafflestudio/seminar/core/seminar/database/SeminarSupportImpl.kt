@@ -4,8 +4,7 @@ import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.core.seminar.database.QSeminarEntity.seminarEntity
 import com.wafflestudio.seminar.core.seminar.database.QUserSeminarEntity.userSeminarEntity
-import com.wafflestudio.seminar.core.seminar.domain.SeminarForInstructorProfile
-import com.wafflestudio.seminar.core.seminar.domain.SeminarForParticipantProfile
+import com.wafflestudio.seminar.core.seminar.domain.*
 import org.springframework.stereotype.Component
 
 @Component
