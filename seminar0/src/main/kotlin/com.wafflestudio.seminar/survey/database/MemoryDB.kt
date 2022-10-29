@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter
 
 @Component
 class MemoryDB {
+
     private val operatingSystems = mutableListOf<OperatingSystem>()
     private val surveyResponses = mutableListOf<SurveyResponse>()
 
@@ -19,8 +20,11 @@ class MemoryDB {
     }
 
     fun getSurveyResponses(): List<SurveyResponse> {
+       
         return surveyResponses
     }
+    
+    
 
     /**
      * 서버가 시작하면, 엑셀 파일을 메모리로 불러오는 역할을 수행해요
@@ -60,4 +64,6 @@ class MemoryDB {
 
         surveyResponses.addAll(responses)
     }
+    
+    
 }
