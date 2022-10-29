@@ -12,7 +12,7 @@ import com.wafflestudio.seminar.core.user.domain.QUserEntity
 import com.wafflestudio.seminar.core.user.domain.QUserSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.dto.CreateSeminarInstructorDto
-import com.wafflestudio.seminar.core.user.dto.SeminarInfoDto
+import com.wafflestudio.seminar.core.user.dto.seminar.SeminarInfoDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 

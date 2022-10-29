@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.user.dto
+package com.wafflestudio.seminar.core.user.dto.auth
 
 data class InstructorProfileDto(
     val id: Long,

@@ -1,7 +1,7 @@
 package com.wafflestudio.seminar.core.user.api.request
 
-import com.wafflestudio.seminar.core.user.dto.UpdateInstructorProfileDto
-import com.wafflestudio.seminar.core.user.dto.UpdateParticipantProfileDto
+import com.wafflestudio.seminar.core.user.dto.user.UpdateInstructorProfileDto
+import com.wafflestudio.seminar.core.user.dto.user.UpdateParticipantProfileDto
 
 data class UpdateProfileRequest(
     val username: String?,

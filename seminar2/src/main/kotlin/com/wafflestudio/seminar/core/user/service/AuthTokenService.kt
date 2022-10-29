@@ -56,7 +56,6 @@ class AuthTokenService(
     //parse(authToken)에 저장된 email을 findByEmail에 적용하여 id를 구하나?
 
     val email : String = parse(authToken).body["email"].toString()
-    println(userRepository.findByEmail(email).id)
     return userRepository.findByEmail(email).instructor!!.id
 
   }
@@ -65,7 +64,6 @@ class AuthTokenService(
     //parse(authToken)에 저장된 email을 findByEmail에 적용하여 id를 구하나?
 
     val email : String = parse(authToken).body["email"].toString()
-    println(userRepository.findByEmail(email).id)
     return userRepository.findByEmail(email).participant!!.id
 
   }

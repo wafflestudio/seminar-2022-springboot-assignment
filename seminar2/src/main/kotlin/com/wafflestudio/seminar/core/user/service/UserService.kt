@@ -10,7 +10,11 @@ import com.wafflestudio.seminar.core.user.domain.QInstructorProfileEntity
 import com.wafflestudio.seminar.core.user.domain.QParticipantProfileEntity
 import com.wafflestudio.seminar.core.user.domain.QUserEntity
 import com.wafflestudio.seminar.core.user.domain.UserEntity
-import com.wafflestudio.seminar.core.user.dto.*
+import com.wafflestudio.seminar.core.user.dto.seminar.UserProfileDto
+import com.wafflestudio.seminar.core.user.dto.user.GetProfileInstructorDto
+import com.wafflestudio.seminar.core.user.dto.user.GetProfileParticipantDto
+import com.wafflestudio.seminar.core.user.dto.user.UpdateInstructorProfileDto
+import com.wafflestudio.seminar.core.user.dto.user.UpdateParticipantProfileDto
 import org.modelmapper.ModelMapper
 import org.springframework.stereotype.Service
 

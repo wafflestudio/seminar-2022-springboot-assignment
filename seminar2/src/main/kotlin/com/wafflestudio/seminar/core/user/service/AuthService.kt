@@ -5,8 +5,8 @@ import com.wafflestudio.seminar.core.user.api.request.LoginRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.*
 import com.wafflestudio.seminar.core.user.domain.UserEntity
-import com.wafflestudio.seminar.core.user.dto.InstructorProfileDto
-import com.wafflestudio.seminar.core.user.dto.ParticipantProfileDto
+import com.wafflestudio.seminar.core.user.dto.auth.InstructorProfileDto
+import com.wafflestudio.seminar.core.user.dto.auth.ParticipantProfileDto
 import org.springframework.stereotype.Service;
 import java.time.LocalDate
 

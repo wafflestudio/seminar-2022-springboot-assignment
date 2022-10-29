@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.user.dto
+package com.wafflestudio.seminar.core.user.dto.auth
 
 import com.wafflestudio.seminar.core.user.domain.SeminarEntity
 import javax.persistence.Column

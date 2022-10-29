@@ -1,7 +1,7 @@
 package com.wafflestudio.seminar.core.user.api.request
 
-import com.wafflestudio.seminar.core.user.dto.InstructorProfileDto
-import com.wafflestudio.seminar.core.user.dto.ParticipantProfileDto
+import com.wafflestudio.seminar.core.user.dto.auth.InstructorProfileDto
+import com.wafflestudio.seminar.core.user.dto.auth.ParticipantProfileDto
 
 data class SignUpRequest(
     val email: String,

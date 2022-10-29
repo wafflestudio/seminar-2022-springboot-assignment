@@ -1,7 +1,7 @@
 package com.wafflestudio.seminar.core.user.api.response
 
-import com.wafflestudio.seminar.core.user.dto.GetProfileInstructorDto
-import com.wafflestudio.seminar.core.user.dto.GetProfileParticipantDto
+import com.wafflestudio.seminar.core.user.dto.user.GetProfileInstructorDto
+import com.wafflestudio.seminar.core.user.dto.user.GetProfileParticipantDto
 import java.time.LocalDate
 
 data class GetProfile(
