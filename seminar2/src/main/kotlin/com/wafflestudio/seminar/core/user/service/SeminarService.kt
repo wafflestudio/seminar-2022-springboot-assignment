@@ -369,14 +369,30 @@ class SeminarService(
                 droppedAt = null
                 )
         )
-        val teacherList = query.where(qSeminarEntity.id.eq(id))
+        val teacherList = queryFactory.select(Projections.constructor(
+            SeminarInfoDto::class.java,
+            qSeminarEntity,
+            qUserSeminarEntity,
+            qUserEntity
+        ))
+            .from(qSeminarEntity)
+            .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
+            .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.id.eq(id))
             .where(qUserSeminarEntity.role.eq("instructor")).fetch()
         
         
         val teacherSeminarEntity = teacherList[0].userSeminarEntity
         val teacherEntity = teacherList[0].userEntity
         
-        val studentList = query.where(qSeminarEntity.id.eq(id))
+        val studentList = queryFactory.select(Projections.constructor(
+            SeminarInfoDto::class.java,
+            qSeminarEntity,
+            qUserSeminarEntity,
+            qUserEntity
+        ))
+            .from(qSeminarEntity)
+            .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
+            .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.id.eq(id))
             .where(qUserSeminarEntity.role.eq("participant")).fetch()
 
 

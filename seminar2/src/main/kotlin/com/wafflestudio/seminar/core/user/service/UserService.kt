@@ -176,18 +176,18 @@ class UserService(
         
         val userEntity = userRepository.findByEmail(authTokenService.getCurrentEmail(token))
         
-        userRepository.save(
-            UserEntity(
-                userEntity.username,
-                userEntity.email,
-                userEntity.password,
-                userEntity.dateJoined,
-                userEntity.lastLogin,
-                participantEntity,
-                userEntity.instructor
-            )
+        val newEntity = UserEntity(
+            userEntity.username,
+            userEntity.email,
+            userEntity.password,
+            userEntity.dateJoined,
+            userEntity.lastLogin,
+            participantEntity,
+            userEntity.instructor
         )
-
+        userRepository.save(newEntity)
+        
+        userRepository.delete(userEntity)
 
         return GetProfile(
             userEntity.id,
