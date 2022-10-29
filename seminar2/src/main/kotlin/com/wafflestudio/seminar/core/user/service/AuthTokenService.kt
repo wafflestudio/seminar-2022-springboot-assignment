@@ -51,6 +51,24 @@ class AuthTokenService(
     return userRepository.findByEmail(email).id
     
   }
+
+  fun getCurrentInstructorId(authToken: String) :Long{
+    //parse(authToken)에 저장된 email을 findByEmail에 적용하여 id를 구하나?
+
+    val email : String = parse(authToken).body["email"].toString()
+    println(userRepository.findByEmail(email).id)
+    return userRepository.findByEmail(email).instructor!!.id
+
+  }
+
+  fun getCurrentParticipantId(authToken: String) :Long{
+    //parse(authToken)에 저장된 email을 findByEmail에 적용하여 id를 구하나?
+
+    val email : String = parse(authToken).body["email"].toString()
+    println(userRepository.findByEmail(email).id)
+    return userRepository.findByEmail(email).participant!!.id
+
+  }
   
   fun getCurrentEmail(authToken: String) : String{
     return parse(authToken).body["email"].toString()

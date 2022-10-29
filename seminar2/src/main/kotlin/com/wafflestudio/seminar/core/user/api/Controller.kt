@@ -7,6 +7,7 @@ import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.api.request.UpdateProfileRequest
 import com.wafflestudio.seminar.core.user.api.response.GetProfile
 import com.wafflestudio.seminar.core.user.api.response.SeminarInfo
+import com.wafflestudio.seminar.core.user.api.response.SeminarInfoByName
 import com.wafflestudio.seminar.core.user.service.*
 import org.springframework.web.bind.annotation.*
 
@@ -62,10 +63,18 @@ class Controller(
         return seminarService.getSeminarById(seminar_id,token)
     }
     
-    @GetMapping("/api/v1/seminar")
-    fun getSeminars(@RequestHeader("Authentication") token: String): List<SeminarInfo>{
+    @GetMapping("/api/v1/seminar/")
+    fun getSeminars(@RequestHeader("Authentication") token: String): List<SeminarInfo>?{
         return seminarService.getSeminars(token)
     }
+    
+    @GetMapping("/api/v1/seminar")
+    fun getSeminarByName(@RequestParam name: String, @RequestParam order: String, @RequestHeader("Authentication") token: String): SeminarInfoByName {
+        //todo: url 잘못되어 있을 수도?
+        return seminarService.getSeminarByName(name, order, token)
+    }
+    
+ 
     
      
  

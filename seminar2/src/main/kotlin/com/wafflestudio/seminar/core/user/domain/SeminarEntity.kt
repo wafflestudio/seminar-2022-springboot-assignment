@@ -22,10 +22,6 @@ class SeminarEntity(
     @Column
     var online: Boolean = true,
 
-    @OneToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name="instructor_id")
-    var instructors: UserEntity
-
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

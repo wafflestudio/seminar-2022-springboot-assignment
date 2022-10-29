@@ -84,7 +84,7 @@ class UserService(
 
         
         if(userEntity.participant != null && userEntity.instructor == null){
-            val participantProfileEntity = participantProfileRepository.findById(authTokenService.getCurrentUserId(token)).get()
+            val participantProfileEntity = participantProfileRepository.findById(authTokenService.getCurrentParticipantId(token)).get()
 
             userEntity.let {
                 it.username = user.username
@@ -107,7 +107,8 @@ class UserService(
                 GetProfileParticipantDto(participantProfileEntity.id,participantProfileEntity.university, participantProfileEntity.isRegistered),
                 null)
         } else if(userEntity.participant == null && userEntity.instructor != null){
-            val instructorProfileEntity = instructorProfileRepository.findById(authTokenService.getCurrentUserId(token)).get()
+            println(authTokenService.getCurrentUserId(token))
+            val instructorProfileEntity = instructorProfileRepository.findById(authTokenService.getCurrentInstructorId(token)).get()
            
             userEntity.let {
                 it.username = user.username
@@ -132,8 +133,8 @@ class UserService(
                 GetProfileInstructorDto(instructorProfileEntity.id, instructorProfileEntity.company, instructorProfileEntity.year)
             )
         } else if(userEntity.participant != null && userEntity.instructor != null){
-            val participantProfileEntity = participantProfileRepository.findById(authTokenService.getCurrentUserId(token)).get()
-            val instructorProfileEntity = instructorProfileRepository.findById(authTokenService.getCurrentUserId(token)).get()
+            val participantProfileEntity = participantProfileRepository.findById(authTokenService.getCurrentParticipantId(token)).get()
+            val instructorProfileEntity = instructorProfileRepository.findById(authTokenService.getCurrentInstructorId(token)).get()
             userEntity.let {
                 it.username = user.username
                 it.password = user.password
@@ -169,7 +170,6 @@ class UserService(
     private fun UserProfile(user: UserEntity, token: String) = user.run {
 
         UpdateProfileRequest(
-            id = authTokenService.getCurrentUserId(token),
             username = user.username,
             password = user.password,
           

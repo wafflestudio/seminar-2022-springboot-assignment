@@ -5,12 +5,12 @@ import com.wafflestudio.seminar.core.user.domain.SeminarEntity
 import com.wafflestudio.seminar.core.user.domain.UserEntity
 import com.wafflestudio.seminar.core.user.domain.UserSeminarEntity
 
-data class SeminarInstructorDto(
+data class SeminarInfoDto(
 
     val seminarEntity: SeminarEntity?,
 
-    val userEntity: UserEntity?,
     val userSeminarEntity: UserSeminarEntity?,
+    val userEntity: UserEntity?,
 
     ) {
     
