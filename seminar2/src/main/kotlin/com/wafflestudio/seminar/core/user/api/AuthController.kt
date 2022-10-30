@@ -7,7 +7,6 @@ import com.wafflestudio.seminar.core.user.domain.User
 import com.wafflestudio.seminar.core.user.service.AuthToken
 import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.web.bind.annotation.*
-import javax.servlet.http.HttpServletRequest
 
 @RestController
 class AuthController(
@@ -25,10 +24,7 @@ class AuthController(
     
     @Authenticated
     @GetMapping("/api/v1/me")
-    fun getMe(request: HttpServletRequest): User {
-        println("in controller")
-        val userId: Long = request.getAttribute("userId") as Long
-        println(userId)
+    fun getMe(@RequestAttribute userId: Long): User {
         return userService.getUser(userId)
     }
 }

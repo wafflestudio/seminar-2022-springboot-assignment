@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.common.Seminar400
+import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
@@ -9,7 +10,7 @@ import com.wafflestudio.seminar.core.user.domain.User
 import org.springframework.stereotype.Service
 
 interface UserService {
-    fun getUser(id: Long?): User
+    fun getUser(id: Long): User
     fun createUser(user: SignUpRequest): AuthToken
     fun loginUser(user: SignInRequest): AuthToken
 }
@@ -19,11 +20,9 @@ class UserServiceImpl(
     private val userRepository: UserRepository,
     private val authTokenService: AuthTokenService,
 ): UserService {
-    override fun getUser(id: Long?): User {
-        // TODO: error 구분해서 처리하기
-        if (id == null) throw Error()
+    override fun getUser(id: Long): User {
         val entity = userRepository.findById(id)
-        if (entity.isEmpty) throw Error()
+        if (entity.isEmpty) throw Seminar404("해당 id로 유저를 찾을 수 없습니다.")
         
         return User(entity.get())
     }
