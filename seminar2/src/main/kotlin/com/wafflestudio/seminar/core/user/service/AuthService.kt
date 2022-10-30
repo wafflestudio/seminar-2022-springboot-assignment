@@ -6,6 +6,7 @@ import com.wafflestudio.seminar.core.user.api.request.LoginRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.*
 import com.wafflestudio.seminar.core.user.domain.UserEntity
+import com.wafflestudio.seminar.core.user.domain.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.dto.auth.InstructorProfileDto
 import com.wafflestudio.seminar.core.user.dto.auth.ParticipantProfileDto
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -23,19 +24,19 @@ class AuthService(
 )  {
     fun signup(user: SignUpRequest): UserEntity {
         return if(user.role == "participant"){
-             user.password = this.passwordEncoder.encode(user.password)
-             userRepository.save(signupParticipantEntity(user))
+             val encodedPassword = this.passwordEncoder.encode(user.password)
+             userRepository.save(signupParticipantEntity(user,encodedPassword))
             
             
         } else if(user.role == "instructor"){
-            user.password = this.passwordEncoder.encode(user.password)
+            val encodedPassword = this.passwordEncoder.encode(user.password)
             if (user.instructor?.year != null) {
                 
                 if(user.instructor.year < 0){
                     throw Seminar400("0 또는 양의 정수만 입력할 수 있습니다")
                 }
             }
-            userRepository.save(signupInstructorEntity(user))
+            userRepository.save(signupInstructorEntity(user, encodedPassword))
             
         } else throw Seminar400("오류")
     }
@@ -54,13 +55,14 @@ class AuthService(
         
     }
     
-    
-    private fun signupParticipantEntity(user: SignUpRequest) = user.run {
-        UserEntity(username, email, password, LocalDate.now(), null, ParticipantProfileEntity(participant), null)
+    val emptyMutableList1 = mutableListOf<UserSeminarEntity>()
+    val emptyMutableList2 = mutableListOf<UserSeminarEntity>()
+    private fun signupParticipantEntity(user: SignUpRequest, encodedPassword: String) = user.run {
+        UserEntity(username, email, encodedPassword, LocalDate.now(), null, ParticipantProfileEntity(participant), null, emptyMutableList1)
     }
     
-    private fun signupInstructorEntity(user: SignUpRequest) = user.run {
-        UserEntity(username, email, password, LocalDate.now(), null, null, InstructorProfileEntity(instructor))
+    private fun signupInstructorEntity(user: SignUpRequest, encodedPassword: String) = user.run {
+        UserEntity(username, email, encodedPassword, LocalDate.now(), null, null, InstructorProfileEntity(instructor),emptyMutableList1)
 
     }
     

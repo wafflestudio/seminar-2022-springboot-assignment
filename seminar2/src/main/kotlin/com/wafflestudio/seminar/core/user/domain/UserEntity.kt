@@ -23,14 +23,16 @@ class UserEntity(
     @Column
     var lastLogin: LocalDate? = null,
 
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name="participant_id")
     var participant: ParticipantProfileEntity? = null,
 
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name="instructor_id")
-    var instructor: InstructorProfileEntity? = null
+    var instructor: InstructorProfileEntity? = null,
 
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    var userSeminars :MutableList<UserSeminarEntity>? = null
     
 ):BaseTimeEntity() {
    

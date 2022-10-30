@@ -8,13 +8,13 @@ import javax.persistence.*
 @Table(name="UserSeminar")
 class UserSeminarEntity(
 
-    @ManyToOne
-    @JoinColumn(name="user_id")
+    @ManyToOne(fetch = FetchType.LAZY) // 1
+    @JoinColumn(name = "user_id") // 2
     val user: UserEntity,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="seminar_id")
-    val seminar: SeminarEntity?,
+    val seminar: SeminarEntity,
 
     @Column
     val role: String,

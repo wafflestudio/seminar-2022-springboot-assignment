@@ -88,6 +88,11 @@ class Controller(
         return seminarService.joinSeminar(seminar_id,role, token)
     }
     
+    @DeleteMapping("seminar/{seminar_id}/user")
+    fun dropSeminar(@PathVariable seminar_id: Long,): String {
+        seminarService.dropSeminar(seminar_id)
+        return "1"
+    }
     
     
 

@@ -5,7 +5,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar403
 import com.wafflestudio.seminar.common.Seminar404
-import com.wafflestudio.seminar.common.Seminar409
 import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.user.api.response.JoinSeminarInfo
 import com.wafflestudio.seminar.core.user.api.response.SeminarInfo
@@ -18,8 +17,11 @@ import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.dto.seminar.SeminarInfoDto
 import com.wafflestudio.seminar.core.user.dto.seminar.StudentDto
 import com.wafflestudio.seminar.core.user.dto.seminar.TeacherDto
+import org.hibernate.cache.spi.support.AbstractReadWriteAccess.Item
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.util.stream.DoubleStream.builder
+
 
 @Service
 class SeminarService(
@@ -54,6 +56,7 @@ class SeminarService(
         if(userRepository.findByEmail(authTokenService.getCurrentEmail(token)).instructor == null) {
             throw Seminar403("진행자만 세미나를 생성할 수 있습니다")
         }
+        
         
         val saveSeminarEntity = seminarRepository.save(SeminarEntity(seminar, token))
         userSeminarRepository.save(userSeminarInstructorEntity(seminar, token))
@@ -544,6 +547,12 @@ class SeminarService(
             participants = newList
         )
     }
+    
+    fun dropSeminar(id: Long) {
+        userRepository.delete(userRepository.findById(1).get())
+    }
+    
+     
     
     private fun SeminarEntity(seminar: SeminarRequest, token: String) = seminar.run{
         com.wafflestudio.seminar.core.user.domain.SeminarEntity(
