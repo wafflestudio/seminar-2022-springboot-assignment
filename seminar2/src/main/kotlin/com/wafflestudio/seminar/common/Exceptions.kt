@@ -13,3 +13,5 @@ class Seminar409(msg: String) : SeminarException(msg, HttpStatus.CONFLICT)
 class Seminar403(msg: String) : SeminarException(msg, HttpStatus.FORBIDDEN)
 
 class Seminar200(msg: String) : SeminarException(msg, HttpStatus.OK)
+
+class Seminar401(msg: String) : SeminarException(msg, HttpStatus.UNAUTHORIZED)
