@@ -13,13 +13,19 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
+interface AuthService {
+    fun signUp(request: SignUpRequest): AuthToken
+    fun logIn(request: LogInRequest): AuthToken
+    fun getMe(request: AuthToken): User
+}
+
 @Service
-class AuthService(
+class AuthServiceImpl(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
     private val authTokenService: AuthTokenService,
-) {
-    fun signUp(request: SignUpRequest): AuthToken {
+) : AuthService {
+    override fun signUp(request: SignUpRequest): AuthToken {
         val user = UserEntity(
             email = request.email,
             username = request.username,
@@ -34,7 +40,7 @@ class AuthService(
         }
     }
 
-    fun logIn(request: LogInRequest): AuthToken {
+    override fun logIn(request: LogInRequest): AuthToken {
         try {
             val user = userRepository.findByEmail(request.email)
             if (!passwordEncoder.matches(request.password, user.password)) {
@@ -46,9 +52,9 @@ class AuthService(
         }
     }
 
-    fun getMe(request: AuthToken): User {
+    override fun getMe(request: AuthToken): User {
         val userId = authTokenService.getCurrentUserId(request.accessToken)
-        return userRepository.findByIdOrNull(userId)?.toUser() 
+        return userRepository.findByIdOrNull(userId)?.toUser()
             ?: throw AuthException("잘못된 유저에 대한 토큰입니다")
     }
 }
