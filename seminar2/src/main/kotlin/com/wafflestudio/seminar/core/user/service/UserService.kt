@@ -29,7 +29,7 @@ class UserServiceImpl(
 
     override fun createUser(user: SignUpRequest): AuthToken {
         val entityByEmail = userRepository.findByEmail(user.email)
-        if (entityByEmail.isPresent) throw Error()
+        if (entityByEmail.isPresent) throw Seminar404("이미 존재하는 이메일입니다.")
 
         val newUser = UserEntity(
             username = user.username,
