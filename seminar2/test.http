@@ -1,0 +1,24 @@
+POST {{host}}/api/v1/signup
+Content-Type: application/json
+
+{
+  "username": "강지혁",
+  "email": "wlgur7238@snu.ac.kr",
+  "password": "1234"
+}
+
+###
+
+POST {{host}}/api/v1/signin
+Content-Type: application/json
+
+{
+  "email": "wlgur7238@snu.ac.kr",
+  "password": "1234"
+}
+
+###
+
+GET {{host}}/api/v1/me
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndsZ3VyNzIzOEBzbnUuYWMua3IiLCJpc3MiOiJzZW1pbmFyLndhZmZsZXN0dWRpby5jb20iLCJpYXQiOjE2NjcxMTg4MTEsImV4cCI6MTY2NzEyNDgxMX0.Oz-UnlQUN1eYkcYJgbsiqlaNxROoYe3nDXKWYdp1-fk
