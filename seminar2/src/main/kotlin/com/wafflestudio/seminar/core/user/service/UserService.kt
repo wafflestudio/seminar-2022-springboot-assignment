@@ -2,24 +2,15 @@ package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.common.Seminar401
 import com.wafflestudio.seminar.common.Seminar404
-import com.wafflestudio.seminar.common.SeminarException
+import com.wafflestudio.seminar.core.user.api.request.RegisterParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
-import com.wafflestudio.seminar.core.user.database.UserEntity
+import com.wafflestudio.seminar.core.user.api.request.UpdateUserRequest
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.domain.User
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.ExpiredJwtException
-import io.jsonwebtoken.Jws
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
-import io.jsonwebtoken.security.Keys
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
-import javax.servlet.http.HttpServletRequest
 
 @Service
 class UserService(
@@ -47,8 +38,30 @@ class UserService(
     return authTokenService.generateTokenByEmail(email)
   }
   
-  fun getMe(userId: Long): User {
+  @Transactional
+  fun update(userId: Long, request: UpdateUserRequest): User = request.run {
+    val user = userRepository.findByIdOrNull(userId)!!
+    user.update(
+      username = username,
+      encodedPwd = passwordEncoder.encode(password),
+      university = university,
+      company = company,
+      year = year,
+    )    
+    
+    User.of(user)
+  }
+  
+  fun getUser(userId: Long): User {
     val entity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("")
     return User.of(entity)
+  }
+  
+  @Transactional
+  fun registerParticipant(userId: Long, request: RegisterParticipantRequest): User {
+    val user = userRepository.findByIdOrNull(userId)!!
+    user.createProfile(request.university, request.isRegistered)
+    
+    return User.of(userRepository.save(user))
   }
 }

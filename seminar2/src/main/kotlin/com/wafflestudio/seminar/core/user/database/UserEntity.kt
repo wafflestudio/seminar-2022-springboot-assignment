@@ -1,6 +1,8 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.common.Seminar400
+import com.wafflestudio.seminar.common.Seminar409
 import com.wafflestudio.seminar.core.seminar.database.InstructorEntity
 import com.wafflestudio.seminar.core.seminar.database.ParticipantEntity
 import java.time.LocalDateTime
@@ -13,8 +15,8 @@ import javax.persistence.OneToOne
 class UserEntity(
     @Column(unique = true)
     val email: String,
-    val username: String,
-    val password: String,
+    var username: String,
+    var password: String,
 ): BaseTimeEntity() {
 
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -27,6 +29,30 @@ class UserEntity(
     
     fun updateLastLogIn() {
         lastLoginedAt = LocalDateTime.now()
+    }
+    
+    fun update(
+        username: String?, 
+        encodedPwd: String?,
+        company: String,
+        university: String,
+        year: Long?,
+    ) {
+        this.username = username ?: this.username
+        this.password = encodedPwd ?: this.password
+        participantProfile?.update(university)
+        instructorProfile?.update(company, year)
+    }
+    
+    fun createProfile(
+        university: String,
+        isRegistered: Boolean,
+    ) {
+        if (participantProfile != null) {
+            throw Seminar409("이미 참여자로 등록되어 있습니다.")
+        }
+        
+        this.participantProfile = ParticipantEntity(this, university, isRegistered)
     }
         
     companion object {

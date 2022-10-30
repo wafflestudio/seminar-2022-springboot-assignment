@@ -12,6 +12,11 @@ import javax.persistence.Table
 class InstructorEntity(
     @OneToOne(fetch = FetchType.LAZY)
     val user: UserEntity,
-    val company: String,
-    val year: Long?,
-): BaseTimeEntity()
+    var company: String,
+    var year: Long?,
+): BaseTimeEntity() {
+    fun update(company: String, year: Long?) {
+        this.company = company
+        this.year = year
+    }
+}

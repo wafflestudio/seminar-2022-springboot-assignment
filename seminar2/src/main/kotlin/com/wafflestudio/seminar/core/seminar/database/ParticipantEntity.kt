@@ -12,6 +12,10 @@ import javax.persistence.Table
 class ParticipantEntity(
     @OneToOne(fetch = FetchType.LAZY)
     val user: UserEntity,
-    val university: String,
+    var university: String,
     val isRegistered: Boolean,
-): BaseTimeEntity()
+): BaseTimeEntity() {
+    fun update(university: String) {
+        this.university = university
+    }
+}
