@@ -9,10 +9,12 @@ import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.api.response.SeminarResponse
 import com.wafflestudio.seminar.core.user.database.ParticipantProfileEntity
 import com.wafflestudio.seminar.core.user.database.SeminarEntity
+import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.repository.*
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -26,17 +28,26 @@ class UserServiceImpl(
     private val seminarRepository: SeminarRepository,
     private val userSeminarRepository: UserSeminarRepository,
     private val customSeminarRepository: CustomSeminarRepository,
-    private val customUserSeminarRepository: CustomUserSeminarRepository
+    private val customUserSeminarRepository: CustomUserSeminarRepository,
+    private val passwordEncoder: PasswordEncoder
 ) : UserService {
 
     override fun signUp(signUpRequest: SignUpRequest): Long {
         val userEntity = signUpRequest.toUserEntity()
+        userEntity.password = passwordEncoder.encode(userEntity.password)
         userRepository.save(userEntity)
         return userEntity.id
     }
 
+    override fun login(email: String, password: String) {
+        val userEntity = userRepository.findByEmail(email) ?: throw Seminar404("No existing user with email: ${email}")
+        if (!passwordEncoder.matches(password, userEntity.password)) {
+            throw Seminar401("Incorrect password")
+        }
+    }
+
     @Transactional(readOnly = true)
-    override fun getMyProfile(userId: Long): User {
+    override fun getProfile(userId: Long): User {
         val userEntity = userRepository.findById(userId).get()
         return userEntity.toDTO()
     }
@@ -82,8 +93,8 @@ class UserServiceImpl(
         return seminarEntity.toDTO()
     }
 
-    override fun editSeminar(seminarId: Long, seminarRequest: SeminarRequest): Seminar {
-        val seminarEntity = seminarRepository.findById(seminarId).get()
+    override fun editSeminar(seminarRequest: SeminarRequest): Seminar {
+        val seminarEntity = seminarRepository.findById(seminarRequest.id!!).get()
         seminarEntity.name = seminarRequest.name
         seminarEntity.capacity = seminarRequest.capacity
         seminarEntity.count = seminarRequest.count
@@ -92,11 +103,13 @@ class UserServiceImpl(
         return seminarEntity.toDTO()
     }
 
-    override fun getSeminar(seminarId: Long): Seminar {
+    @Transactional(readOnly = true)
+    override fun getSeminar(seminarId: Long): SeminarResponse {
         val seminarEntity = seminarRepository.findById(seminarId).get()
-        return seminarEntity.toDTO()
+        return seminarEntity.toSeminarResponse()
     }
 
+    @Transactional(readOnly = true)
     override fun getSeminars(name: String, order: String): List<SeminarResponse> {
         val seminarEntities = customSeminarRepository.findByNameWithOrder("pr", "earliest")
         val seminars = ArrayList<SeminarResponse>()
