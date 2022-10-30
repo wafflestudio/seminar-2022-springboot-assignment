@@ -61,6 +61,9 @@ dependencies {
     implementation("com.querydsl:querydsl-jpa:$querydslVersion")
     kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa")
 
+    //AOP
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
