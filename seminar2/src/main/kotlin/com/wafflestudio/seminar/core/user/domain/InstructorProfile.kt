@@ -7,5 +7,5 @@ data class InstructorProfile(
     val id: Long,
     val company: String? = "",
     val year: Int?,
-    val instructingSeminars: List<SeminarForInstructorProfile>? = null
+    val instructingSeminars: SeminarForInstructorProfile?
 )

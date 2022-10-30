@@ -31,7 +31,7 @@ class UserEntity(
     val userSeminars: List<UserSeminarEntity>? = mutableListOf()
 ) : BaseTimeEntity() {
 
-    fun toDTO(seminars: List<SeminarForParticipantProfile>?, instructingSeminars: List<SeminarForInstructorProfile>?): User = this.run {
+    fun toDTO(seminars: List<SeminarForParticipantProfile>?, instructingSeminars: SeminarForInstructorProfile?): User = this.run {
         User(
             id = id,
             email = email,

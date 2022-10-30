@@ -39,7 +39,7 @@ class SeminarSupportImpl(
             .fetch()
     }
 
-    override fun findSeminarsByInstructorId(instructorId: Long): List<SeminarForInstructorProfile> {
+    override fun findSeminarsByInstructorId(instructorId: Long): SeminarForInstructorProfile? {
         return queryFactory
             .select(
                 Projections.constructor(
@@ -56,6 +56,6 @@ class SeminarSupportImpl(
                 userSeminarEntity.isInstructor.isTrue,
                 userSeminarEntity.user.id.eq(instructorId)
             )
-            .fetch()
+            .fetchOne()
     }
 }
