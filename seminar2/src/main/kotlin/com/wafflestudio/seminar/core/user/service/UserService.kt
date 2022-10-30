@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 
 interface UserService {
     fun getUser(id: Long?): User
-    fun createUser(user: SignUpRequest): User
+    fun createUser(user: SignUpRequest): AuthToken
     fun loginUser(user: SignInRequest): AuthToken
 }
 
@@ -27,7 +27,7 @@ class UserServiceImpl(
         return User(entity.get())
     }
 
-    override fun createUser(user: SignUpRequest): User {
+    override fun createUser(user: SignUpRequest): AuthToken {
         val entityByEmail = userRepository.findByEmail(user.email)
         if (entityByEmail.isPresent) throw Error()
 
@@ -37,7 +37,7 @@ class UserServiceImpl(
             password = user.password
         )
         val entity = userRepository.save(newUser)
-        return User(entity)
+        return authTokenService.generateTokenByUsername(entity.id)
     }
     
     override fun loginUser(user: SignInRequest): AuthToken {
@@ -45,7 +45,7 @@ class UserServiceImpl(
         if (entity.isEmpty) throw Error()
         if (entity.get().password != user.password) throw Error()
         
-        return authTokenService.generateTokenByUsername(entity.get().username)
+        return authTokenService.generateTokenByUsername(entity.get().id)
     }
     
     private fun User(entity: UserEntity) = entity.run {

@@ -7,13 +7,14 @@ import com.wafflestudio.seminar.core.user.domain.User
 import com.wafflestudio.seminar.core.user.service.AuthToken
 import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.web.bind.annotation.*
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 class AuthController(
     private val userService: UserService,
 ) {
     @PostMapping("/api/v1/signup")
-    fun signUp(@RequestBody request: SignUpRequest): User  {
+    fun signUp(@RequestBody request: SignUpRequest): AuthToken  {
         return userService.createUser(request)
     }
     
@@ -24,7 +25,10 @@ class AuthController(
     
     @Authenticated
     @GetMapping("/api/v1/me")
-    fun getMe() {
-        // TODO("인증 토큰을 바탕으로 유저 정보를 적당히 처리해서, 본인이 잘 인증되어있음을 알려주세요.")
+    fun getMe(request: HttpServletRequest): User {
+        println("in controller")
+        val userId: Long = request.getAttribute("userId") as Long
+        println(userId)
+        return userService.getUser(userId)
     }
 }
