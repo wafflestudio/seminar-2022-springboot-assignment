@@ -1,27 +1,93 @@
 package com.wafflestudio.seminar.core.user.api
 
 import com.wafflestudio.seminar.common.Authenticated
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RestController
+import com.wafflestudio.seminar.common.UserContext
+import com.wafflestudio.seminar.core.user.api.request.*
+import com.wafflestudio.seminar.core.user.api.response.SeminarResponse
+import com.wafflestudio.seminar.core.user.domain.Seminar
+import com.wafflestudio.seminar.core.user.domain.User
+import com.wafflestudio.seminar.core.user.service.AuthTokenService
+import com.wafflestudio.seminar.core.user.service.UserService
+import org.springframework.web.bind.annotation.*
 
 @RestController
-class AuthController {
-    
-    @PostMapping("/api/v1/signup")
-    fun signUp() {
-        TODO("회원가입을 구현해주세요.")
+@RequestMapping("/api/v1")
+class AuthController(
+    private val userService: UserService,
+    private val authTokenService: AuthTokenService
+) {
+
+    @PostMapping("/signup")
+    fun signUp(@RequestBody signUpRequest: SignUpRequest): String {
+        userService.signUp(signUpRequest)
+        return authTokenService.generateTokenByEmail(signUpRequest.email).accessToken
     }
-    
-    @PostMapping("/api/v1/signin")
-    fun logIn() {
-        TODO("회원가입을 진행한 유저가 로그인할 경우, JWT를 생성해서 내려주세요.")
+
+    @PostMapping("/signin")
+    fun logIn(@RequestBody loginRequest: LoginRequest): String {
+        userService.login(loginRequest.email, loginRequest.password)
+        return authTokenService.generateTokenByEmail(loginRequest.email).accessToken
     }
-    
+
     @Authenticated
-    @GetMapping("/api/v1/me")
-    fun getMe() {
-        TODO("인증 토큰을 바탕으로 유저 정보를 적당히 처리해서, 본인이 잘 인증되어있음을 알려주세요.")
+    @GetMapping("/me")
+    fun getMe(@UserContext userId: Long): User {
+        return userService.getProfile(userId)
     }
-    
+
+    @Authenticated
+    @GetMapping("/user/{userId}")
+    fun getUser(@PathVariable("userId") userId: Long): User {
+        return userService.getProfile(userId)
+    }
+
+    @Authenticated
+    @PutMapping("/user/me")
+    fun editMe(@UserContext userId: Long, @RequestBody editProfileRequest: EditProfileRequest) {
+        return userService.editProfile(userId, editProfileRequest)
+    }
+
+    @Authenticated
+    @PostMapping("/user/participant")
+    fun registerParticipant(@UserContext userId: Long, @RequestBody participantRequest: ParticipantRequest) {
+        return userService.registerParticipantProfile(userId, participantRequest)
+    }
+
+    @Authenticated
+    @PostMapping("/seminar")
+    fun createSeminar(@UserContext userId: Long, @RequestBody seminarRequest: SeminarRequest): Seminar {
+        return userService.createSeminar(userId, seminarRequest)
+    }
+
+    @Authenticated
+    @PutMapping("/seminar")
+    fun editSeminar(@UserContext userId: Long, @RequestBody seminarRequest: SeminarRequest): Seminar {
+        return userService.editSeminar(seminarRequest)
+    }
+
+    @Authenticated
+    @GetMapping("/seminar/{seminarId}")
+    fun getSeminar(@PathVariable("seminarId") seminarId: Long): SeminarResponse {
+        return userService.getSeminar(seminarId)
+    }
+
+    @Authenticated
+    @GetMapping("/seminar")
+    fun getSeminars(@RequestParam("name") name: String, @RequestParam("order") order: String): List<SeminarResponse> {
+        return userService.getSeminars(name, order)
+    }
+
+    @Authenticated
+    @PostMapping("/seminar/{seminarId}/user")
+    fun joinSeminar(@UserContext userId: Long, @RequestBody joinSeminarRequest: JoinSeminarRequest): Seminar {
+        return userService.joinSeminar(userId, joinSeminarRequest.seminarId, joinSeminarRequest.role)
+    }
+
+    @Authenticated
+    @DeleteMapping("/seminar/{seminarId}/user")
+    fun dropSeminar(@UserContext userId: Long, seminarId: Long): Seminar {
+        return userService.dropSeminar(userId, seminarId)
+    }
+
+
 }
