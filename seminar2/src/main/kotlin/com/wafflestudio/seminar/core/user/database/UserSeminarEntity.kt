@@ -1,11 +1,13 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.user.domain.User
 import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
+@Table(name = "UserSeminar")
 data class UserSeminarEntity(
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "user_id")
@@ -22,5 +24,4 @@ data class UserSeminarEntity(
     val droppedAt: LocalDateTime?,
     @Column(name = "is_active")
     val isActive: Boolean,
-): BaseTimeEntity() {
-}
+): BaseTimeEntity()

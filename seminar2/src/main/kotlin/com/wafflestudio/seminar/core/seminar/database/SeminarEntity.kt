@@ -1,11 +1,9 @@
-package com.wafflestudio.seminar.core.user.database
+package com.wafflestudio.seminar.core.seminar.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.user.database.UserSeminarEntity
 import java.time.LocalTime
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.OneToMany
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "seminar")
@@ -22,6 +20,6 @@ data class SeminarEntity(
     val online: Boolean,
 ): BaseTimeEntity() {
     
-    @OneToMany(mappedBy = "seminar")
-    private val users: Set<UserEntity> = emptySet()
+    @OneToMany(mappedBy = "seminar", fetch = FetchType.LAZY)
+    private val users: MutableSet<UserSeminarEntity> = mutableSetOf()
 }

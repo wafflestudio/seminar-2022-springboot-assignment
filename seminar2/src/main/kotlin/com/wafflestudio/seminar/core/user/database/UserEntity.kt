@@ -10,7 +10,7 @@ data class UserEntity(
     @Column(name = "email", unique = true, nullable = false)
     val email: String,
     @Column(name = "name", nullable = false)
-    val name: String,
+    val username: String,
     @Column(name = "password", nullable = false)
     val password: String,
     @Column(name = "role", nullable = false)
@@ -18,15 +18,14 @@ data class UserEntity(
     val role: User.Role,
 ) : BaseTimeEntity() {
     
-    @OneToMany(mappedBy = "user")
-    private val seminars: Set<SeminarEntity> = emptySet()
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private val seminars: MutableSet<UserSeminarEntity> = mutableSetOf()
     
     fun toUser(): User {
         return User(
             id = id,
             email = email,
-            name = name,
-            password = password,
+            username = username,
             role = role,
         )
     }
