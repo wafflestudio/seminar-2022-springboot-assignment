@@ -27,6 +27,9 @@ class UserEntity(
     
     var lastLoginedAt: LocalDateTime = LocalDateTime.now()
     
+    val isInstructor: Boolean
+        get() = this.instructorProfile != null
+    
     fun updateLastLogIn() {
         lastLoginedAt = LocalDateTime.now()
     }
