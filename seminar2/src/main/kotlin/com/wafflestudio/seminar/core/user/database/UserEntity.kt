@@ -24,8 +24,8 @@ data class UserEntity(
     fun toUser(): User {
         return User(
             id = id,
-            email = email,
             username = username,
+            email = email,
             role = role,
         )
     }
