@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
  */
 @RestControllerAdvice
 class SeminarExceptionHandler {
-    @ExceptionHandler(value = [Exception::class])
-    fun handle(e: Exception): ResponseEntity<Any> {
-        return ResponseEntity("오류가 발생했어요!", HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = [OsIdException::class])
+    fun handle(e: OsIdException): ResponseEntity<Any> {
+        return ResponseEntity("id가 존재하지 않습니다", HttpStatus.BAD_REQUEST)
     }
 
     /**
@@ -21,8 +21,18 @@ class SeminarExceptionHandler {
      * 예외들은 어느 패키지에 있는게 적절할까요?
      * 예외는 어떤 정보를 공통적으로 담고 있을까요?
      */
+<<<<<<< HEAD:seminar0/src/main/kotlin/com/wafflestudio/seminar/survey/api/SeminarExceptionHandler.kt
+    @ExceptionHandler(value = [OsNameException::class])
+    fun handle(e: OsNameException): ResponseEntity<Any> {
+        return ResponseEntity("name이 존재하지 않습니다", HttpStatus.BAD_REQUEST)
+    }
+
+    inner class OsIdException() : RuntimeException()
+    inner class OsNameException() : RuntimeException()
+=======
     @ExceptionHandler(value = [SeminarException::class])
     fun handle(e: SeminarException): ResponseEntity<Any> {
         return ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
     }
+>>>>>>> 07ef91823c7021a8efff88137b9982ff643dc776:seminar0/src/main/kotlin/com.wafflestudio.seminar/survey/api/SeminarExceptionHandler.kt
 }
