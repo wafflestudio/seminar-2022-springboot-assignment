@@ -42,7 +42,18 @@ class SeminarEntity(
         this.online = request.online
     }
     
-    final fun addInstructor(userEntity: UserEntity) {
+    fun addUser(userEntity: UserEntity, role: UserSeminarEntity.Role) {
+        if (userSeminars.filter { it.userId == userEntity.id }.isNotEmpty()) {
+            throw Seminar400("이미 참여중인 세미나입니다.")
+        }
+        
+        when(role) {
+            UserSeminarEntity.Role.PARTICIPANT -> addParticipant(userEntity)
+            UserSeminarEntity.Role.INSTRUCTOR -> addInstructor(userEntity)
+        }
+    }
+    
+    private fun addInstructor(userEntity: UserEntity) {
         requireNotNull(userEntity.instructorProfile) {
             throw Seminar403("${userEntity.id} 유저는 강사가 될 수 없습니다.")
         }
@@ -51,12 +62,16 @@ class SeminarEntity(
         userSeminars.add(relation)
     }
     
-    fun addParticipant(userEntity: UserEntity) {
+    private fun addParticipant(userEntity: UserEntity) {
         requireNotNull(userEntity.participantProfile) {
             throw Seminar403("${userEntity.id} 유저의 수강생 정보가 없습니다.")
         }
         
         val relation = UserSeminarEntity.participant(userEntity.id, this)
         userSeminars.add(relation)
+        
+        if (userSeminars.count { it.isActive } > capacity) {
+            throw Seminar400("세미나 정원이 다 찼습니다.")
+        }
     }
 }

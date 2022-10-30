@@ -4,9 +4,11 @@ import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.GetSeminarRequest
+import com.wafflestudio.seminar.core.seminar.api.request.JoinSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -35,6 +37,25 @@ class SeminarController(
         @PathVariable seminarId: Long,
     ): Seminar {
         return seminarService.getSeminar(seminarId)
+    }
+    
+    @Authenticated
+    @PostMapping("api/v1/seminar/{seminarId}/user")
+    fun joinToSeminar(
+        @UserContext userId: Long,
+        @PathVariable seminarId: Long,
+        @RequestBody request: JoinSeminarRequest
+    ): Seminar {
+        return seminarService.joinToSeminar(userId, seminarId, request.role)
+    }
+    
+    @Authenticated
+    @DeleteMapping("api/v1/seminar/{seminarId}/user")
+    fun joinToSeminar(
+        @UserContext userId: Long,
+        @PathVariable seminarId: Long,
+    ): Seminar {
+        return seminarService.dropSeminar(userId, seminarId)
     }
     
     @Authenticated
