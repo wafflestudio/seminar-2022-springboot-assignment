@@ -33,7 +33,7 @@ class UserServiceImpl(
 ) : UserService {
 
     override fun signUp(signUpRequest: SignUpRequest): Long {
-        if (userRepository.findByEmail(signUpRequest.email) != null) {
+        if (userRepository.findByEmail(signUpRequest.email!!) != null) {
             throw Seminar409("Email is already in use")
         }
         val userEntity = signUpRequest.toUserEntity()

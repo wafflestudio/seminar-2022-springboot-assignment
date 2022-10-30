@@ -9,6 +9,7 @@ import com.wafflestudio.seminar.core.user.domain.User
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
 import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1")
@@ -18,9 +19,9 @@ class AuthController(
 ) {
 
     @PostMapping("/signup")
-    fun signUp(@RequestBody signUpRequest: SignUpRequest): String {
+    fun signUp(@Valid @RequestBody signUpRequest: SignUpRequest): String {
         userService.signUp(signUpRequest)
-        return authTokenService.generateTokenByEmail(signUpRequest.email).accessToken
+        return authTokenService.generateTokenByEmail(signUpRequest.email!!).accessToken
     }
 
     @PostMapping("/signin")
