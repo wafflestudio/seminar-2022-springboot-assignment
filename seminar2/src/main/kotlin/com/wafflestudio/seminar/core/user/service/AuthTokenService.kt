@@ -32,7 +32,6 @@ class AuthTokenService(
 
   fun verifyToken(authToken: String): Boolean {
     val parseResult: Jws<Claims> = parse(authToken)
-    println("AuthTokenService - verifyToken")
     val tokenExpiredSec = (parseResult.body["exp"] as Int).toLong()
     return Date().time < tokenExpiredSec * 1000
   }
@@ -44,7 +43,6 @@ class AuthTokenService(
 
   private fun parse(authToken: String): Jws<Claims> {
     val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
-    println("parse result: $prefixRemoved")
     return Jwts.parserBuilder()
       .setSigningKey(signingKey)
       .build()

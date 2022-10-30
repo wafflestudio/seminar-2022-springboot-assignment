@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.UnsupportedJwtException
+import io.jsonwebtoken.security.SignatureException
 import org.springframework.boot.json.JsonParseException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,7 +13,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import java.security.SignatureException
 
 
 @RestControllerAdvice
@@ -22,10 +22,14 @@ class SeminarExceptionHandler {
     fun exception(e: Exception): ResponseEntity<Any> {
         println("!특정 예외 발생!")
         println(e.javaClass.name) // 예외가 어디서 발생했는 지 찾음
-        println("!예외 발생!")
         println(e.localizedMessage) // 예외 메시지 출력
         e.printStackTrace()
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("알 수 없는 오류 발생")
+    }
+    
+    @ExceptionHandler(value = [SeminarException::class])
+    fun seminarException(e: SeminarException): ResponseEntity<Any> {
+        return ResponseEntity(e.message, e.status)
     }
 
     // request validation

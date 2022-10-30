@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
@@ -42,8 +43,8 @@ class UserServiceImpl(
     
     override fun loginUser(user: SignInRequest): AuthToken {
         val entity = userRepository.findByEmail(user.email)
-        if (entity.isEmpty) throw Error()
-        if (entity.get().password != user.password) throw Error()
+        if (entity.isEmpty) throw Seminar400("해당 email의 유저가 없습니다.")
+        if (entity.get().password != user.password) throw Seminar400("비밀번호가 틀렸습니다.")
         
         return authTokenService.generateTokenByUsername(entity.get().id)
     }

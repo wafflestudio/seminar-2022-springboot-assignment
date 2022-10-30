@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.config
 
 import com.wafflestudio.seminar.common.Authenticated
+import com.wafflestudio.seminar.common.Seminar401
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
 import io.jsonwebtoken.ExpiredJwtException
@@ -21,11 +22,11 @@ import javax.servlet.http.HttpServletResponse
 class WebConfig(
     private val authInterceptor: AuthInterceptor,
     private val authArgumentResolver: AuthArgumentResolver,
-): WebMvcConfigurer {
+) : WebMvcConfigurer {
     override fun addInterceptors(registry: InterceptorRegistry) {
-         registry.addInterceptor(authInterceptor)
-             .excludePathPatterns("/api/v1/signup")
-             .excludePathPatterns("/api/v1/signin")
+        registry.addInterceptor(authInterceptor)
+            .excludePathPatterns("/api/v1/signup")
+            .excludePathPatterns("/api/v1/signin")
     }
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
@@ -34,13 +35,13 @@ class WebConfig(
 }
 
 @Configuration
-class AuthArgumentResolver: HandlerMethodArgumentResolver {
+class AuthArgumentResolver : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         val isAuthenticated: Boolean = parameter.hasParameterAnnotation(Authenticated::class.java)
         val isString = parameter.parameterType == String::class.java
         return isAuthenticated && isString
     }
-    
+
     override fun resolveArgument(
         parameter: MethodParameter,
         mavContainer: ModelAndViewContainer?,
@@ -56,17 +57,17 @@ class AuthArgumentResolver: HandlerMethodArgumentResolver {
 @Configuration
 class AuthInterceptor(
     private val authTokenService: AuthTokenService
-): HandlerInterceptor {
+) : HandlerInterceptor {
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val handlerCasted = (handler as? HandlerMethod) ?: return true
-        println("auth interceptor, request")
         val jwtToken: String = request.getHeader("Authorization")
+            ?: throw Seminar401("Authorization 헤더가 없습니다.")
+
         val isVerify: Boolean = authTokenService.verifyToken(jwtToken)
         if (!isVerify) throw ExpiredJwtException(null, null, "expired")
-        
+
         println(jwtToken)
         val userId: Long = authTokenService.getCurrentUserId(jwtToken)
-        println("userId : $userId")
         request.setAttribute("userId", userId)
         return super.preHandle(request, response, handler)
     }
