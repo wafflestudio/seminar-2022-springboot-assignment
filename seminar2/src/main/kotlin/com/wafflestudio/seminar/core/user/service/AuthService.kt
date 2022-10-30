@@ -3,9 +3,9 @@ package com.wafflestudio.seminar.core.user.service
 import com.wafflestudio.seminar.config.AuthConfig
 import com.wafflestudio.seminar.core.profile.database.InstructorProfileRepository
 import com.wafflestudio.seminar.core.profile.database.ParticipantProfileRepository
-import com.wafflestudio.seminar.core.user.api.request.MeAuthenticationInfoResponse
-import com.wafflestudio.seminar.core.user.api.request.SignInRequest
-import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.api.dto.UserResponse
+import com.wafflestudio.seminar.core.user.api.dto.SignInRequest
+import com.wafflestudio.seminar.core.user.api.dto.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +16,6 @@ import java.time.LocalDateTime
 interface AuthService {
     fun createUserAndReturnToken(signUpRequest: SignUpRequest): AuthToken
     fun findUserAndReturnToken(signInRequest: SignInRequest): AuthToken
-    fun getUserAuthenticatedInfo(user: UserEntity): MeAuthenticationInfoResponse
 }
 
 @Service
@@ -59,13 +58,5 @@ class AuthServiceImpl(
             // Return generated token
             return authTokenService.generateTokenByUsername(user.email)
         }
-    }
-
-    override fun getUserAuthenticatedInfo(user: UserEntity): MeAuthenticationInfoResponse {
-        return MeAuthenticationInfoResponse(
-                message = "Authenticated!",
-                username = user.username,
-                email = user.email,
-        )
     }
 }

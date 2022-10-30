@@ -7,3 +7,5 @@ open class UserException(msg: String, status: HttpStatus): SeminarException(msg,
 
 class UserException409(msg: String = ""): UserException(msg, HttpStatus.CONFLICT)
 class UserException400(msg: String = ""): UserException(msg, HttpStatus.BAD_REQUEST)
+
+class UserException404(msg: String = ""): UserException(msg, HttpStatus.NOT_FOUND)

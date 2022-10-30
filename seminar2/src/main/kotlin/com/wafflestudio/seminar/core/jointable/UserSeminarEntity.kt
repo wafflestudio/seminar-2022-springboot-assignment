@@ -34,7 +34,9 @@ class UserSeminarEntity(
         val isActive: Boolean = false,
 
         @Column(nullable = true)
-        val droppedAt: LocalDateTime? = null
+        val droppedAt: LocalDateTime? = null,
 
+        @Column
+        val isParticipant: Boolean,
 ) : BaseTimeEntity() {
 }

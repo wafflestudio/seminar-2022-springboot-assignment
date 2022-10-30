@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.user.api.request
+package com.wafflestudio.seminar.core.user.api.dto
 
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank

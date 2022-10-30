@@ -1,16 +1,14 @@
 package com.wafflestudio.seminar.core.user.api
 
-import com.fasterxml.jackson.module.kotlin.jsonMapper
-import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.LoginUser
 import com.wafflestudio.seminar.common.SeminarRequestBodyException
-import com.wafflestudio.seminar.core.user.api.request.MeAuthenticationInfoResponse
-import com.wafflestudio.seminar.core.user.api.request.SignInRequest
-import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.api.dto.SignInRequest
+import com.wafflestudio.seminar.core.user.api.dto.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.service.AuthException
 import com.wafflestudio.seminar.core.user.service.AuthService
 import com.wafflestudio.seminar.core.user.service.AuthToken
+import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
@@ -19,7 +17,8 @@ import javax.validation.Valid
 
 @RestController
 class AuthController(
-        private val authService: AuthService
+        private val authService: AuthService,
+        private val userService: UserService
 ) {
     @PostMapping("/api/v1/signup")
     fun signUp(@Valid @RequestBody signUpRequest: SignUpRequest, bindingResult: BindingResult): AuthToken {
@@ -48,7 +47,7 @@ class AuthController(
     @GetMapping("/api/v1/me")
     fun getMe(@LoginUser user: UserEntity?): Any {
 //        TODO("인증 토큰을 바탕으로 유저 정보를 적당히 처리해서, 본인이 잘 인증되어있음을 알려주세요.")
-        user?.let{ return authService.getUserAuthenticatedInfo(it) }
+        user?.let{ return userService.constructUserInformationByUser(it) }
                 ?: return ResponseEntity<String>("Unauthorized", HttpStatus.UNAUTHORIZED)
     }
 }

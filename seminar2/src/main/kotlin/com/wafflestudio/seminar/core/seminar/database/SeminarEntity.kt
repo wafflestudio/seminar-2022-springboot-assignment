@@ -12,6 +12,14 @@ class SeminarEntity(
         @Column(nullable = false)
         val name: String,
         
+        val capacity: Int,
+        
+        var count: Int,
+        
+        val time: LocalDateTime,
+        
+        val online: Boolean,
+        
         @OneToMany(mappedBy = "seminar")
         val users: MutableSet<UserSeminarEntity> = mutableSetOf()
 ) {
