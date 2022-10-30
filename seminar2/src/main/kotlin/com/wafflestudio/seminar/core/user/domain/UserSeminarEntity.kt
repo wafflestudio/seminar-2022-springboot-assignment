@@ -23,7 +23,7 @@ class UserSeminarEntity(
     val joinedAt: LocalDateTime?,
 
     @Column
-    val isActive: Boolean = true,
+    val isActive: Boolean? = true,
 
     @Column
     val droppedAt: LocalDateTime? = null

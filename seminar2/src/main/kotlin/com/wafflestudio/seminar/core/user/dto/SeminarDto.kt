@@ -2,7 +2,7 @@
 //
 //import java.time.LocalDateTime
 //
-//data class SeminarDto(
+//data class SeminarsDto(
 //    val id: Long,
 //    val name: String,
 ////    val joinedAt: LocalDateTime?,

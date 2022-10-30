@@ -8,7 +8,6 @@ import javax.persistence.ManyToOne
 
 
 data class ParticipantProfileDto(
-    val id: Long,
     val university: String? = "",
     val isRegistered: Boolean = true,
 ) {

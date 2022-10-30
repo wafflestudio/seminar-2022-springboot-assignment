@@ -1,10 +1,16 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.common.Seminar401
+import com.wafflestudio.seminar.common.Seminar403
+import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
+import io.jsonwebtoken.security.SignatureException
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
+import java.lang.NullPointerException
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -45,10 +51,13 @@ class AuthTokenService(
 
   fun getCurrentUserId(authToken: String) :Long{
     //parse(authToken)에 저장된 email을 findByEmail에 적용하여 id를 구하나?
+    try{
+      val email : String = parse(authToken).body["email"].toString()
+      return userRepository.findByEmail(email).id
+    } catch (e: EmptyResultDataAccessException){
+      throw Seminar404("인증이 되지 않았습니다")
+    }
     
-    val email : String = parse(authToken).body["email"].toString()
-    println(userRepository.findByEmail(email).id)
-    return userRepository.findByEmail(email).id
     
   }
 
@@ -90,7 +99,13 @@ class AuthTokenService(
 // 토큰 만료시 io.jsonwebtoken.ExpiredJwtException 예외 발생
 // 시그너쳐 미일치시 io.jsonwebtoken.security.SignatureException 예외 발생
     val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
-    return Jwts.parserBuilder().setSigningKey(signingKey)
-      .build().parseClaimsJws(prefixRemoved)
+    try {
+      return Jwts.parserBuilder().setSigningKey(signingKey)
+        .build().parseClaimsJws(prefixRemoved)
+    } catch (e: SignatureException) {
+      throw Seminar404("인증이 되지 않았습니다")
+    } catch (e: ExpiredJwtException) {
+      throw Seminar401("인증이 되지 않았습니다")
+    } 
   }
 }

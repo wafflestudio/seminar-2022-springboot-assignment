@@ -11,16 +11,16 @@ class SeminarEntity(
     var name: String?,
     
     @Column
-    var capacity: Int,
+    var capacity: Int?,
     
     @Column
-    var count: Int,
+    var count: Int?,
 
     @Column
-    var time: String,
+    var time: String?,
 
     @Column
-    var online: Boolean = true,
+    var online: Boolean? = true,
 
 ) {
     @Id
