@@ -8,6 +8,7 @@ import com.wafflestudio.seminar.core.user.service.AuthToken
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
@@ -23,5 +24,5 @@ class AuthController(
 
     @Authenticated
     @GetMapping("/api/v1/me")
-    fun getMe(@RequestBody request: AuthToken) = authService.getMe(request)
+    fun getMe(@RequestHeader request: AuthToken) = authService.getMe(request)
 }
