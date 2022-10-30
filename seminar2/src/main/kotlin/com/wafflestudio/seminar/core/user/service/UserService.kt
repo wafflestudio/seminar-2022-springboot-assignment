@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar404
+import com.wafflestudio.seminar.core.user.api.request.CreateParticipantDTO
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
@@ -18,6 +19,7 @@ interface UserService {
 @Service
 class UserServiceImpl(
     private val userRepository: UserRepository,
+    private val participantService: ParticipantService,
     private val authTokenService: AuthTokenService,
 ): UserService {
     override fun getUser(id: Long): User {
@@ -30,12 +32,28 @@ class UserServiceImpl(
     override fun createUser(user: SignUpRequest): AuthToken {
         val entityByEmail = userRepository.findByEmail(user.email)
         if (entityByEmail.isPresent) throw Seminar404("이미 존재하는 이메일입니다.")
-
-        val newUser = UserEntity(
+        var newUser = UserEntity(
             username = user.username,
             email = user.email,
-            password = user.password
+            password = user.password,
         )
+
+        if (user.role == "participant") {
+            if (user.participant == null) throw Seminar400("수강생 프로필 정보를 입력해주세요.")
+            
+            val createParticipantDTO = CreateParticipantDTO(
+                university = user.participant.university,
+                is_registered = user.participant.is_registered,
+            )
+            val newParticipant = participantService.createParticipant(createParticipantDTO)
+            newUser.participant = newParticipant
+        } else if (user.role == "instructor") {
+            if (user.company == null) throw Seminar400("진행자의 회사는 필수 입니다.")
+            if (user.year == null) throw Seminar400("진행자의 연차는 필수 입니다.")
+        } else {
+            throw Seminar400("잘못된 role 입니다.")
+        }
+        
         val entity = userRepository.save(newUser)
         return authTokenService.generateTokenByUsername(entity.id)
     }
@@ -49,6 +67,6 @@ class UserServiceImpl(
     }
     
     private fun User(entity: UserEntity) = entity.run {
-        User(id, username, email, password)
+        User(id, username, email, password, participant)
     }
 }

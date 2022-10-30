@@ -27,7 +27,6 @@ class WebConfig(
         registry.addInterceptor(authInterceptor)
             .excludePathPatterns("/api/v1/signup")
             .excludePathPatterns("/api/v1/signin")
-            .excludePathPatterns("/api/v1/user/{user_id}")
     }
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
@@ -67,7 +66,6 @@ class AuthInterceptor(
         val isVerify: Boolean = authTokenService.verifyToken(jwtToken)
         if (!isVerify) throw ExpiredJwtException(null, null, "expired")
 
-        println(jwtToken)
         val userId: Long = authTokenService.getCurrentUserId(jwtToken)
         request.setAttribute("userId", userId)
         return super.preHandle(request, response, handler)
