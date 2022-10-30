@@ -10,10 +10,10 @@ import javax.persistence.*
 @Table(name = "instructor_profile")
 class InstructorProfileEntity(
         @Column(nullable = false)
-        val company: String,
+        var company: String,
         
         @Column(nullable = true)
-        val year: Int? = null,
+        var year: Int? = null,
         
         @OneToOne
         @JoinColumn(name = "user_id")

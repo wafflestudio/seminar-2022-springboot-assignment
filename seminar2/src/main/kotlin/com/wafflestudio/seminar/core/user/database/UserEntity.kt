@@ -14,13 +14,13 @@ import javax.validation.constraints.Size
 @Table(name = "user")
 class UserEntity (
         @Size(min = 1) @Column(nullable = false)
-        val username: String,
+        var username: String,
         
         @Size(min = 1) @Column(nullable = false, unique = true)
         val email: String,
 
         @Size(min = 1) @Column(nullable = false)
-        val password: String,
+        var password: String,
         
         @CreationTimestamp @Column(nullable = false)
         var lastLogin: LocalDateTime? = null,

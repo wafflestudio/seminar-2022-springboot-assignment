@@ -10,7 +10,7 @@ import javax.persistence.*
 @Table(name = "participant_profile")
 class ParticipantProfileEntity(
         @Column(nullable = false)
-        val university: String,
+        var university: String,
 
         @Column(nullable = false)
         var isRegistered: Boolean,

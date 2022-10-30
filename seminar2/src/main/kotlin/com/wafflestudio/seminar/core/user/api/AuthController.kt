@@ -2,8 +2,8 @@ package com.wafflestudio.seminar.core.user.api
 
 import com.wafflestudio.seminar.common.LoginUser
 import com.wafflestudio.seminar.common.SeminarRequestBodyException
-import com.wafflestudio.seminar.core.user.api.dto.SignInRequest
-import com.wafflestudio.seminar.core.user.api.dto.SignUpRequest
+import com.wafflestudio.seminar.core.user.dto.SignInRequest
+import com.wafflestudio.seminar.core.user.dto.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.service.AuthException
 import com.wafflestudio.seminar.core.user.service.AuthService

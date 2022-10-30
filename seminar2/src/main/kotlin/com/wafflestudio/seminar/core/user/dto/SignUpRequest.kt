@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.user.api.dto
+package com.wafflestudio.seminar.core.user.dto
 
 import com.wafflestudio.seminar.core.profile.database.InstructorProfileEntity
 import com.wafflestudio.seminar.core.profile.database.InstructorProfileRepository

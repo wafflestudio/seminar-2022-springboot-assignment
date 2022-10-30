@@ -1,26 +1,33 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.config.AuthConfig
 import com.wafflestudio.seminar.core.jointable.UserSeminarRepository
 import com.wafflestudio.seminar.core.profile.dto.InstructorProfileResponse
 import com.wafflestudio.seminar.core.profile.dto.ParticipantProfileResponse
 import com.wafflestudio.seminar.core.seminar.dto.InstructingSeminarResponse
 import com.wafflestudio.seminar.core.seminar.dto.ParticipantSeminarResponse
-import com.wafflestudio.seminar.core.user.api.dto.UserResponse
+import com.wafflestudio.seminar.core.user.dto.UserResponse
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
+import com.wafflestudio.seminar.core.user.dto.UserRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import javax.transaction.Transactional
 
 interface UserService {
     fun constructUserInformationById(userId: Long): UserResponse
     fun constructUserInformationByUser(user: UserEntity): UserResponse
+    fun modifyUserInformation(userRequest: UserRequest, meUser: UserEntity)
 }
 
 @Service
 class UserServiceImpl(
         private val userRepository: UserRepository,
         private val userSeminarRepository: UserSeminarRepository,
+        private val authConfig: AuthConfig
 ): UserService {
+    private val encoder = authConfig.passwordEncoder()
+    
     override fun constructUserInformationById(userId: Long): UserResponse {
         val user: UserEntity = userRepository.findByIdOrNull(userId)
                 ?: throw UserException404("User ${userId} doesn't exists")
@@ -74,5 +81,34 @@ class UserServiceImpl(
                 participant = participantProfileResponse,
                 instructor = instructorProfileResponse,
         )
+    }
+
+    @Transactional
+    override fun modifyUserInformation(userRequest: UserRequest, meUser: UserEntity) {
+        val isParticipant: Boolean = meUser.participantProfile != null
+        val isInstructor: Boolean = meUser.instructorProfile != null
+        
+        // Modify User Information
+        if (userRequest.username.isNotBlank()) {
+            meUser.username = userRequest.username
+        }
+        if (userRequest.password.isNotEmpty()) {
+            meUser.password = encoder.encode(userRequest.password)
+        }
+        
+        // Modify Participant Information
+        if (isParticipant) {
+            userRequest.university?.let{ meUser.participantProfile!!.university = it }
+        }
+        
+        // Modify Instructor Information
+        if (isInstructor) {
+            userRequest.company?.let{ meUser.instructorProfile!!.company = it }
+            
+            if (userRequest.year != null) {
+                if (userRequest.year <= 0) { throw UserException400("Not Appropriate Year given") }
+                else { meUser.instructorProfile!!.year = userRequest.year }
+            }
+        }
     }
 }

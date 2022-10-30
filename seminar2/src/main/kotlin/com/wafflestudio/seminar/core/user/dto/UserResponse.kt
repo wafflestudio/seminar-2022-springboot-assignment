@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.user.api.dto
+package com.wafflestudio.seminar.core.user.dto
 
 import com.wafflestudio.seminar.core.profile.dto.InstructorProfileResponse
 import com.wafflestudio.seminar.core.profile.dto.ParticipantProfileResponse

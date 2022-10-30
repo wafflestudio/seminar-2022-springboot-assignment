@@ -3,10 +3,8 @@ package com.wafflestudio.seminar.core.user.service
 import com.wafflestudio.seminar.config.AuthConfig
 import com.wafflestudio.seminar.core.profile.database.InstructorProfileRepository
 import com.wafflestudio.seminar.core.profile.database.ParticipantProfileRepository
-import com.wafflestudio.seminar.core.user.api.dto.UserResponse
-import com.wafflestudio.seminar.core.user.api.dto.SignInRequest
-import com.wafflestudio.seminar.core.user.api.dto.SignUpRequest
-import com.wafflestudio.seminar.core.user.database.UserEntity
+import com.wafflestudio.seminar.core.user.dto.SignInRequest
+import com.wafflestudio.seminar.core.user.dto.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException
