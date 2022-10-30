@@ -12,7 +12,7 @@ class SeminarExceptionHandler {
     
     // as-you-wish
     @ExceptionHandler(value = [SeminarException::class])
-    fun handleUserException(e: UserException): ResponseEntity<Any> {
+    fun handleUserException(e: SeminarException): ResponseEntity<Any> {
         return ResponseEntity<Any>(e.message, e.status)
     }
     

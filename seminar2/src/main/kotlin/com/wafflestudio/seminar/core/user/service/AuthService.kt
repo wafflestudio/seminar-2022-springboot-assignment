@@ -1,6 +1,8 @@
 package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.config.AuthConfig
+import com.wafflestudio.seminar.core.profile.database.InstructorProfileRepository
+import com.wafflestudio.seminar.core.profile.database.ParticipantProfileRepository
 import com.wafflestudio.seminar.core.user.api.request.MeAuthenticationInfoResponse
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
@@ -8,10 +10,7 @@ import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDateTime
 
 interface AuthService {
@@ -24,21 +23,22 @@ interface AuthService {
 class AuthServiceImpl(
         private val userRepository: UserRepository,
         private val authTokenService: AuthTokenService,
-        private val authConfig: AuthConfig
+        private val authConfig: AuthConfig,
+        private val participantProfileRepository: ParticipantProfileRepository,
+        private val instructorProfileRepository: InstructorProfileRepository,
 ) : AuthService {
     @Autowired
     private val encoder = authConfig.passwordEncoder()
     
     override fun createUserAndReturnToken(signUpRequest: SignUpRequest): AuthToken {
         try {
-            userRepository.save(
-                    UserEntity(
-                            username = signUpRequest.username!!,
-                            email = signUpRequest.email!!,
-                            password = encoder.encode(signUpRequest.password!!)
-                    )
+            val user = signUpRequest.saveAndGetUser(
+                    encoder, 
+                    userRepository, 
+                    participantProfileRepository, 
+                    instructorProfileRepository
             )
-            return authTokenService.generateTokenByUsername(signUpRequest.email)
+            return authTokenService.generateTokenByUsername(signUpRequest.email!!)
         } catch (e: DataIntegrityViolationException) {
             throw UserException409("Email already exists.")
         }
@@ -68,28 +68,4 @@ class AuthServiceImpl(
                 email = user.email,
         )
     }
-    
-    // If not verified, 
-//    override fun getUserAuthenticatedInfo(token: String): MeAuthenticationInfoResponse {
-//        if (!authTokenService.verifyToken(token)) {
-//            //FIXME
-//            throw AuthException("User not Authenticated!")
-////            throw ResponseStatusException(
-////                HttpStatus.UNAUTHORIZED, 
-////                "User not Authenticated!", 
-////                AuthException()
-////            )
-//        }
-////        val userId = authTokenService.getCurrentUserId(token)
-////        val user = userRepository.findByIdOrNull(userId)
-//        val user = authTokenService.getCurrentUser(token)
-//                //FIXME: AuthException cannot be handled directly
-//                ?: throw AuthException("User not Authenticated!")
-////        ?: throw ResponseStatusException(
-////                HttpStatus.UNAUTHORIZED, 
-////                "User not Authenticated!", 
-////                AuthException()
-//        return MeAuthenticationInfoResponse(username = user.username, email = user.email)
-////        )
-//    }
 }
