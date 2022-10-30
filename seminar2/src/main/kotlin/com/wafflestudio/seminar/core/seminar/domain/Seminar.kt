@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.seminar.domain
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.domain.InstructorProfile
@@ -9,6 +10,7 @@ import java.time.LocalTime
 data class Seminar(
     val id: Long,
     val name: String,
+    @JsonFormat(pattern = "HH:mm")
     val time: LocalTime,
     val count: Int,
     val capacity: Int,

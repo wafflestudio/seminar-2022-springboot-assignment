@@ -42,9 +42,9 @@ class UserSeminarDslRepository(
                     userEntity.id,
                     userEntity.username,
                     userEntity.email,
-                    userSeminarEntity.droppedAt,
+                    userSeminarEntity.createdAt,
                     userSeminarEntity.isActive,
-                    userSeminarEntity.createdAt
+                    userSeminarEntity.droppedAt,
                 )
             )
             .from(userSeminarEntity)

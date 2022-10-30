@@ -23,7 +23,7 @@ class SeminarDslRepository(
         }
         
         return queryFactory
-            .select(seminarEntity)
+            .selectDistinct(seminarEntity)
             .from(seminarEntity)
             .leftJoin(userSeminarEntity)
             .on(userSeminarEntity.seminar.eq(seminarEntity))

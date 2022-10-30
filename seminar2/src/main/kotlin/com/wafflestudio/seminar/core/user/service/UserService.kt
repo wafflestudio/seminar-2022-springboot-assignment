@@ -43,7 +43,7 @@ class UserService(
     val user = userRepository.findByIdOrNull(userId)!!
     user.update(
       username = username,
-      encodedPwd = passwordEncoder.encode(password),
+      encodedPwd = password?.let { passwordEncoder.encode(it) },
       university = university,
       company = company,
       year = year,

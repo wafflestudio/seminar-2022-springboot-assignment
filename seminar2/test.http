@@ -1,3 +1,5 @@
+### 회원가입 하기
+
 POST {{host}}/api/v1/signup
 Content-Type: application/json
 
@@ -8,7 +10,7 @@ Content-Type: application/json
   "role": "INSTRUCTOR"
 }
 
-###
+### 로그인 하기
 
 POST {{host}}/api/v1/signin
 Content-Type: application/json
@@ -18,8 +20,98 @@ Content-Type: application/json
   "password": "1234"
 }
 
-###
+### 내 신원 확인하기
+### 아래 토큰은 위 API 요청에 대한 결과임
 
 GET {{host}}/api/v1/me
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndsZ3VyNzIzOEBzbnUuYWMua3IiLCJpc3MiOiJzZW1pbmFyLndhZmZsZXN0dWRpby5jb20iLCJpYXQiOjE2NjcxMzc5MjYsImV4cCI6MTY2NzE0MzkyNn0.fcO22H2aL4TNkRfGMH_CVRQhrU5FG_qHIPD8L25o17E
+
+### 내 정보 수정하기
+
+PUT {{host}}/api/v1/me
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndsZ3VyNzIzOEBzbnUuYWMua3IiLCJpc3MiOiJzZW1pbmFyLndhZmZsZXN0dWRpby5jb20iLCJpYXQiOjE2NjcxMzc5MjYsImV4cCI6MTY2NzE0MzkyNn0.fcO22H2aL4TNkRfGMH_CVRQhrU5FG_qHIPD8L25o17E
+
+{
+  "username": "세미나장"
+}
+
+### 강사가 수강생도 하고싶다
+
+POST {{host}}/api/v1/user/participant
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndsZ3VyNzIzOEBzbnUuYWMua3IiLCJpc3MiOiJzZW1pbmFyLndhZmZsZXN0dWRpby5jb20iLCJpYXQiOjE2NjcxMzc5MjYsImV4cCI6MTY2NzE0MzkyNn0.fcO22H2aL4TNkRfGMH_CVRQhrU5FG_qHIPD8L25o17E
+
+{
+  "university": "피식대학",
+  "isRegistered": true
+}
+
+### 세미나 만들기 (여러번 해둬도 좋다)
+
+POST {{host}}/api/v1/seminar
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndsZ3VyNzIzOEBzbnUuYWMua3IiLCJpc3MiOiJzZW1pbmFyLndhZmZsZXN0dWRpby5jb20iLCJpYXQiOjE2NjcxMzc5MjYsImV4cCI6MTY2NzE0MzkyNn0.fcO22H2aL4TNkRfGMH_CVRQhrU5FG_qHIPD8L25o17E
+
+{
+  "name": "세미나 둘",
+  "capacity": 12,
+  "count": 10,
+  "time": "23:30"
+}
+
+### 세미나 수정하기
+
+PUT {{host}}/api/v1/seminar
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndsZ3VyNzIzOEBzbnUuYWMua3IiLCJpc3MiOiJzZW1pbmFyLndhZmZsZXN0dWRpby5jb20iLCJpYXQiOjE2NjcxMzc5MjYsImV4cCI6MTY2NzE0MzkyNn0.fcO22H2aL4TNkRfGMH_CVRQhrU5FG_qHIPD8L25o17E
+
+{
+  "id": 1,
+  "time": "13:30"
+}
+
+### 세미나 조회하기
+
+GET {{host}}/api/v1/seminar?name=하나&order=earlist
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndsZ3VyNzIzOEBzbnUuYWMua3IiLCJpc3MiOiJzZW1pbmFyLndhZmZsZXN0dWRpby5jb20iLCJpYXQiOjE2NjcxMzc5MjYsImV4cCI6MTY2NzE0MzkyNn0.fcO22H2aL4TNkRfGMH_CVRQhrU5FG_qHIPD8L25o17E
+
+### 수강생으로 회원가입 하기
+
+POST {{host}}/api/v1/signup
+Content-Type: application/json
+
+{
+  "username": "수강생",
+  "email": "participant@snu.ac.kr",
+  "password": "1234",
+  "role": "PARTICIPANT"
+}
+
+### 수강생이 세미나 참여하기
+
+POST {{host}}/api/v1/seminar/1/user
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InBhcnRpY2lwYW50QHNudS5hYy5rciIsImlzcyI6InNlbWluYXIud2FmZmxlc3R1ZGlvLmNvbSIsImlhdCI6MTY2NzEzODc2MiwiZXhwIjoxNjY3MTQ0NzYyfQ.uoxylWWl6aWjmm7P5mYT8_E6HjBO-W9cdOuoiYh8kDA
+
+{
+  "role": "PARTICIPANT"
+}
+
+### 수강생이 세미나 드랍하기
+
+DELETE {{host}}/api/v1/seminar/1/user
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InBhcnRpY2lwYW50QHNudS5hYy5rciIsImlzcyI6InNlbWluYXIud2FmZmxlc3R1ZGlvLmNvbSIsImlhdCI6MTY2NzEzODc2MiwiZXhwIjoxNjY3MTQ0NzYyfQ.uoxylWWl6aWjmm7P5mYT8_E6HjBO-W9cdOuoiYh8kDA
+
+### 드랍하면 재수강 못함
+
+POST {{host}}/api/v1/seminar/1/user
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InBhcnRpY2lwYW50QHNudS5hYy5rciIsImlzcyI6InNlbWluYXIud2FmZmxlc3R1ZGlvLmNvbSIsImlhdCI6MTY2NzEzODc2MiwiZXhwIjoxNjY3MTQ0NzYyfQ.uoxylWWl6aWjmm7P5mYT8_E6HjBO-W9cdOuoiYh8kDA
+
+{
+  "role": "PARTICIPANT"
+}

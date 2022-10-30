@@ -35,16 +35,16 @@ class SeminarEntity(
             throw Seminar403("수정을 할 수 없습니다.")
         }
         
-        this.count = request.count
-        this.capacity = request.capacity
-        this.name = request.name
-        this.time = request.time
-        this.online = request.online
+        this.count = request.count ?: this.count
+        this.capacity = request.capacity ?: this.capacity
+        this.name = request.name ?: this.name
+        this.time = request.time ?: this.time
+        this.online = request.online ?: this.online
     }
     
     fun addUser(userEntity: UserEntity, role: UserSeminarEntity.Role) {
         if (userSeminars.filter { it.userId == userEntity.id }.isNotEmpty()) {
-            throw Seminar400("이미 참여중인 세미나입니다.")
+            throw Seminar400("이미 참여한 적이 있는 세미나입니다.")
         }
         
         when(role) {
@@ -70,7 +70,7 @@ class SeminarEntity(
         val relation = UserSeminarEntity.participant(userEntity.id, this)
         userSeminars.add(relation)
         
-        if (userSeminars.count { it.isActive } > capacity) {
+        if (userSeminars.count { it.isParticipant && it.isActive } > capacity) {
             throw Seminar400("세미나 정원이 다 찼습니다.")
         }
     }
