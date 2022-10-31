@@ -9,6 +9,7 @@ import com.wafflestudio.seminar.core.user.domain.User
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import javax.transaction.Transactional
 
 interface AuthService {
@@ -24,7 +25,6 @@ class AuthServiceImpl(
     private val instructorRepository: InstructorRepository,
     private val passwordEncoder: PasswordEncoder,
     private val authTokenService: AuthTokenService,
-    private val userRepositorySupport: UserRepositorySupport,
 ) : AuthService {
 
     @Transactional
@@ -71,7 +71,8 @@ class AuthServiceImpl(
         if (!passwordEncoder.matches(request.password, user.password)) {
             throw AuthException("비밀번호가 틀렸습니다")
         }
-        userRepositorySupport.lastLogInTime(user.id)
+        user.modifiedAt = LocalDateTime.now()
+        userRepository.save(user)
         return authTokenService.generateTokenByUserId(user.id)
 
     }

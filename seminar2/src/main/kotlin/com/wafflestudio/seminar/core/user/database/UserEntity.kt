@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.User
 import javax.persistence.*
 
@@ -13,10 +14,10 @@ data class UserEntity(
     val username: String,
     @Column(name = "password", nullable = false)
     val password: String,
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "participant_id")
     var participant: ParticipantProfileEntity? = null,
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id")
     var instructor: InstructorProfileEntity? = null,
 ) : BaseTimeEntity() {

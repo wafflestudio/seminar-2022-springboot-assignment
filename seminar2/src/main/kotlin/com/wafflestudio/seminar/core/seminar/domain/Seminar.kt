@@ -4,9 +4,10 @@ import java.time.LocalTime
 
 data class Seminar(
     val id: Long,
+    val hostId: Long,
     val name: String,
     val capacity: Int,
     val count: Int,
     val time: LocalTime,
-    val online: Boolean?,
+    val online: Boolean,
 )
