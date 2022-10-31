@@ -2,13 +2,14 @@ package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.core.user.api.request.LogInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
-import com.wafflestudio.seminar.core.user.database.UserEntity
-import com.wafflestudio.seminar.core.user.database.UserRepository
+import com.wafflestudio.seminar.core.user.database.*
 import com.wafflestudio.seminar.core.user.domain.UserInfo
+import com.wafflestudio.seminar.core.user.domain.UserRole
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 interface UserService {
     fun signUp(signUpRequest: SignUpRequest): AuthToken
@@ -20,22 +21,32 @@ interface UserService {
 class UserServiceImpl(
     private val authTokenService: AuthTokenService,
     private val userRepository: UserRepository,
+    private val participantProfileRepository: ParticipateProfileRepository,
+    private val instructorProfileRepository: InstructorProfileRepository,
     private val passwordEncoder: PasswordEncoder,
 ) : UserService {
 
+    @Transactional
     override fun signUp(signUpRequest: SignUpRequest): AuthToken {
         val userEntity = try {
             userRepository.save(
-                UserEntity(
-                    signUpRequest.email,
-                    signUpRequest.username,
-                    passwordEncoder.encode(signUpRequest.password),
-                )
+                signUpRequest.toUserEntity(passwordEncoder)
             )
         } catch (e: DataIntegrityViolationException) {
             throw DuplicateEmailException
         }
-        
+
+        when (signUpRequest.role) {
+            UserRole.Participant ->
+                userEntity.participantProfileEntity = participantProfileRepository.save(
+                    signUpRequest.toParticipantProfileEntity()
+                )
+            UserRole.Instructor ->
+                userEntity.instructorProfileEntity = instructorProfileRepository.save(
+                    signUpRequest.toInstructorProfileEntry()
+                )
+        }
+
         return authTokenService.generateTokenByEmail(userEntity.email)
     }
 
