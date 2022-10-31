@@ -55,8 +55,11 @@ class UserSeminarSupportImpl(
     override fun findActiveParticipantCountById(seminarId: Long): Long? {
         return queryFactory
             .select(userEntity.count())
-            .from(userEntity).innerJoin(userSeminarEntity)
+            .from(userEntity).rightJoin(userSeminarEntity)
             .on(
+                userSeminarEntity.user.id.eq(userEntity.id)
+            )
+            .where(
                 userSeminarEntity.seminar.id.eq(seminarId),
                 userSeminarEntity.isInstructor.isFalse,
                 userSeminarEntity.isActive.isTrue
