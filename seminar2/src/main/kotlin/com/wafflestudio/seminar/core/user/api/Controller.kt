@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1")
 class Controller(
-    // valid도 추가하기
+
     private var authService: AuthService,
     private var authTokenService: AuthTokenService,
     private var userService: UserService,
@@ -20,8 +20,7 @@ class Controller(
     fun signup(@RequestBody user: SignUpRequest) : AuthToken {
         
         authService.signup(user)
-        // 비밀번호 powerEncoder 추가해야함, 아이디 중복된거 회원가입 못하게 해야함
-        // 비밀번호 규칙도 걸어두면 참~ 좋겠네
+
        
         return authTokenService.generateTokenByEmail(user.email)
     }
@@ -29,7 +28,6 @@ class Controller(
     @PostMapping("login")
     fun login(@RequestBody userLogin: LoginRequest) : AuthToken {
         
-        // 이메일 없으면 오류, 이메일 있지만 비번 틀렸으면 오류
       return  authService.login(userLogin)
     }
     
@@ -53,7 +51,7 @@ class Controller(
     }
     
     @PostMapping("seminar")
-    fun createSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authentication") token: String): SeminarInfo {
+    fun createSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authentication") token: String): GetSeminarInfo {
         
         return seminarService.createSeminar(seminar, token)
     }
@@ -65,22 +63,19 @@ class Controller(
     }
     
     @GetMapping("seminar/{seminar_id}")
-    fun getSeminarById(@PathVariable seminar_id: Long, @RequestHeader("Authentication") token: String):SeminarInfo{
+    fun getSeminarById(@PathVariable seminar_id: Long, @RequestHeader("Authentication") token: String):GetSeminarInfo{
         return seminarService.getSeminarById(seminar_id,token)
     }
-    /*
-    @GetMapping("/api/v1/seminar/")
-    fun getSeminars(@RequestHeader("Authentication") token: String): List<SeminarInfo>?{
+    
+    
+    @GetMapping("seminars")
+    fun getSeminars(@RequestHeader("Authentication") token: String): List<GetSeminars>{
         return seminarService.getSeminars(token)
     }
     
-     */
-    
-     
-    
     @GetMapping("seminar")
-    fun getSeminarByName(@RequestParam name: String, @RequestParam order: String, @RequestHeader("Authentication") token: String): SeminarInfoByName {
-        //todo: url 잘못되어 있을 수도?
+    fun getSeminarByName(@RequestParam name: String, @RequestParam order: String, @RequestHeader("Authentication") token: String): GetSeminarInfoByName {
+
         return seminarService.getSeminarByName(name, order, token)
     }
     
@@ -91,7 +86,7 @@ class Controller(
     }
     
     @DeleteMapping("seminar/{seminar_id}/user")
-    fun dropSeminar(@PathVariable seminar_id: Long,@RequestHeader("Authentication") token: String): SeminarInfo {
+    fun dropSeminar(@PathVariable seminar_id: Long,@RequestHeader("Authentication") token: String): GetSeminarInfo {
         return seminarService.dropSeminar(seminar_id,token)
         
     }

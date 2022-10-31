@@ -46,7 +46,7 @@ class AuthTokenService(
   }
 
   fun verifyToken(authToken: String) {
-    TODO()
+    parse(authToken)
   }
 
   fun getCurrentUserId(authToken: String) :Long{

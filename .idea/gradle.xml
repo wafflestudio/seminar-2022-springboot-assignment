@@ -6,7 +6,7 @@
       <GradleProjectSettings>
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/seminar0" />
-        <option name="gradleJvm" value="azul-15" />
+        <option name="gradleJvm" value="azul-15 (2)" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/seminar0" />
@@ -16,7 +16,7 @@
       <GradleProjectSettings>
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/seminar1" />
-        <option name="gradleJvm" value="azul-15" />
+        <option name="gradleJvm" value="azul-15 (2)" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/seminar1" />

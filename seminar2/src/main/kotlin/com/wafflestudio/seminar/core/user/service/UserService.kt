@@ -27,7 +27,7 @@ class UserService(
     private val queryFactory: JPAQueryFactory,
 ) {
     fun getProfile(id : Long, token: String): GetProfile {
-        //todo: token 인증
+
         val findByEmailEntity = userRepository.findByEmail(authTokenService.getCurrentEmail(token))
         
         
@@ -146,8 +146,6 @@ class UserService(
     }
     
     fun updateProfile(user: UpdateProfileRequest, token: String): GetProfile{
-        //todo: email 못찾았으면 예외 제공
-        //todo: year 음수이면 예외 제공
         
         val userEntity = userRepository.findByEmail(authTokenService.getCurrentEmail(token))
 
