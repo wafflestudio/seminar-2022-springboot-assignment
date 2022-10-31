@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.core.user.api
 
 import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
+import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.domain.ProfileResponse
@@ -26,7 +27,7 @@ class AuthController(
 
     @PostMapping("/signin")
     fun signIn(
-        @RequestBody signInRequest: SignInRequest
+        @RequestBody @Valid signInRequest: SignInRequest
     ): AuthToken {
         return userService.signIn(signInRequest)
     }
@@ -48,17 +49,17 @@ class AuthController(
     ): ProfileResponse {
         return userService.getProfile(user_id)
     }
-//
-//    @Authenticated
-//    @PutMapping("/user/me")
-//    fun editProfile(
-//        @RequestHeader("Authorization") authHeader: String,
-//        @RequestBody editProfileRequest: EditProfileRequest,
-//        @UserContext userId: Long
-//    ): User {
-//        return authTokenService.editProfile(userId, editProfileRequest)
-//    }
-//
+
+    @Authenticated
+    @PutMapping("/user/me")
+    fun editProfile(
+        @RequestHeader("Authorization") authHeader: String,
+        @RequestBody @Valid editProfileRequest: EditProfileRequest,
+        @UserContext userId: Long
+    ): ProfileResponse {
+        return userService.editProfile(userId, editProfileRequest)
+    }
+
 //    @Authenticated
 //    @PostMapping("/user/participant")
 //    fun registerParticipant(
@@ -66,6 +67,6 @@ class AuthController(
 //        @RequestBody registerParticipantRequest: RegisterParticipantRequest,
 //        @UserContext userId: Long
 //    ): User {
-//        return authTokenService.registerParticipant(userId, registerParticipantRequest)
+//        return userService.registerParticipant(userId, registerParticipantRequest)
 //    }
 }

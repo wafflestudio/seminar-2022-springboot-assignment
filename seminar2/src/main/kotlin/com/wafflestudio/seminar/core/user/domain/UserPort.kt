@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.domain
 
+import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
@@ -14,7 +15,7 @@ interface UserPort {
 
     fun getProfile(userId: Long): ProfileResponse
 
-//    fun editProfile(userId: Long, editProfileRequest: EditProfileRequest): UserProfileResponse
-//
+    fun editProfile(userId: Long, editProfileRequest: EditProfileRequest): ProfileResponse
+
 //    fun registerParticipant(userId: Long, registerParticipantRequest: RegisterParticipantRequest)
 }

@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.domain.ProfileResponse
@@ -24,11 +25,11 @@ class UserService(
     fun getProfile(userId: Long): ProfileResponse {
         return userPort.getProfile(userId)
     }
-//
-//    fun editProfile(userId: Long, editProfileRequest: EditProfileRequest): User {
-//        return userPort.editProfile(userId, editProfileRequest)
-//    }
-//
+
+    fun editProfile(userId: Long, editProfileRequest: EditProfileRequest): ProfileResponse {
+        return userPort.editProfile(userId, editProfileRequest)
+    }
+
 //    fun registerParticipant(userId: Long, registerParticipantRequest: RegisterParticipantRequest): User {
 //        return userPort.registerParticipant(userId, registerParticipantRequest)
 //    }
