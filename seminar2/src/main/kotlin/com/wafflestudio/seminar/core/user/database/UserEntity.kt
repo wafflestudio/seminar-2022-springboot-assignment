@@ -2,7 +2,7 @@ package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
-import com.wafflestudio.seminar.core.user.domain.User
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
@@ -12,27 +12,21 @@ class UserEntity(
     val email: String,
 
     @Column(nullable = false)
-    val username: String,
+    var username: String,
 
     @Column(nullable = false)
-    val encodedPassword: String,
+    var encodedPassword: String,
 
-    @OneToMany(mappedBy = "user")
-    val userSeminars: Set<UserSeminarEntity>? = HashSet(),
+    var lastLogin: LocalDateTime,
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
+    val userSeminars: MutableSet<UserSeminarEntity> = mutableSetOf(),
 
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "participant_profile_id", referencedColumnName = "id")
-    val participantProfile: ParticipantProfileEntity?,
+    var participantProfile: ParticipantProfileEntity?,
 
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "instructor_profile_id", referencedColumnName = "id")
-    val instructorProfile: InstructorProfileEntity?
-) : BaseTimeEntity() {
-    fun toUser(): User {
-        return User(
-            email = email,
-            username = username,
-            encodedPassword = encodedPassword
-        )
-    }
-}
+    var instructorProfile: InstructorProfileEntity?
+) : BaseTimeEntity() 
