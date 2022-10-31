@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
 @RestControllerAdvice
 class SeminarExceptionHandler {
@@ -18,7 +19,7 @@ class SeminarExceptionHandler {
     @ExceptionHandler(Exception::class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     fun handle(e: Exception): ResponseEntity<Any> = ResponseEntity(
-        e.message + e.javaClass.name,
+        e.message + e.javaClass.name + e.printStackTrace(),
         HttpStatus.INTERNAL_SERVER_ERROR,
     )
     
@@ -45,6 +46,12 @@ class SeminarExceptionHandler {
     // on request with invalid enum value 
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handle(e: HttpMessageNotReadableException): ResponseEntity<Any> = ResponseEntity(
+        e.message,
+        HttpStatus.BAD_REQUEST
+    )
+    
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    fun handle(e: MethodArgumentTypeMismatchException): ResponseEntity<Any> = ResponseEntity(
         e.message,
         HttpStatus.BAD_REQUEST
     )

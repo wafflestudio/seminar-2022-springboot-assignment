@@ -1,7 +1,6 @@
 package com.wafflestudio.seminar.core.user.service
 
-import com.wafflestudio.seminar.core.user.api.request.LogInRequest
-import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.database.*
 import com.wafflestudio.seminar.core.user.domain.UserInfo
 import com.wafflestudio.seminar.core.user.domain.UserRole
@@ -15,6 +14,8 @@ interface UserService {
     fun signUp(signUpRequest: SignUpRequest): AuthToken
     fun logIn(logInRequest: LogInRequest): AuthToken
     fun getUserById(userid: Long): UserInfo
+    fun updateUser(userid: Long, updateRequest: UpdateRequest): UserInfo
+    fun participantEnroll(userid: Long, participantEnrollRequest: ParticipantEnrollRequest): UserInfo
 }
 
 @Service
@@ -64,6 +65,49 @@ class UserServiceImpl(
         return userRepository.findByIdOrNull(userid)
             ?.toUserInfo()
             ?: throw UserNotFoundException
+    }
+
+    @Transactional
+    override fun updateUser(userid: Long, updateRequest: UpdateRequest): UserInfo {
+        val user = userRepository.findByIdOrNull(userid) ?: throw UserNotFoundException
+        
+        updateRequest.username?.let {
+            user.username = it
+        }
+        updateRequest.password?.let {
+            user.password = passwordEncoder.encode(it)
+        }
+        
+        if (user.participantProfile != null) {
+            updateRequest.university?.let {
+                user.participantProfile!!.university = it
+            }
+        }
+        
+        if (user.instructorProfile != null) {
+            updateRequest.company?.let {
+                user.instructorProfile!!.company = it
+            }
+            updateRequest.year?.let {
+                user.instructorProfile!!.year = it
+            } ?: throw NullNumberException
+        }
+        
+        return user.toUserInfo()
+    }
+
+    @Transactional
+    override fun participantEnroll(userid: Long, participantEnrollRequest: ParticipantEnrollRequest): UserInfo {
+        val user = userRepository.findByIdOrNull(userid) ?: throw UserNotFoundException
+        if (user.participantProfile != null) {
+            throw DuplicateParticipantEnrollmentException
+        }
+        
+        user.participantProfile = participantProfileRepository.save(
+            participantEnrollRequest.toParticipantProfileEntity()
+        )
+        
+        return user.toUserInfo()
     }
 
 }

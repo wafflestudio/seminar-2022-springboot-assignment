@@ -8,8 +8,8 @@ import javax.persistence.*
 @Table(name = "users", uniqueConstraints = [UniqueConstraint(columnNames = ["email"])])
 class UserEntity(
     val email: String,
-    val username: String,
-    val password: String,
+    var username: String,
+    var password: String,
 ) : BaseTimeEntity() {
     
     @OneToOne

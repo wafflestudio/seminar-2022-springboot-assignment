@@ -8,8 +8,8 @@ import javax.persistence.*
 @Entity
 @Table(name = "participant_profiles")
 class ParticipantProfileEntity(
-    val university: String?,
-    val isRegistered: Boolean,
+    var university: String?,
+    var isRegistered: Boolean,
 ) : BaseTimeEntity() {
     
     fun toParticipantProfile(): ParticipantProfile = ParticipantProfile(
@@ -22,8 +22,8 @@ class ParticipantProfileEntity(
 @Entity
 @Table(name = "instructor_profiles")
 class InstructorProfileEntity(
-    val company: String?,
-    val year: Int?,
+    var company: String?,
+    var year: Int?,
 ) : BaseTimeEntity() {
 
     fun toInstructorProfile(): InstructorProfile = InstructorProfile(

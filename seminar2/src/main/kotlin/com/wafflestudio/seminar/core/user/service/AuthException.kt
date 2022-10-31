@@ -4,6 +4,10 @@ import com.wafflestudio.seminar.common.*
 
 typealias AuthException = Seminar401
 
+// 400
+object NullNumberException :
+    Seminar400("Null value was given for numeric data")
+
 // 401
 object InvalidTokenException :
     AuthException("Authorization token is in invalid form (unsupported, malformed, etc.)")
@@ -19,3 +23,5 @@ object UserNotFoundException :
 // 409
 object DuplicateEmailException :
     Seminar409("Given email is already signed up")
+object DuplicateParticipantEnrollmentException :
+    Seminar409("Already enrolled as participant")
