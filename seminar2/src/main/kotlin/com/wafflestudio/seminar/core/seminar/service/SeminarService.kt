@@ -21,7 +21,7 @@ interface SeminarService {
     fun makeSeminar(userId: Long, seminarRequest: SeminarRequest): Seminar
     fun editSeminar(userId: Long, seminarRequest: EditSeminarRequest): Seminar
     fun getSeminar(userId: Long, seminarId: Long): Seminar
-    fun getAllSeminar(userId: Long): List<Seminar>
+    fun getAllSeminar(userId: Long, name: String, order: String): List<Seminar>
     fun addSeminar(userId: Long, seminarId: Long, roleRequest: RoleRequest): Seminar
     fun dropSeminar(userId: Long, seminarId: Long): User
 }
@@ -60,7 +60,8 @@ class SeminarServiceImpl(
             joinedAt = LocalDateTime.now(),
             isActive = true,
         )
-        
+
+        seminar.users.add(userSeminar)
         userSeminarRepository.save(userSeminar)
         seminarRepository.save(seminar)
         return seminar.toSeminar()
@@ -91,10 +92,20 @@ class SeminarServiceImpl(
     }
 
     @Transactional
-    override fun getAllSeminar(userId: Long): List<Seminar> {
+    override fun getAllSeminar(userId: Long, name: String, order: String): List<Seminar> {
         userRepository.findByIdOrNull(userId)?.toUser()
             ?: throw Seminar404("존재하지 않는 userId 입니다")
-        return seminarRepository.findAll().map { it.toSeminar() }
+
+        val seminars = seminarRepository.findAll()
+            .filter { it.name.contains(name) }
+            .sortedBy { it.createdAt }
+            .map { it.toSeminar() }
+            .reversed()
+        
+        if (order == "earliest") {
+            return seminars.reversed()
+        }
+        return seminars
     }
 
     @Transactional

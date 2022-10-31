@@ -1,5 +1,7 @@
 package com.wafflestudio.seminar.core.user.database
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.User
@@ -7,6 +9,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "user")
+@JsonIdentityInfo(generator = IntSequenceGenerator::class, property = "id")
 data class UserEntity(
     @Column(name = "email", unique = true, nullable = false)
     val email: String,
@@ -20,10 +23,9 @@ data class UserEntity(
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id")
     var instructor: InstructorProfileEntity? = null,
-) : BaseTimeEntity() {
-    
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    private val seminars: MutableSet<UserSeminarEntity> = mutableSetOf()
+    val seminars: MutableSet<UserSeminarEntity> = mutableSetOf()
+) : BaseTimeEntity() {
     
     fun toUser(): User {
         return User(
@@ -36,5 +38,10 @@ data class UserEntity(
             participant = participant?.toParticipant(),
             instructor = instructor?.toInstructor(),
         )
+    }
+
+    override fun hashCode() = id.hashCode()
+    override fun equals(other: Any?): Boolean {
+        return super.equals(other)
     }
 }

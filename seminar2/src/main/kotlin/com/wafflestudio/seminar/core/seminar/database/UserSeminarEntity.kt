@@ -1,24 +1,26 @@
 package com.wafflestudio.seminar.core.seminar.database
 
-import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.seminar.domain.Instructor
 import com.wafflestudio.seminar.core.seminar.domain.Participant
 import com.wafflestudio.seminar.core.user.database.UserEntity
+import com.wafflestudio.seminar.core.user.domain.InstructingSeminar
+import com.wafflestudio.seminar.core.user.domain.ParticipantSeminar
 import com.wafflestudio.seminar.core.user.domain.User
 import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
 @Table(name = "UserSeminar")
+@JsonIdentityInfo(generator = IntSequenceGenerator::class, property = "id")
 data class UserSeminarEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonManagedReference
     val user: UserEntity,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seminar_id")
-    @JsonManagedReference
     val seminar: SeminarEntity,
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
@@ -49,5 +51,28 @@ data class UserSeminarEntity(
             isActive = isActive,
             droppedAt = droppedAt,
         )
+    }
+    
+    fun toParticipantSeminar(): ParticipantSeminar {
+        return ParticipantSeminar(
+            seminarId = seminar.id,
+            name = seminar.name,
+            joinedAt = joinedAt,
+            isActive = isActive,
+            droppedAt = droppedAt,
+        )
+    }
+
+    fun toInstructingSeminar(): InstructingSeminar {
+        return InstructingSeminar(
+            seminarId = seminar.id,
+            name = seminar.name,
+            joinedAt = joinedAt,
+        )
+    }
+    
+    override fun hashCode() = id.hashCode()
+    override fun equals(other: Any?): Boolean {
+        return super.equals(other)
     }
 }

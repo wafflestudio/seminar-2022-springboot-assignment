@@ -1,14 +1,18 @@
 package com.wafflestudio.seminar.core.seminar.database
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.seminar.api.request.EditSeminarRequest
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
+import com.wafflestudio.seminar.core.user.domain.User
 import java.time.LocalTime
 import javax.persistence.*
 import javax.transaction.Transactional
 
 @Entity
 @Table(name = "seminar")
+@JsonIdentityInfo(generator = IntSequenceGenerator::class, property = "id")
 data class SeminarEntity(
     @Column(name = "name")
     var name: String,
@@ -22,10 +26,10 @@ data class SeminarEntity(
     var online: Boolean = true,
     @Column(name = "hostId", unique = true)
     val hostId: Long,
-    @OneToMany(mappedBy = "seminar", fetch = FetchType.LAZY, cascade = [CascadeType.ALL]) val users: MutableSet<UserSeminarEntity> = mutableSetOf()
-): BaseTimeEntity() {
-    
-    
+    @OneToMany(mappedBy = "seminar", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    val users: MutableSet<UserSeminarEntity> = mutableSetOf()
+) : BaseTimeEntity() {
+
     fun toSeminar(): Seminar {
         return Seminar(
             id = id,
@@ -35,7 +39,15 @@ data class SeminarEntity(
             time = time,
             online = online,
             hostId = hostId,
-            users = users,
+            participants = users.filter { it.role == User.Role.PARTICIPANT }
+                .map { it.toParticipant() }
+                .toMutableSet(),
+            instructors = users.filter { it.role == User.Role.INSTRUCTOR }
+                .map { it.toInstructor() }
+                .toMutableSet(),
+            participantCount = users
+                .filter { it.role == User.Role.PARTICIPANT && it.isActive }
+                .size,
         )
     }
 
@@ -56,5 +68,10 @@ data class SeminarEntity(
         seminarRequest.online?.let {
             online = seminarRequest.online
         }
+    }
+
+    override fun hashCode() = id.hashCode()
+    override fun equals(other: Any?): Boolean {
+        return super.equals(other)
     }
 }

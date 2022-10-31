@@ -39,7 +39,9 @@ class SeminarController(
     @GetMapping("/")
     fun getAllSeminar(
         @UserContext userId: Long,
-    ) = seminarService.getAllSeminar(userId)
+        @RequestParam("name") name: String,
+        @RequestParam("order") order: String,
+    ) = seminarService.getAllSeminar(userId, name, order)
     
     @Authenticated
     @PostMapping("/{seminar_id}/user/")
