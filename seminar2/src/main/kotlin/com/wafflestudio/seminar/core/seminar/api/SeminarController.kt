@@ -13,5 +13,21 @@ import javax.validation.Valid
 class SeminarController(
     private val seminarService: SeminarService
 ) {
-    
+    @Authenticated
+    @PostMapping("/api/v1/seminar/")
+    fun makeSeminar(
+        @RequestHeader(value = "Authorization") authorization: String,
+        @Valid @RequestBody req: SeminarDto.SeminarRequest,
+        @UserContext userId: Long
+    ): ResponseEntity<SeminarDto.SeminarProfileResponse> =
+        ResponseEntity(seminarService.makeSeminar(userId, req), HttpStatus.OK)
+
+    @Authenticated
+    @PutMapping("/api/v1/seminar")
+    fun updateSeminar(
+        @RequestHeader(value = "Authorization") authorization: String,
+        @Valid @RequestBody req: SeminarDto.UpdateSeminarRequest,
+        @UserContext userId: Long
+    ): ResponseEntity<SeminarDto.SeminarProfileResponse> =
+        ResponseEntity(seminarService.updateSeminar(userId, req), HttpStatus.OK)
 }
