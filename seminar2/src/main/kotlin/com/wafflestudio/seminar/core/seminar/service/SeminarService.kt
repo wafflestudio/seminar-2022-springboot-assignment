@@ -7,6 +7,7 @@ import com.wafflestudio.seminar.common.Seminar409
 import com.wafflestudio.seminar.core.profile.database.ParticipantProfileRepository
 import com.wafflestudio.seminar.core.seminar.api.request.ParticipateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
+import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.response.InstructorInfo
 import com.wafflestudio.seminar.core.seminar.api.response.SeminarInfo
 import com.wafflestudio.seminar.core.seminar.api.response.SeminarsQueryResponse
@@ -32,7 +33,7 @@ class SeminarService(
 ){
     @Transactional
     fun createSeminar(user: UserEntity, seminarRequest: SeminarRequest) : SeminarInfo {
-        validateSeminarRequest(user, seminarRequest)
+        validateUserSeminarRequest(user)
         val seminarEntityByName : Optional<SeminarEntity> = seminarRepository.findByName(seminarRequest.name)
         if (seminarEntityByName.isPresent) {
             throw Seminar409("중복된 세미나 이름입니다")
@@ -61,27 +62,42 @@ class SeminarService(
     }
     
     @Transactional
-    fun updateSeminar(user: UserEntity, seminarRequest: SeminarRequest) : SeminarInfo {
-        validateSeminarRequest(user, seminarRequest)
+    fun updateSeminar(user: UserEntity, seminarRequest: UpdateSeminarRequest) : SeminarInfo {
+        validateUserSeminarRequest(user)
         val userSeminarEntity: UserSeminarEntity = userSeminarRepository.findUserSeminarByUserIdAndIsParticipantAndIsActive(
             user.id, false, true
         ) ?: throw Seminar404("진행하고 있는 세미나가 없습니다.")
+        println("세미나 아이디: ${seminarRequest.id}")
+        if (userSeminarEntity.seminar!!.id != seminarRequest.id) {
+            throw Seminar400("세미나 아이디가 잘못됐습니다")
+        }
         
         val userSeminarsEntity: List<UserSeminarEntity> = userSeminarRepository.findUserSeminarsBySeminarId(
             userSeminarEntity.seminar!!.id
         )
-
-        val nParticipant = userSeminarsEntity.filter { it.isActive && it.isParticipant }.count()
-        if (nParticipant > seminarRequest.capacity) {
-            throw Seminar400("현재 수강생이 $nParticipant 명이기 때문에 capacity를 이보다 적게 변경할 수 없습니다")
+        if (seminarRequest.capacity != null) {
+            val nParticipant = userSeminarsEntity.filter { it.isActive && it.isParticipant }.count()
+            if (nParticipant > seminarRequest.capacity!!) {
+                throw Seminar400("현재 수강생이 $nParticipant 명이기 때문에 capacity를 이보다 적게 변경할 수 없습니다")
+            }
         }
         
         val seminarEntity: SeminarEntity = userSeminarEntity.seminar!!
-        seminarEntity.name = seminarRequest.name
-        seminarEntity.capacity = seminarRequest.capacity
-        seminarEntity.count = seminarRequest.count
-        seminarEntity.time = seminarRequest.time
-        seminarEntity.online = seminarRequest.online
+        seminarRequest.name?.let { 
+            seminarEntity.name = it
+        }
+        seminarRequest.capacity?.let { 
+            seminarEntity.capacity = it
+        }
+        seminarRequest.count?.let { 
+            seminarEntity.count = it
+        }
+        seminarRequest.time?.let { 
+            seminarEntity.time = it
+        }
+        seminarRequest.online?.let { 
+            seminarEntity.online = it
+        }
         seminarRepository.save(seminarEntity)
         return SeminarInfo.from(seminarEntity, userSeminarsEntity)
     }
@@ -186,7 +202,7 @@ class SeminarService(
         return seminarRepository.findSeminarsByNameAndOrder(name, orderBool, PageRequest.of(page, size))
     }
     
-    fun validateSeminarRequest(user: UserEntity, seminarRequest: SeminarRequest) {
+    fun validateUserSeminarRequest(user: UserEntity) {
         if (user.role == UserRole.PARTICIPANT) {
             throw Seminar403("참가자는 세미나를 생성하거나 업데이트 할 수 없습니다")
         }

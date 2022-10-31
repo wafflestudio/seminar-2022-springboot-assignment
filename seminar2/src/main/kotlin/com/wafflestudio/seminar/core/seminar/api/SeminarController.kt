@@ -5,6 +5,7 @@ import com.wafflestudio.seminar.common.LogExecutionTime
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.seminar.api.request.ParticipateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
+import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.response.SeminarInfo
 import com.wafflestudio.seminar.core.seminar.api.response.SeminarsQueryResponse
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
@@ -39,7 +40,7 @@ class SeminarController(
     @PutMapping("/api/v1/seminar")
     fun updateSeminar(
         @UserContext user: Optional<UserEntity>,
-        @Valid @RequestBody seminarRequest: SeminarRequest
+        @Valid @RequestBody seminarRequest: UpdateSeminarRequest
     ) : ResponseEntity<SeminarInfo> {
         if (user.isEmpty) {
             throw AuthException("유저를 찾을 수 없습니다")
