@@ -1,15 +1,10 @@
 package com.wafflestudio.seminar.core.user.service
 
-import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.common.*
-import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
-import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
-import com.wafflestudio.seminar.core.user.api.request.ParticipantRequest
-import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.api.response.SeminarResponse
 import com.wafflestudio.seminar.core.user.database.ParticipantProfileEntity
 import com.wafflestudio.seminar.core.user.database.SeminarEntity
-import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.repository.*
@@ -18,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 
 @Service
@@ -53,12 +49,14 @@ class UserServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getProfile(userId: Long): User {
-        val userEntity = userRepository.findById(userId).get()
+        val userEntity =
+            userRepository.findByIdOrNull(userId) ?: throw Seminar404("No existing user with id: ${userId}")
         return userEntity.toDTO()
     }
 
     override fun editProfile(userId: Long, editProfileRequest: EditProfileRequest) {
-        val userEntity = userRepository.findById(userId).get()
+        val userEntity =
+            userRepository.findByIdOrNull(userId) ?: throw Seminar404("No existing user with id: ${userId}")
         if (editProfileRequest.username != null) {
             userEntity.username = editProfileRequest.username
         }
@@ -75,7 +73,8 @@ class UserServiceImpl(
     }
 
     override fun registerParticipantProfile(userId: Long, participantRequest: ParticipantRequest) {
-        val userEntity = userRepository.findById(userId).get()
+        val userEntity =
+            userRepository.findByIdOrNull(userId) ?: throw Seminar404("No existing user with id: ${userId}")
         if (userEntity.participantProfile != null) {
             throw Seminar409("You have participant profile already")
         }
@@ -85,14 +84,19 @@ class UserServiceImpl(
         participantProfileRepository.save(participantProfileEntity)
     }
 
-    override fun createSeminar(userId: Long, seminarRequest: SeminarRequest): Seminar {
-        val userEntity = userRepository.findById(userId).get()
+    override fun createSeminar(userId: Long, createSeminarRequest: CreateSeminarRequest): Seminar {
+        val userEntity =
+            userRepository.findByIdOrNull(userId) ?: throw Seminar404("No existing user with id: ${userId}")
+        if (userEntity.instructorProfile == null) {
+            throw Seminar403("Cannot create seminar. You don't have instructor profile")
+        }
         val seminarEntity = SeminarEntity(
-            seminarRequest.name,
-            seminarRequest.capacity,
-            seminarRequest.count,
-            seminarRequest.time,
-            seminarRequest.online
+            createSeminarRequest.name,
+            createSeminarRequest.capacity,
+            createSeminarRequest.count,
+            LocalTime.parse(createSeminarRequest.time),
+            createSeminarRequest.online,
+            userId
         )
         val userSeminarEntity = UserSeminarEntity(userEntity, seminarEntity, Role.INSTRUCTOR)
         seminarEntity.addUserSeminar(userSeminarEntity)
@@ -101,20 +105,25 @@ class UserServiceImpl(
         return seminarEntity.toDTO()
     }
 
-    override fun editSeminar(seminarRequest: SeminarRequest): Seminar {
-        val seminarEntity = seminarRepository.findById(seminarRequest.id!!).get()
-        seminarEntity.name = seminarRequest.name
-        seminarEntity.capacity = seminarRequest.capacity
-        seminarEntity.count = seminarRequest.count
-        seminarEntity.time = seminarRequest.time
-        seminarEntity.online = seminarRequest.online
+    override fun editSeminar(userId: Long, editSeminarRequest: EditSeminarRequest): Seminar {
+        val seminarEntity = seminarRepository.findByIdOrNull(editSeminarRequest.id)
+            ?: throw Seminar404("No existing seminar with id: ${editSeminarRequest.id}")
+        if (seminarEntity.creatorId != userId) {
+            throw Seminar403("You are not the creator of this seminar")
+        }
+        seminarEntity.name = editSeminarRequest.name
+        seminarEntity.capacity = editSeminarRequest.capacity
+        seminarEntity.count = editSeminarRequest.count
+        seminarEntity.time = LocalTime.parse(editSeminarRequest.time)
+        seminarEntity.online = editSeminarRequest.online
         return seminarEntity.toDTO()
     }
 
     @Transactional(readOnly = true)
-    override fun getSeminar(seminarId: Long): SeminarResponse {
-        val seminarEntity = seminarRepository.findById(seminarId).get()
-        return seminarEntity.toSeminarResponse()
+    override fun getSeminar(seminarId: Long): Seminar {
+        val seminarEntity = seminarRepository.findByIdOrNull(seminarId)
+            ?: throw Seminar404("No existing seminar with id: ${seminarId}")
+        return seminarEntity.toDTO()
     }
 
     @Transactional(readOnly = true)

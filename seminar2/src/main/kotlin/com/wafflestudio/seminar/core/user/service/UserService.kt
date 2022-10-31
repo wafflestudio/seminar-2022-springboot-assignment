@@ -1,9 +1,6 @@
 package com.wafflestudio.seminar.core.user.service
 
-import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
-import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
-import com.wafflestudio.seminar.core.user.api.request.ParticipantRequest
-import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.api.response.SeminarResponse
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.domain.Role
@@ -16,9 +13,9 @@ interface UserService {
     fun getProfile(userId: Long): User
     fun editProfile(userId: Long, editProfileRequest: EditProfileRequest)
     fun registerParticipantProfile(userId: Long, participantRequest: ParticipantRequest)
-    fun createSeminar(userId: Long, seminarRequest: SeminarRequest): Seminar
-    fun editSeminar(seminarRequest: SeminarRequest): Seminar
-    fun getSeminar(seminarId: Long): SeminarResponse
+    fun createSeminar(userId: Long, createSeminarRequest: CreateSeminarRequest): Seminar
+    fun editSeminar(userId: Long, editSeminarRequest: EditSeminarRequest): Seminar
+    fun getSeminar(seminarId: Long): Seminar
     fun getSeminars(name: String, order: String): List<SeminarResponse>
     fun joinSeminar(userId: Long, seminarId: Long, role: Role): Seminar
     fun dropSeminar(userId: Long, seminarId: Long): Seminar

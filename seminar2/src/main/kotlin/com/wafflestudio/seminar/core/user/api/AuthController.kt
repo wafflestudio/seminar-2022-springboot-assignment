@@ -44,7 +44,7 @@ class AuthController(
 
     @Authenticated
     @PutMapping("/user/me")
-    fun editMe(@UserContext userId: Long, @RequestBody editProfileRequest: EditProfileRequest) {
+    fun editMe(@UserContext userId: Long, @Valid @RequestBody editProfileRequest: EditProfileRequest) {
         return userService.editProfile(userId, editProfileRequest)
     }
 
@@ -56,19 +56,22 @@ class AuthController(
 
     @Authenticated
     @PostMapping("/seminar")
-    fun createSeminar(@UserContext userId: Long, @RequestBody seminarRequest: SeminarRequest): Seminar {
-        return userService.createSeminar(userId, seminarRequest)
+    fun createSeminar(
+        @UserContext userId: Long,
+        @Valid @RequestBody createSeminarRequest: CreateSeminarRequest
+    ): Seminar {
+        return userService.createSeminar(userId, createSeminarRequest)
     }
 
     @Authenticated
     @PutMapping("/seminar")
-    fun editSeminar(@UserContext userId: Long, @RequestBody seminarRequest: SeminarRequest): Seminar {
-        return userService.editSeminar(seminarRequest)
+    fun editSeminar(@UserContext userId: Long, @Valid @RequestBody editSeminarRequest: EditSeminarRequest): Seminar {
+        return userService.editSeminar(userId, editSeminarRequest)
     }
 
     @Authenticated
     @GetMapping("/seminar/{seminarId}")
-    fun getSeminar(@PathVariable("seminarId") seminarId: Long): SeminarResponse {
+    fun getSeminar(@PathVariable("seminarId") seminarId: Long): Seminar {
         return userService.getSeminar(seminarId)
     }
 

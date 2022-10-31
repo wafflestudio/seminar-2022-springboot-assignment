@@ -17,7 +17,8 @@ class SeminarEntity(
     var capacity: Int,
     var count: Int,
     var time: LocalTime,
-    var online: Boolean = true
+    var online: Boolean = true,
+    var creatorId: Long
 ) : BaseTimeEntity() {
     @OneToMany(mappedBy = "seminar", cascade = [CascadeType.REMOVE])
     val userSeminars: MutableList<UserSeminarEntity> = ArrayList()
