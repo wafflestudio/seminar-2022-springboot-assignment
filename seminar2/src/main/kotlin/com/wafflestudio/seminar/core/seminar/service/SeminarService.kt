@@ -22,6 +22,7 @@ interface SeminarService {
     fun getSeminarById(seminarId: Long): SeminarDto.SeminarProfileResponse
     fun getSeminars(name: String?, earliest: String?): MutableList<SeminarDto.SeminarProfileSimplifiedResponse>
     fun participateSeminar(seminarId: Long, role: String, userId: Long): SeminarDto.SeminarProfileResponse
+    fun dropSeminar(seminarId: Long, userId: Long): SeminarDto.SeminarProfileResponse
 }
 
 @Service
@@ -156,6 +157,29 @@ class SeminarServiceImpl(
             seminarEntity = seminarEntity,
         )
         userSeminarRepository.save(userSeminarEntity)
+        return seminarRepositorySupport.getSeminarById(seminarId)
+    }
+
+    @Transactional
+    override fun dropSeminar(seminarId: Long, userId: Long): SeminarDto.SeminarProfileResponse {
+        if (!seminarRepository.existsById(seminarId)) {
+            throw Seminar404("This seminar doesn't exist.")
+        }
+        val userEntity = userRepository.findById(userId).get()
+        if (userEntity.role == "INSTRUCTOR") {
+            throw Seminar403("Instructor can not drop the seminar.")
+        }
+        val seminarEntity = seminarRepository.findById(seminarId).get()
+        for (userSeminarEntity in userEntity.userSeminarEntities) {
+            if (userSeminarEntity.seminarEntity == seminarEntity) {
+                userSeminarEntity.isActive = false
+                userSeminarEntity.droppedAt = LocalDateTime.now()
+                userSeminarEntity.modifiedAt = LocalDateTime.now()
+                seminarEntity.participantCount -= 1L
+                userSeminarRepository.save(userSeminarEntity)
+                break
+            }
+        }
         return seminarRepositorySupport.getSeminarById(seminarId)
     }
 

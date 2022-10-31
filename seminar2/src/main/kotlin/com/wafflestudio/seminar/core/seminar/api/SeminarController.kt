@@ -57,4 +57,13 @@ class SeminarController(
         @UserContext userId: Long
     ): ResponseEntity<SeminarDto.SeminarProfileResponse> =
         ResponseEntity(seminarService.participateSeminar(seminar_id, role, userId), HttpStatus.OK)
+
+    @Authenticated
+    @DeleteMapping("/api/v1/seminar/{seminar_id}/user/")
+    fun dropSeminar(
+        @RequestHeader(value = "Authorization") authorization: String,
+        @PathVariable seminar_id: Long,
+        @UserContext userId: Long
+    ): ResponseEntity<SeminarDto.SeminarProfileResponse> = ResponseEntity(seminarService.dropSeminar(seminar_id, userId), HttpStatus.OK)
+    
 }
