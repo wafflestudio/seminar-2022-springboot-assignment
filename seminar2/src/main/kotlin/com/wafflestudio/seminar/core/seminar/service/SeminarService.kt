@@ -1,19 +1,13 @@
 package com.wafflestudio.seminar.core.seminar.service
 
-import com.wafflestudio.seminar.common.INSTRUCTOR
-import com.wafflestudio.seminar.common.PARTICIPANT
-import com.wafflestudio.seminar.common.Seminar403
-import com.wafflestudio.seminar.common.Seminar404
+import com.wafflestudio.seminar.common.*
 import com.wafflestudio.seminar.core.join.UserSeminarEntity
 import com.wafflestudio.seminar.core.join.UserSeminarRepository
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
 import com.wafflestudio.seminar.core.seminar.database.changeTimeStringToMinutes
 import com.wafflestudio.seminar.core.seminar.database.changeTotalMinutesToTimeString
-import com.wafflestudio.seminar.core.seminar.dto.SeminarDetailResponse
-import com.wafflestudio.seminar.core.seminar.dto.SeminarPostRequest
-import com.wafflestudio.seminar.core.seminar.dto.SeminarPutRequest
-import com.wafflestudio.seminar.core.seminar.dto.SeminarQueryElementResponse
+import com.wafflestudio.seminar.core.seminar.dto.*
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.dto.InstructorUserResponse
@@ -33,6 +27,9 @@ interface SeminarService {
 
     fun getSeminarDetailById(seminarId: Long): SeminarDetailResponse
     fun getSeminarListQueriedByNameAndOrder(name: String, order: String): List<SeminarQueryElementResponse>
+    fun attendUserToSeminarAndReturnSeminarDetail
+            (seminarId: Long, seminarRegisterRequest: SeminarRegisterRequest, meUser: UserEntity)
+        : SeminarDetailResponse
 }
 
 @Service
@@ -121,6 +118,58 @@ class SeminarServiceImpl(
             )
         }
         return seminarQueryResponseList
+    }
+
+    override fun attendUserToSeminarAndReturnSeminarDetail(
+            seminarId: Long, seminarRegisterRequest: SeminarRegisterRequest, meUser: UserEntity
+    ): SeminarDetailResponse {
+        val seminar = seminarRepository.findByIdOrNull(seminarId)
+                ?: throw Seminar404("Seminar ${seminarId} not found")
+        
+        // if already in seminar, throw error
+        if (userSeminarRepository.existsByUserAndSeminar(meUser, seminar)) {
+            throw Seminar400("Already in Seminar")
+        }
+        
+        val attendSeminar = { r: String -> {
+                userSeminarRepository.save(
+                        UserSeminarEntity(
+                                user = meUser,
+                                seminar = seminar,
+                                isActive = true,
+                                role = r
+                        )
+                )
+            }
+        }
+        
+        when (seminarRegisterRequest.role) {
+            PARTICIPANT -> {
+                if (meUser.participantProfile == null) {
+                    throw Seminar403("Wrong role given.")
+                } else if (!meUser.participantProfile!!.isRegistered) {
+                    throw Seminar403("Not registered")
+                } else {
+                    // if seminar is full
+                    if (userSeminarRepository.countAllBySeminarAndRole(seminar, PARTICIPANT) >= seminar.count) {
+                        throw Seminar400("Seminar already full.")
+                    } else {
+                        attendSeminar(PARTICIPANT)
+                    }
+                }
+            }
+            INSTRUCTOR -> {
+                if (userSeminarRepository.existsByUserAndRole(meUser, INSTRUCTOR)) {
+                    throw Seminar400("Already instructor in other seminar")
+                } else {
+                    attendSeminar(INSTRUCTOR)
+                }
+            }
+            else -> throw Seminar400("Invalid role given.")
+        }
+        
+        // If reach to here, it means there was no problem.
+        return makeSeminarDetail(seminar)
     }
     
     fun makeSeminarDetail(seminar: SeminarEntity): SeminarDetailResponse {

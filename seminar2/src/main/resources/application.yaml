@@ -10,11 +10,11 @@ spring:
       hibernate:
         show_sql: true
     hibernate:
-      ddl-auto: create
-#      ddl-auto: update
+#      ddl-auto: create
+      ddl-auto: update
       
 auth.jwt:
   issuer: waffle
   jwtSecret: THIS_IS_THE_SECRET_KEY_FOR_THE_WAFFLE_SEMINAR2_ASSIGNMENT_SPRING_PROJECT
-  jwtExpiration: 600000
+  jwtExpiration: 3600000
 #   TODO 누락된 정보를 추가해 주세요.

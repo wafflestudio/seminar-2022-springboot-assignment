@@ -4,6 +4,7 @@ import com.wafflestudio.seminar.common.LoginUser
 import com.wafflestudio.seminar.common.SeminarRequestBodyException
 import com.wafflestudio.seminar.core.seminar.dto.SeminarPostRequest
 import com.wafflestudio.seminar.core.seminar.dto.SeminarPutRequest
+import com.wafflestudio.seminar.core.seminar.dto.SeminarRegisterRequest
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import org.springframework.http.HttpStatus
@@ -52,4 +53,19 @@ class SeminarController(
             @RequestParam(name = "name") name: String?,
             @RequestParam(name = "order") order: String?,
     ) = seminarService.getSeminarListQueriedByNameAndOrder(name?:"", order?:"")
+    
+    @PostMapping("/api/v1/seminar/{seminar_id}/user/")
+    fun postUserToSeminar(
+            @PathVariable seminar_id: Long,
+            @Valid @RequestBody seminarRegisterRequest: SeminarRegisterRequest,
+            bindingResult: BindingResult,
+            @LoginUser meUser: UserEntity?,
+    ): Any {
+        meUser?.let{
+            if (bindingResult.hasErrors()) {
+                throw SeminarRequestBodyException(bindingResult.fieldErrors)
+            }
+            return seminarService.attendUserToSeminarAndReturnSeminarDetail(seminar_id, seminarRegisterRequest, meUser)
+        } ?: return ResponseEntity<String>("Cannot found current user", HttpStatus.UNAUTHORIZED)
+    }
 }
