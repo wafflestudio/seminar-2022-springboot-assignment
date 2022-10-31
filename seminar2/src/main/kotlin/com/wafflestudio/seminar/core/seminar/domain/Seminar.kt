@@ -1,5 +1,7 @@
 package com.wafflestudio.seminar.core.seminar.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import java.time.LocalTime
 
 data class Seminar(
@@ -10,4 +12,6 @@ data class Seminar(
     val count: Int,
     val time: LocalTime,
     val online: Boolean,
+    @JsonIgnore
+    val users: MutableSet<UserSeminarEntity>,
 )

@@ -22,10 +22,9 @@ data class SeminarEntity(
     var online: Boolean = true,
     @Column(name = "hostId", unique = true)
     val hostId: Long,
+    @OneToMany(mappedBy = "seminar", fetch = FetchType.LAZY, cascade = [CascadeType.ALL]) val users: MutableSet<UserSeminarEntity> = mutableSetOf()
 ): BaseTimeEntity() {
     
-    @OneToMany(mappedBy = "seminar", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    private val users: MutableSet<UserSeminarEntity> = mutableSetOf()
     
     fun toSeminar(): Seminar {
         return Seminar(
@@ -35,7 +34,8 @@ data class SeminarEntity(
             count = count,
             time = time,
             online = online,
-            hostId = hostId
+            hostId = hostId,
+            users = users,
         )
     }
 

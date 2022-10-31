@@ -9,14 +9,3 @@ interface UserRepository : JpaRepository<UserEntity, Long> {
 interface ParticipantRepository : JpaRepository<ParticipantProfileEntity, Long>
 
 interface InstructorRepository : JpaRepository<InstructorProfileEntity, Long>
-
-//@Component
-//class UserRepositorySupport(
-//    private val queryFactory: JPAQueryFactory,
-//) {
-//    fun findByIdOrNull(userId: Long): UserEntity? {
-//        return queryFactory.selectFrom(userEntity)
-//            .where(userEntity.id.eq(userId))
-//            .fetchOne()
-//    }
-//}
