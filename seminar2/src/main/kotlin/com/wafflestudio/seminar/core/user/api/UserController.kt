@@ -6,6 +6,7 @@ import com.wafflestudio.seminar.core.user.api.request.ParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.UserRequest
 import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -22,7 +23,7 @@ class UserController(
     @PutMapping("/me/")
     fun editUser(
         @UserContext userId: Long,
-        @RequestBody userRequest: UserRequest,
+        @Valid @RequestBody userRequest: UserRequest,
     ) = userService.editUser(userId, userRequest)
     
     @Authenticated

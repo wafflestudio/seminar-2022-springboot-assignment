@@ -150,7 +150,9 @@ class SeminarServiceImpl(
             joinedAt = LocalDateTime.now(),
             isActive = true,
         )
+        seminar.users.add(userSeminar)
         userSeminarRepository.save(userSeminar)
+        seminarRepository.save(seminar)
         return seminar.toSeminar()
     }
 
@@ -167,7 +169,7 @@ class SeminarServiceImpl(
             throw Seminar403("세미나 진행자는 드랍할 수 없습니다")
         }
         if (userSeminar?.isActive == false) {
-            throw Seminar404("이미 드랍한 세미나입니다")
+            throw Seminar403("이미 드랍한 세미나입니다")
         }
         userSeminar?.isActive = false
         userSeminar?.droppedAt = LocalDateTime.now()

@@ -36,7 +36,7 @@ class AuthServiceImpl(
             email = request.email,
             username = request.username,
             password = passwordEncoder.encode(request.password),
-            seminars = mutableSetOf(),
+            seminars = mutableListOf(),
         )
 
         when (request.role) {
