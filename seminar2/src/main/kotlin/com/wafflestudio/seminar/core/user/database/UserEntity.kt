@@ -7,6 +7,7 @@ import com.wafflestudio.seminar.core.seminar.domain.ParticipatingSeminar
 import com.wafflestudio.seminar.core.user.domain.InstructorProfile
 import com.wafflestudio.seminar.core.user.domain.ParticipantProfile
 import com.wafflestudio.seminar.core.user.domain.ProfileResponse
+import com.wafflestudio.seminar.core.user.domain.User
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -35,10 +36,26 @@ class UserEntity(
     @JoinColumn(name = "instructor_profile_id", referencedColumnName = "id")
     var instructorProfile: InstructorProfileEntity?
 ) : BaseTimeEntity() {
-    fun toProfileResponse(
-        participatingSeminars: List<ParticipatingSeminar>,
-        instructingSeminar: InstructingSeminar?
-    ): ProfileResponse {
+    fun toProfileResponse(): ProfileResponse {
+        val participatingSeminars: MutableList<ParticipatingSeminar> = mutableListOf()
+        var instructingSeminar: InstructingSeminar? = null
+        userSeminars.forEach {
+            it.seminar.run {
+                if (it.role == User.Role.PARTICIPANT) participatingSeminars.add(
+                    ParticipatingSeminar(
+                        id = id,
+                        name = name,
+                        joinedAt = it.joinedAt,
+                        isActive = it.isActive,
+                        droppedAt = it.droppedAt
+                    )
+                ) else instructingSeminar = InstructingSeminar(
+                    id = id,
+                    name = name,
+                    joinedAt = it.joinedAt
+                )
+            }
+        }
         return ProfileResponse(
             id = id,
             username = username,

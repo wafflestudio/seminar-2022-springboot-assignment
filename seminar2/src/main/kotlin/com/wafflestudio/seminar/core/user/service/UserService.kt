@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
+import com.wafflestudio.seminar.core.user.api.request.RegisterParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.domain.ProfileResponse
@@ -30,7 +31,7 @@ class UserService(
         return userPort.editProfile(userId, editProfileRequest)
     }
 
-//    fun registerParticipant(userId: Long, registerParticipantRequest: RegisterParticipantRequest): User {
-//        return userPort.registerParticipant(userId, registerParticipantRequest)
-//    }
+    fun registerParticipant(userId: Long, registerParticipantRequest: RegisterParticipantRequest): ProfileResponse {
+        return userPort.registerParticipant(userId, registerParticipantRequest)
+    }
 }

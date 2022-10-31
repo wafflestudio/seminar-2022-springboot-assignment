@@ -3,9 +3,8 @@ package com.wafflestudio.seminar.core.user.database
 import com.wafflestudio.seminar.common.Seminar401
 import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.common.Seminar409
-import com.wafflestudio.seminar.core.seminar.domain.InstructingSeminar
-import com.wafflestudio.seminar.core.seminar.domain.ParticipatingSeminar
 import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
+import com.wafflestudio.seminar.core.user.api.request.RegisterParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.domain.ProfileResponse
@@ -72,70 +71,29 @@ class UserAdapter(
 
     override fun getProfile(userId: Long): ProfileResponse {
         val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
-        val participatingSeminars: MutableList<ParticipatingSeminar> = mutableListOf()
-        var instructingSeminar: InstructingSeminar? = null
-        userEntity.userSeminars.forEach {
-            it.seminar.run {
-                if (it.role == User.Role.PARTICIPANT) participatingSeminars.add(
-                    ParticipatingSeminar(
-                        id = id,
-                        name = name,
-                        joinedAt = it.joinedAt,
-                        isActive = it.isActive,
-                        droppedAt = it.droppedAt
-                    )
-                ) else instructingSeminar = InstructingSeminar(
-                    id = id,
-                    name = name,
-                    joinedAt = it.joinedAt
-                )
-            }
-        }
-        return userEntity.toProfileResponse(participatingSeminars, instructingSeminar)
+        return userEntity.toProfileResponse()
     }
 
     override fun editProfile(userId: Long, editProfileRequest: EditProfileRequest) = editProfileRequest.run {
         val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
-        val participatingSeminars: MutableList<ParticipatingSeminar> = mutableListOf()
-        var instructingSeminar: InstructingSeminar? = null
-        userEntity.userSeminars.forEach {
-            it.seminar.run {
-                if (it.role == User.Role.PARTICIPANT) participatingSeminars.add(
-                    ParticipatingSeminar(
-                        id = id,
-                        name = name,
-                        joinedAt = it.joinedAt,
-                        isActive = it.isActive,
-                        droppedAt = it.droppedAt
-                    )
-                ) else instructingSeminar = InstructingSeminar(
-                    id = id,
-                    name = name,
-                    joinedAt = it.joinedAt
-                )
-            }
-        }
         if (username != null) userEntity.username = username
         userEntity.participantProfile?.let { it.university = university }
         userEntity.instructorProfile?.let {
             it.company = company
             it.year = year
         }
-        userRepository.save(userEntity)
-        userEntity.toProfileResponse(participatingSeminars, instructingSeminar)
+        userRepository.save(userEntity).toProfileResponse()
     }
 
-    //
-//    override fun registerParticipant(userId: Long, registerParticipantRequest: RegisterParticipantRequest) =
-//        registerParticipantRequest.run {
-//            val userEntity =
-//                userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
-//            if (userEntity.participantProfile != null) {
-//                throw Seminar409("이미 수강생 신분입니다.")
-//            }
-//            userEntity.participantProfile = ParticipantProfileEntity(userEntity, university, isRegistered)
-//            userRepository.save(userEntity).toUser()
-//        }
+    override fun registerParticipant(userId: Long, registerParticipantRequest: RegisterParticipantRequest) =
+        registerParticipantRequest.run {
+            val userEntity =
+                userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
+            if (userEntity.participantProfile != null) throw Seminar409("이미 수강생 신분입니다.")
+            userEntity.participantProfile = ParticipantProfileEntity(userEntity, university, isRegistered)
+            userRepository.save(userEntity).toProfileResponse()
+        }
+
     fun checkDuplicatedEmail(email: String) {
         userRepository.findByEmail(email)?.let { throw Seminar409("${email}: 중복된 이메일입니다.") }
     }
