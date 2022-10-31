@@ -99,12 +99,12 @@ class AuthController(
     fun joinSeminar(
         @UserContext userId: Long,
         @PathVariable("seminarId") seminarId: Long,
-        @RequestBody role: Role?
+        @RequestBody joinSeminarRequest: JoinSeminarRequest
     ): Seminar {
-        if (role == null) {
+        if (joinSeminarRequest.role == null) {
             throw Seminar400("role is required")
         }
-        return userService.joinSeminar(userId, seminarId, role)
+        return userService.joinSeminar(userId, seminarId, joinSeminarRequest.role)
     }
 
     @Authenticated

@@ -29,7 +29,7 @@ class SeminarExceptionHandler {
 
     @ExceptionHandler(value = [HttpMessageNotReadableException::class])
     fun handle(e: HttpMessageNotReadableException): ResponseEntity<Any> {
-        return ResponseEntity("Role must be PARTICIPANT or INSTRUCTOR", HttpStatus.BAD_REQUEST)
+        return ResponseEntity("role must be PARTICIPANT or INSTRUCTOR", HttpStatus.BAD_REQUEST)
     }
 
     @ExceptionHandler(value = [MethodArgumentNotValidException::class])
