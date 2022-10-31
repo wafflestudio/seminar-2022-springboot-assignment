@@ -5,6 +5,7 @@ import com.wafflestudio.seminar.common.Seminar403
 import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.EditSeminarRequest
+import com.wafflestudio.seminar.core.seminar.domain.SearchSeminarResponse
 import com.wafflestudio.seminar.core.seminar.domain.SeminarPort
 import com.wafflestudio.seminar.core.seminar.domain.SeminarResponse
 import com.wafflestudio.seminar.core.user.database.UserRepository
@@ -85,5 +86,14 @@ class SeminarAdapter(
         val seminarEntity =
             seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
         return seminarEntity.toSeminarResponse()
+    }
+
+    override fun searchSeminar(name: String?, order: String?): List<SearchSeminarResponse> {
+        val seminars = mutableListOf<SearchSeminarResponse>()
+        val seminarEntities: MutableList<SeminarEntity> =
+            if (name == null) seminarRepository.findAll() else seminarRepository.findContainingName(name)
+        if (order == "earliest") seminarEntities.sort() else seminarEntities.reverse()
+        seminarEntities.forEach { seminars.add(it.toSearchSeminarResponse()) }
+        return seminars
     }
 }

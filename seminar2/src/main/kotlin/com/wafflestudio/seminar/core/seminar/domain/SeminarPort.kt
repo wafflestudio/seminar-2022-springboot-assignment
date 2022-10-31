@@ -9,4 +9,6 @@ interface SeminarPort {
     fun editSeminar(userId: Long, editSeminarRequest: EditSeminarRequest): SeminarResponse
 
     fun getSeminar(seminarId: Long): SeminarResponse
+
+    fun searchSeminar(name: String?, order: String?): List<SearchSeminarResponse>
 }

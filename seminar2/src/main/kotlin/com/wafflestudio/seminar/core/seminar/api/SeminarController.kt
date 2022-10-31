@@ -4,6 +4,7 @@ import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.EditSeminarRequest
+import com.wafflestudio.seminar.core.seminar.domain.SearchSeminarResponse
 import com.wafflestudio.seminar.core.seminar.domain.SeminarResponse
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
 import org.springframework.web.bind.annotation.*
@@ -41,5 +42,15 @@ class SeminarController(
         @PathVariable seminar_id: Long
     ): SeminarResponse {
         return seminarService.getSeminar(seminar_id)
+    }
+
+    @Authenticated
+    @GetMapping("/seminar")
+    fun searchSeminar(
+        @RequestHeader("Authorization") authHeader: String,
+        @RequestParam name: String?,
+        @RequestParam order: String?
+    ): List<SearchSeminarResponse> {
+        return seminarService.searchSeminar(name = name, order = order)
     }
 }

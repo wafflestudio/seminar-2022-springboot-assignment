@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.core.seminar.service
 
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.EditSeminarRequest
+import com.wafflestudio.seminar.core.seminar.domain.SearchSeminarResponse
 import com.wafflestudio.seminar.core.seminar.domain.SeminarPort
 import com.wafflestudio.seminar.core.seminar.domain.SeminarResponse
 import org.springframework.stereotype.Service
@@ -20,5 +21,9 @@ class SeminarService(
 
     fun getSeminar(seminarId: Long): SeminarResponse {
         return seminarPort.getSeminar(seminarId)
+    }
+
+    fun searchSeminar(name: String?, order: String?): List<SearchSeminarResponse> {
+        return seminarPort.searchSeminar(name = name, order = order)
     }
 }

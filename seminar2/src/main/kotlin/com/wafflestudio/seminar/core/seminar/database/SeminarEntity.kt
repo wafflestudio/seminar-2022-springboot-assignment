@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.seminar.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.seminar.domain.SearchSeminarResponse
 import com.wafflestudio.seminar.core.seminar.domain.SeminarResponse
 import com.wafflestudio.seminar.core.user.domain.Instructor
 import com.wafflestudio.seminar.core.user.domain.Participant
@@ -23,7 +24,7 @@ class SeminarEntity(
     var time: LocalTime,
     var online: Boolean,
     val creatorId: Long
-) : BaseTimeEntity() {
+) : BaseTimeEntity(), Comparable<SeminarEntity> {
     fun toSeminarResponse(): SeminarResponse {
         val instructors: MutableList<Instructor> = mutableListOf()
         val participants: MutableList<Participant> = mutableListOf()
@@ -58,5 +59,32 @@ class SeminarEntity(
             instructors = instructors,
             participants = participants
         )
+    }
+
+    fun toSearchSeminarResponse(): SearchSeminarResponse {
+        val instructors: MutableList<Instructor> = mutableListOf()
+        var participantCount = 0
+        userSeminars.forEach {
+            it.user.run {
+                if (it.role == User.Role.INSTRUCTOR) instructors.add(
+                    Instructor(
+                        id = id,
+                        username = username,
+                        email = email,
+                        joinedAt = it.joinedAt
+                    )
+                ) else if (it.isActive) participantCount++
+            }
+        }
+        return SearchSeminarResponse(
+            id = id,
+            name = name,
+            instructors = instructors,
+            participantCount = participantCount
+        )
+    }
+
+    override fun compareTo(other: SeminarEntity): Int {
+        return this.createdAt!!.compareTo(other.createdAt)
     }
 }
