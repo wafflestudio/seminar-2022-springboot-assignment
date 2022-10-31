@@ -26,10 +26,10 @@ class UserSeminarEntity(
         val seminar: SeminarEntity,
 
         @Column(nullable = false)
-        val isActive: Boolean = false,
+        var isActive: Boolean = false,
 
         @Column(nullable = true)
-        val droppedAt: LocalDateTime? = null,
+        var droppedAt: LocalDateTime? = null,
 
         val role: String,
 ) : BaseTimeEntity() {

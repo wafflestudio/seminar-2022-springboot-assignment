@@ -68,4 +68,14 @@ class SeminarController(
             return seminarService.attendUserToSeminarAndReturnSeminarDetail(seminar_id, seminarRegisterRequest, meUser)
         } ?: return ResponseEntity<String>("Cannot found current user", HttpStatus.UNAUTHORIZED)
     }
+    
+    @DeleteMapping("/api/v1/seminar/{seminar_id}/user")
+    fun deleteUserFromSeminar(
+            @PathVariable seminar_id: Long,
+            @LoginUser meUser: UserEntity?,
+    ): Any {
+        meUser?.let{
+            return seminarService.dropUserFromSeminar(seminar_id, meUser)
+        } ?: return ResponseEntity<String>("Cannot found current user", HttpStatus.UNAUTHORIZED)
+    }
 }

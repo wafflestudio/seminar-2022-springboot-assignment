@@ -13,7 +13,10 @@ import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.dto.InstructorUserResponse
 import com.wafflestudio.seminar.core.user.dto.ParticipantUserResponse
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import javax.transaction.Transactional
 
 interface SeminarService {
@@ -30,6 +33,8 @@ interface SeminarService {
     fun attendUserToSeminarAndReturnSeminarDetail
             (seminarId: Long, seminarRegisterRequest: SeminarRegisterRequest, meUser: UserEntity)
         : SeminarDetailResponse
+
+    fun dropUserFromSeminar(seminarId: Long, meUser: UserEntity): Any
 }
 
 @Service
@@ -131,7 +136,8 @@ class SeminarServiceImpl(
             throw Seminar400("Already in Seminar")
         }
         
-        val attendSeminar = { r: String -> {
+        @Transactional
+        fun attendSeminar(r: String) {
                 userSeminarRepository.save(
                         UserSeminarEntity(
                                 user = meUser,
@@ -141,7 +147,6 @@ class SeminarServiceImpl(
                         )
                 )
             }
-        }
         
         when (seminarRegisterRequest.role) {
             PARTICIPANT -> {
@@ -170,6 +175,20 @@ class SeminarServiceImpl(
         
         // If reach to here, it means there was no problem.
         return makeSeminarDetail(seminar)
+    }
+
+    override fun dropUserFromSeminar(seminarId: Long, meUser: UserEntity): Any {
+        val seminar = seminarRepository.findByIdOrNull(seminarId)
+                ?: throw Seminar403("No seminar ${seminarId} exists.")
+        
+        val userSeminar = userSeminarRepository.findByUserAndSeminarAndRole(meUser, seminar, PARTICIPANT)
+                ?.run{
+                    isActive = false
+                    droppedAt = LocalDateTime.now()
+                    userSeminarRepository.save(this)
+                    return makeSeminarDetail(seminar)
+                }
+        return ResponseEntity<Any>(HttpStatus.OK)
     }
     
     fun makeSeminarDetail(seminar: SeminarEntity): SeminarDetailResponse {

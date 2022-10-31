@@ -22,4 +22,7 @@ interface UserSeminarRepository: JpaRepository<UserSeminarEntity, Long> {
     
     fun findByUserAndSeminar(user: UserEntity, seminar: SeminarEntity)
         : UserSeminarEntity?
+    
+    fun findByUserAndSeminarAndRole(user: UserEntity, seminar: SeminarEntity, role: String)
+        : UserSeminarEntity?
 }
