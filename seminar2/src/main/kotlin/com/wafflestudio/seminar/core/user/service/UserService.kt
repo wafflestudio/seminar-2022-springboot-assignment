@@ -39,7 +39,7 @@ class UserServiceImpl(
             throw DuplicateEmailException
         }
         
-        return authTokenService.generateTokenByUsername(userEntity.username, userEntity.id)
+        return authTokenService.generateTokenByEmail(userEntity.email)
     }
 
     override fun logIn(logInRequest: LogInRequest): AuthToken {
@@ -49,7 +49,7 @@ class UserServiceImpl(
             throw FailedToLogInException
         }
 
-        return authTokenService.generateTokenByUsername(userEntity.username, userEntity.id)
+        return authTokenService.generateTokenByEmail(userEntity.email)
     }
 
     override fun getUserById(userid: Long): UserInfo {

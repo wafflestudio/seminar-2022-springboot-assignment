@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.common.AuthTokenExpiredException
 import com.wafflestudio.seminar.common.InvalidTokenException
+import com.wafflestudio.seminar.core.user.database.UserRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jws
@@ -12,12 +13,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.*
 
 @Service
 @EnableConfigurationProperties(AuthProperties::class)
 class AuthTokenService(
     private val authProperties: AuthProperties,
+    private val userRepository: UserRepository,
 ) {
     private val tokenPrefix = "Bearer "
     private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
@@ -26,14 +27,13 @@ class AuthTokenService(
      * TODO Jwts.builder() 라이브러리를 통해서, 어떻게 필요한 정보를 토큰에 넣어 발급하고,
      *   검증할지, 또 만료는 어떻게 시킬 수 있을지 고민해보아요.
      */
-    fun generateTokenByUsername(username: String, userid: Long): AuthToken {
+    fun generateTokenByEmail(email: String): AuthToken {
         val issuedDate = LocalDateTime.now()
         val expiryDate = issuedDate.plusSeconds(authProperties.jwtExpiration)
 
         val resultToken = Jwts.builder()
             .setIssuer(authProperties.issuer)
-            .setSubject(username)
-            .claim("userid", userid)
+            .setSubject(email)
             .setIssuedAt(Timestamp.valueOf(issuedDate))
             .setExpiration(Timestamp.valueOf(expiryDate))
             .signWith(signingKey, SignatureAlgorithm.HS256)
@@ -53,7 +53,9 @@ class AuthTokenService(
     }
 
     fun getCurrentUserId(verifiedAuthToken: String): Long {
-        return parse(verifiedAuthToken).body.get<Long>("userid", Long::class.java)
+        return userRepository.findByEmail(parse(verifiedAuthToken).body.subject)
+            ?.id
+            ?: throw InvalidTokenException
     }
 
     /**
