@@ -8,6 +8,7 @@ import com.wafflestudio.seminar.core.user.api.response.SeminarResponse
 import com.wafflestudio.seminar.core.user.domain.Role
 import com.wafflestudio.seminar.core.user.domain.Seminar
 import com.wafflestudio.seminar.core.user.domain.User
+import com.wafflestudio.seminar.core.user.service.AuthToken
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
 import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.web.bind.annotation.*
@@ -21,15 +22,15 @@ class AuthController(
 ) {
 
     @PostMapping("/signup")
-    fun signUp(@Valid @RequestBody signUpRequest: SignUpRequest): String {
+    fun signUp(@Valid @RequestBody signUpRequest: SignUpRequest): AuthToken {
         userService.signUp(signUpRequest)
-        return authTokenService.generateTokenByEmail(signUpRequest.email!!).accessToken
+        return authTokenService.generateTokenByEmail(signUpRequest.email!!)
     }
 
     @PostMapping("/signin")
-    fun logIn(@RequestBody loginRequest: LoginRequest): String {
-        userService.login(loginRequest.email, loginRequest.password)
-        return authTokenService.generateTokenByEmail(loginRequest.email).accessToken
+    fun logIn(@RequestBody @Valid loginRequest: LoginRequest): AuthToken {
+        userService.login(loginRequest.email!!, loginRequest.password!!)
+        return authTokenService.generateTokenByEmail(loginRequest.email)
     }
 
     @Authenticated
@@ -52,8 +53,9 @@ class AuthController(
 
     @Authenticated
     @PostMapping("/user/participant")
-    fun registerParticipant(@UserContext userId: Long, @RequestBody participantRequest: ParticipantRequest) {
-        return userService.registerParticipantProfile(userId, participantRequest)
+    fun registerParticipant(@UserContext userId: Long, @RequestBody participantRequest: ParticipantRequest): User {
+        userService.registerParticipantProfile(userId, participantRequest)
+        return userService.getProfile(userId)
     }
 
     @Authenticated
