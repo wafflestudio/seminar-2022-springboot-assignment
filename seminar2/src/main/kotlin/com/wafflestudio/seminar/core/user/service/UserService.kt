@@ -38,11 +38,11 @@ class UserServiceImpl(
 
         when (signUpRequest.role) {
             UserRole.Participant ->
-                userEntity.participantProfileEntity = participantProfileRepository.save(
+                userEntity.participantProfile = participantProfileRepository.save(
                     signUpRequest.toParticipantProfileEntity()
                 )
             UserRole.Instructor ->
-                userEntity.instructorProfileEntity = instructorProfileRepository.save(
+                userEntity.instructorProfile = instructorProfileRepository.save(
                     signUpRequest.toInstructorProfileEntry()
                 )
         }

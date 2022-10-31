@@ -1,10 +1,7 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
-import javax.persistence.Entity
-import javax.persistence.OneToOne
-import javax.persistence.Table
-import javax.persistence.UniqueConstraint
+import javax.persistence.*
 
 @Entity
 @Table(name = "users", uniqueConstraints = [UniqueConstraint(columnNames = ["email"])])
@@ -15,9 +12,11 @@ class UserEntity(
 ) : BaseTimeEntity() {
     
     @OneToOne
-    var participantProfileEntity: ParticipantProfileEntity? = null;
+    @JoinColumn(name = "participant_profile_id")
+    var participantProfile: ParticipantProfileEntity? = null;
     
     @OneToOne
-    var instructorProfileEntity: InstructorProfileEntity? = null;
+    @JoinColumn(name = "instructor_profile_id")
+    var instructorProfile: InstructorProfileEntity? = null;
     
 }
