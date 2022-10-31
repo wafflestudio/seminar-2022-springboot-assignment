@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.domain.ProfileResponse
 import com.wafflestudio.seminar.core.user.domain.UserPort
 import org.springframework.stereotype.Service
 
@@ -20,9 +21,9 @@ class UserService(
         return authTokenService.generateTokenByEmail(user.email)
     }
 
-//    fun getProfile(userId: Long): ProfileResponse {
-//        return userPort.getProfile(userId)
-//    }
+    fun getProfile(userId: Long): ProfileResponse {
+        return userPort.getProfile(userId)
+    }
 //
 //    fun editProfile(userId: Long, editProfileRequest: EditProfileRequest): User {
 //        return userPort.editProfile(userId, editProfileRequest)

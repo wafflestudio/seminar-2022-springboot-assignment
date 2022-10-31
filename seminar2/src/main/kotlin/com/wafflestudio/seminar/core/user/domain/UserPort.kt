@@ -12,7 +12,7 @@ interface UserPort {
 
     fun getUserIdByEmail(email: String): Long
 
-//    fun getProfile(userId: Long): ProfileResponse
+    fun getProfile(userId: Long): ProfileResponse
 
 //    fun editProfile(userId: Long, editProfileRequest: EditProfileRequest): UserProfileResponse
 //

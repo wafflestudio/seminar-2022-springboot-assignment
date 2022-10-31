@@ -1,14 +1,14 @@
 package com.wafflestudio.seminar.core.user.api
 
+import com.wafflestudio.seminar.common.Authenticated
+import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.domain.ProfileResponse
 import com.wafflestudio.seminar.core.user.service.AuthToken
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
 import com.wafflestudio.seminar.core.user.service.UserService
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
@@ -31,23 +31,23 @@ class AuthController(
         return userService.signIn(signInRequest)
     }
 
-//    @Authenticated
-//    @GetMapping("/me")
-//    fun getMe(
-//        @RequestHeader("Authorization") authHeader: String,
-//        @UserContext userId: Long
-//    ): ProfileResponse {
-//        return userService.getProfile(userId)
-//    }
+    @Authenticated
+    @GetMapping("/me")
+    fun getMe(
+        @RequestHeader("Authorization") authHeader: String,
+        @UserContext userId: Long
+    ): ProfileResponse {
+        return userService.getProfile(userId)
+    }
 
-//    @Authenticated
-//    @GetMapping("/user/{user_id}")
-//    fun getProfile(
-//        @RequestHeader("Authorization") authHeader: String,
-//        @PathVariable user_id: Long
-//    ): User {
-//        return authTokenService.getProfile(user_id)
-//    }
+    @Authenticated
+    @GetMapping("/user/{user_id}")
+    fun getProfile(
+        @RequestHeader("Authorization") authHeader: String,
+        @PathVariable user_id: Long
+    ): ProfileResponse {
+        return userService.getProfile(user_id)
+    }
 //
 //    @Authenticated
 //    @PutMapping("/user/me")

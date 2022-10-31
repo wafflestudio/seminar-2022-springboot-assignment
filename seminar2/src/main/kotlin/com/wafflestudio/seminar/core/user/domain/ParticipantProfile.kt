@@ -6,5 +6,5 @@ data class ParticipantProfile(
     val id: Long,
     var university: String,
     val isRegistered: Boolean,
-    val seminars: ArrayList<ParticipatingSeminar> = ArrayList(),
+    val seminars: List<ParticipatingSeminar>,
 ) 
