@@ -2,12 +2,10 @@ package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.user.domain.*
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.JoinColumn
-import javax.persistence.OneToOne
+import javax.persistence.*
 
 @Entity
+@Table(name = "instructor_profile")
 class InstructorProfileEntity(
     var company: String = "",
     var year: Int? = null,

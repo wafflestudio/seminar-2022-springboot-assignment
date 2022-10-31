@@ -10,8 +10,10 @@ import java.time.LocalTime
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.OneToMany
+import javax.persistence.Table
 
 @Entity
+@Table(name = "seminar")
 class SeminarEntity(
     var name: String,
     var capacity: Int,

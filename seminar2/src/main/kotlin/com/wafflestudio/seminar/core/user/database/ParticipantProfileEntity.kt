@@ -4,12 +4,10 @@ import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.user.domain.ParticipantProfile
 import com.wafflestudio.seminar.core.user.domain.Role
 import com.wafflestudio.seminar.core.user.domain.UserParticipantSeminar
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.JoinColumn
-import javax.persistence.OneToOne
+import javax.persistence.*
 
 @Entity
+@Table(name = "participant_profile")
 class ParticipantProfileEntity(
     var university: String = "",
     val isRegistered: Boolean = true

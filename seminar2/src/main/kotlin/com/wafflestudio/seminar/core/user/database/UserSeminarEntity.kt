@@ -10,6 +10,7 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
+@Table(name = "user_seminar")
 class UserSeminarEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
