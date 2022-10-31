@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.common
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -30,5 +31,10 @@ class SeminarExceptionHandler {
     @ExceptionHandler(value = [MethodArgumentTypeMismatchException::class])
     fun handle(e: MethodArgumentTypeMismatchException): ResponseEntity<Any> {
         return ResponseEntity(e.name + " requires " + e.requiredType, HttpStatus.BAD_REQUEST)
+    }
+    
+    @ExceptionHandler(value = [HttpMessageNotReadableException::class])
+    fun handle(e: HttpMessageNotReadableException): ResponseEntity<Any> {
+        return ResponseEntity("잘못된 역할입니다", HttpStatus.BAD_REQUEST)
     }
 }
