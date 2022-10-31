@@ -38,6 +38,7 @@ class UserServiceImpl(
         }
         val userEntity = signUpRequest.toUserEntity()
         userEntity.password = passwordEncoder.encode(userEntity.password)
+        userEntity.lastLogin = LocalDateTime.now()
         userRepository.save(userEntity)
         return userEntity.id
     }
@@ -47,6 +48,7 @@ class UserServiceImpl(
         if (!passwordEncoder.matches(password, userEntity.password)) {
             throw Seminar401("Incorrect password")
         }
+        userEntity.lastLogin = LocalDateTime.now()
     }
 
     @Transactional(readOnly = true)
@@ -57,9 +59,12 @@ class UserServiceImpl(
 
     override fun editProfile(userId: Long, editProfileRequest: EditProfileRequest) {
         val userEntity = userRepository.findById(userId).get()
-        userEntity.email = editProfileRequest.email
-        userEntity.username = editProfileRequest.username
-        userEntity.password = editProfileRequest.password
+        if (editProfileRequest.username != null) {
+            userEntity.username = editProfileRequest.username
+        }
+        if (editProfileRequest.password != null) {
+            userEntity.password = editProfileRequest.password
+        }
         if (userEntity.participantProfile != null) {
             userEntity.participantProfile!!.university = editProfileRequest.university
         }

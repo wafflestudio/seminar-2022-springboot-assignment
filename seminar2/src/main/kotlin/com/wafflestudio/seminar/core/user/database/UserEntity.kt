@@ -4,13 +4,18 @@ import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.user.domain.User
 import java.time.LocalDateTime
 import javax.persistence.*
+import javax.validation.constraints.NotNull
 
 @Entity
 class UserEntity(
     @Column(unique = true)
+    @NotNull
     var email: String,
+    @NotNull
     var username: String,
+    @NotNull
     var password: String,
+    var lastLogin: LocalDateTime? = null,
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
     var participantProfile: ParticipantProfileEntity? = null,
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
