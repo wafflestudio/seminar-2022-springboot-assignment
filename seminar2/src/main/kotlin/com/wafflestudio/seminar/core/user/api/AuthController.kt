@@ -77,8 +77,19 @@ class AuthController(
 
     @Authenticated
     @GetMapping("/seminar")
-    fun getSeminars(@RequestParam("name") name: String, @RequestParam("order") order: String): List<SeminarResponse> {
-        return userService.getSeminars(name, order)
+    fun getSeminars(
+        @RequestParam("name") name: String?,
+        @RequestParam("order") order: String?
+    ): List<SeminarResponse> {
+        var nameQuery = ""
+        var orderQuery = ""
+        if (name != null) {
+            nameQuery = name
+        }
+        if (order != null) {
+            orderQuery = order
+        }
+        return userService.getSeminars(nameQuery, orderQuery)
     }
 
     @Authenticated

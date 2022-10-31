@@ -128,7 +128,7 @@ class UserServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getSeminars(name: String, order: String): List<SeminarResponse> {
-        val seminarEntities = customSeminarRepository.findByNameWithOrder("pr", "earliest")
+        val seminarEntities = customSeminarRepository.findByNameWithOrder(name, order)
         val seminars = ArrayList<SeminarResponse>()
         for (seminarEntity in seminarEntities) {
             seminars.add(seminarEntity.toSeminarResponse())
