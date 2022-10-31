@@ -250,33 +250,26 @@ class SeminarService(
 
             .fetch()
         
-        
+        val newList = mutableListOf<SeminarInfoDto>()
         for(i in 0 until seminarInfoDtoList.size){
-            val studentEntity = studentList[i].userEntity
-            
             
             val seminarEntity = seminarInfoDtoList[i].seminarEntity
             val userSeminarEntity = seminarInfoDtoList[i].userSeminarEntity
             val userEntity = seminarInfoDtoList[i].userEntity
 
-            newList.add( SeminarInfo(
-                seminarEntity?.id,seminarEntity?.name,seminarEntity?.capacity,seminarEntity?.count,seminarEntity?.time,seminarEntity?.online,
-                List(seminarInfoDtoList.size){
-                    TeacherDto(
-                    userEntity?.id,
-                    userEntity?.username,
-                    userEntity?.email,
-                    userSeminarEntity?.joinedAt
-                )
-                })
-            )
-        }
+            newList.add(SeminarInfoDto(seminarEntity, userSeminarEntity,userEntity))
             
-       return newList 
+        }
+        
+        val newList1 = mutableListOf<SeminarInfo>()
+        for(i in 0 until newList.size){
+            
+        }
+       
 
     }
-    
-     */
+    */
+     
 
     fun getSeminarByName(name: String, order: String, token: String):SeminarInfoByName{
         val seminarInfoDto : List<SeminarInfoDto>
@@ -339,7 +332,7 @@ class SeminarService(
                     )
 
                 }.distinct()
-                ,newList.size
+                ,newList.filter { it.isActive ==true }.size
             )
         } else {
             seminarInfoDto = queryFactory.select(Projections.constructor(
@@ -396,7 +389,7 @@ class SeminarService(
                     )
 
                 }.distinct(),
-                newList.size
+                newList.filter { it.isActive ==true }.size
 
             )
         }
@@ -411,8 +404,11 @@ class SeminarService(
         
         val userEntity = userRepository.findById(authTokenService.getCurrentUserId(token))
 
-
-        if(userSeminarRepository.findByUser(userEntity.get())?.seminar?.id == id) {
+        
+        if(userSeminarRepository.findByUser(userEntity.get())?.filter { 
+            it.seminar.id == id && it.isActive == true
+                
+            } != emptyList<UserSeminarEntity>()) {
             
             throw Seminar400("이미 세미나에 참여하고 있습니다")
         }
@@ -428,6 +424,12 @@ class SeminarService(
             }
         }
 
+        if(userSeminarRepository.findByUser(userEntity.get())?.filter {
+                it.isActive == false
+            } != emptyList<UserSeminarEntity>()) {
+
+            throw Seminar400("드랍한 세미나는 다시 신청할 수 없습니다")
+        }
         val saveUserSeminarEntity : UserSeminarEntity
         
         if(role["role"] == "participant"){
@@ -451,7 +453,7 @@ class SeminarService(
             
         } else if (role["role"] == "instructor") {
             if(userEntity.get().instructor != null){
-                if(userSeminarRepository.findByUser(userEntity.get())?.seminar == null) {
+                if(userSeminarRepository.findByUser(userEntity.get()) == emptyList<UserSeminarEntity>()) {
                     saveUserSeminarEntity = userSeminarRepository.save(
                         UserSeminarEntity(
                             user = userRepository.findById(authTokenService.getCurrentUserId(token)).get(),
@@ -463,7 +465,7 @@ class SeminarService(
                         )
                     ) 
                 } else {
-                    throw Seminar400("이미 다른 수업을 진행하고 있습니다.")
+                    throw Seminar400("이미 다른 세미나를 진행하고 있습니다.")
                 }
                 
             } else {
@@ -548,10 +550,89 @@ class SeminarService(
         )
     }
     
-    fun dropSeminar(id: Long) {
-        userRepository.delete(userRepository.findById(1).get())
+    fun dropSeminar(id: Long, token: String) : SeminarInfo{
+        val findByEmailEntity = userRepository.findByEmail(authTokenService.getCurrentEmail(token))
+
+        if(userSeminarRepository.findByUser(findByEmailEntity)?.filter { 
+            it.seminar.id == id
+            } == emptyList<UserSeminarEntity>()){
+            throw Seminar404("해당 세미나를 신청한 적이 없습니다")
+        }
+        
+        if(userSeminarRepository.findByUser(findByEmailEntity)?.filter { 
+            it.role == "instructor"
+            } != emptyList<UserSeminarEntity>()){
+            throw Seminar403("진행자는 세미나를 드랍할 수 없습니다")
+        }
+        val seminarInfoDto = queryFactory.select(Projections.constructor(
+            SeminarInfoDto::class.java,
+            qSeminarEntity,
+            qUserSeminarEntity,
+            qUserEntity
+        ))
+            .from(qSeminarEntity)
+            .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
+            .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
+            .where(qSeminarEntity.id.eq(id))
+            .where(qUserEntity.email.eq(authTokenService.getCurrentEmail(token))).fetch()
+
+        val seminarEntity = seminarInfoDto[0].seminarEntity
+        var userSeminarEntity = seminarInfoDto[0].userSeminarEntity
+        val userEntity = seminarInfoDto[0].userEntity
+        
+        userSeminarEntity?.isActive = false
+        userSeminarEntity?.droppedAt = LocalDateTime.now()
+        userSeminarEntity?.let { userSeminarRepository.save(it) }
+        val studentList = queryFactory.select(Projections.constructor(
+            SeminarInfoDto::class.java,
+            qSeminarEntity,
+            qUserSeminarEntity,
+            qUserEntity
+        ))
+            .from(qSeminarEntity)
+            .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
+            .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.id.eq(id)).where(qUserSeminarEntity.role.eq("participant")).fetch()
+
+        val newList = mutableListOf<StudentDto>()
+
+        for(i in 0 until studentList.size){
+            val studentEntity = studentList[i].userEntity
+            val studentSeminarEntity = studentList[i].userSeminarEntity
+            newList.add(
+                StudentDto(
+                    studentEntity?.id,
+                    studentEntity?.username,
+                    studentEntity?.email,
+                    studentSeminarEntity?.joinedAt,
+                    studentSeminarEntity?.isActive,
+                    studentSeminarEntity?.droppedAt
+
+                )
+            )
+        }
+
+        return SeminarInfo(
+            seminarEntity?.id,
+            seminarEntity?.name,
+            seminarEntity?.capacity,
+            seminarEntity?.count,
+            seminarEntity?.time,
+            seminarEntity?.online,
+            List(seminarInfoDto.size) { _ ->
+                TeacherDto(
+                    userEntity?.id,
+                    userEntity?.username,
+                    userEntity?.email,
+                    userSeminarEntity?.joinedAt
+                )
+
+            },newList
+
+        )
     }
     
+    
+     
      
     
     private fun SeminarEntity(seminar: SeminarRequest, token: String) = seminar.run{

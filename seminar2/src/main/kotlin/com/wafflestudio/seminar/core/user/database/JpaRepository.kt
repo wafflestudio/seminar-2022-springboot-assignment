@@ -27,5 +27,5 @@ interface SeminarRepository : JpaRepository<SeminarEntity, Long> {
 
 interface UserSeminarRepository: JpaRepository<UserSeminarEntity, Long>{
     fun save(userSeminarEntity: UserSeminarEntity): UserSeminarEntity
-    fun findByUser(userEntity:UserEntity) : UserSeminarEntity?
+    fun findByUser(userEntity:UserEntity) : List<UserSeminarEntity>?
 }

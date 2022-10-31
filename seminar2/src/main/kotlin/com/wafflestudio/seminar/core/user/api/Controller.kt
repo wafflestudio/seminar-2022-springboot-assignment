@@ -76,6 +76,8 @@ class Controller(
     
      */
     
+     
+    
     @GetMapping("seminar")
     fun getSeminarByName(@RequestParam name: String, @RequestParam order: String, @RequestHeader("Authentication") token: String): SeminarInfoByName {
         //todo: url 잘못되어 있을 수도?
@@ -89,10 +91,12 @@ class Controller(
     }
     
     @DeleteMapping("seminar/{seminar_id}/user")
-    fun dropSeminar(@PathVariable seminar_id: Long,): String {
-        seminarService.dropSeminar(seminar_id)
-        return "1"
+    fun dropSeminar(@PathVariable seminar_id: Long,@RequestHeader("Authentication") token: String): SeminarInfo {
+        return seminarService.dropSeminar(seminar_id,token)
+        
     }
+    
+     
     
     
 
