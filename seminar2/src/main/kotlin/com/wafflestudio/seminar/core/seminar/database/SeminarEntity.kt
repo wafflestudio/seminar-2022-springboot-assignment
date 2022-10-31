@@ -1,6 +1,10 @@
 package com.wafflestudio.seminar.core.seminar.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.seminar.domain.SeminarResponse
+import com.wafflestudio.seminar.core.user.domain.Instructor
+import com.wafflestudio.seminar.core.user.domain.Participant
+import com.wafflestudio.seminar.core.user.domain.User
 import java.time.LocalTime
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -19,4 +23,40 @@ class SeminarEntity(
     var time: LocalTime,
     var online: Boolean,
     val creatorId: Long
-) : BaseTimeEntity() 
+) : BaseTimeEntity() {
+    fun toSeminarResponse(): SeminarResponse {
+        val instructors: MutableList<Instructor> = mutableListOf()
+        val participants: MutableList<Participant> = mutableListOf()
+        userSeminars.forEach {
+            it.user.run {
+                if (it.role == User.Role.INSTRUCTOR) instructors.add(
+                    Instructor(
+                        id = id,
+                        username = username,
+                        email = email,
+                        joinedAt = it.joinedAt
+                    )
+                ) else participants.add(
+                    Participant(
+                        id = id,
+                        username = username,
+                        email = email,
+                        joinedAt = it.joinedAt,
+                        isActive = it.isActive,
+                        droppedAt = it.droppedAt
+                    )
+                )
+            }
+        }
+        return SeminarResponse(
+            id = id,
+            name = name,
+            capacity = capacity,
+            count = count,
+            time = time,
+            online = online,
+            instructors = instructors,
+            participants = participants
+        )
+    }
+}

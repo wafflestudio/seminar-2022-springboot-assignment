@@ -7,4 +7,6 @@ interface SeminarPort {
     fun createSeminar(userId: Long, createSeminarRequest: CreateSeminarRequest): SeminarResponse
 
     fun editSeminar(userId: Long, editSeminarRequest: EditSeminarRequest): SeminarResponse
+
+    fun getSeminar(seminarId: Long): SeminarResponse
 }

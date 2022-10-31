@@ -17,4 +17,8 @@ class SeminarService(
     fun editSeminar(userId: Long, editSeminarRequest: EditSeminarRequest): SeminarResponse {
         return seminarPort.editSeminar(userId, editSeminarRequest)
     }
+
+    fun getSeminar(seminarId: Long): SeminarResponse {
+        return seminarPort.getSeminar(seminarId)
+    }
 }

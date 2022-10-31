@@ -33,4 +33,13 @@ class SeminarController(
     ): SeminarResponse {
         return seminarService.editSeminar(userId, editSeminarRequest)
     }
+
+    @Authenticated
+    @GetMapping("/seminar/{seminar_id}")
+    fun getSeminar(
+        @RequestHeader("Authorization") authHeader: String,
+        @PathVariable seminar_id: Long
+    ): SeminarResponse {
+        return seminarService.getSeminar(seminar_id)
+    }
 }
