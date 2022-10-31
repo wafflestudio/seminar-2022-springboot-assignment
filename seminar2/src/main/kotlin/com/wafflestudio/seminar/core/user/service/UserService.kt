@@ -1,8 +1,12 @@
 package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.common.Seminar404
+import com.wafflestudio.seminar.common.Seminar409
 import com.wafflestudio.seminar.core.user.api.request.ParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.UserRequest
+import com.wafflestudio.seminar.core.user.database.InstructorRepository
+import com.wafflestudio.seminar.core.user.database.ParticipantProfileEntity
+import com.wafflestudio.seminar.core.user.database.ParticipantRepository
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.domain.User
 import org.springframework.data.repository.findByIdOrNull
@@ -17,6 +21,8 @@ interface UserService {
 @Service
 class UserServiceImpl(
     private val userRepository: UserRepository,
+    private val participantRepository: ParticipantRepository,
+    private val instructorRepository: InstructorRepository,
 ): UserService {
     override fun getUser(userId: Long): User {
         return userRepository.findByIdOrNull(userId)?.toUser()
@@ -24,10 +30,36 @@ class UserServiceImpl(
     }
 
     override fun editUser(userId: Long, userRequest: UserRequest): User {
-        TODO("Not yet implemented")
+        val user = userRepository.findByIdOrNull(userId)
+            ?: throw AuthException("잘못된 유저에 대한 토큰입니다")
+        user.participant?.let {
+            user.participant!!.updateProfile(userRequest)
+            participantRepository.save(user.participant!!)
+        }
+        user.instructor?.let {
+            user.instructor!!.updateProfile(userRequest)
+            instructorRepository.save(user.instructor!!)
+        }
+        userRepository.save(user)
+        return user.toUser()
     }
 
     override fun registerToParticipate(userId: Long, participantRequest: ParticipantRequest): User {
-        TODO("Not yet implemented")
+        val user = userRepository.findByIdOrNull(userId)
+            ?: throw AuthException("잘못된 유저에 대한 토큰입니다")
+        
+        if (user.participant != null) {
+            throw Seminar409("이미 참가자로 등록된 유저입니다")
+        }
+        
+        val participant = ParticipantProfileEntity(
+            user = user,
+            university = participantRequest.university,
+            isRegistered = participantRequest.isRegistered
+        )
+        participantRepository.save(participant)
+        user.participant = participant
+        userRepository.save(user)
+        return user.toUser()
     }
 }

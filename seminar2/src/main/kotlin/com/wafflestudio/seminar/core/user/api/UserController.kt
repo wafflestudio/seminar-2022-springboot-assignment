@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.api
 
+import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.user.api.request.ParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.UserRequest
@@ -11,17 +12,20 @@ import org.springframework.web.bind.annotation.*
 class UserController(
     private val userService: UserService,
 ) {
+    @Authenticated
     @GetMapping("/{user_id}/")
     fun getUser(
-        @UserContext @PathVariable("user_id") userId: Long
+        @PathVariable("user_id") userId: Long
     ) = userService.getUser(userId)
     
+    @Authenticated
     @PutMapping("/me/")
     fun editUser(
         @UserContext userId: Long,
         @RequestBody userRequest: UserRequest,
     ) = userService.editUser(userId, userRequest)
     
+    @Authenticated
     @PostMapping("/participant/")
     fun registerToParticipate(
         @UserContext userId: Long,

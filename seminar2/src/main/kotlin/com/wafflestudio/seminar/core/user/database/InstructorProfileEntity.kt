@@ -1,8 +1,10 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.user.api.request.UserRequest
 import com.wafflestudio.seminar.core.user.domain.Instructor
 import javax.persistence.*
+import javax.transaction.Transactional
 
 @Entity
 @Table(name = "InstructorProfile")
@@ -10,9 +12,9 @@ data class InstructorProfileEntity(
     @OneToOne(fetch = FetchType.LAZY)
     val user: UserEntity,
     @Column(name = "company")
-    val company: String = "",
+    var company: String = "",
     @Column(name = "year")
-    val year: Int? = null,
+    var year: Int? = null,
 ): BaseTimeEntity() {
     
     fun toInstructor(): Instructor {
@@ -22,5 +24,15 @@ data class InstructorProfileEntity(
             year = year,
             instructingSeminars = emptyList(),
         )
+    }
+
+    @Transactional
+    fun updateProfile(userRequest: UserRequest) {
+        userRequest.company?.let {
+            company = userRequest.company
+        }
+        userRequest.year?.let {
+            year = userRequest.year
+        }
     }
 }
