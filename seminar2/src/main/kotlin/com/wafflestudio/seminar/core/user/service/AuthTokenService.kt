@@ -1,7 +1,5 @@
 package com.wafflestudio.seminar.core.user.service
 
-import com.wafflestudio.seminar.common.AuthTokenExpiredException
-import com.wafflestudio.seminar.common.InvalidTokenException
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
@@ -55,7 +53,7 @@ class AuthTokenService(
     fun getCurrentUserId(verifiedAuthToken: String): Long {
         return userRepository.findByEmail(parse(verifiedAuthToken).body.subject)
             ?.id
-            ?: throw InvalidTokenException
+            ?: throw UserNotFoundException
     }
 
     /**

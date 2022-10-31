@@ -2,6 +2,8 @@ package com.wafflestudio.seminar.common
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.HttpRequestHandler
+import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -15,7 +17,7 @@ class SeminarExceptionHandler {
     @ExceptionHandler(Exception::class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     fun handle(e: Exception): ResponseEntity<Any> = ResponseEntity(
-        e.message + e.printStackTrace(),
+        e.message + e.javaClass.name,
         HttpStatus.INTERNAL_SERVER_ERROR,
     )
     
@@ -30,6 +32,14 @@ class SeminarExceptionHandler {
         e.bindingResult.allErrors[0].defaultMessage,
         HttpStatus.BAD_REQUEST
     )
+    
+    @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
+    fun handle(e: HttpRequestMethodNotSupportedException): ResponseEntity<Any> = ResponseEntity(
+        e.message,
+        HttpStatus.BAD_REQUEST
+    )
+    
+    
     
     
 }

@@ -70,7 +70,7 @@ class AuthInterceptor(
 ): HandlerInterceptor {
     
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        val handlerCasted = handler as? HandlerMethod ?: throw HandlerCastingException
+        val handlerCasted = handler as? HandlerMethod ?: return true
         
         if (handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
             authTokenService.verifyToken(

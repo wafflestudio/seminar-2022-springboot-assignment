@@ -1,8 +1,5 @@
 package com.wafflestudio.seminar.core.user.service
 
-import com.wafflestudio.seminar.common.DuplicateEmailException
-import com.wafflestudio.seminar.common.FailedToLogInException
-import com.wafflestudio.seminar.common.UserNotFoundException
 import com.wafflestudio.seminar.core.user.api.request.LogInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
