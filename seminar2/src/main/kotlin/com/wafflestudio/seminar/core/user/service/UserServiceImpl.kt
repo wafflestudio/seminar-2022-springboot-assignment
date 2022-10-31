@@ -137,7 +137,8 @@ class UserServiceImpl(
     }
 
     override fun joinSeminar(userId: Long, seminarId: Long, role: Role): Seminar {
-        val seminarEntity = seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("Seminar Not Found")
+        val seminarEntity = seminarRepository.findByIdOrNull(seminarId)
+            ?: throw Seminar404("No existing seminar with id: ${seminarId}")
         val userEntity = userRepository.findById(userId).get()
         when (role) {
             Role.PARTICIPANT -> {
@@ -147,7 +148,7 @@ class UserServiceImpl(
                 if (!userEntity.participantProfile!!.isRegistered) {
                     throw Seminar403("You are not registered")
                 }
-                if (seminarEntity.capacity == seminarEntity.userSeminars.size) {
+                if (seminarEntity.capacity == seminarEntity.toSeminarResponse().participantCount) {
                     throw Seminar400("Sorry, this seminar is full")
                 }
             }
@@ -157,11 +158,10 @@ class UserServiceImpl(
                 }
                 for (userSeminar in userEntity.userSeminars) {
                     if (userSeminar.role == Role.INSTRUCTOR) {
-                        throw Seminar400("You are already instructing other seminar")
+                        throw Seminar400("You are already instructing a seminar")
                     }
                 }
             }
-            else -> throw Seminar400("No Such Role")
         }
         for (userSeminar in userEntity.userSeminars) {
             if (userSeminar.seminar == seminarEntity && userSeminar.isActive) {
@@ -178,9 +178,13 @@ class UserServiceImpl(
     }
 
     override fun dropSeminar(userId: Long, seminarId: Long): Seminar {
-        val seminarEntity = seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("Seminar Not Found")
+        val seminarEntity = seminarRepository.findByIdOrNull(seminarId)
+            ?: throw Seminar404("No existing seminar with id: ${seminarId}")
         val userSeminarEntity =
             customUserSeminarRepository.findByUserIdAndSeminarId(userId, seminarId) ?: throw Seminar200("")
+        if (userSeminarEntity.role == Role.INSTRUCTOR) {
+            throw Seminar403("Instructor cannot drop seminar")
+        }
         userSeminarEntity.isActive = false
         userSeminarEntity.droppedAt = LocalDateTime.now()
         return seminarEntity.toDTO()

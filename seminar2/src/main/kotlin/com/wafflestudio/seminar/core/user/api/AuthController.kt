@@ -1,9 +1,11 @@
 package com.wafflestudio.seminar.core.user.api
 
 import com.wafflestudio.seminar.common.Authenticated
+import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.api.response.SeminarResponse
+import com.wafflestudio.seminar.core.user.domain.Role
 import com.wafflestudio.seminar.core.user.domain.Seminar
 import com.wafflestudio.seminar.core.user.domain.User
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
@@ -94,15 +96,21 @@ class AuthController(
 
     @Authenticated
     @PostMapping("/seminar/{seminarId}/user")
-    fun joinSeminar(@UserContext userId: Long, @RequestBody joinSeminarRequest: JoinSeminarRequest): Seminar {
-        return userService.joinSeminar(userId, joinSeminarRequest.seminarId, joinSeminarRequest.role)
+    fun joinSeminar(
+        @UserContext userId: Long,
+        @PathVariable("seminarId") seminarId: Long,
+        @RequestBody role: Role?
+    ): Seminar {
+        if (role == null) {
+            throw Seminar400("role is required")
+        }
+        return userService.joinSeminar(userId, seminarId, role)
     }
 
     @Authenticated
     @DeleteMapping("/seminar/{seminarId}/user")
-    fun dropSeminar(@UserContext userId: Long, seminarId: Long): Seminar {
+    fun dropSeminar(@UserContext userId: Long, @PathVariable("seminarId") seminarId: Long): Seminar {
         return userService.dropSeminar(userId, seminarId)
     }
-
 
 }
