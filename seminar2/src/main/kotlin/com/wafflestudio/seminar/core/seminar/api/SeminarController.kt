@@ -47,4 +47,14 @@ class SeminarController(
         @RequestParam(name = "order", required = false) earliest: String?
     ): ResponseEntity<MutableList<SeminarDto.SeminarProfileSimplifiedResponse>> =
         ResponseEntity(seminarService.getSeminars(name, earliest), HttpStatus.OK)
+
+    @Authenticated
+    @PostMapping("/api/v1/seminar/{seminar_id}/user/")
+    fun participateSeminar(
+        @RequestHeader(value = "Authorization") authorization: String,
+        @PathVariable seminar_id: Long,
+        @RequestBody role: String,
+        @UserContext userId: Long
+    ): ResponseEntity<SeminarDto.SeminarProfileResponse> =
+        ResponseEntity(seminarService.participateSeminar(seminar_id, role, userId), HttpStatus.OK)
 }

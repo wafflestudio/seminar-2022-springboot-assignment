@@ -21,6 +21,7 @@ interface SeminarService {
     fun updateSeminar(userId: Long, req: SeminarDto.UpdateSeminarRequest): SeminarDto.SeminarProfileResponse
     fun getSeminarById(seminarId: Long): SeminarDto.SeminarProfileResponse
     fun getSeminars(name: String?, earliest: String?): MutableList<SeminarDto.SeminarProfileSimplifiedResponse>
+    fun participateSeminar(seminarId: Long, role: String, userId: Long): SeminarDto.SeminarProfileResponse
 }
 
 @Service
@@ -105,6 +106,57 @@ class SeminarServiceImpl(
     ): MutableList<SeminarDto.SeminarProfileSimplifiedResponse> {
         val doEarliest: Boolean = earliest.equals("earliest")
         return seminarRepositorySupport.getSeminars(name, doEarliest)
+    }
+
+    @Transactional
+    override fun participateSeminar(seminarId: Long, role: String, userId: Long): SeminarDto.SeminarProfileResponse {
+        if (!seminarRepository.existsById(seminarId)) {
+            throw Seminar404("This seminar doesn't exist.")
+        }
+        if (role != "PARTICIPANT" && role != "INSTRUCTOR") {
+            throw Seminar400("'role' should be either PARTICIPANT or INSTRUCTOR.")
+        }
+        val userEntity = userRepository.findById(userId).get()
+        val seminarEntity = seminarRepository.findById(seminarId).get()
+        for (userSeminarEntity in userEntity.userSeminarEntities) {
+            if (userSeminarEntity.seminarEntity == seminarEntity) {
+                if (userSeminarEntity.isActive)
+                    throw Seminar400("You are already in this seminar as a " + userSeminarEntity.role + ".")
+                else
+                    throw Seminar400("You dropped this seminar before. You can not participate in this seminar again.")
+            }
+        }
+        if (role == "PARTICIPANT") {
+            if (userEntity.participantProfileEntity == null) {
+                throw Seminar403("Only participant can participate in a seminar")
+            }
+            if (!userEntity.participantProfileEntity!!.isRegistered) {
+                throw Seminar403("You should register to participate in a seminar.")
+            }
+            if (seminarEntity.capacity <= seminarEntity.participantCount) {
+                throw Seminar400("This seminar is full. You can not participate in this seminar.")
+            }
+            seminarEntity.participantCount += 1L
+            seminarRepository.save(seminarEntity)
+        } else {
+            if (userEntity.instructorProfileEntity == null) {
+                throw Seminar403("Only instructor can conduct a seminar.")
+            }
+            for (userSeminarEntity in userEntity.userSeminarEntities) {
+                if (userSeminarEntity.role == "INSTRUCTOR") {
+                    throw Seminar400("You are already conducting the other seminar. You can not conduct this seminar.")
+                }
+            }
+
+        }
+        val userSeminarEntity = UserSeminarEntity(
+            role = role,
+            isActive = true,
+            userEntity = userEntity,
+            seminarEntity = seminarEntity,
+        )
+        userSeminarRepository.save(userSeminarEntity)
+        return seminarRepositorySupport.getSeminarById(seminarId)
     }
 
 }
