@@ -1,7 +1,10 @@
 package com.wafflestudio.seminar.core.user.domain
 
+import com.wafflestudio.seminar.core.seminar.domain.ParticipatingSeminar
+
 data class ParticipantProfile(
-    val user: User,
-    val university: String,
-    val isRegistered: Boolean
+    val id: Long,
+    var university: String,
+    val isRegistered: Boolean,
+    val seminars: ArrayList<ParticipatingSeminar> = ArrayList(),
 ) 
