@@ -15,4 +15,4 @@ spring:
 auth.jwt:
   issuer: JAEWOONG
   jwtSecret: seminar-secret-key-jwt-authorization-token
-  jwtExpiration: 12000000
+  jwtExpiration: 600000
