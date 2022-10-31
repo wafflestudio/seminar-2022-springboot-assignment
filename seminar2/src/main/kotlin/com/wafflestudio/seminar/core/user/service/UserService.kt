@@ -62,14 +62,7 @@ class UserServiceImpl(
 
     override fun getUserById(userid: Long): UserInfo {
         return userRepository.findByIdOrNull(userid)
-            ?.let {
-                UserInfo(
-                    it.email,
-                    it.username,
-                    it.createdAt.toString(),
-                    it.modifiedAt.toString(),
-                )
-            }
+            ?.toUserInfo()
             ?: throw UserNotFoundException
     }
 

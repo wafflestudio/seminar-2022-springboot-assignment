@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.user.domain.UserInfo
 import javax.persistence.*
 
 @Entity
@@ -18,5 +19,15 @@ class UserEntity(
     @OneToOne
     @JoinColumn(name = "instructor_profile_id")
     var instructorProfile: InstructorProfileEntity? = null;
+    
+    fun toUserInfo(): UserInfo = UserInfo(
+        id,
+        username,
+        email,
+        createdAt!!,
+        modifiedAt!!,
+        participantProfile?.toParticipantProfile(),
+        instructorProfile?.toInstructorProfile(),
+    )
     
 }

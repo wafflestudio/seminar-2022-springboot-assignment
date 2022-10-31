@@ -1,8 +1,13 @@
 package com.wafflestudio.seminar.core.user.domain
 
+import java.time.LocalDateTime
+
 data class UserInfo(
-    val email: String,
+    val id: Long,
     val username: String,
-    val createdAt: String,
-    val modifiedAt: String,
+    val email: String,
+    val lastLogin: LocalDateTime,
+    val dateJoined: LocalDateTime,
+    val participant: ParticipantProfile?,
+    val instructor: InstructorProfile?,
 )
