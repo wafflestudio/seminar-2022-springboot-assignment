@@ -33,9 +33,7 @@ class WebConfig(
 }
 
 @Configuration
-class AuthArgumentResolver(
-    private val authTokenService: AuthTokenService
-) : HandlerMethodArgumentResolver {
+class AuthArgumentResolver : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         return parameter.hasParameterAnnotation(UserContext::class.java)
                 && parameter.parameterType == Long::class.java
@@ -61,12 +59,11 @@ class AuthInterceptor(
         val needAuthentication = handlerCasted.hasMethodAnnotation(Authenticated::class.java)
 
         if (needAuthentication) {
-            val authToken = request.getHeader("Authorization")
+            val authToken = request.getHeader("Authorization") ?: throw Seminar401("NO ACCESS TOKEN")
             val isTokenValid = authTokenService.verifyToken(authToken)
             if (!isTokenValid) {
                 throw Seminar401("NOT VALID ACCESS TOKEN")
             }
-
             val userId = authTokenService.getCurrentUserId(authToken)
             request.setAttribute("userId", userId)
         }
