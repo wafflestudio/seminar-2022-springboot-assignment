@@ -15,7 +15,7 @@ class UserEntity(
     var email: String?,
 
     @Column
-    var password: String,
+    var password: String?,
 
     @Column
     var dateJoined: LocalDate?,

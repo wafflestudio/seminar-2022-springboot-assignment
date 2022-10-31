@@ -23,6 +23,10 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder
 )  {
     fun signup(user: SignUpRequest): UserEntity {
+        
+        if(userRepository.findByEmail(user.email) != null) {
+            throw Seminar400("해당 아이디로 가입할 수 없습니다")
+        }
         return if(user.role == "participant"){
              val encodedPassword = this.passwordEncoder.encode(user.password)
              userRepository.save(signupParticipantEntity(user,encodedPassword))
@@ -44,7 +48,7 @@ class AuthService(
     fun login(userLogin: LoginRequest): AuthToken {
         
         val userEntity = userRepository.findByEmail(userLogin.email)
-        if(this.passwordEncoder.matches(userLogin.password, userEntity.password)) {
+        if(this.passwordEncoder.matches(userLogin.password, userEntity?.password)) {
             val token = authTokenService.generateTokenByEmail(userLogin.email)
             val lastLogin = LocalDate.from(authTokenService.getCurrentIssuedAt(token.accessToken))
             loginEntity(userLogin.email, lastLogin)
@@ -68,8 +72,10 @@ class AuthService(
     
     private fun loginEntity(email: String, lastLogin: LocalDate){
         val userEntity = userRepository.findByEmail(email)
-        userEntity.lastLogin = lastLogin
-        userRepository.save(userEntity)
+        userEntity?.lastLogin = lastLogin
+        if (userEntity != null) {
+            userRepository.save(userEntity)
+        }
     }
     
     private fun ParticipantProfileEntity(par: ParticipantProfileDto?) = par?.run {

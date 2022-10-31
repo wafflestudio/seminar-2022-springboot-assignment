@@ -10,7 +10,7 @@ class UserSeminarEntity(
 
     @ManyToOne(fetch = FetchType.LAZY) // 1
     @JoinColumn(name = "user_id") // 2
-    val user: UserEntity,
+    val user: UserEntity?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="seminar_id")

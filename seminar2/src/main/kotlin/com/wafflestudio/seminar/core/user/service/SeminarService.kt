@@ -14,6 +14,7 @@ import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.dto.seminar.*
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.util.*
 
 
 @Service
@@ -46,7 +47,7 @@ class SeminarService(
             }
         }
         
-        if(userRepository.findByEmail(authTokenService.getCurrentEmail(token)).instructor == null) {
+        if(userRepository.findByEmail(authTokenService.getCurrentEmail(token))?.instructor == null) {
             throw Seminar403("진행자만 세미나를 생성할 수 있습니다")
         }
         
@@ -132,8 +133,8 @@ class SeminarService(
             }
         }
 
-        if(userRepository.findByEmail(authTokenService.getCurrentEmail(token)).instructor == null) {
-            throw Seminar403("진행자만 세미나를 생성할 수 있습니다")
+        if(userRepository.findByEmail(authTokenService.getCurrentEmail(token))?.instructor == null) {
+            throw Seminar403("세미나를 수정할 자격이 없습니다")
         }
         
         val seminarEntity = seminarRepository.findByName(seminar.name)
@@ -162,6 +163,9 @@ class SeminarService(
 
     fun getSeminarById(id: Long, token: String):GetSeminarInfo{
 
+        if(seminarRepository.findById(id).isEmpty){
+            throw Seminar404("해당하는 세미나가 없습니다")
+        }
         val seminarList = queryFactory.select(Projections.constructor(
             SeminarDto::class.java,
             qSeminarEntity
@@ -281,6 +285,7 @@ class SeminarService(
 
     fun getSeminarByName(name: String, order: String, token: String):GetSeminarInfoByName{
         val seminarInfoDto : List<SeminarInfoDto>
+        
         
         if(order=="earliest") {
             seminarInfoDto = queryFactory.select(Projections.constructor(
@@ -574,15 +579,19 @@ class SeminarService(
     fun dropSeminar(id: Long, token: String) : GetSeminarInfo{
         val findByEmailEntity = userRepository.findByEmail(authTokenService.getCurrentEmail(token))
 
-        if(userSeminarRepository.findByUser(findByEmailEntity)?.filter { 
-            it.seminar.id == id
-            } == emptyList<UserSeminarEntity>()){
+        if(findByEmailEntity?.let {
+                    userSeminarRepository.findByUser(it)?.filter {
+                        it.seminar.id == id
+                    }
+                } == emptyList<UserSeminarEntity>()){
             throw Seminar404("해당 세미나를 신청한 적이 없습니다")
         }
         
-        if(userSeminarRepository.findByUser(findByEmailEntity)?.filter { 
-            it.role == "instructor"
-            } != emptyList<UserSeminarEntity>()){
+        if(findByEmailEntity?.let {
+                    userSeminarRepository.findByUser(it)?.filter {
+                        it.role == "instructor"
+                    }
+                } != emptyList<UserSeminarEntity>()){
             throw Seminar403("진행자는 세미나를 드랍할 수 없습니다")
         }
         val seminarInfoDto = queryFactory.select(Projections.constructor(

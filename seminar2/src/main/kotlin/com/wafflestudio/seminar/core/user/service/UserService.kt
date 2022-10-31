@@ -103,7 +103,7 @@ class UserService(
         }
         
         
-        return if(findByEmailEntity.participant != null && findByEmailEntity.instructor == null) {
+        return if(findByEmailEntity?.participant != null && findByEmailEntity?.instructor == null) {
             GetProfile(
                 userEntity?.id, 
                 userEntity?.username, 
@@ -116,7 +116,7 @@ class UserService(
                null
             )
             
-        } else if(findByEmailEntity.participant == null && findByEmailEntity.instructor != null){
+        } else if(findByEmailEntity?.participant == null && findByEmailEntity?.instructor != null){
             GetProfile(
                 userEntity?.id, 
                 userEntity?.username, 
@@ -128,7 +128,7 @@ class UserService(
                     instructorProfileEntity?.id, instructorProfileEntity?.company, instructorProfileEntity?.year, newListInstructor
                 )
             )
-        } else if(findByEmailEntity.participant != null && findByEmailEntity.instructor != null){
+        } else if(findByEmailEntity?.participant != null && findByEmailEntity?.instructor != null){
             GetProfile(
                 userEntity?.id, 
                 userEntity?.username, 
@@ -208,7 +208,7 @@ class UserService(
             )
         }
 
-        if(userEntity.participant != null && userEntity.instructor == null){
+        if(userEntity?.participant != null && userEntity?.instructor == null){
             val participantProfileEntity = participantProfileRepository.findById(authTokenService.getCurrentParticipantId(token)).get()
 
             userEntity.let {
@@ -231,7 +231,7 @@ class UserService(
                 userEntity.dateJoined,
                 GetProfileParticipantDto(participantProfileEntity.id,participantProfileEntity.university, participantProfileEntity.isRegistered, newListParticipant),
                 null)
-        } else if(userEntity.participant == null && userEntity.instructor != null){
+        } else if(userEntity?.participant == null && userEntity?.instructor != null){
             val instructorProfileEntity = instructorProfileRepository.findById(authTokenService.getCurrentInstructorId(token)).get()
 
            val year = user.instructor?.year
@@ -241,29 +241,31 @@ class UserService(
                 }
             }
             userEntity.let {
-                it.username = user.username
-                it.password = user.password
-                it.instructor?.company = user.instructor?.company.toString()
-                it.instructor?.year = user.instructor?.year
+                it?.username = user.username
+                it?.password = user.password
+                it?.instructor?.company = user.instructor?.company.toString()
+                it?.instructor?.year = user.instructor?.year
             }
             instructorProfileEntity.let { 
                 it.company = user.instructor?.company ?: ""
                 it.year = user.instructor?.year 
                 
             }
-            userRepository.save(userEntity)
+            if (userEntity != null) {
+                userRepository.save(userEntity)
+            }
             instructorProfileRepository.save(instructorProfileEntity)
 
             return GetProfile(
-                userEntity.id,
-                userEntity.username,
-                userEntity.email,
-                userEntity.lastLogin,
-                userEntity.dateJoined,
+                userEntity?.id,
+                userEntity?.username,
+                userEntity?.email,
+                userEntity?.lastLogin,
+                userEntity?.dateJoined,
                null,
                 GetProfileInstructorDto(instructorProfileEntity.id, instructorProfileEntity.company, instructorProfileEntity.year, newListInstructor)
             )
-        } else if(userEntity.participant != null && userEntity.instructor != null){
+        } else if(userEntity?.participant != null && userEntity?.instructor != null){
             val participantProfileEntity = participantProfileRepository.findById(authTokenService.getCurrentParticipantId(token)).get()
             val instructorProfileEntity = instructorProfileRepository.findById(authTokenService.getCurrentInstructorId(token)).get()
             userEntity.let {
@@ -302,7 +304,7 @@ class UserService(
     fun beParticipant(participant: BeParticipantRequest, token: String):GetProfile {
         val userEntity = userRepository.findByEmail(authTokenService.getCurrentEmail(token))
         
-        if(userEntity.participant != null) {
+        if(userEntity?.participant != null) {
             throw Seminar409("이미 참가자로 등록되어 있습니다")
         }
 
@@ -369,26 +371,28 @@ class UserService(
         
         
         val newEntity = UserEntity(
-            userEntity.username,
-            userEntity.email,
-            userEntity.password,
-            userEntity.dateJoined,
-            userEntity.lastLogin,
+            userEntity?.username,
+            userEntity?.email,
+            userEntity?.password,
+            userEntity?.dateJoined,
+            userEntity?.lastLogin,
             participantEntity,
-            userEntity.instructor
+            userEntity?.instructor
         )
         userRepository.save(newEntity)
-        
-        userRepository.delete(userEntity)
+
+        if (userEntity != null) {
+            userRepository.delete(userEntity)
+        }
 
         return GetProfile(
-            userEntity.id,
-            userEntity.username,
-            userEntity.email,
-            userEntity.lastLogin,
-            userEntity.dateJoined,
+            userEntity?.id,
+            userEntity?.username,
+            userEntity?.email,
+            userEntity?.lastLogin,
+            userEntity?.dateJoined,
             GetProfileParticipantDto(participantEntity.id,participantEntity.university, participantEntity.isRegistered,newListParticipant),
-            GetProfileInstructorDto(userEntity.instructor?.id, userEntity.instructor?.company, userEntity.instructor?.year,newListInstructor)
+            GetProfileInstructorDto(userEntity?.instructor?.id, userEntity?.instructor?.company, userEntity?.instructor?.year,newListInstructor)
         )
     }
     
