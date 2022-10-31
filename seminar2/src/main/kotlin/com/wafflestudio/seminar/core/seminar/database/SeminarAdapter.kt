@@ -5,9 +5,8 @@ import com.wafflestudio.seminar.common.Seminar403
 import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.EditSeminarRequest
-import com.wafflestudio.seminar.core.seminar.domain.CreateSeminarResponse
-import com.wafflestudio.seminar.core.seminar.domain.EditSeminarResponse
 import com.wafflestudio.seminar.core.seminar.domain.SeminarPort
+import com.wafflestudio.seminar.core.seminar.domain.SeminarResponse
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.domain.Instructor
 import com.wafflestudio.seminar.core.user.domain.Participant
@@ -60,7 +59,7 @@ class SeminarAdapter(
         userRepository.save(userEntity)
         seminarRepository.save(seminarEntity)
 
-        CreateSeminarResponse(
+        SeminarResponse(
             id = seminarEntity.id,
             name = name,
             capacity = capacity,
@@ -92,6 +91,13 @@ class SeminarAdapter(
             throw Seminar403("세미나를 만든 사람이 아니면 수정을 할 수 없습니다.")
         }
 
+        if (capacity != null) seminarEntity.capacity = capacity
+        if (count != null) seminarEntity.count = count
+        if (name != null) seminarEntity.name = name
+        if (time != null) seminarEntity.time = LocalTime.parse(time)
+        if (online != null) seminarEntity.online = online
+        seminarRepository.save(seminarEntity)
+
         val instructors: MutableList<Instructor> = mutableListOf()
         val participants: MutableList<Participant> = mutableListOf()
         seminarEntity.userSeminars.forEach {
@@ -116,15 +122,17 @@ class SeminarAdapter(
             }
         }
 
-        EditSeminarResponse(
-            id = seminarEntity.id,
-            name = name ?: seminarEntity.name,
-            capacity = capacity ?: seminarEntity.capacity,
-            count = count ?: seminarEntity.count,
-            time = if (time != null) LocalTime.parse(time) else seminarEntity.time,
-            online = online ?: seminarEntity.online,
-            instructors = instructors,
-            participants = participants
-        )
+        seminarEntity.run {
+            SeminarResponse(
+                id = id,
+                name = name,
+                capacity = capacity,
+                count = count,
+                time = time,
+                online = online,
+                instructors = instructors,
+                participants = participants
+            )
+        }
     }
 }

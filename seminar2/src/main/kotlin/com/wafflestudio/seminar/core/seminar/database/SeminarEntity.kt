@@ -13,10 +13,10 @@ class SeminarEntity(
     @OneToMany(mappedBy = "seminar", cascade = [CascadeType.ALL])
     val userSeminars: MutableSet<UserSeminarEntity> = mutableSetOf(),
 
-    val name: String,
-    val capacity: Int,
-    val count: Int,
-    val time: LocalTime,
-    val online: Boolean,
+    var name: String,
+    var capacity: Int,
+    var count: Int,
+    var time: LocalTime,
+    var online: Boolean,
     val creatorId: Long
 ) : BaseTimeEntity() 
