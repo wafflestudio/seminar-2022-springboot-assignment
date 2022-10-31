@@ -19,7 +19,7 @@ class SeminarServiceImpl(
     private val userSeminarRepository: UserSeminarRepository,
     private val authTokenService: AuthTokenService,
 ) : SeminarService {
-    
+
     @LogExecutionTime
     override fun createSeminar(authToken: String, createSeminarRequest: CreateSeminarRequest): Seminar {
         val instructorId = authTokenService.getCurrentUserId(authToken)
@@ -27,9 +27,9 @@ class SeminarServiceImpl(
         if (instructor!!.instructorProfileEntity == null) {
             throw Seminar403("세미나 진행자만 세미나를 생성할 수 있습니다.")
         }
-        
+
         seminarRepository.findSeminarsByInstructorId(instructorId)?.let { throw Seminar400("이미 참여하고 있는 세미나가 존재합니다.") }
-        
+
         if (createSeminarRequest.name == "" || createSeminarRequest.capacity!! <= 0 || createSeminarRequest.count!! <= 0 || createSeminarRequest.time == null) {
             throw Seminar400("필요한 정보를 모두 입력해주세요")
         }
@@ -53,7 +53,7 @@ class SeminarServiceImpl(
             mutableListOf()
         )
     }
-    
+
     @LogExecutionTime
     override fun modifySeminar(authToken: String, modifySeminarRequest: ModifySeminarRequest): Seminar {
         if (modifySeminarRequest.id == null) {
@@ -87,7 +87,7 @@ class SeminarServiceImpl(
         modifySeminarRequest.time?.let {
             val regex = Regex("^[0-2][0-9]:[0-5][0-9]")
             if (!regex.matches(it)) {
-                Seminar400("올바른 시간 값을 입력해주세요")
+                throw Seminar400("올바른 시간 값을 입력해주세요")
             } else {
                 seminar.time = it
             }
@@ -102,7 +102,7 @@ class SeminarServiceImpl(
 
         return seminar.toDTO(instructors, participants)
     }
-    
+
     @LogExecutionTime
     override fun getAllSeminar(seminarName: String?, order: String?, pageable: Pageable): List<SeminarForList> {
         var seminars = if (seminarName != null) {
@@ -127,7 +127,7 @@ class SeminarServiceImpl(
     override fun readSeminar(seminarId: Long): Seminar {
         val seminar = seminarRepository.findByIdOrNull(seminarId)
         seminar ?: throw Seminar404("존재하지 않는 세미나입니다.")
-        
+
         val instructors = userSeminarRepository.findInstructorsById(seminarId)
         val participants = userSeminarRepository.findParticipantsById(seminarId)
 
@@ -149,38 +149,37 @@ class SeminarServiceImpl(
             }
             throw Seminar400("이미 세미나에 참여하고 있습니다.")
         }
-        if (user!!.instructorProfileEntity != null) {
-            if (applySeminarRequest.role == "participant") {
+        if (applySeminarRequest.role == "participant") {
+            if (user!!.participantProfileEntity == null) {
                 throw Seminar403("세미나 참여 자격이 없습니다.")
             } else {
-                if (userSeminarRepository.findAllSeminarByInstructorId(userId).isNotEmpty()) {
-                    throw Seminar400("이미 진행하는 세미나가 존재합니다.")
+                if (user.participantProfileEntity!!.isRegistered == false) {
+                    throw Seminar403("활성회원이 아닙니다.")
                 }
-                val newUserSeminarRelation = UserSeminarEntity(user = user, isInstructor = true, seminar = seminar)
-                userSeminarRepository.save(newUserSeminarRelation)
-            }
-        } else {
-            if (user.participantProfileEntity!!.isRegistered == false) {
-                throw Seminar403("활성회원이 아닙니다.")
-            }
-            if (applySeminarRequest.role == "instructor") {
-                throw Seminar403("세미나 진행 자격이 없습니다.")
-            } else {
                 val participantCount = userSeminarRepository.findActiveParticipantCountById(seminarId)
-                if (participantCount == seminar.count.toLong()) {
+                if (participantCount == seminar.capacity.toLong()) {
                     throw Seminar400("이미 수강 정원이 가득찼습니다.")
                 }
                 val newUserSeminarRelation = UserSeminarEntity(user = user, isInstructor = false, seminar = seminar)
                 userSeminarRepository.save(newUserSeminarRelation)
+                
             }
+        } else if (applySeminarRequest.role == "instructor") {
+            if (user!!.instructorProfileEntity == null) {
+                throw Seminar403("세미나 진행 자격이 없습니다.")
+            }
+            if (userSeminarRepository.findAllSeminarByInstructorId(userId).isNotEmpty()) {
+                throw Seminar400("이미 진행하는 세미나가 존재합니다.")
+            }
+            val newUserSeminarRelation = UserSeminarEntity(user = user, isInstructor = true, seminar = seminar)
+            userSeminarRepository.save(newUserSeminarRelation)
         }
-
         val instructors = userSeminarRepository.findInstructorsById(seminarId)
         val participants = userSeminarRepository.findParticipantsById(seminarId)
 
         return seminar.toDTO(instructors, participants)
     }
-    
+
     @LogExecutionTime
     override fun deleteParticipantFromSeminar(authToken: String, seminarId: Long): String {
         val userId = authTokenService.getCurrentUserId(authToken)
