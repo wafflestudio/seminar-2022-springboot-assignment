@@ -1,7 +1,9 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.common.INSTRUCTOR
+import com.wafflestudio.seminar.common.PARTICIPANT
 import com.wafflestudio.seminar.config.AuthConfig
-import com.wafflestudio.seminar.core.jointable.UserSeminarRepository
+import com.wafflestudio.seminar.core.join.UserSeminarRepository
 import com.wafflestudio.seminar.core.profile.database.ParticipantProfileEntity
 import com.wafflestudio.seminar.core.profile.database.ParticipantProfileRepository
 import com.wafflestudio.seminar.core.profile.dto.InstructorProfileResponse
@@ -45,7 +47,7 @@ class UserServiceImpl(
         val participantProfileResponse: ParticipantProfileResponse? = 
                 user.participantProfile?.let {
                     val userSeminarList = userSeminarRepository
-                                    .findAllByUserAndIsParticipant(user, true)
+                                .findAllByUserAndRole(user, PARTICIPANT)
                     val seminarList = userSeminarList.map { us -> us.seminar }
                     ParticipantProfileResponse(
                             id = it.id,
@@ -64,7 +66,7 @@ class UserServiceImpl(
         val instructorProfileResponse: InstructorProfileResponse? = 
                 user.instructorProfile?.let {
                     val userSeminarList = userSeminarRepository
-                            .findAllByUserAndIsParticipant(user, false)
+                            .findAllByUserAndRole(user, INSTRUCTOR)
                     val seminarList = userSeminarList.map { us -> us.seminar }
                     InstructorProfileResponse(
                             id = it.id,

@@ -9,5 +9,7 @@ class Seminar404(msg: String) : SeminarException(msg, HttpStatus.NOT_FOUND)
 
 class Seminar400(msg: String) : SeminarException(msg, HttpStatus.BAD_REQUEST)
 
+class Seminar403(msg: String) : SeminarException(msg, HttpStatus.UNAUTHORIZED)
+
 class SeminarRequestBodyException(val errorList: List<FieldError>)
     : SeminarException("Wrong formatted request body given.", HttpStatus.BAD_REQUEST)

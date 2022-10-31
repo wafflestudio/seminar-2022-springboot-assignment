@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.jointable
+package com.wafflestudio.seminar.core.join
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.user.database.UserEntity
@@ -12,20 +12,15 @@ import javax.persistence.*
 @Table(name = "user_seminar")
 @AttributeOverride(name = "createdAt", column = Column(name = "joined_at"))
 class UserSeminarEntity(
-//        @Column(name = "user_id")
-//        var userId: Long,
-//
-//        @Column(name = "seminar_id")
-//        var seminarId: Long,
         
         @ManyToOne
-        @MapsId("user_id")
+//        @MapsId("user_id")
         @JoinColumn
         @Cascade(CascadeType.ALL)
         val user: UserEntity,
 
         @ManyToOne
-        @MapsId("seminar_id")
+//        @MapsId("seminar_id")
         @JoinColumn
         @Cascade(CascadeType.ALL)
         val seminar: SeminarEntity,
@@ -36,7 +31,13 @@ class UserSeminarEntity(
         @Column(nullable = true)
         val droppedAt: LocalDateTime? = null,
 
-        @Column
-        val isParticipant: Boolean,
+        val role: String,
 ) : BaseTimeEntity() {
+//        @Column(name = "user_id")
+//        @GeneratedValue(strategy = GenerationType.IDENTITY)
+//        var userId: Long = 0L
+//
+//        @Column(name = "seminar_id")
+//        @GeneratedValue(strategy = GenerationType.IDENTITY)
+//        var seminarId: Long = 0L
 }

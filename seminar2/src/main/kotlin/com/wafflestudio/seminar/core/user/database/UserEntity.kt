@@ -1,11 +1,9 @@
 package com.wafflestudio.seminar.core.user.database
 
-import com.wafflestudio.seminar.core.jointable.UserSeminarEntity
+import com.wafflestudio.seminar.core.join.UserSeminarEntity
 import com.wafflestudio.seminar.core.profile.database.InstructorProfileEntity
 import com.wafflestudio.seminar.core.profile.database.ParticipantProfileEntity
-import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.Size
