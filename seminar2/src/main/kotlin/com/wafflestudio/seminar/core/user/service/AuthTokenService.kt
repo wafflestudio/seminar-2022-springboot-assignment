@@ -1,7 +1,5 @@
 package com.wafflestudio.seminar.core.user.service
 
-import com.wafflestudio.seminar.core.user.api.request.SignInRequest
-import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.domain.UserPort
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
@@ -10,7 +8,6 @@ import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
@@ -45,9 +42,13 @@ class AuthTokenService(
     }
 
     fun verifyToken(authToken: String): Boolean {
-        val email = getEmailFromToken(authToken)
-        val expiryDateInMillisecond = parse(authToken).body.expiration.time
-        return userPort.getUserIdByEmail(email).let { return expiryDateInMillisecond > System.currentTimeMillis() }
+        try {
+            val email = getEmailFromToken(authToken)
+            userPort.getUserIdByEmail(email)
+        } catch (exception: Exception) {
+            return false
+        }
+        return true
     }
 
     fun getCurrentUserId(authToken: String): Long {
@@ -66,16 +67,5 @@ class AuthTokenService(
             .setSigningKey(signingKey)
             .build()
             .parseClaimsJws(prefixRemoved)
-    }
-
-    @Transactional
-    fun signUp(signUpRequest: SignUpRequest): AuthToken {
-        val user = userPort.createUser(signUpRequest)
-        return generateTokenByEmail(user.email)
-    }
-
-    fun signIn(signInRequest: SignInRequest): AuthToken {
-        val user = userPort.getUser(signInRequest)
-        return generateTokenByEmail(user.email)
     }
 }
