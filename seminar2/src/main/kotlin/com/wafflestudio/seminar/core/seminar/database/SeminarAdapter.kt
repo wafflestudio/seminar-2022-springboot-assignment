@@ -5,6 +5,7 @@ import com.wafflestudio.seminar.common.Seminar403
 import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.EditSeminarRequest
+import com.wafflestudio.seminar.core.seminar.api.request.JoinSeminarRequest
 import com.wafflestudio.seminar.core.seminar.domain.SearchSeminarResponse
 import com.wafflestudio.seminar.core.seminar.domain.SeminarPort
 import com.wafflestudio.seminar.core.seminar.domain.SeminarResponse
@@ -95,5 +96,35 @@ class SeminarAdapter(
         if (order == "earliest") seminarEntities.sort() else seminarEntities.reverse()
         seminarEntities.forEach { seminars.add(it.toSearchSeminarResponse()) }
         return seminars
+    }
+
+    override fun joinSeminar(seminarId: Long, userId: Long, joinSeminarRequest: JoinSeminarRequest): SeminarResponse {
+        val seminarEntity =
+            seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
+        val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
+        val thisUserSeminar = userEntity.userSeminars.find { it.seminar.id == seminarId }
+        if (thisUserSeminar != null) throw Seminar400("이미 세미나에 ${thisUserSeminar.role}(으)로 참여 중입니다.")
+
+        if (User.Role.valueOf(joinSeminarRequest.role) == User.Role.PARTICIPANT) {
+            if (userEntity.participantProfile == null) throw Seminar403("수강생 신분이 아니므로 세미나에 수강생으로 참여할 수 없습니다.")
+            if (!userEntity.participantProfile!!.isRegistered) throw Seminar403("비활성화된 회원이므로 세미나에 수강생으로 참여할 수 없습니다.")
+            if (seminarEntity.getParticipantCount() >= seminarEntity.capacity) throw Seminar400("세미나 정원이 가득 차서 참여할 수 없습니다.")
+        } else {
+            if (userEntity.instructorProfile == null) throw Seminar403("진행자 신분이 아니므로 세미나에 진행자로 참여할 수 없습니다.")
+            if (userEntity.getInstructingSeminar() != null) throw Seminar400("이미 진행 중인 세미나가 있으므로, 다른 세미나에 진행자로 참여할 수 없습니다.")
+        }
+        val userSeminarEntity = userSeminarRepository.save(
+            UserSeminarEntity(
+                user = userEntity,
+                seminar = seminarEntity,
+                role = User.Role.valueOf(joinSeminarRequest.role),
+                joinedAt = LocalDateTime.now(),
+                isActive = true
+            )
+        )
+        userEntity.userSeminars.add(userSeminarEntity)
+        seminarEntity.userSeminars.add(userSeminarEntity)
+        userRepository.save(userEntity)
+        return seminarRepository.save(seminarEntity).toSeminarResponse()
     }
 }

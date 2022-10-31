@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.seminar.domain.InstructingSeminar
 import com.wafflestudio.seminar.core.seminar.domain.ParticipatingSeminar
@@ -75,5 +76,10 @@ class UserEntity(
                 instructingSeminars = instructingSeminar
             ) else null
         )
+    }
+
+    fun getInstructingSeminar(): SeminarEntity? {
+        instructorProfile ?: return null
+        return userSeminars.find { it.role == User.Role.INSTRUCTOR }?.seminar
     }
 }

@@ -4,6 +4,7 @@ import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.EditSeminarRequest
+import com.wafflestudio.seminar.core.seminar.api.request.JoinSeminarRequest
 import com.wafflestudio.seminar.core.seminar.domain.SearchSeminarResponse
 import com.wafflestudio.seminar.core.seminar.domain.SeminarResponse
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
@@ -52,5 +53,16 @@ class SeminarController(
         @RequestParam order: String?
     ): List<SearchSeminarResponse> {
         return seminarService.searchSeminar(name = name, order = order)
+    }
+
+    @Authenticated
+    @PostMapping("/seminar/{seminar_id}/user")
+    fun joinSeminar(
+        @RequestHeader("Authorization") authHeader: String,
+        @RequestBody @Valid joinSeminarRequest: JoinSeminarRequest,
+        @PathVariable seminar_id: Long,
+        @UserContext userId: Long
+    ): SeminarResponse {
+        return seminarService.joinSeminar(seminarId = seminar_id, userId = userId, joinSeminarRequest)
     }
 }

@@ -11,4 +11,4 @@ class InstructorProfileEntity(
     val user: UserEntity? = null,
     var company: String,
     var year: Int?,
-) : BaseTimeEntity() 
+) : BaseTimeEntity()

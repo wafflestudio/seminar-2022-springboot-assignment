@@ -84,6 +84,14 @@ class SeminarEntity(
         )
     }
 
+    fun getParticipantCount(): Int {
+        var participantCount = 0
+        userSeminars.forEach {
+            if ((it.role == User.Role.PARTICIPANT) && it.isActive) participantCount++
+        }
+        return participantCount
+    }
+
     override fun compareTo(other: SeminarEntity): Int {
         return this.createdAt!!.compareTo(other.createdAt)
     }
