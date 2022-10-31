@@ -2,7 +2,10 @@ package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.config.AuthConfig
 import com.wafflestudio.seminar.core.jointable.UserSeminarRepository
+import com.wafflestudio.seminar.core.profile.database.ParticipantProfileEntity
+import com.wafflestudio.seminar.core.profile.database.ParticipantProfileRepository
 import com.wafflestudio.seminar.core.profile.dto.InstructorProfileResponse
+import com.wafflestudio.seminar.core.profile.dto.ParticipantProfileRequest
 import com.wafflestudio.seminar.core.profile.dto.ParticipantProfileResponse
 import com.wafflestudio.seminar.core.seminar.dto.InstructingSeminarResponse
 import com.wafflestudio.seminar.core.seminar.dto.ParticipantSeminarResponse
@@ -18,12 +21,16 @@ interface UserService {
     fun constructUserInformationById(userId: Long): UserResponse
     fun constructUserInformationByUser(user: UserEntity): UserResponse
     fun modifyUserInformation(userRequest: UserRequest, meUser: UserEntity)
+    fun addToParticipantAndReturnUserInfo(
+            participantProfileRequest: ParticipantProfileRequest, meUser: UserEntity
+    ): UserResponse
 }
 
 @Service
 class UserServiceImpl(
         private val userRepository: UserRepository,
         private val userSeminarRepository: UserSeminarRepository,
+        private val participantProfileRepository: ParticipantProfileRepository,
         private val authConfig: AuthConfig
 ): UserService {
     private val encoder = authConfig.passwordEncoder()
@@ -110,5 +117,25 @@ class UserServiceImpl(
                 else { meUser.instructorProfile!!.year = userRequest.year }
             }
         }
+    }
+
+    override fun addToParticipantAndReturnUserInfo(
+            participantProfileRequest: ParticipantProfileRequest, meUser: UserEntity
+    ): UserResponse {
+        if (meUser.participantProfile != null) {
+            throw UserException409("Already participant.")
+        }
+        
+        val participantProfile = ParticipantProfileEntity(
+                user = meUser,
+                university = participantProfileRequest.university,
+                isRegistered = participantProfileRequest.isRegistered
+        )
+        meUser.participantProfile = participantProfile
+        
+        participantProfileRepository.save(participantProfile)
+        userRepository.save(meUser)
+        
+        return constructUserInformationByUser(meUser)
     }
 }
