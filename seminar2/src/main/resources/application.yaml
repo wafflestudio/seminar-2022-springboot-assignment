@@ -13,5 +13,7 @@ spring:
       ddl-auto: update
       
 auth.jwt:
-  jwtSecret: SEMINAR_SECRET_KEY
-  # TODO 누락된 정보를 추가해 주세요.
+  jwtSecret: SEMINAR_ASSIGNMENT_LONG_SECRET_KEY
+  issuer : Jaemin
+  jwtExpiration : 10000
+  
