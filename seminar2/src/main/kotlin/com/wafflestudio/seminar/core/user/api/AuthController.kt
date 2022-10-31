@@ -36,14 +36,14 @@ class AuthController(
     ) = service.getProfile(userId)
     
     @Authenticated
-    @PutMapping("/api/v1/user/me/")
+    @PutMapping("/api/v1/user/me")
     fun profileModify(
         @RequestHeader("Authorization") authToken: String,
         @RequestBody modifyRequest: ModifyRequest
     ) = service.modifyProfile(authToken, modifyRequest)
     
     @Authenticated
-    @PostMapping("/api/v1/user/participant/")
+    @PostMapping("/api/v1/user/participant")
     fun registerParticipant(
         @RequestHeader("Authorization") authToken: String,
         @RequestBody registerParticipantRequest: RegisterParticipantRequest
