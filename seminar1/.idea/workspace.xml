@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="74675012-339e-4afc-b541-56bdd54ca3ba" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/common/Role.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/seminar/api/SeminarController.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/seminar/api/request/CreateSeminarRequest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/seminar/api/request/UpdateSeminarRequest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/seminar/database/SeminarEntity.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/seminar/database/SeminarRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/seminar/database/UserSeminarEntity.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/seminar/domain/Seminar.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/seminar/domain/UserSeminar.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/seminar/service/SeminarService.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/request/FindUserRequest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/request/LoginRequest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/request/ParticipateRequest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/InstructorProfile.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/ParticipantProfile.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/UserEntity.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/UserRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/Instructor.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/Participant.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/Profile.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/User.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/UserService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/SeminarAssignmentTwo.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/SeminarAssignmentTwo.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/common/Exceptions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/common/Exceptions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/common/SeminarExceptionHandler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/common/SeminarExceptionHandler.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/config/WebConfig.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/config/WebConfig.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/AuthController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/AuthController.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/request/SignUpRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/request/SignUpRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthTokenService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthTokenService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/resources/application.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2GnphqSC0hzu3mLmlLAsqDxv3tu" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "last_opened_file_path": "/Users/sinjemin/Documents/GitHub/seminar-2022-springboot-assignment/seminar1"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="74675012-339e-4afc-b541-56bdd54ca3ba" name="Changes" comment="" />
+      <created>1667034323368</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1667034323368</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
