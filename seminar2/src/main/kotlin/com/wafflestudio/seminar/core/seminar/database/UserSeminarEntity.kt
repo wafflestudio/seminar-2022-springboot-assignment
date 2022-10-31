@@ -26,7 +26,7 @@ data class UserSeminarEntity(
     @Column(name = "joined_at")
     val joinedAt: LocalDateTime,
     @Column(name = "dropped_at")
-    val droppedAt: LocalDateTime? = null,
+    var droppedAt: LocalDateTime? = null,
     @Column(name = "is_active")
     var isActive: Boolean = true,
 ): BaseTimeEntity() {

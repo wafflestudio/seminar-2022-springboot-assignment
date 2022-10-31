@@ -36,7 +36,7 @@ class SeminarServiceImpl(
 
     @Transactional
     override fun makeSeminar(userId: Long, seminarRequest: SeminarRequest): Seminar {
-        val user = userRepository.findByIdOrNull(userId)?.toUser()
+        val user = userRepository.findByIdOrNull(userId)
             ?: throw AuthException("잘못된 유저에 대한 토큰입니다")
 
         if (seminarRepository.findByHostId(userId) != null)
@@ -53,6 +53,15 @@ class SeminarServiceImpl(
             hostId = userId,
         )
 
+        val userSeminar = UserSeminarEntity(
+            user = user,
+            seminar = seminar,
+            role = User.Role.INSTRUCTOR,
+            joinedAt = LocalDateTime.now(),
+            isActive = true,
+        )
+        
+        userSeminarRepository.save(userSeminar)
         seminarRepository.save(seminar)
         return seminar.toSeminar()
     }
@@ -62,9 +71,9 @@ class SeminarServiceImpl(
         userRepository.findByIdOrNull(userId)?.toUser()
             ?: throw AuthException("잘못된 유저에 대한 토큰입니다")
 
-        val hostId = seminarRequest.seminarId
-        val seminar = seminarRepository.findByHostId(userId)
-        if (seminar?.hostId != hostId) {
+        val seminar = seminarRepository.findByIdOrNull(seminarRequest.seminarId)
+            ?: throw Seminar404("존재하지 않는 seminarId 입니다")
+        if (seminar.hostId != userId) {
             throw Seminar403("세미나를 수정할 권한이 없습니다")
         }
 
@@ -144,6 +153,7 @@ class SeminarServiceImpl(
             throw Seminar404("이미 드랍한 세미나입니다")
         }
         userSeminar?.isActive = false
+        userSeminar?.droppedAt = LocalDateTime.now()
         userSeminar?.let {
             userSeminarRepository.save(userSeminar)
         }
