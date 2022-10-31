@@ -5,6 +5,7 @@ import com.wafflestudio.seminar.core.seminar.api.request.*
 import com.wafflestudio.seminar.core.seminar.domain.SeminarForList
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -34,8 +35,14 @@ class SeminarController(
         @RequestParam("order") order: String?,
         @RequestParam("page", required = false, defaultValue = "1") page: Int?
     ): List<SeminarForList> {
-        val pageable = PageRequest.of(page!!-1, 50)
-        return service.getAllSeminar(seminarName, order, pageable)
+        if (order == "earliest") {
+            val pageable = PageRequest.of(page!! - 1, 50, Sort.by("createdAt").descending())
+            return service.getAllSeminar(seminarName, order, pageable)
+        } else {
+            val pageable = PageRequest.of(page!! -1, 50)
+            return service.getAllSeminar(seminarName, order, pageable)
+        }
+        
     }
 
     @Authenticated
