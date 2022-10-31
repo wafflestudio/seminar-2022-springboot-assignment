@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.seminar.database
 
+import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.join.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import javax.persistence.*
@@ -24,7 +25,5 @@ class SeminarEntity(
         @OneToOne
         @JoinColumn(name = "created_user_id")
         val created_user: UserEntity,
-) {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0L
+): BaseTimeEntity() {
 }

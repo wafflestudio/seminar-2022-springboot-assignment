@@ -8,6 +8,9 @@ interface UserSeminarRepository: JpaRepository<UserSeminarEntity, Long> {
     fun findAllByUserAndRole(user: UserEntity, role: String)
         : List<UserSeminarEntity>
     
+    fun countAllBySeminarAndRole(seminar: SeminarEntity, role: String)
+        : Int
+    
     fun findAllBySeminarAndRole(seminar: SeminarEntity, role: String)
         : List<UserSeminarEntity>
     

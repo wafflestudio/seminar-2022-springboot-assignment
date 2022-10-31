@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 plugins {
     id("org.springframework.boot") version "2.7.2"
@@ -8,6 +9,7 @@ plugins {
     kotlin("plugin.jpa") version "1.6.21"
     kotlin("plugin.allopen") version "1.3.71"
     kotlin("plugin.noarg") version "1.3.71"
+    kotlin("kapt") version "1.3.61" //Queryds
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
@@ -42,6 +44,12 @@ dependencies {
     
     implementation("javax.validation:validation-api")
 
+    // QueryDSL
+    val querydslVersion = "5.0.0"
+    implementation("com.querydsl:querydsl-jpa:$querydslVersion")
+    implementation("com.querydsl:querydsl-core:$querydslVersion")
+    kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa")
+    kapt(group = "com.querydsl", name = "querydsl-apt", classifier = "jpa")
 
     // Auth
     implementation("org.springframework.boot:spring-boot-starter-security")

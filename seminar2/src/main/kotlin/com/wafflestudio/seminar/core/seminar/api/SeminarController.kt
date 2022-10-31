@@ -9,10 +9,7 @@ import com.wafflestudio.seminar.core.user.database.UserEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
@@ -46,4 +43,13 @@ class SeminarController(
         }
             ?: ResponseEntity<String>("Failed to get current user info.", HttpStatus.UNAUTHORIZED)
     }
+    
+    @GetMapping("/api/v1/seminar/{seminarId}")
+    fun getSeminar(@PathVariable seminarId: Long) = seminarService.getSeminarDetailById(seminarId)
+    
+    @GetMapping("/api/v1/seminar")
+    fun getSeminarsWithQuery(
+            @RequestParam(name = "name") name: String?,
+            @RequestParam(name = "order") order: String?,
+    ) = seminarService.getSeminarListQueriedByNameAndOrder(name?:"", order?:"")
 }

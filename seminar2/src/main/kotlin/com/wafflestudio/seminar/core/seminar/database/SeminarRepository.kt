@@ -1,10 +1,40 @@
 package com.wafflestudio.seminar.core.seminar.database
 
+import com.querydsl.jpa.impl.JPAQueryFactory
+import com.wafflestudio.seminar.common.ASC
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.TIME_FORMAT
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
+import com.wafflestudio.seminar.core.seminar.database.QSeminarEntity.seminarEntity
+import org.springframework.stereotype.Component
 
-interface SeminarRepository: JpaRepository<SeminarEntity, Long> {
+interface SeminarRepository
+    : JpaRepository<SeminarEntity, Long>,
+    SeminarRepositoryCustom {
+}
+
+interface SeminarRepositoryCustom {
+    fun queryWithNameByOrder(name: String = "", order: String = ""): MutableList<SeminarEntity>
+}
+
+@Repository
+class SeminarRepositoryCustomImpl (
+        private val jpaQueryFactory: JPAQueryFactory,
+): SeminarRepositoryCustom {
+    override fun queryWithNameByOrder(name: String, order: String): MutableList<SeminarEntity> {
+        return jpaQueryFactory
+                .selectFrom(seminarEntity)
+                .where(seminarEntity.name.contains(name))
+                .orderBy(
+                        if (order == ASC) {
+                            seminarEntity.createdAt.asc()
+                        } else {
+                            seminarEntity.createdAt.desc()
+                        }
+                )
+                .fetch()
+    }
 }
 
 fun changeTimeStringToMinutes(timeString: String): Int {

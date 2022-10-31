@@ -3,6 +3,7 @@ package com.wafflestudio.seminar.core.seminar.service
 import com.wafflestudio.seminar.common.INSTRUCTOR
 import com.wafflestudio.seminar.common.PARTICIPANT
 import com.wafflestudio.seminar.common.Seminar403
+import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.core.join.UserSeminarEntity
 import com.wafflestudio.seminar.core.join.UserSeminarRepository
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
@@ -12,6 +13,7 @@ import com.wafflestudio.seminar.core.seminar.database.changeTotalMinutesToTimeSt
 import com.wafflestudio.seminar.core.seminar.dto.SeminarDetailResponse
 import com.wafflestudio.seminar.core.seminar.dto.SeminarPostRequest
 import com.wafflestudio.seminar.core.seminar.dto.SeminarPutRequest
+import com.wafflestudio.seminar.core.seminar.dto.SeminarQueryElementResponse
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.dto.InstructorUserResponse
@@ -28,6 +30,9 @@ interface SeminarService {
     fun modifySeminarAndReturnSeminarDetail(
             seminarPutRequest: SeminarPutRequest, meUser: UserEntity
     ): SeminarDetailResponse
+
+    fun getSeminarDetailById(seminarId: Long): SeminarDetailResponse
+    fun getSeminarListQueriedByNameAndOrder(name: String, order: String): List<SeminarQueryElementResponse>
 }
 
 @Service
@@ -62,7 +67,7 @@ class SeminarServiceImpl(
         seminarRepository.save(seminar)
         userSeminarRepository.save(userSeminar)
         
-        return makeSeminarDetail(seminar, userSeminar)
+        return makeSeminarDetail(seminar)
     }
 
     @Transactional
@@ -87,15 +92,38 @@ class SeminarServiceImpl(
         }
         seminarRepository.save(seminar)
         
-        // Since we already checked that meUser is creator of this seminar, it must not null.
-        val userSeminar = userSeminarRepository.findByUserAndSeminar(meUser, seminar)!!
-        return makeSeminarDetail(seminar, userSeminar)
+        return makeSeminarDetail(seminar)
+    }
+
+
+    override fun getSeminarDetailById(seminarId: Long): SeminarDetailResponse {
+        val seminar = seminarRepository.findByIdOrNull(seminarId) 
+                ?: throw Seminar404("Seminar ${seminarId} does not exists.")
+        return makeSeminarDetail(seminar)
+    }
+
+    override fun getSeminarListQueriedByNameAndOrder(
+            name: String, order: String): List<SeminarQueryElementResponse> {
+        val seminarList = seminarRepository.queryWithNameByOrder(name, order)
+        val seminarQueryResponseList = seminarList.map {
+            SeminarQueryElementResponse (
+                id = it.id,
+                name = it.name,
+                instructors = userSeminarRepository
+                        .findAllBySeminarAndRole(it, INSTRUCTOR)
+                        .map { us -> InstructorUserResponse(
+                                id = us.user.id,
+                                username = us.user.username,
+                                email = us.user.email,
+                                joinedAt = us.createdAt!!,
+                        )},
+                participantCount = userSeminarRepository.countAllBySeminarAndRole(it, PARTICIPANT),
+            )
+        }
+        return seminarQueryResponseList
     }
     
-    fun makeSeminarDetail(
-            seminar: SeminarEntity, userSeminar: UserSeminarEntity
-    ): SeminarDetailResponse {
-        
+    fun makeSeminarDetail(seminar: SeminarEntity): SeminarDetailResponse {
         val instructorUserSeminar = userSeminarRepository.findAllBySeminarAndRole(
                 seminar, INSTRUCTOR
         )
