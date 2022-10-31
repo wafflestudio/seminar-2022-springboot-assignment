@@ -14,4 +14,6 @@ interface SeminarPort {
     fun searchSeminar(name: String?, order: String?): List<SearchSeminarResponse>
 
     fun joinSeminar(seminarId: Long, userId: Long, joinSeminarRequest: JoinSeminarRequest): SeminarResponse
+
+    fun dropSeminar(seminarId: Long, userId: Long): SeminarResponse
 }

@@ -31,4 +31,8 @@ class SeminarService(
     fun joinSeminar(seminarId: Long, userId: Long, joinSeminarRequest: JoinSeminarRequest): SeminarResponse {
         return seminarPort.joinSeminar(seminarId = seminarId, userId = userId, joinSeminarRequest)
     }
+
+    fun dropSeminar(seminarId: Long, userId: Long): SeminarResponse {
+        return seminarPort.dropSeminar(seminarId = seminarId, userId = userId)
+    }
 }

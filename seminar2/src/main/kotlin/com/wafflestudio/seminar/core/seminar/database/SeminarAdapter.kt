@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.seminar.database
 
+import com.wafflestudio.seminar.common.Seminar200
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar403
 import com.wafflestudio.seminar.common.Seminar404
@@ -102,8 +103,11 @@ class SeminarAdapter(
         val seminarEntity =
             seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
         val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
-        val thisUserSeminar = userEntity.userSeminars.find { it.seminar.id == seminarId }
-        if (thisUserSeminar != null) throw Seminar400("이미 세미나에 ${thisUserSeminar.role}(으)로 참여 중입니다.")
+        var userSeminarEntity = userEntity.userSeminars.find { it.seminar.id == seminarId }
+        if (userSeminarEntity != null) {
+            if (!userSeminarEntity.isActive) throw Seminar400("이전에 드랍한 세미나이므로 다시 참여할 수 없습니다.")
+            throw Seminar400("이미 세미나에 ${userSeminarEntity.role}(으)로 참여 중입니다.")
+        }
 
         if (User.Role.valueOf(joinSeminarRequest.role) == User.Role.PARTICIPANT) {
             if (userEntity.participantProfile == null) throw Seminar403("수강생 신분이 아니므로 세미나에 수강생으로 참여할 수 없습니다.")
@@ -113,7 +117,7 @@ class SeminarAdapter(
             if (userEntity.instructorProfile == null) throw Seminar403("진행자 신분이 아니므로 세미나에 진행자로 참여할 수 없습니다.")
             if (userEntity.getInstructingSeminar() != null) throw Seminar400("이미 진행 중인 세미나가 있으므로, 다른 세미나에 진행자로 참여할 수 없습니다.")
         }
-        val userSeminarEntity = userSeminarRepository.save(
+        userSeminarEntity = userSeminarRepository.save(
             UserSeminarEntity(
                 user = userEntity,
                 seminar = seminarEntity,
@@ -126,5 +130,17 @@ class SeminarAdapter(
         seminarEntity.userSeminars.add(userSeminarEntity)
         userRepository.save(userEntity)
         return seminarRepository.save(seminarEntity).toSeminarResponse()
+    }
+
+    override fun dropSeminar(seminarId: Long, userId: Long): SeminarResponse {
+        val seminarEntity =
+            seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
+        val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
+        val userSeminarEntity =
+            userEntity.userSeminars.find { it.seminar.id == seminarId } ?: throw Seminar200("해당 세미나에 참여하고 있지 않습니다.")
+        if (userSeminarEntity.role == User.Role.INSTRUCTOR) throw Seminar403("해당 세미나의 진행자이므로 세미나를 드랍할 수 없습니다.")
+        userSeminarEntity.isActive = false
+        userSeminarEntity.droppedAt = LocalDateTime.now()
+        return userSeminarRepository.save(userSeminarEntity).seminar.toSeminarResponse()
     }
 }

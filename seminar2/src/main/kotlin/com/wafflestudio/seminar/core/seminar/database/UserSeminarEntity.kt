@@ -20,6 +20,6 @@ class UserSeminarEntity(
     @Enumerated(EnumType.STRING)
     val role: User.Role,
     val joinedAt: LocalDateTime,
-    val droppedAt: LocalDateTime? = null,
+    var droppedAt: LocalDateTime? = null,
     var isActive: Boolean
 ) : BaseTimeEntity() 

@@ -65,4 +65,14 @@ class SeminarController(
     ): SeminarResponse {
         return seminarService.joinSeminar(seminarId = seminar_id, userId = userId, joinSeminarRequest)
     }
+
+    @Authenticated
+    @DeleteMapping("/seminar/{seminar_id}/user")
+    fun dropSeminar(
+        @RequestHeader("Authorization") authHeader: String,
+        @PathVariable seminar_id: Long,
+        @UserContext userId: Long
+    ): SeminarResponse {
+        return seminarService.dropSeminar(seminarId = seminar_id, userId = userId)
+    }
 }
