@@ -35,7 +35,7 @@ class AuthTokenServiceImpl(
             .setExpiration(expiredAt)
             .signWith(signingKey)
             .compact()
-        return AuthToken(resultToken)
+        return AuthToken(tokenPrefix + resultToken)
     }
 
     override fun verifyToken(authToken: String): Boolean {
@@ -48,12 +48,16 @@ class AuthTokenServiceImpl(
     }
 
     override fun getCurrentUserId(authToken: String): Long {
-        return parse(authToken).body["userId"] as? Long
+        val userId = parse(authToken).body["userId"] as? Int
             ?: throw AuthException("잘못된 아이디에 대한 토큰입니다")
+        return userId.toLong()
     }
 
     private fun parse(authToken: String): Jws<Claims> {
         val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
-        return Jwts.parserBuilder().build().parseClaimsJws(prefixRemoved)
+        return Jwts.parserBuilder()
+            .setSigningKey(signingKey)
+            .build()
+            .parseClaimsJws(prefixRemoved)
     }
 }

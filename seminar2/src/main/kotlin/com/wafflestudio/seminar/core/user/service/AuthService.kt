@@ -6,17 +6,18 @@ import com.wafflestudio.seminar.core.user.api.request.LogInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
+import com.wafflestudio.seminar.core.user.database.UserRepositorySupport
 import com.wafflestudio.seminar.core.user.domain.User
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import javax.transaction.Transactional
 
 interface AuthService {
     fun signUp(request: SignUpRequest): AuthToken
     fun logIn(request: LogInRequest): AuthToken
-    fun getMe(request: AuthToken): User
+    fun getMe(userId: Long): User
 }
 
 @Service
@@ -24,13 +25,15 @@ class AuthServiceImpl(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
     private val authTokenService: AuthTokenService,
+    private val userRepositorySupport: UserRepositorySupport,
 ) : AuthService {
+    
+    @Transactional
     override fun signUp(request: SignUpRequest): AuthToken {
         val user = UserEntity(
             email = request.email,
             username = request.username,
             password = passwordEncoder.encode(request.password),
-            role = request.role,
         )
         try {
             userRepository.save(user)
@@ -40,20 +43,20 @@ class AuthServiceImpl(
         }
     }
 
+    @Transactional
     override fun logIn(request: LogInRequest): AuthToken {
-        try {
-            val user = userRepository.findByEmail(request.email)
-            if (!passwordEncoder.matches(request.password, user.password)) {
-                throw AuthException("비밀번호가 틀렸습니다")
-            }
-            return authTokenService.generateTokenByUserId(user.id)
-        } catch (e: EmptyResultDataAccessException) {
-            throw Seminar404(request.email + "은(는) 없는 이메일입니다")
+        val user = userRepository.findByEmail(request.email)
+            ?: throw Seminar404(request.email + "은(는) 없는 이메일입니다")
+        if (!passwordEncoder.matches(request.password, user.password)) {
+            throw AuthException("비밀번호가 틀렸습니다")
         }
+        userRepositorySupport.lastLogInTime(user.id)
+        return authTokenService.generateTokenByUserId(user.id)
+
     }
 
-    override fun getMe(request: AuthToken): User {
-        val userId = authTokenService.getCurrentUserId(request.accessToken)
+    @Transactional
+    override fun getMe(userId: Long): User {
         return userRepository.findByIdOrNull(userId)?.toUser()
             ?: throw AuthException("잘못된 유저에 대한 토큰입니다")
     }

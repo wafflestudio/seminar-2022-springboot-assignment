@@ -17,11 +17,11 @@ abstract class BaseTimeEntity {
     
     @CreatedDate
     @Column(columnDefinition = "datetime(6) default '1999-01-01'", updatable = false)
-    var createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime = LocalDateTime.now()
 
     @LastModifiedDate
     @Column(columnDefinition = "datetime(6) default '1999-01-01'")
-    var modifiedAt: LocalDateTime? = null
+    var modifiedAt: LocalDateTime = LocalDateTime.now()
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

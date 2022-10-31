@@ -13,20 +13,25 @@ data class UserEntity(
     val username: String,
     @Column(name = "password", nullable = false)
     val password: String,
-    @Column(name = "role", nullable = false)
-    @Enumerated(EnumType.STRING)
-    val role: User.Role,
+    @OneToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "participant_id")
+    val participant: ParticipantProfileEntity? = null,
+    @OneToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "instructor_id")
+    val instructor: InstructorProfileEntity? = null,
 ) : BaseTimeEntity() {
     
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     private val seminars: MutableSet<UserSeminarEntity> = mutableSetOf()
     
     fun toUser(): User {
         return User(
             id = id,
-            username = username,
             email = email,
-            role = role,
+            username = username,
+            password = password,
+            lastLogin = modifiedAt,
+            dateJoined = createdAt,
         )
     }
 }

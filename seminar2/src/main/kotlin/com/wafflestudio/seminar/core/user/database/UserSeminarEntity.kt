@@ -9,10 +9,10 @@ import javax.persistence.*
 @Entity
 @Table(name = "UserSeminar")
 data class UserSeminarEntity(
-    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     val user: UserEntity,
-    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seminar_id")
     val seminar: SeminarEntity,
     @Column(name = "role")
