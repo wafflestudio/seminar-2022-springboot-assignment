@@ -79,7 +79,7 @@ class UserServiceImpl(
             throw Seminar409("You have participant profile already")
         }
         val participantProfileEntity =
-            ParticipantProfileEntity(participantRequest.university, participantRequest.isRegisterd)
+            ParticipantProfileEntity(participantRequest.university, participantRequest.isRegistered)
         participantProfileEntity.addUser(userEntity)
         participantProfileRepository.save(participantProfileEntity)
     }
@@ -90,10 +90,15 @@ class UserServiceImpl(
         if (userEntity.instructorProfile == null) {
             throw Seminar403("Cannot create seminar. You don't have instructor profile")
         }
+        for (userSeminar in userEntity.userSeminars) {
+            if (userSeminar.role == Role.INSTRUCTOR) {
+                throw Seminar400("You are already instructing a seminar")
+            }
+        }
         val seminarEntity = SeminarEntity(
-            createSeminarRequest.name,
-            createSeminarRequest.capacity,
-            createSeminarRequest.count,
+            createSeminarRequest.name!!,
+            createSeminarRequest.capacity!!,
+            createSeminarRequest.count!!,
             LocalTime.parse(createSeminarRequest.time),
             createSeminarRequest.online,
             userId
