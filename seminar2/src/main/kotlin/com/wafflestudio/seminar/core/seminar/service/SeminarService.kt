@@ -19,6 +19,8 @@ import java.util.*
 interface SeminarService {
     fun makeSeminar(userId: Long, req: SeminarDto.SeminarRequest): SeminarDto.SeminarProfileResponse
     fun updateSeminar(userId: Long, req: SeminarDto.UpdateSeminarRequest): SeminarDto.SeminarProfileResponse
+    fun getSeminarById(seminarId: Long): SeminarDto.SeminarProfileResponse
+    fun getSeminars(name: String?, earliest: String?): MutableList<SeminarDto.SeminarProfileSimplifiedResponse>
 }
 
 @Service
@@ -86,6 +88,23 @@ class SeminarServiceImpl(
         seminarEntity.modifiedAt = LocalDateTime.now()
         val seminarId = seminarRepository.save(seminarEntity).id
         return seminarRepositorySupport.getSeminarById(seminarId)
+    }
+
+    @Transactional
+    override fun getSeminarById(seminarId: Long): SeminarDto.SeminarProfileResponse {
+        if (!seminarRepository.existsById(seminarId)) {
+            throw Seminar404("This seminar doesn't exist.")
+        }
+        return seminarRepositorySupport.getSeminarById(seminarId)
+    }
+
+    @Transactional
+    override fun getSeminars(
+        name: String?,
+        earliest: String?
+    ): MutableList<SeminarDto.SeminarProfileSimplifiedResponse> {
+        val doEarliest: Boolean = earliest.equals("earliest")
+        return seminarRepositorySupport.getSeminars(name, doEarliest)
     }
 
 }

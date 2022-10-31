@@ -45,6 +45,15 @@ class SeminarDto {
         var instructors: MutableList<UserDto.SeminarInstructorProfileResponse>? = null
         var participants: MutableList<UserDto.SeminarParticipantProfileResponse>? = null
     }
+
+    data class SeminarProfileSimplifiedResponse @QueryProjection constructor(
+        val id: Long,
+        val name: String,
+        var instructors: MutableList<UserDto.SeminarInstructorProfileResponse>?,
+        val participantCount: Long
+    ) {
+        constructor(id: Long, name: String, participantCount: Long) : this(id, name, null, participantCount)
+    }
     
     data class SeminarResponse @QueryProjection constructor(
         val id: Long,

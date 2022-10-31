@@ -17,6 +17,7 @@ interface SeminarRepository : JpaRepository<SeminarEntity, Long> {
 
 interface SeminarRepositorySupport {
     fun getSeminarById(seminarId: Long): SeminarDto.SeminarProfileResponse
+    fun getSeminars(name: String?, doEarliest: Boolean): MutableList<SeminarDto.SeminarProfileSimplifiedResponse>
 }
 
 @Component
@@ -87,6 +88,59 @@ class SeminarRepositorySupportImpl(
         return result
     }
 
+    override fun getSeminars(
+        name: String?,
+        doEarliest: Boolean
+    ): MutableList<SeminarDto.SeminarProfileSimplifiedResponse> {
 
+        val result = queryFactory
+            .select(
+                Projections.constructor(
+                    SeminarDto.SeminarProfileSimplifiedResponse::class.java,
+                    seminarEntity.id,
+                    seminarEntity.name,
+                    seminarEntity.participantCount
+                )
+            )
+            .from(seminarEntity)
+            .where(
+                when {
+                    name.isNullOrBlank() -> seminarEntity.isNotNull
+                    else -> seminarEntity.name.eq(name)
+                } as Predicate?
+            )
+            .groupBy(seminarEntity.id)
+            .orderBy(
+                when {
+                    doEarliest -> seminarEntity.createdAt.asc()
+                    else -> seminarEntity.createdAt.desc()
+                }
+            )
+            .fetch()
+
+
+        result.forEach { response ->
+            response.instructors = queryFactory
+                .select(
+                    Projections.constructor(
+                        UserDto.SeminarInstructorProfileResponse::class.java,
+                        userSeminarEntity.userEntity.id,
+                        userSeminarEntity.userEntity.username,
+                        userSeminarEntity.userEntity.email,
+                        userSeminarEntity.joinedAt
+                    )
+                )
+                .from(seminarEntity)
+                .rightJoin(userSeminarEntity)
+                .on(
+                    userSeminarEntity.`in`(seminarEntity.userSeminarEntities),
+                    userSeminarEntity.role.eq("INSTRUCTOR")
+                )
+                .where(seminarEntity.id.eq(response.id))
+                .fetch()
+        }
+
+        return result
+    }
 
 }

@@ -30,4 +30,21 @@ class SeminarController(
         @UserContext userId: Long
     ): ResponseEntity<SeminarDto.SeminarProfileResponse> =
         ResponseEntity(seminarService.updateSeminar(userId, req), HttpStatus.OK)
+
+    @Authenticated
+    @GetMapping("/api/v1/seminar/{seminar_id}/")
+    fun getSeminarById(
+        @PathVariable seminar_id: Long,
+        @RequestHeader(value = "Authorization") authorization: String,
+    ): ResponseEntity<SeminarDto.SeminarProfileResponse> =
+        ResponseEntity(seminarService.getSeminarById(seminar_id), HttpStatus.OK)
+
+    @Authenticated
+    @GetMapping("/api/v1/seminar/")
+    fun getSeminars(
+        @RequestHeader(value = "Authorization") authorization: String,
+        @RequestParam(name = "name", required = false) name: String?,
+        @RequestParam(name = "order", required = false) earliest: String?
+    ): ResponseEntity<MutableList<SeminarDto.SeminarProfileSimplifiedResponse>> =
+        ResponseEntity(seminarService.getSeminars(name, earliest), HttpStatus.OK)
 }
