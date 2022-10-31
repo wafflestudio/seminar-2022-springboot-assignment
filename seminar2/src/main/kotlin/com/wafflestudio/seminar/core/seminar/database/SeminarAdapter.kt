@@ -6,14 +6,17 @@ import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.EditSeminarRequest
 import com.wafflestudio.seminar.core.seminar.domain.CreateSeminarResponse
+import com.wafflestudio.seminar.core.seminar.domain.EditSeminarResponse
 import com.wafflestudio.seminar.core.seminar.domain.SeminarPort
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.domain.Instructor
+import com.wafflestudio.seminar.core.user.domain.Participant
 import com.wafflestudio.seminar.core.user.domain.User
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.format.DateTimeParseException
 
 @Component
 class SeminarAdapter(
@@ -22,6 +25,11 @@ class SeminarAdapter(
     private val userSeminarRepository: UserSeminarRepository
 ) : SeminarPort {
     override fun createSeminar(userId: Long, createSeminarRequest: CreateSeminarRequest) = createSeminarRequest.run {
+        try {
+            LocalTime.parse(time)
+        } catch (e: DateTimeParseException) {
+            throw Seminar400("세미나 시간 입력 형식이 잘못되었습니다.")
+        }
         val userEntity = userRepository.findByIdOrNull(userId)
         userEntity?.instructorProfile ?: throw Seminar403("세미나 진행자만 세미나를 만들 수 있습니다.")
         userEntity.userSeminars.forEach {
@@ -29,6 +37,7 @@ class SeminarAdapter(
                 throw Seminar400("이미 진행 중인 세미니가 있으므로 새로운 세미나를 만들 수 없습니다.")
             }
         }
+
         val seminarEntity = SeminarEntity(
             name = name!!,
             capacity = capacity!!,
@@ -70,12 +79,52 @@ class SeminarAdapter(
     }
 
     override fun editSeminar(userId: Long, editSeminarRequest: EditSeminarRequest) = editSeminarRequest.run {
+        if (time != null) {
+            try {
+                LocalTime.parse(time)
+            } catch (e: DateTimeParseException) {
+                throw Seminar400("세미나 시간 입력 형식이 잘못되었습니다.")
+            }
+        }
         val seminarEntity =
             seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
         if (userId != seminarEntity.creatorId) {
             throw Seminar403("세미나를 만든 사람이 아니면 수정을 할 수 없습니다.")
         }
 
-        TODO("Not yet implemented")
+        val instructors: MutableList<Instructor> = mutableListOf()
+        val participants: MutableList<Participant> = mutableListOf()
+        seminarEntity.userSeminars.forEach {
+            it.user.run {
+                if (it.role == User.Role.INSTRUCTOR) instructors.add(
+                    Instructor(
+                        id = id,
+                        username = username,
+                        email = email,
+                        joinedAt = it.joinedAt
+                    )
+                ) else participants.add(
+                    Participant(
+                        id = id,
+                        username = username,
+                        email = email,
+                        joinedAt = it.joinedAt,
+                        isActive = it.isActive,
+                        droppedAt = it.droppedAt
+                    )
+                )
+            }
+        }
+
+        EditSeminarResponse(
+            id = seminarEntity.id,
+            name = name ?: seminarEntity.name,
+            capacity = capacity ?: seminarEntity.capacity,
+            count = count ?: seminarEntity.count,
+            time = if (time != null) LocalTime.parse(time) else seminarEntity.time,
+            online = online ?: seminarEntity.online,
+            instructors = instructors,
+            participants = participants
+        )
     }
 }
