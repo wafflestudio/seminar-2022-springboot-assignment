@@ -39,8 +39,8 @@ class SeminarController(
     @GetMapping("/")
     fun getAllSeminar(
         @UserContext userId: Long,
-        @RequestParam("name") name: String,
-        @RequestParam("order") order: String,
+        @RequestParam("name", defaultValue = "", required = false) name: String,
+        @RequestParam("order", defaultValue = "", required = false) order: String,
     ) = seminarService.getAllSeminar(userId, name, order)
     
     @Authenticated

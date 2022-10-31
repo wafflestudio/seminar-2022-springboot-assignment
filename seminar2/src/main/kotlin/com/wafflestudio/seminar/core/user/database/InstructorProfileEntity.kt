@@ -28,7 +28,6 @@ data class InstructorProfileEntity(
             year = year,
             instructingSeminars = user.seminars.filter { it.role == User.Role.INSTRUCTOR }
                 .map { it.toInstructingSeminar() }
-                .toMutableSet(),
         )
     }
 

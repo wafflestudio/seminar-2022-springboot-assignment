@@ -22,6 +22,7 @@ interface SeminarService {
     fun editSeminar(userId: Long, seminarRequest: EditSeminarRequest): Seminar
     fun getSeminar(userId: Long, seminarId: Long): Seminar
     fun getAllSeminar(userId: Long, name: String, order: String): List<Seminar>
+
     fun addSeminar(userId: Long, seminarId: Long, roleRequest: RoleRequest): Seminar
     fun dropSeminar(userId: Long, seminarId: Long): User
 }
@@ -96,15 +97,16 @@ class SeminarServiceImpl(
         userRepository.findByIdOrNull(userId)?.toUser()
             ?: throw Seminar404("존재하지 않는 userId 입니다")
 
-        val seminars = seminarRepository.findAll()
+        var seminars = seminarRepository.findAll()
             .filter { it.name.contains(name) }
             .sortedBy { it.createdAt }
             .map { it.toSeminar() }
             .reversed()
         
         if (order == "earliest") {
-            return seminars.reversed()
+            seminars = seminars.reversed()
         }
+
         return seminars
     }
 
@@ -126,7 +128,7 @@ class SeminarServiceImpl(
         if (roleRequest.role == User.Role.INSTRUCTOR) {
             user.instructor ?: throw Seminar403("진행 자격이 없습니다")
             if (seminarRepository.findByHostId(userId) != null) {
-                throw Seminar400("이미 세미나를 진행하고 있어요")
+                throw Seminar400("이미 세미나를 진행하고 있습니다")
             }
         }
 
@@ -135,6 +137,10 @@ class SeminarServiceImpl(
             if (!user.participant!!.isRegistered) {
                 throw Seminar403("활성회원이 아닙니다")
             }
+        }
+
+        if (seminar.capacity <= seminar.toSeminar().participantCount) {
+            throw Seminar400("세미나 정원이 가득 찼습니다")
         }
 
         val userSeminar = UserSeminarEntity(
