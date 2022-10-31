@@ -10,8 +10,10 @@ spring:
       hibernate:
         show_sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
       
 auth.jwt:
-  jwtSecret: SEMINAR_SECRET_KEY
-  # TODO 누락된 정보를 추가해 주세요.
+  issuer: Authorization
+  jwtSecret: Eom_Seong_Ho_Secret_Key_Eom_Seong_Ho_Secret_Key_Eom_Seong_Ho_Secret_Key_Eom_Seong_Ho_Secret_Key
+  jwtExpiration: 600
+  # TODO 누락된 정보 를 추가해 주세요. 

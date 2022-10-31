@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "auth.jwt.jwtExpiration",
+      "type": "java.lang.String",
+      "description": "Description for auth.jwt.jwtExpiration."
+  }
+] }
