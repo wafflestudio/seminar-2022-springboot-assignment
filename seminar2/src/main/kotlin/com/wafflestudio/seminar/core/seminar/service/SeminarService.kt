@@ -1,0 +1,172 @@
+package com.wafflestudio.seminar.core.seminar.service
+
+import com.wafflestudio.seminar.common.ErrorCode
+import com.wafflestudio.seminar.common.SeminarException
+import com.wafflestudio.seminar.core.UserSeminar.domain.UserSeminarEntity
+import com.wafflestudio.seminar.core.UserSeminar.repository.UserSeminarRepository
+import com.wafflestudio.seminar.core.seminar.api.request.RegRequest
+import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
+import com.wafflestudio.seminar.core.seminar.domain.SeminarDTO
+import com.wafflestudio.seminar.core.seminar.domain.SeminarEntity
+import com.wafflestudio.seminar.core.seminar.domain.SeminarGroupByDTO
+import com.wafflestudio.seminar.core.seminar.repository.SeminarRepository
+import com.wafflestudio.seminar.core.user.domain.enums.RoleType.*
+import com.wafflestudio.seminar.core.user.repository.UserRepository
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+
+interface SeminarService {
+    fun makeSeminar(userId: Long, request: SeminarRequest): SeminarDTO
+    fun editSeminar(userId: Long, request: SeminarDTO): SeminarDTO
+    
+    fun getSeminar(name: String?, order: String?): Any?
+    fun findSeminarById(seminarId: Long) : SeminarDTO
+    
+    fun regSeminar(userId: Long, seminarId: Long, request:RegRequest): Any?
+    fun dropSeminar(userId: Long, seminarId: Long): SeminarDTO
+}
+
+@Service
+class SeminarServiceImpl(
+    private val userRepository: UserRepository,
+    private val seminarRepository: SeminarRepository,
+    private val userSeminarRepository: UserSeminarRepository
+): SeminarService {
+    
+    override fun makeSeminar(userId: Long, request: SeminarRequest): SeminarDTO {
+        val entity = userRepository.findById(userId).get()
+        if(entity.role != INSTRUCTOR)
+            throw SeminarException(ErrorCode.MAKE_SEMINAR_FORBIDDEN)
+        if(userSeminarRepository.checkInstructingSeminars(entity.id) > 0)
+            throw SeminarException(ErrorCode.ALREADY_INSTRUCTED)
+        
+        // 진행자 자격 여부 확인 완료
+        var newSeminar: SeminarEntity = request.run {
+            SeminarEntity(
+                name= this.name!!,
+                instructor= entity.username,
+                capacity= this.capacity!!,
+                count= this.count!!,
+                time= this.time!!,
+                online= this.online?: true
+            ) }
+        newSeminar.userSeminarList =
+            mutableListOf(UserSeminarEntity(user=entity, seminar=newSeminar))
+        
+        val seminarId = seminarRepository.save(newSeminar).id
+        return seminarRepository.findSeminarById(seminarId)
+    }
+
+    
+    override fun editSeminar(userId: Long, request: SeminarDTO): SeminarDTO {
+        // request body에 seminar_id 값이 들어오지 않을 수도 있음
+        // 현재 이 API를 요청한 유저가 instructor인지 확인
+        val instructor = userRepository.findById(userId).get()
+        if (instructor.role != INSTRUCTOR) throw SeminarException(ErrorCode.EDIT_SEMINAR_FORBIDDEN)
+        // 이 instructor가 가르치고 있는 세미나 확인
+        var instructingSeminar = userSeminarRepository.findByUser_Id(instructor.id)
+            ?.find { it.role == INSTRUCTOR && it.isActive }
+            ?.seminar 
+            // null -> 수정할 수 있는 세미나가 존재하지 않음. 403 에러 처리
+            ?: throw SeminarException(ErrorCode.EDIT_SEMINAR_FORBIDDEN)
+        
+        // 만약 request에 id (=seminar_id) 값이 들어왔다면, 유저가 가르치는 세미나의 id와 일치하는지 확인
+        if (request.id != null && instructingSeminar.id != request.id) {
+            throw SeminarException(ErrorCode.EDIT_SEMINAR_FORBIDDEN)
+        } else {
+            if(request.name != null) instructingSeminar.name = request.name!!
+            if(request.capacity != null) instructingSeminar.capacity = request.capacity!!
+            if(request.count != null) instructingSeminar.count = request.count!!
+            if(request.time != null) instructingSeminar.time = request.time!!
+            if(request.online != null) instructingSeminar.online = request.online!!
+        }
+        
+        // 수정된 버전, repository에다가 저장
+        seminarRepository.save(instructingSeminar)
+        return seminarRepository.findSeminarById(instructingSeminar.id)
+    }
+    
+
+    // 세미나명에 name이 포함된 세미나가 전혀 없다면 빈 리스트를 반환
+    override fun getSeminar(name: String?, order: String?): List<SeminarGroupByDTO> =
+        seminarRepository.findSeminarByName(name, order)!!
+        
+
+    override fun findSeminarById(seminarId: Long): SeminarDTO {
+        if(!seminarRepository.existsById(seminarId))
+            throw SeminarException(ErrorCode.SEMINAR_NOT_FOUND)
+        else
+            return seminarRepository.findSeminarById(seminarId)
+    }
+    
+    
+    override fun regSeminar(userId: Long, seminarId: Long, request: RegRequest): Any? {
+        // 세미나 정보가 존재하는지 확인 -> 없으면 403 에러
+        var seminar = seminarRepository.findByIdOrNull(seminarId)?:
+            throw SeminarException(ErrorCode.SEMINAR_NOT_FOUND)
+        // 유저 정보 찾기
+        var user = userRepository.findById(userId).get()
+         
+        // 기존 수강 이력 존재? - 중도 포기 or 현재 참여중
+        val oldReg = userSeminarRepository.findByUser_IdAndSeminar_Id(user.id, seminarId)?.also {
+            if (it.role == PARTICIPANT && !it.isActive) // 이전에 중도포기했던 세미나
+                throw SeminarException(ErrorCode.ALREADY_DROPPED)
+            else
+                throw SeminarException(ErrorCode.ALREADY_PARTICIPATE)
+        } // -> null이면 해당 강좌를 이전에 수강한 이력이 없는 거니까 상관없음. 그게 맞는 거임.
+        
+        // 세미나 참여 & 세미나 함께 진행
+        var newReg = UserSeminarEntity(user, seminar)
+        
+        when (request.role) {
+            PARTICIPANT -> {
+                // 정말로 이 유저가 참여자인지 확인 -> ParticipantProfile을 가지고 있는지
+                if(user.participantProfile == null)
+                    throw SeminarException(ErrorCode.INVALID_REQUEST)
+                // 활성회원 여부 확인
+                if (user.participantProfile!!.isRegistered == false)
+                    throw SeminarException(ErrorCode.NOT_REGISTERED)
+                // 세미나 정원 확인
+                if(seminarRepository.checkCapacity(seminarId) >= seminar.capacity)
+                    throw SeminarException(ErrorCode.FULL_CAPACITY)
+                
+                // 최종적으로 세미나 등록
+                newReg.role = PARTICIPANT
+            }
+            INSTRUCTOR -> {
+                // 정말로 진행자 자격이 있는지 확인
+                if(user.instructorProfile == null)
+                    throw SeminarException(ErrorCode.INVALID_REQUEST)
+                // 담당하고 있는 세미나가 존재하는지 확인
+                if(userSeminarRepository.checkInstructingSeminars(user.id) > 0)
+                    throw SeminarException(ErrorCode.ALREADY_INSTRUCTED)
+                
+                // 없다면 세미나 함께 진행하도록 등록
+                newReg.role = INSTRUCTOR
+            }
+        }
+        userSeminarRepository.save(newReg)
+        
+        return seminarRepository.findSeminarById(seminarId)
+    }
+    
+    override fun dropSeminar(userId: Long, seminarId: Long): SeminarDTO {
+        // 해당 세미나가 존재하지 않음 -> 403 에러
+        if(!seminarRepository.existsById(seminarId))
+            throw SeminarException(ErrorCode.SEMINAR_NOT_FOUND)
+        
+        // 드랍하려는 유저
+        var user = userRepository.findById(userId).get()
+        var entity = userSeminarRepository.findByUser_IdAndSeminar_Id(user.id, seminarId)!!
+        // 그 유저가 만약 드랍하려고 하는 세미나의 진행자라면
+        if(entity.role == INSTRUCTOR)
+            throw SeminarException(ErrorCode.CANNOT_DROP)
+        // 드랍처리
+        entity.isActive = false
+        entity.droppedAt = LocalDateTime.now()
+        userSeminarRepository.save(entity)
+        
+        return seminarRepository.findSeminarById(seminarId)
+    }
+}
