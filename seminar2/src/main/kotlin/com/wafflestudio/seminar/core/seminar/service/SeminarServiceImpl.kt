@@ -46,7 +46,6 @@ class SeminarServiceImpl(
         )
         seminarRepository.save(newSeminar)
         val newUserSeminarRelation = UserSeminarEntity(user = instructor, isInstructor = true, seminar = newSeminar)
-        newUserSeminarRelation.modifiedAt = null
         userSeminarRepository.save(newUserSeminarRelation)
         return newSeminar.toDTO(
             mutableListOf(instructor.toInstructorDTO(newUserSeminarRelation.createdAt!!)),
@@ -138,7 +137,7 @@ class SeminarServiceImpl(
     override fun applySeminar(authToken: String, seminarId: Long, applySeminarRequest: ApplySeminarRequest): Seminar {
         val userId = authTokenService.getCurrentUserId(authToken)
         val user = userRepository.findByIdOrNull(userId)
-        if (applySeminarRequest.role == null || (applySeminarRequest.role != "instructor" && applySeminarRequest.role != "participant")) {
+        if (applySeminarRequest.role == null || (applySeminarRequest.role.lowercase() != "instructor" && applySeminarRequest.role.lowercase() != "participant")) {
             throw Seminar400("올바른 role을 입력해주세요.")
         }
         val seminar = seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("세미나를 찾을 수 없습니다.")

@@ -14,7 +14,7 @@ class SeminarSupportImpl(
     override fun findSeminarByName(seminarName: String): List<SeminarEntity> {
         return queryFactory
             .selectFrom(seminarEntity)
-            .where(seminarEntity.seminarName.eq(seminarName))
+            .where(seminarEntity.seminarName.contains(seminarName))
             .fetch()
     }
 

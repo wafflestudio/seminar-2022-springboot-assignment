@@ -20,12 +20,9 @@ class UserSeminarEntity(
     
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     @JoinColumn(name = "seminar_id")
-    val seminar: SeminarEntity
-    ): BaseTimeEntity() {
+    val seminar: SeminarEntity,
+
+    override var modifiedAt: LocalDateTime? = null
     
-    override var modifiedAt: LocalDateTime?
-        get() = super.modifiedAt
-        set(value) {
-            modifiedAt = value
-        }
+    ): BaseTimeEntity() {
 }

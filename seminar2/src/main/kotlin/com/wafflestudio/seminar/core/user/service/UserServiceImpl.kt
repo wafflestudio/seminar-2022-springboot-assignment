@@ -20,7 +20,7 @@ class UserServiceImpl(
     private val participantProfileRepository: ParticipantProfileRepository,
     private val seminarRepository: SeminarRepository
 ) : UserService {
-    
+
     @LogExecutionTime
     override fun createUser(signUpRequest: SignUpRequest): AuthToken {
         if (signUpRequest.email == null || signUpRequest.username == null || signUpRequest.password == null) {
@@ -63,7 +63,7 @@ class UserServiceImpl(
             return authTokenService.generateTokenByUsername(newUserEntity.email)
         }
     }
-    
+
     @LogExecutionTime
     override fun loginUser(loginRequest: LoginRequest): AuthToken {
         if (loginRequest.email == null || loginRequest.password == null) {
@@ -77,12 +77,12 @@ class UserServiceImpl(
         userRepository.save(user)
         return authTokenService.generateTokenByUsername(user.email)
     }
-    
+
     @LogExecutionTime
     override fun getUser(authToken: String): String {
         return "인증에 성공하였습니다."
     }
-    
+
     @LogExecutionTime
     override fun getProfile(userId: Long): User {
         val userInfo = userRepository.findByIdOrNull(userId) ?: throw User404("존재하지 않는 유저입니다.")
@@ -98,7 +98,7 @@ class UserServiceImpl(
             return userInfo.toDTO(seminars, null)
         }
     }
-    
+
     @LogExecutionTime
     override fun modifyProfile(authToken: String, modifyRequest: ModifyRequest): User {
         val userId = authTokenService.getCurrentUserId(authToken)
@@ -143,12 +143,14 @@ class UserServiceImpl(
         if (user!!.participantProfileEntity != null) {
             throw User400("이미 참여자로 등록되어있습니다.")
         }
-        if (registerParticipantRequest.toBeParticipant) {
-            val newParticipantProfile = ParticipantProfileEntity(university = registerParticipantRequest.university, isRegistered = registerParticipantRequest.isRegistered)
-            participantProfileRepository.save(newParticipantProfile)
-            user.participantProfileEntity = newParticipantProfile
-            userRepository.save(user)
-        }
+        val newParticipantProfile = ParticipantProfileEntity(
+            university = registerParticipantRequest.university,
+            isRegistered = registerParticipantRequest.isRegistered
+        )
+        participantProfileRepository.save(newParticipantProfile)
+        user.participantProfileEntity = newParticipantProfile
+        userRepository.save(user)
+        
         val seminars = seminarRepository.findSeminarsByParticipantId(userId)
         val instructingSeminars = seminarRepository.findSeminarsByInstructorId(userId)
         return user.toDTO(seminars, instructingSeminars)
