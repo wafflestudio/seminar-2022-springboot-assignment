@@ -4,5 +4,5 @@ data class Participant(
     val id: Long,
     val university: String,
     val isRegistered: Boolean,
-    val seminars: MutableSet<ParticipantSeminar>,
+    val seminars: List<ParticipantSeminar>,
 )

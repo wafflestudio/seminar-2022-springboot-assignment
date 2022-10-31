@@ -28,7 +28,6 @@ data class ParticipantProfileEntity(
             isRegistered = isRegistered,
             seminars = user.seminars.filter { it.role == User.Role.PARTICIPANT }
                 .map { it.toParticipantSeminar() }
-                .toMutableSet(),
         )
     }
 

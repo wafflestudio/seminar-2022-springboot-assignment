@@ -10,7 +10,7 @@ data class Seminar(
     val count: Int,
     val time: LocalTime,
     val online: Boolean,
-    val participants: MutableSet<Participant>,
-    val instructors: MutableSet<Instructor>,
+    val participants: List<Participant>,
+    val instructors: List<Instructor>,
     val participantCount: Int,
 )

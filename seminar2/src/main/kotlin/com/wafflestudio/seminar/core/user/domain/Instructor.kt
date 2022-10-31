@@ -4,5 +4,5 @@ data class Instructor(
     val id: Long,
     val company: String,
     val year: Int?,
-    val instructingSeminars: MutableSet<InstructingSeminar>,
+    val instructingSeminars: List<InstructingSeminar>,
 )

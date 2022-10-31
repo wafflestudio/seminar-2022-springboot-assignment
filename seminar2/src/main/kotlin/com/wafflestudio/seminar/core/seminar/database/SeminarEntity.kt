@@ -27,7 +27,7 @@ data class SeminarEntity(
     @Column(name = "hostId", unique = true)
     val hostId: Long,
     @OneToMany(mappedBy = "seminar", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    val users: MutableSet<UserSeminarEntity> = mutableSetOf()
+    val users: MutableList<UserSeminarEntity> = mutableListOf()
 ) : BaseTimeEntity() {
 
     fun toSeminar(): Seminar {
@@ -40,11 +40,9 @@ data class SeminarEntity(
             online = online,
             hostId = hostId,
             participants = users.filter { it.role == User.Role.PARTICIPANT }
-                .map { it.toParticipant() }
-                .toMutableSet(),
+                .map { it.toParticipant() },
             instructors = users.filter { it.role == User.Role.INSTRUCTOR }
-                .map { it.toInstructor() }
-                .toMutableSet(),
+                .map { it.toInstructor() },
             participantCount = users
                 .filter { it.role == User.Role.PARTICIPANT && it.isActive }
                 .size,

@@ -24,7 +24,7 @@ data class UserEntity(
     @JoinColumn(name = "instructor_id")
     var instructor: InstructorProfileEntity? = null,
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    val seminars: MutableSet<UserSeminarEntity> = mutableSetOf()
+    val seminars: MutableList<UserSeminarEntity> = mutableListOf()
 ) : BaseTimeEntity() {
     
     fun toUser(): User {
