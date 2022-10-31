@@ -7,6 +7,7 @@ import com.wafflestudio.seminar.core.seminar.domain.Seminar
 import com.wafflestudio.seminar.core.seminar.domain.SeminarForList
 import com.wafflestudio.seminar.core.user.database.*
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -103,11 +104,11 @@ class SeminarServiceImpl(
     }
     
     @LogExecutionTime
-    override fun getAllSeminar(seminarName: String?, order: String?): List<SeminarForList> {
+    override fun getAllSeminar(seminarName: String?, order: String?, pageable: Pageable): List<SeminarForList> {
         var seminars = if (seminarName != null) {
             seminarRepository.findSeminarByName(seminarName)
         } else {
-            seminarRepository.findAll()
+            seminarRepository.findAll(pageable)
         }
         if (order == "earliest") {
             seminars = seminars.sortedByDescending { it.createdAt }
