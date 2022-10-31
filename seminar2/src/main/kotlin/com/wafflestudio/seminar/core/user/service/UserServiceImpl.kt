@@ -111,11 +111,21 @@ class UserServiceImpl(
         if (seminarEntity.creatorId != userId) {
             throw Seminar403("You are not the creator of this seminar")
         }
-        seminarEntity.name = editSeminarRequest.name
-        seminarEntity.capacity = editSeminarRequest.capacity
-        seminarEntity.count = editSeminarRequest.count
-        seminarEntity.time = LocalTime.parse(editSeminarRequest.time)
-        seminarEntity.online = editSeminarRequest.online
+        if (editSeminarRequest.name != null) {
+            seminarEntity.name = editSeminarRequest.name
+        }
+        if (editSeminarRequest.capacity != null) {
+            seminarEntity.capacity = editSeminarRequest.capacity
+        }
+        if (editSeminarRequest.count != null) {
+            seminarEntity.count = editSeminarRequest.count
+        }
+        if (editSeminarRequest.time != null) {
+            seminarEntity.time = LocalTime.parse(editSeminarRequest.time)
+        }
+        if (editSeminarRequest.online != null) {
+            seminarEntity.online = editSeminarRequest.online
+        }
         return seminarEntity.toDTO()
     }
 
@@ -139,7 +149,8 @@ class UserServiceImpl(
     override fun joinSeminar(userId: Long, seminarId: Long, role: Role): Seminar {
         val seminarEntity = seminarRepository.findByIdOrNull(seminarId)
             ?: throw Seminar404("No existing seminar with id: ${seminarId}")
-        val userEntity = userRepository.findById(userId).get()
+        val userEntity =
+            userRepository.findByIdOrNull(userId) ?: throw throw Seminar404("No existing user with id: ${userId}")
         when (role) {
             Role.PARTICIPANT -> {
                 if (userEntity.participantProfile == null) {
@@ -152,6 +163,7 @@ class UserServiceImpl(
                     throw Seminar400("Sorry, this seminar is full")
                 }
             }
+
             Role.INSTRUCTOR -> {
                 if (userEntity.instructorProfile == null) {
                     throw Seminar403("You don't have instructor profile")
