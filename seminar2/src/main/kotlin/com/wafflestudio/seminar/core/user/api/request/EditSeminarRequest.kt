@@ -7,7 +7,7 @@ import javax.validation.constraints.Positive
 
 data class EditSeminarRequest(
     @field:NotNull(message = "id is required")
-    val id: Long,
+    val id: Long?,
     val name: String?,
     @field:Positive(message = "capacity should be greater than zero")
     val capacity: Int?,
