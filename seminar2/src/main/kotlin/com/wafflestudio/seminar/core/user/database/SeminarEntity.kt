@@ -46,7 +46,7 @@ class SeminarEntity(
                 participants.add(
                     SeminarParticipant(
                         userSeminar.user.id, userSeminar.user.username,
-                        userSeminar.user.email, userSeminar.createdAt, userSeminar.isActive, null
+                        userSeminar.user.email, userSeminar.createdAt, userSeminar.isActive, userSeminar.droppedAt
                     )
                 )
             }

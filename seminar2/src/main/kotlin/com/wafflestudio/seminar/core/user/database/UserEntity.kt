@@ -37,7 +37,7 @@ class UserEntity(
             id = id,
             username = username,
             email = email,
-            lastLogin = null,
+            lastLogin = lastLogin,
             dateJoined = createdAt,
             participant = participantProfile?.toDTO(),
             instructor = instructorProfile?.toDTO()

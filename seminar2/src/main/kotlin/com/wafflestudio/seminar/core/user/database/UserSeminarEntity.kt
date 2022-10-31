@@ -34,7 +34,7 @@ class UserSeminarEntity(
             seminarName = seminar.name,
             joinedAt = createdAt,
             isActive = isActive,
-            droppedAt = null
+            droppedAt = droppedAt
         )
     }
 
