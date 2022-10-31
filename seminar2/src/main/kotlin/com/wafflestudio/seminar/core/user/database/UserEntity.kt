@@ -15,10 +15,10 @@ data class UserEntity(
     val password: String,
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "participant_id")
-    val participant: ParticipantProfileEntity? = null,
+    var participant: ParticipantProfileEntity? = null,
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "instructor_id")
-    val instructor: InstructorProfileEntity? = null,
+    var instructor: InstructorProfileEntity? = null,
 ) : BaseTimeEntity() {
     
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
@@ -32,6 +32,8 @@ data class UserEntity(
             password = password,
             lastLogin = modifiedAt,
             dateJoined = createdAt,
+            participant = participant?.toParticipant(),
+            instructor = instructor?.toInstructor(),
         )
     }
 }

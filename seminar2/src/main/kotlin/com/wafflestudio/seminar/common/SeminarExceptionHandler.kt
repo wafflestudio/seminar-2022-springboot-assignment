@@ -35,6 +35,6 @@ class SeminarExceptionHandler {
     
     @ExceptionHandler(value = [HttpMessageNotReadableException::class])
     fun handle(e: HttpMessageNotReadableException): ResponseEntity<Any> {
-        return ResponseEntity("잘못된 역할입니다", HttpStatus.BAD_REQUEST)
+        return ResponseEntity("잘못된 타입 입력입니다", HttpStatus.BAD_REQUEST)
     }
 }

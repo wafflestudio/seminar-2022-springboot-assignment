@@ -12,6 +12,10 @@ interface UserRepository : JpaRepository<UserEntity, Long> {
     fun findByEmail(email: String): UserEntity?
 }
 
+interface ParticipantRepository : JpaRepository<ParticipantProfileEntity, Long>
+
+interface InstructorRepository : JpaRepository<InstructorProfileEntity, Long>
+
 @Component
 class UserRepositorySupport(
     private val queryFactory: JPAQueryFactory,
@@ -19,14 +23,14 @@ class UserRepositorySupport(
     fun findParticipantById(userId: Long): ParticipantProfileEntity? {
         return queryFactory
             .selectFrom(participantProfileEntity)
-            .where(participantProfileEntity.user.id.eq(userId))
+            .where(participantProfileEntity.id.eq(userId))
             .fetchOne()
     }
 
     fun findInstructorById(userId: Long): InstructorProfileEntity? {
         return queryFactory
             .selectFrom(instructorProfileEntity)
-            .where(instructorProfileEntity.user.id.eq(userId))
+            .where(instructorProfileEntity.id.eq(userId))
             .fetchOne()
     }
     
