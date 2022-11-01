@@ -11,9 +11,9 @@ data class ParticipantProfile(
     companion object {
         fun of(entity: ParticipantEntity) = entity.run {
             ParticipantProfile(
-              id = id,
-              university = university,
-              isRegistered = isRegistered,  
+                id = id,
+                university = university,
+                isRegistered = isRegistered,
             )
         }
     }

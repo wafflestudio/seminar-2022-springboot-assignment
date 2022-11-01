@@ -1,12 +1,8 @@
 package com.wafflestudio.seminar.core.seminar.domain
 
-import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.database.UserEntity
-import com.wafflestudio.seminar.core.user.domain.InstructorProfile
-import com.wafflestudio.seminar.core.user.domain.ParticipantProfile
 import java.time.LocalDateTime
-import java.time.LocalTime
 
 data class SeminarParticipant(
     val id: Long,

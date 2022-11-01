@@ -14,7 +14,7 @@ class InstructorEntity(
     val user: UserEntity,
     var company: String,
     var year: Long?,
-): BaseTimeEntity() {
+) : BaseTimeEntity() {
     fun update(company: String, year: Long?) {
         this.company = company
         this.year = year

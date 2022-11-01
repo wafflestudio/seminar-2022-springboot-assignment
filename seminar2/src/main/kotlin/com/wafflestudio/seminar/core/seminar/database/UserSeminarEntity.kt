@@ -22,37 +22,37 @@ class UserSeminarEntity(
     val seminar: SeminarEntity,
     @Enumerated(EnumType.STRING)
     val role: Role,
-): BaseTimeEntity() {
-    
+) : BaseTimeEntity() {
+
     var droppedAt: LocalDateTime? = null
     var isActive: Boolean = true
-    
+
     val joinedAt: LocalDateTime
         get() = createdAt!!
-    
+
     val isInstructor: Boolean
         get() = role == Role.INSTRUCTOR
-    
+
     val isParticipant: Boolean
         get() = role == Role.PARTICIPANT
-    
+
     fun drop() {
         require(this.isParticipant) {
             throw Seminar403("강사는 세미나를 드랍할 수 없습니다.")
         }
-        
+
         this.droppedAt = LocalDateTime.now()
         this.isActive = false
     }
-    
+
     enum class Role {
         PARTICIPANT, INSTRUCTOR
     }
-    
+
     companion object {
         fun instructor(userId: Long, seminar: SeminarEntity) =
             UserSeminarEntity(userId, seminar, Role.INSTRUCTOR)
-        
+
         fun participant(userId: Long, seminar: SeminarEntity) =
             UserSeminarEntity(userId, seminar, Role.PARTICIPANT)
     }

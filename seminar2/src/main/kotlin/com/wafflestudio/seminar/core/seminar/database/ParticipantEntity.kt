@@ -14,7 +14,7 @@ class ParticipantEntity(
     val user: UserEntity,
     var university: String,
     val isRegistered: Boolean,
-): BaseTimeEntity() {
+) : BaseTimeEntity() {
     fun update(university: String) {
         this.university = university
     }

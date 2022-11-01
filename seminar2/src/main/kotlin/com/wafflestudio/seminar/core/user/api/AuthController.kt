@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     private val userService: UserService,
 ) {
-    
+
     @PostMapping("/api/v1/signup")
     fun signUp(@RequestBody request: SignUpRequest): AuthToken {
         return userService.createUser(request)
     }
-    
+
     @PostMapping("/api/v1/signin")
     fun logIn(@RequestBody request: SignInRequest): AuthToken {
         val (email, password) = request
         return userService.logIn(email, password)
     }
-    
+
 }

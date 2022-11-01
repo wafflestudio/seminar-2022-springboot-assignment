@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class SeminarExceptionHandler {
-    
+
     @ExceptionHandler(SeminarException::class)
     fun handle(e: SeminarException) =
         ResponseEntity(e.message, e.status)
-    
+
     @ExceptionHandler(DataIntegrityViolationException::class)
     fun handle(e: DataIntegrityViolationException) =
         ResponseEntity(e.message, HttpStatus.CONFLICT)
-    
+
 }

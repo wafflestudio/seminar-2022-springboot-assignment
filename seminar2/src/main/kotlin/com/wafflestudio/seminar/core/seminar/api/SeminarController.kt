@@ -30,7 +30,7 @@ class SeminarController(
     ): Seminar {
         return seminarService.createSeminar(userId, request)
     }
-    
+
     @Authenticated
     @GetMapping("api/v1/seminar/{seminarId}")
     fun getSeminar(
@@ -38,7 +38,7 @@ class SeminarController(
     ): Seminar {
         return seminarService.getSeminar(seminarId)
     }
-    
+
     @Authenticated
     @PostMapping("api/v1/seminar/{seminarId}/user")
     fun joinToSeminar(
@@ -48,7 +48,7 @@ class SeminarController(
     ): Seminar {
         return seminarService.joinToSeminar(userId, seminarId, request.role)
     }
-    
+
     @Authenticated
     @DeleteMapping("api/v1/seminar/{seminarId}/user")
     fun joinToSeminar(
@@ -57,7 +57,7 @@ class SeminarController(
     ): Seminar {
         return seminarService.dropSeminar(userId, seminarId)
     }
-    
+
     @Authenticated
     @GetMapping("api/v1/seminar")
     fun getSeminarList(
@@ -65,7 +65,7 @@ class SeminarController(
     ): List<Seminar> {
         return seminarService.getSeminarList(request)
     }
-    
+
     @Authenticated
     @PutMapping("api/v1/seminar")
     fun createSeminar(

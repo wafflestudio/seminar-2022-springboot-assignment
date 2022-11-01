@@ -18,13 +18,12 @@ data class SignUpRequest(
             throw Seminar400("연차가 잘못 입력되었습니다.")
         }
     }
-    
-    fun toUserEntity(encodedPwd: String): UserEntity = when(role) {
+
+    fun toUserEntity(encodedPwd: String): UserEntity = when (role) {
         Role.PARTICIPANT -> UserEntity.participant(email, username, encodedPwd, university, isRegistered)
         Role.INSTRUCTOR -> UserEntity.instructor(email, username, encodedPwd, company, year)
     }
-    
-    
+
     enum class Role {
         PARTICIPANT, INSTRUCTOR
     }

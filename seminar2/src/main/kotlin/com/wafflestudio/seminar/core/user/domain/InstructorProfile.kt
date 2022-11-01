@@ -9,7 +9,7 @@ data class InstructorProfile(
     // TODO seminars
 ) {
     companion object {
-        fun of(entity: InstructorEntity) = entity.run { 
+        fun of(entity: InstructorEntity) = entity.run {
             InstructorProfile(
                 id = id,
                 company = company,

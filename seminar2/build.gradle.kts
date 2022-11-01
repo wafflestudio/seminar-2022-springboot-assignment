@@ -41,7 +41,6 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
 
-
     // Auth
     implementation("org.springframework.boot:spring-boot-starter-security")
 
@@ -53,10 +52,10 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    
+
     // QueryDSL
     val querydslVersion = "5.0.0"
     implementation("com.querydsl:querydsl-jpa:$querydslVersion")

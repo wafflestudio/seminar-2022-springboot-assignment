@@ -1,7 +1,6 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
-import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar409
 import com.wafflestudio.seminar.core.seminar.database.InstructorEntity
 import com.wafflestudio.seminar.core.seminar.database.ParticipantEntity
@@ -17,25 +16,25 @@ class UserEntity(
     val email: String,
     var username: String,
     var password: String,
-): BaseTimeEntity() {
+) : BaseTimeEntity() {
 
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     var participantProfile: ParticipantEntity? = null
-    
+
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     var instructorProfile: InstructorEntity? = null
-    
+
     var lastLoginedAt: LocalDateTime = LocalDateTime.now()
-    
+
     val isInstructor: Boolean
         get() = this.instructorProfile != null
-    
+
     fun updateLastLogIn() {
         lastLoginedAt = LocalDateTime.now()
     }
-    
+
     fun update(
-        username: String?, 
+        username: String?,
         encodedPwd: String?,
         company: String,
         university: String,
@@ -46,7 +45,7 @@ class UserEntity(
         participantProfile?.update(university)
         instructorProfile?.update(company, year)
     }
-    
+
     fun createProfile(
         university: String,
         isRegistered: Boolean,
@@ -54,10 +53,10 @@ class UserEntity(
         if (participantProfile != null) {
             throw Seminar409("이미 참여자로 등록되어 있습니다.")
         }
-        
+
         this.participantProfile = ParticipantEntity(this, university, isRegistered)
     }
-        
+
     companion object {
         fun participant(
             email: String,
@@ -69,7 +68,7 @@ class UserEntity(
             return UserEntity(email, username, password)
                 .apply { participantProfile = ParticipantEntity(this, university, isActive) }
         }
-        
+
         fun instructor(
             email: String,
             username: String,

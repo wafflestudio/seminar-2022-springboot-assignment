@@ -22,23 +22,23 @@ import javax.servlet.http.HttpServletResponse
 class WebConfig(
     private val userContextResolver: UserContextResolver,
     private val authInterceptor: AuthInterceptor,
-): WebMvcConfigurer {
+) : WebMvcConfigurer {
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
         resolvers.add(userContextResolver)
     }
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-         registry.addInterceptor(authInterceptor)
+        registry.addInterceptor(authInterceptor)
     }
-    
+
 }
 
 @Configuration
-class UserContextResolver: HandlerMethodArgumentResolver {
+class UserContextResolver : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean =
         parameter.hasParameterAnnotation(UserContext::class.java) &&
-                Long::class.java.isAssignableFrom(parameter.parameterType)
+            Long::class.java.isAssignableFrom(parameter.parameterType)
 
     override fun resolveArgument(
         parameter: MethodParameter,
@@ -54,7 +54,7 @@ class UserContextResolver: HandlerMethodArgumentResolver {
 @Configuration
 class AuthInterceptor(
     private val authTokenService: AuthTokenService
-): HandlerInterceptor {
+) : HandlerInterceptor {
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val handlerCasted = (handler as? HandlerMethod) ?: return true
         if (handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
@@ -62,7 +62,7 @@ class AuthInterceptor(
             val userId = authTokenService.getCurrentUserId(authToken)
             request.setAttribute("userId", userId)
         }
-        
+
         return super.preHandle(request, response, handler)
     }
 }

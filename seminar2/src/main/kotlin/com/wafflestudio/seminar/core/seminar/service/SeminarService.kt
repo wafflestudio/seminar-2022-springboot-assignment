@@ -14,7 +14,6 @@ import com.wafflestudio.seminar.core.seminar.database.UserSeminarRepository
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
 import com.wafflestudio.seminar.core.seminar.domain.SeminarInstructor
 import com.wafflestudio.seminar.core.seminar.domain.SeminarParticipant
-import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -34,12 +33,12 @@ class SeminarService(
         val seminar = seminarRepository.save(request.toEntity(user))
         return seminar.toDto()
     }
-    
+
     fun getSeminar(seminarId: Long): Seminar {
         val seminar = seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404()
         return seminar.toDto()
     }
-    
+
     private fun SeminarEntity.toDto(): Seminar {
         val userSeminars = userSeminarRepository.findAllBySeminarId(id)
         val (instructors, participants) = userSeminars.partition { us -> us.isInstructor }
@@ -56,11 +55,11 @@ class SeminarService(
         val isAscending = order == "earliest"
         // seminar + userSeminar fetch join
         val seminars = seminarDslRepository.getList(name, isAscending)
-        
+
         // userSeminar의 user를 한번에 모두 가져와서 딕셔너리에 담아둠
         val userIds = seminars.flatMap { it.userSeminars.map { it.userId } }
         val userMap = userRepository.findAllById(userIds).associateBy { it.id }
-        
+
         // 조합해서 반환
         return seminars.map { seminar ->
             val userSeminars = seminar.userSeminars
@@ -70,7 +69,7 @@ class SeminarService(
             Seminar.of(seminar, instProjections, partProjections)
         }
     }
-    
+
     @Transactional
     fun joinToSeminar(userId: Long, seminarId: Long, role: UserSeminarEntity.Role): Seminar {
         val user = userRepository.findByIdOrNull(userId)!!
@@ -79,36 +78,36 @@ class SeminarService(
         seminar.addUser(user, role)
         return seminar.toDto()
     }
-    
+
     @Transactional
     fun dropSeminar(userId: Long, seminarId: Long): Seminar {
         val seminar = seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404()
         val userSeminars = userSeminarRepository.findAllBySeminarId(seminarId)
         val userSeminar = userSeminars.find { it.userId == userId }
         userSeminar?.drop()
-        
+
         val (instructors, participants) = userSeminars.partition { us -> us.isInstructor }
         val instructorProjections = userSeminarDslRepository.findInstructorProjections(instructors.map { it.id })
         val participantProjections = userSeminarDslRepository.findParticipantProjections(participants.map { it.id })
         return Seminar.of(seminar, instructorProjections, participantProjections)
     }
-    
+
     private fun checkUserIsInstructorOfAnother(userId: Long, role: UserSeminarEntity.Role) {
         if (role != UserSeminarEntity.Role.INSTRUCTOR) {
             return
         }
-        
+
         val userInstructingSeminars = userSeminarRepository.findAllByUserId(userId).filter { it.isInstructor }
         require(userInstructingSeminars.isEmpty()) {
             throw Seminar400("한 명의 강사가 동시에 여러 강좌를 담당할 수 없습니다.")
         }
     }
-    
+
     @Transactional
     fun updateSeminar(userId: Long, request: UpdateSeminarRequest) {
         val user = userRepository.findByIdOrNull(userId)!!
         val seminar = seminarRepository.findByIdOrNull(request.id) ?: throw Seminar404()
-        
+
         seminar.update(user, request)
     }
 }

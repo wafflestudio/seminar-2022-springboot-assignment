@@ -1,7 +1,6 @@
 package com.wafflestudio.seminar.core.user.api.request
 
 import com.wafflestudio.seminar.common.Seminar400
-import com.wafflestudio.seminar.core.user.database.UserEntity
 
 data class UpdateUserRequest(
     val username: String? = null,

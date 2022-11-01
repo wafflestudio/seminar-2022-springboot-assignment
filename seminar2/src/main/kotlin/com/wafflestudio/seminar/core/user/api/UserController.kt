@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private val userService: UserService,
 ) {
-    
+
     @Authenticated
     @GetMapping("/api/v1/me")
     fun getMe(
@@ -34,7 +34,7 @@ class UserController(
     ): User {
         return userService.update(userId, request)
     }
-    
+
     @Authenticated
     @GetMapping("/api/v1/{userId}")
     fun getUser(
@@ -43,7 +43,7 @@ class UserController(
     ): User {
         return userService.getUser(userId)
     }
-    
+
     @Authenticated
     @PostMapping("/api/v1/user/participant")
     fun registerAsParticipant(
@@ -52,5 +52,5 @@ class UserController(
     ): User {
         return userService.registerParticipant(userId, request)
     }
-    
+
 }

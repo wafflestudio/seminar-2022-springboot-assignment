@@ -2,9 +2,6 @@ package com.wafflestudio.seminar.core.seminar.domain
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
-import com.wafflestudio.seminar.core.user.database.UserEntity
-import com.wafflestudio.seminar.core.user.domain.InstructorProfile
-import com.wafflestudio.seminar.core.user.domain.ParticipantProfile
 import java.time.LocalTime
 
 data class Seminar(
