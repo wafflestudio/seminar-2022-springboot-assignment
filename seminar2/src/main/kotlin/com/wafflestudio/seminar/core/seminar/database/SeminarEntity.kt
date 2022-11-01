@@ -17,9 +17,14 @@ class SeminarEntity (
 ): BaseTimeEntity() {
     fun toSeminar(): Seminar {
         val participants = userSeminars
-            .filter { it.role == "participant" }
+            .filter { it.role == "participant" && it.isActive }
             .map { it.toParticipant() }
             .toMutableList()
+        val instructors = userSeminars
+            .filter { it.role == "instructor" && it.isActive }
+            .map { it.toInstructor() }
+            .toMutableList()
+        
         return Seminar(
             id = id,
             name = name,
@@ -27,10 +32,7 @@ class SeminarEntity (
             count = count,
             time = time,
             online = online,
-            instructors = userSeminars
-                .filter { it.role == "instructor" }
-                .map { it.toInstructor() }
-                .toMutableList(),
+            instructors = instructors,
             participants = participants,
             participantCount = participants.size,
         )
