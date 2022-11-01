@@ -7,10 +7,10 @@ import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.UserTestHelper
 import com.wafflestudio.seminar.global.HibernateQueryCounter
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import kotlin.system.measureTimeMillis
 
 @SpringBootTest
 internal class SeminarServiceTest @Autowired constructor(
@@ -39,6 +39,21 @@ internal class SeminarServiceTest @Autowired constructor(
         // then
         assertThat(result).hasSize(1)
         assertThat(queryCount).isEqualTo(3)
+    }
+    
+    @Test
+    fun `쿼리 방식에 따라 시간차이가 난다`() {
+        // given
+        createFixtures()
+
+        // when
+        val firstResult = measureTimeMillis { seminarService.getSeminarList(GetSeminarRequest(null, null)) }
+        val secondResult = measureTimeMillis { seminarService.getSeminarListWithFetchJoin(GetSeminarRequest(null, null)) }
+
+        // then
+        println(firstResult)
+        println(secondResult)
+        assertThat(secondResult).isLessThan(firstResult)
     }
 
     private fun createFixtures() {

@@ -71,6 +71,27 @@ class SeminarService(
             val partProjections = participants.map { part -> SeminarParticipant.of(userMap[part.userId]!!, part) }
             Seminar.of(seminar, instProjections, partProjections)
         }
+    } 
+    
+    @Transactional(readOnly = true)
+    fun getSeminarListWithFetchJoin(request: GetSeminarRequest): List<Seminar> {
+        val (name, order) = request
+        val isAscending = order == "earliest"
+        // seminar + userSeminar fetch join
+        val seminars = seminarDslRepository.getList(name, isAscending)
+
+        // userSeminar의 user를 한번에 모두 가져와서 딕셔너리에 담아둠
+        val userIds = seminars.flatMap { it.userSeminars.map { it.userId } }
+        val userMap = userRepository.findAllWithProfiles(userIds).associateBy { it.id }
+
+        // 조합해서 반환
+        return seminars.map { seminar ->
+            val userSeminars = seminar.userSeminars
+            val (instructors, participants) = userSeminars.partition { it.isInstructor }
+            val instProjections = instructors.map { inst -> SeminarInstructor.of(userMap[inst.userId]!!, inst) }
+            val partProjections = participants.map { part -> SeminarParticipant.of(userMap[part.userId]!!, part) }
+            Seminar.of(seminar, instProjections, partProjections)
+        }
     }
 
     @Transactional
