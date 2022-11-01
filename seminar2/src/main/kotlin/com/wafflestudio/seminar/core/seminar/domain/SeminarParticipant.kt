@@ -2,7 +2,7 @@ package com.wafflestudio.seminar.core.seminar.domain
 
 import java.time.LocalDateTime
 
-data class Participant (
+data class SeminarParticipant (
     val id: Long,
     val username: String,
     val email: String,

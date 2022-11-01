@@ -3,8 +3,8 @@ package com.wafflestudio.seminar.core.seminar.database
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.user.database.UserEntity
 
-import com.wafflestudio.seminar.core.seminar.domain.Instructor
-import com.wafflestudio.seminar.core.seminar.domain.Participant
+import com.wafflestudio.seminar.core.seminar.domain.SeminarInstructor
+import com.wafflestudio.seminar.core.seminar.domain.SeminarParticipant
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -23,17 +23,17 @@ class UserSeminarEntity (
     var droppedAt: LocalDateTime? = null,
     var isActive: Boolean = true,
 ): BaseTimeEntity() {
-    fun toInstructor(): Instructor {
-        return Instructor(
+    fun toInstructor(): SeminarInstructor {
+        return SeminarInstructor(
             id = user.id,
             username = user.username,
             email = user.email,
-            joinedAt = joinedAt
+            joinedAt = joinedAt,
         )
     }
 
-    fun toParticipant(): Participant {
-        return Participant(
+    fun toParticipant(): SeminarParticipant {
+        return SeminarParticipant(
             id = user.id,
             username = user.username,
             email = user.email,

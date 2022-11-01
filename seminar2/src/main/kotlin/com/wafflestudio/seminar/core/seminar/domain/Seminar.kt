@@ -7,7 +7,7 @@ data class Seminar (
     val count: Int,
     val time: String,
     val online: Boolean = true,
-    val instructors: MutableList<Instructor> = mutableListOf(),
-    val participants: MutableList<Participant> = mutableListOf(),
+    val instructors: MutableList<SeminarInstructor> = mutableListOf(),
+    val participants: MutableList<SeminarParticipant> = mutableListOf(),
     val participantCount: Int = 0,
 )
