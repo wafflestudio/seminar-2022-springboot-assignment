@@ -25,16 +25,16 @@ class UserServiceImpl(
     private val authTokenService: AuthTokenService,
 ): UserService {
     override fun getUser(id: Long): UserEntity {
-        val entity = userRepository.findById(id)
-        if (entity.isEmpty) throw Seminar404("해당 id로 유저를 찾을 수 없습니다.")
+        val userEntity = userRepository.findById(id)
+        if (userEntity.isEmpty) throw Seminar404("해당 id로 유저를 찾을 수 없습니다.")
         
-        return entity.get()
+        return userEntity.get()
     }
 
     @Transactional
     override fun createUser(user: SignUpRequest): AuthToken {
         val entityByEmail = userRepository.findByEmail(user.email)
-        if (entityByEmail.isPresent) throw Seminar404("이미 존재하는 이메일입니다.")
+        if (entityByEmail != null) throw Seminar404("이미 존재하는 이메일입니다.")
         var newUser = UserEntity(
             username = user.username,
             email = user.email,
@@ -71,9 +71,9 @@ class UserServiceImpl(
     
     override fun loginUser(user: SignInRequest): AuthToken {
         val entity = userRepository.findByEmail(user.email)
-        if (entity.isEmpty) throw Seminar400("해당 email의 유저가 없습니다.")
-        if (entity.get().password != user.password) throw Seminar400("비밀번호가 틀렸습니다.")
+            ?: throw Seminar400("해당 email의 유저가 없습니다.")
+        if (entity.password != user.password) throw Seminar400("비밀번호가 틀렸습니다.")
         
-        return authTokenService.generateTokenByUsername(entity.get().id)
+        return authTokenService.generateTokenByUsername(entity.id)
     }
 }

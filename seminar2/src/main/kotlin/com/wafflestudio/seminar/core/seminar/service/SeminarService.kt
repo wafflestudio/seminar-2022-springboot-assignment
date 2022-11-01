@@ -94,4 +94,23 @@ class SeminarService(
         
         return seminarEntity.toSeminar()
     }
+    
+    @Transactional
+    fun dropSeminar(userEntity: UserEntity, seminarId: Long): Seminar? {
+        val seminarEntity = seminarRepository.findByIdOrNull(seminarId)
+            ?: throw Seminar400("$seminarId 의 세미나는 존재하지 않습니다.")
+
+        val userSeminarEntity = userSeminarRepository.findAll()
+            .firstOrNull { it.user.id == userEntity.id && it.seminar.id == seminarId }
+            ?: return null
+
+        if (!userSeminarEntity.isActive)
+            throw Seminar400("이전에 이미 세미나를 드랍한 적이 있습니다.")
+
+        userSeminarEntity.isActive = false
+        userSeminarEntity.droppedAt = LocalDateTime.now()
+        userSeminarRepository.save(userSeminarEntity)
+        
+        return seminarEntity.toSeminar()
+    }
 }

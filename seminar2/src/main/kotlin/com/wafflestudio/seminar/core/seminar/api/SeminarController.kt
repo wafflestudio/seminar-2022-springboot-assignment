@@ -45,4 +45,10 @@ class SeminarController(
         val userEntity: UserEntity = userService.getUser(userId)
         return seminarService.joinSeminar(userEntity, seminarId, joinSeminarDTO)
     }
+    
+    @DeleteMapping("/api/v1/seminar/{seminarId}/user")
+    fun dropSeminar(@RequestAttribute userId: Long, @PathVariable seminarId: Long): Seminar? {
+        val userEntity: UserEntity = userService.getUser(userId)
+        return seminarService.dropSeminar(userEntity, seminarId)
+    }
 }

@@ -1,8 +1,5 @@
 package com.wafflestudio.seminar.core.seminar.domain
 
-import com.wafflestudio.seminar.core.user.domain.Instructor
-import com.wafflestudio.seminar.core.user.domain.Participant
-
 data class Seminar (
     val id: Long,
     val name: String,

@@ -27,8 +27,14 @@ class UserEntity(
             username = username,
             email = email,
             password = password,
-            participant = participant,
-            instructor = instructor
+            participant = userSeminars
+                .filter { it.role == "participant" }
+                .map { it.toParticipant() }
+                .firstOrNull(),
+            instructor = userSeminars
+                .filter { it.role == "instructor" }
+                .map { it.toInstructor() }
+                .firstOrNull(),
         )
     }
 }
