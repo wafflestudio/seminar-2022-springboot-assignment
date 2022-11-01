@@ -23,12 +23,15 @@ class SeminarController(
     }
     
     @GetMapping("/api/v1/seminar")
-    fun getAllSeminar(): List<Seminar> {
-        return seminarService.getAllSeminar()
+    fun getAllSeminar(
+        @RequestParam("name", defaultValue = "", required = false) name: String,
+        @RequestParam("order", defaultValue = "", required = false) order: String
+    ): List<Seminar> {
+        return seminarService.getAllSeminar(name, order)
     }
     
     @GetMapping("/api/v1/seminar/{seminarId}")
-    fun getSeminar(@RequestAttribute userId: Long, @PathVariable seminarId: Long): Seminar {
+    fun getSeminar(@PathVariable seminarId: Long): Seminar {
         return seminarService.getSeminar(seminarId)
     }
 }

@@ -22,8 +22,14 @@ class SeminarService(
         return seminarEntity.toSeminar()
     }
     
-    fun getAllSeminar(): List<Seminar> {
-        return seminarRepository.findAll().map { it.toSeminar() }
+    fun getAllSeminar(name: String, order: String): List<Seminar> {
+        val seminars = seminarRepository.findAll()
+            .filter { it.name.contains(name) }
+            .sortedBy { it.createdAt }
+            .map { it.toSeminar() }
+            .reversed()
+
+        return if (order =="earliest") seminars.reversed() else seminars
     }
     
     @Transactional
