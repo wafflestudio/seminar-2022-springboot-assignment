@@ -14,6 +14,7 @@ import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.domain.User
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeParseException
@@ -24,6 +25,7 @@ class SeminarAdapter(
     private val seminarRepository: SeminarRepository,
     private val userSeminarRepository: UserSeminarRepository
 ) : SeminarPort {
+    @Transactional
     override fun createSeminar(userId: Long, createSeminarRequest: CreateSeminarRequest) = createSeminarRequest.run {
         try {
             LocalTime.parse(time)
@@ -62,6 +64,7 @@ class SeminarAdapter(
         seminarRepository.save(seminarEntity).toSeminarResponse()
     }
 
+    @Transactional
     override fun editSeminar(userId: Long, editSeminarRequest: EditSeminarRequest) = editSeminarRequest.run {
         if (time != null) {
             try {
@@ -90,6 +93,7 @@ class SeminarAdapter(
         return seminarEntity.toSeminarResponse()
     }
 
+    @Transactional
     override fun searchSeminar(name: String?, order: String?): List<SearchSeminarResponse> {
         val seminars = mutableListOf<SearchSeminarResponse>()
         val seminarEntities: MutableList<SeminarEntity> =
@@ -99,6 +103,7 @@ class SeminarAdapter(
         return seminars
     }
 
+    @Transactional
     override fun joinSeminar(seminarId: Long, userId: Long, joinSeminarRequest: JoinSeminarRequest): SeminarResponse {
         val seminarEntity =
             seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
@@ -132,6 +137,7 @@ class SeminarAdapter(
         return seminarRepository.save(seminarEntity).toSeminarResponse()
     }
 
+    @Transactional
     override fun dropSeminar(seminarId: Long, userId: Long): SeminarResponse {
         val seminarEntity =
             seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")

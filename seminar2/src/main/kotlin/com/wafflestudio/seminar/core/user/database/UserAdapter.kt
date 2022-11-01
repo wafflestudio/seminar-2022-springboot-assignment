@@ -13,6 +13,7 @@ import com.wafflestudio.seminar.core.user.domain.UserPort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Component
@@ -22,6 +23,7 @@ class UserAdapter(
     private val instructorProfileRepository: InstructorProfileRepository,
     private val passwordEncoder: PasswordEncoder
 ) : UserPort {
+    @Transactional
     override fun createUser(signUpRequest: SignUpRequest) = signUpRequest.run {
         checkDuplicatedEmail(email!!)
         val encodedPassword = passwordEncoder.encode(signUpRequest.password)
@@ -55,6 +57,7 @@ class UserAdapter(
     }
 
 
+    @Transactional
     override fun getUser(signInRequest: SignInRequest) = signInRequest.run {
         val userEntity = userRepository.findByEmail(email) ?: throw Seminar404("해당 이메일(${email})로 등록된 사용자가 없어요.")
         if (!passwordEncoder.matches(password, userEntity.encodedPassword)) {
@@ -74,6 +77,7 @@ class UserAdapter(
         return userEntity.toProfileResponse()
     }
 
+    @Transactional
     override fun editProfile(userId: Long, editProfileRequest: EditProfileRequest) = editProfileRequest.run {
         val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
         if (username != null) userEntity.username = username
@@ -85,6 +89,7 @@ class UserAdapter(
         userRepository.save(userEntity).toProfileResponse()
     }
 
+    @Transactional
     override fun registerParticipant(userId: Long, registerParticipantRequest: RegisterParticipantRequest) =
         registerParticipantRequest.run {
             val userEntity =
