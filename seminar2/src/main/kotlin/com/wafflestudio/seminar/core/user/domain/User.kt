@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.domain
 
+import com.wafflestudio.seminar.core.user.database.InstructorEntity
 import com.wafflestudio.seminar.core.user.database.ParticipantEntity
 
 data class User(
@@ -8,4 +9,5 @@ data class User(
     val email: String,
     val password: String,
     val participant: ParticipantEntity?,
+    val instructor: InstructorEntity?,
 )
