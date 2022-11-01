@@ -6,6 +6,5 @@ data class SignUpRequest(
     val password: String,
     val role: String,
     val participant: CreateParticipantDTO?,
-    val company: String?,
-    val year: Int?,
+    val instructor: CreateInstructorDTO?,
 )

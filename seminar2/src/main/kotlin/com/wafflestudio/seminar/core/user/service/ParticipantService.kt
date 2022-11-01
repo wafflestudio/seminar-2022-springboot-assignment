@@ -5,8 +5,6 @@ import com.wafflestudio.seminar.core.user.database.ParticipantEntity
 import com.wafflestudio.seminar.core.user.database.ParticipantRepository
 import org.springframework.stereotype.Service
 
-
-
 @Service
 class ParticipantService(
     private val participantRepository: ParticipantRepository,
@@ -16,12 +14,10 @@ class ParticipantService(
     }
     
     fun createParticipant(createParticipantDTO: CreateParticipantDTO): ParticipantEntity {
-        println(createParticipantDTO.university)
         val newParticipant = ParticipantEntity(
             university = createParticipantDTO.university,
             isRegistered = true,
         )
-        participantRepository.save(newParticipant)
-        return newParticipant
+        return participantRepository.save(newParticipant)
     }
 }

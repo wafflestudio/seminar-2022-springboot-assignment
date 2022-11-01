@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar404
+import com.wafflestudio.seminar.core.user.api.request.CreateInstructorDTO
 import com.wafflestudio.seminar.core.user.api.request.CreateParticipantDTO
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
@@ -20,6 +21,7 @@ interface UserService {
 class UserServiceImpl(
     private val userRepository: UserRepository,
     private val participantService: ParticipantService,
+    private val instructorService: InstructorService,
     private val authTokenService: AuthTokenService,
 ): UserService {
     override fun getUser(id: Long): User {
@@ -48,8 +50,16 @@ class UserServiceImpl(
             val newParticipant = participantService.createParticipant(createParticipantDTO)
             newUser.participant = newParticipant
         } else if (user.role == "instructor") {
-            if (user.company == null) throw Seminar400("진행자의 회사는 필수 입니다.")
-            if (user.year == null) throw Seminar400("진행자의 연차는 필수 입니다.")
+            if (user.instructor?.year != null && user.instructor.year <= 0) {
+                throw Seminar400("회사의 경력은 자연수가 되어야 합니다.")
+            }
+            
+            val createInstructorDTO = CreateInstructorDTO(
+                company = user.instructor?.company ?: "",
+                year = user.instructor?.year,
+            )
+            val newInstructor = instructorService.createInstructor(createInstructorDTO)
+            newUser.instructor = newInstructor
         } else {
             throw Seminar400("잘못된 role 입니다.")
         }
