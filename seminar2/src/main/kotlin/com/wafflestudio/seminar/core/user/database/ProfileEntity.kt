@@ -1,6 +1,8 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.seminar.domain.InstructingSeminarInfo
+import com.wafflestudio.seminar.core.seminar.domain.ParticipatingSeminarInfo
 import com.wafflestudio.seminar.core.user.domain.InstructorProfile
 import com.wafflestudio.seminar.core.user.domain.ParticipantProfile
 import javax.persistence.*
@@ -12,10 +14,11 @@ class ParticipantProfileEntity(
     var isRegistered: Boolean,
 ) : BaseTimeEntity() {
     
-    fun toParticipantProfile(): ParticipantProfile = ParticipantProfile(
+    fun toParticipantProfile(seminars: List<ParticipatingSeminarInfo>): ParticipantProfile = ParticipantProfile(
         id,
         university,
         isRegistered,
+        seminars,
     )
 }
 
@@ -26,9 +29,10 @@ class InstructorProfileEntity(
     var year: Int?,
 ) : BaseTimeEntity() {
 
-    fun toInstructorProfile(): InstructorProfile = InstructorProfile(
+    fun toInstructorProfile(seminars: List<InstructingSeminarInfo>): InstructorProfile = InstructorProfile(
         id,
         company,
         year,
+        seminars,
     )
 }

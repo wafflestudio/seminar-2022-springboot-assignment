@@ -3,6 +3,8 @@ package com.wafflestudio.seminar.core.user.api
 import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.user.api.request.*
+import com.wafflestudio.seminar.core.user.domain.UserInfo
+import com.wafflestudio.seminar.core.user.service.AuthToken
 import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,14 +22,14 @@ class AuthController(
     @PostMapping("/api/v1/signup")
     fun signUp(
         @RequestBody @Valid signUpRequest: SignUpRequest
-    ): AuthTokenResponse {
+    ): AuthToken {
         return userService.signUp(signUpRequest)
     }
 
     @PostMapping("/api/v1/signin")
     fun logIn(
         @RequestBody @Valid logInRequest: LogInRequest
-    ): AuthTokenResponse {
+    ): AuthToken {
         return userService.logIn(logInRequest)
     }
 
@@ -35,7 +37,7 @@ class AuthController(
     @GetMapping("/api/v1/me")
     fun getMe(
         @UserContext userid: Long
-    ): UserInfoResponse {
+    ): UserInfo {
         return userService.getUserById(userid)
     }
     
@@ -43,7 +45,7 @@ class AuthController(
     @GetMapping("/api/v1/user/{userid}")
     fun getUser(
         @PathVariable userid: Long
-    ): UserInfoResponse {
+    ): UserInfo {
         return userService.getUserById(userid)
     }
     
@@ -52,7 +54,7 @@ class AuthController(
     fun updateUser(
         @UserContext userid: Long,
         @RequestBody @Valid updateRequest: UpdateRequest,
-    ): UserInfoResponse {
+    ): UserInfo {
         return userService.updateUser(userid, updateRequest)
     }
     
@@ -61,7 +63,7 @@ class AuthController(
     fun participantEnroll(
         @UserContext userid: Long,
         @RequestBody participateSeminarRequest: ParticipantEnrollRequest
-    ): UserInfoResponse {
+    ): UserInfo {
         return userService.participantEnroll(userid, participateSeminarRequest)
     }
 

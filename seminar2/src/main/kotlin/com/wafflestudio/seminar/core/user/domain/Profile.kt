@@ -1,15 +1,18 @@
 package com.wafflestudio.seminar.core.user.domain
 
+import com.wafflestudio.seminar.core.seminar.domain.InstructingSeminarInfo
+import com.wafflestudio.seminar.core.seminar.domain.ParticipatingSeminarInfo
+
 data class ParticipantProfile(
     val id: Long,
     val university: String?,
     val isRegistered: Boolean,
-    // TODO: Seminar List
+    val seminars: List<ParticipatingSeminarInfo>,
 )
 
 data class InstructorProfile(
     val id: Long,
     val company: String?,
     val year: Int?,
-    // TODO: Seminar List
+    val seminars: List<InstructingSeminarInfo>,
 )

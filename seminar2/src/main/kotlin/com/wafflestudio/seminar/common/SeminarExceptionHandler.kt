@@ -14,8 +14,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RestControllerAdvice
 class SeminarExceptionHandler {
     
-    // TODO as-you-wish
-    
     @ExceptionHandler(Exception::class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     fun handle(e: Exception): ResponseEntity<Any> = ResponseEntity(

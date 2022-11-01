@@ -1,10 +1,8 @@
-package com.wafflestudio.seminar.core.seminar.api.dto
+package com.wafflestudio.seminar.core.seminar.domain
 
-import com.wafflestudio.seminar.core.seminar.domain.SeminarInstructorInfo
-import com.wafflestudio.seminar.core.seminar.domain.SeminarParticipantInfo
 import java.time.LocalTime
 
-data class CreateSeminarResponse(
+data class SeminarDetailInfo(
     val id: Long,
     val name: String,
     val capacity: Int,

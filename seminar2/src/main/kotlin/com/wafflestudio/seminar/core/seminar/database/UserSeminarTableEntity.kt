@@ -1,6 +1,8 @@
 package com.wafflestudio.seminar.core.seminar.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.seminar.domain.InstructingSeminarInfo
+import com.wafflestudio.seminar.core.seminar.domain.ParticipatingSeminarInfo
 import com.wafflestudio.seminar.core.seminar.domain.SeminarInstructorInfo
 import com.wafflestudio.seminar.core.seminar.domain.SeminarParticipantInfo
 import com.wafflestudio.seminar.core.user.database.UserEntity
@@ -30,6 +32,14 @@ class ParticipantSeminarTableEntity(
         isActive,
         droppedAt,
     )
+    
+    fun toParticipatingSeminarInfo(): ParticipatingSeminarInfo = ParticipatingSeminarInfo(
+        seminar.id,
+        seminar.name,
+        createdAt!!,
+        isActive,
+        droppedAt,
+    )
 }
 
 @Entity
@@ -48,6 +58,12 @@ class InstructorSeminarTableEntity(
         instructor.id,
         instructor.username,
         instructor.email,
+        createdAt!!,
+    )
+    
+    fun toInstructingSeminarInfo(): InstructingSeminarInfo = InstructingSeminarInfo(
+        seminar.id,
+        seminar.name,
         createdAt!!,
     )
 }

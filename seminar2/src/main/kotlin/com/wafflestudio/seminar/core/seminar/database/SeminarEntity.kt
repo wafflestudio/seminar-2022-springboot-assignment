@@ -1,10 +1,7 @@
 package com.wafflestudio.seminar.core.seminar.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
-import com.wafflestudio.seminar.core.seminar.api.dto.CreateSeminarResponse
-import com.wafflestudio.seminar.core.seminar.domain.SeminarInfo
-import com.wafflestudio.seminar.core.seminar.domain.SeminarInstructorInfo
-import com.wafflestudio.seminar.core.seminar.domain.SeminarParticipantInfo
+import com.wafflestudio.seminar.core.seminar.domain.*
 import java.time.LocalTime
 import javax.persistence.*
 
@@ -23,7 +20,7 @@ class SeminarEntity(
     @OneToMany(mappedBy = "seminar")
     val instructorSet: MutableSet<InstructorSeminarTableEntity> = mutableSetOf();
     
-    fun toCreateSeminarResponse(): CreateSeminarResponse {
+    fun toSeminarDetailInfo(): SeminarDetailInfo {
         val instructorInfoList = mutableListOf<SeminarInstructorInfo>()
         instructorSet.forEach {
             instructorInfoList.add(it.toSeminarInstructorInfo())
@@ -34,7 +31,7 @@ class SeminarEntity(
             participantInfoList.add(it.toSeminarParticipantInfo())
         }
         
-        return CreateSeminarResponse(
+        return SeminarDetailInfo(
             id,
             name,
             capacity,

@@ -21,12 +21,7 @@ class WebConfig(
     private val authArgumentResolver: AuthArgumentResolver,
     private val authInterceptor: AuthInterceptor,
 ): WebMvcConfigurer {
-
-    /**
-     * TODO 세미나 레포지토리를 참고해서,
-     *   헤더를 통한 JWT 인증이 가능하게끔 적절한 컴포넌트들을 구성해주세요.
-     */
-
+    
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
         resolvers.add(authArgumentResolver)
     }

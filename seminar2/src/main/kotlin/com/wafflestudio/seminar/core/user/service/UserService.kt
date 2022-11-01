@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional
 interface UserService {
     fun signUp(signUpRequest: SignUpRequest): AuthToken
     fun logIn(logInRequest: LogInRequest): AuthToken
-    fun getUserById(userid: Long): UserInfo
-    fun updateUser(userid: Long, updateRequest: UpdateRequest): UserInfo
-    fun participantEnroll(userid: Long, participantEnrollRequest: ParticipantEnrollRequest): UserInfo
+    fun getUserById(user_id: Long): UserInfo
+    fun updateUser(user_id: Long, updateRequest: UpdateRequest): UserInfo
+    fun participantEnroll(user_id: Long, participantEnrollRequest: ParticipantEnrollRequest): UserInfo
 }
 
 @Service
@@ -61,15 +61,13 @@ class UserServiceImpl(
         return authTokenService.generateTokenByEmail(userEntity.email)
     }
 
-    override fun getUserById(userid: Long): UserInfo {
-        return userRepository.findByIdOrNull(userid)
-            ?.toUserInfo()
-            ?: throw UserNotFoundException
+    override fun getUserById(user_id: Long): UserInfo {
+        return findUser(user_id).toUserInfo()
     }
 
     @Transactional
-    override fun updateUser(userid: Long, updateRequest: UpdateRequest): UserInfo {
-        val user = userRepository.findByIdOrNull(userid) ?: throw UserNotFoundException
+    override fun updateUser(user_id: Long, updateRequest: UpdateRequest): UserInfo {
+        val user = findUser(user_id)
         
         updateRequest.username?.let {
             user.username = it
@@ -97,8 +95,8 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun participantEnroll(userid: Long, participantEnrollRequest: ParticipantEnrollRequest): UserInfo {
-        val user = userRepository.findByIdOrNull(userid) ?: throw UserNotFoundException
+    override fun participantEnroll(user_id: Long, participantEnrollRequest: ParticipantEnrollRequest): UserInfo {
+        val user = findUser(user_id)
         if (user.participantProfile != null) {
             throw DuplicateParticipantEnrollmentException
         }
@@ -109,5 +107,8 @@ class UserServiceImpl(
         
         return user.toUserInfo()
     }
+    
+    private fun findUser(user_id: Long): UserEntity = userRepository.findByIdOrNull(user_id)
+        ?: throw UserNotFoundException
 
 }

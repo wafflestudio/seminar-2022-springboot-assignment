@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.seminar.api.dto
+package com.wafflestudio.seminar.core.seminar.api.request
 
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import org.springframework.format.annotation.DateTimeFormat

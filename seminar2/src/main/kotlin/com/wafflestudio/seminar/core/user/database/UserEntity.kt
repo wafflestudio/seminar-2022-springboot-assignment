@@ -35,8 +35,12 @@ class UserEntity(
         email,
         createdAt!!,
         modifiedAt!!,
-        participantProfile?.toParticipantProfile(),
-        instructorProfile?.toInstructorProfile(),
+        participantProfile?.toParticipantProfile(
+            participatingSeminars.map { it.toParticipatingSeminarInfo() }
+        ),
+        instructorProfile?.toInstructorProfile(
+            instructingSeminars.map { it.toInstructingSeminarInfo() }
+        ),
     )
     
 }

@@ -16,4 +16,3 @@ auth.jwt:
   issuer: seminar2assignment
   jwtSecret: SEMINAR_SECRET_KEY_MAKE_IT_LONG_ENOUGH
   jwtExpiration: 1800
-  # TODO 누락된 정보를 추가해 주세요.
