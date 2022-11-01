@@ -8,10 +8,10 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
     hibernate:
       ddl-auto: update
-      
+
 auth.jwt:
   issuer: WAFFLE_STUDIO
   jwtSecret: WAFFLE_STUDIO_SPRING_AND_KOTLIN_SEMINAR_SECRET_KEY
