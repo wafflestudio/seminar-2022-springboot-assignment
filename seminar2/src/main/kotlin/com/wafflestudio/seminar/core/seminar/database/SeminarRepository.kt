@@ -1,4 +1,8 @@
 package com.wafflestudio.seminar.core.seminar.database
 
-class SeminarRepository {
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface SeminarRepository: JpaRepository<SeminarEntity, Long> {
+    fun findByName(name: String): SeminarEntity
+    fun save(seminarEntity: SeminarEntity): SeminarEntity
 }

@@ -10,6 +10,7 @@ import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.domain.User
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 interface UserService {
     fun getUser(id: Long): User
@@ -31,6 +32,7 @@ class UserServiceImpl(
         return User(entity.get())
     }
 
+    @Transactional
     override fun createUser(user: SignUpRequest): AuthToken {
         val entityByEmail = userRepository.findByEmail(user.email)
         if (entityByEmail.isPresent) throw Seminar404("이미 존재하는 이메일입니다.")
