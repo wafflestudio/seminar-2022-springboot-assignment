@@ -10,15 +10,27 @@ open class Seminar403(msg: String) : SeminarException(msg, HttpStatus.FORBIDDEN)
 open class Seminar404(msg: String) : SeminarException(msg, HttpStatus.NOT_FOUND)
 open class Seminar409(msg: String) : SeminarException(msg, HttpStatus.CONFLICT)
 
+// 400
+object SeminarCapacityFullException :
+    Seminar400("Seminar capacity is full")
+object AlreadyParticipatingException :
+    Seminar400("Already participating this seminar")
+object DroppedSeminarException :
+    Seminar400("Cannot participate dropped seminar again")
+object MultipleInstructingSeminarException :
+    Seminar400("Cannot join multiple seminars as instructor")
+
 // 401
 object AuthTokenMissingException :
     Seminar401("Authorization token is missing")
 
 // 403
 object NotAllowedToParticipateException :
-    Seminar403("Only users enrolled as participant can participate")
-object NotAllowedToCreateSeminarException :
-    Seminar403("Only instructors can create seminar")
+    Seminar403("Current user is not participant")
+object NotAllowedToInstructException :
+    Seminar403("Current user is not instructor")
+object InstructorNotAllowedToDropException :
+    Seminar403("Instructor cannot drop instructing seminar")
 
 // 404
 object SeminarNotFoundException :

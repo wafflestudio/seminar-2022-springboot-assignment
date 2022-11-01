@@ -1,6 +1,8 @@
 package com.wafflestudio.seminar.core.seminar.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.seminar.domain.SeminarInstructorInfo
+import com.wafflestudio.seminar.core.seminar.domain.SeminarParticipantInfo
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -11,15 +13,23 @@ class ParticipantSeminarTableEntity(
     @ManyToOne
     @JoinColumn(name = "participant_id")
     val participant: UserEntity,
-    
+
     @ManyToOne
     @JoinColumn(name = "seminar_id")
     val seminar: SeminarEntity,
-    
-    val isActive: Boolean = true,
-    val droppedAt: LocalDateTime?,
+
+    var isActive: Boolean = true,
+    var droppedAt: LocalDateTime?,
 ) : BaseTimeEntity() {
-    
+
+    fun toSeminarParticipantInfo(): SeminarParticipantInfo = SeminarParticipantInfo(
+        participant.id,
+        participant.username,
+        participant.email,
+        createdAt!!,
+        isActive,
+        droppedAt,
+    )
 }
 
 @Entity
@@ -33,5 +43,11 @@ class InstructorSeminarTableEntity(
     @JoinColumn(name = "seminar_id")
     val seminar: SeminarEntity,
 ) : BaseTimeEntity() {
-    
+
+    fun toSeminarInstructorInfo(): SeminarInstructorInfo = SeminarInstructorInfo(
+        instructor.id,
+        instructor.username,
+        instructor.email,
+        createdAt!!,
+    )
 }

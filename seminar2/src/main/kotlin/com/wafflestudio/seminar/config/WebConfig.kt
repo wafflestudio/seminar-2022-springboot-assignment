@@ -90,7 +90,7 @@ class AuthInterceptor(
                 val userid = authTokenService.getCurrentUserId(authToken)
 
                 if (userService.getUserById(userid).instructor == null) {
-                    throw NotAllowedToCreateSeminarException
+                    throw NotAllowedToInstructException
                 }
             }
         }

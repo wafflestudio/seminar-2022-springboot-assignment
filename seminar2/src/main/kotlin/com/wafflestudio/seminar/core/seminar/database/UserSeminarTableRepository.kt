@@ -1,4 +1,7 @@
 package com.wafflestudio.seminar.core.seminar.database
 
-class UserSeminarTableRepository {
-}
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface ParticipantSeminarTableRepository : JpaRepository<ParticipantSeminarTableEntity, Long>
+
+interface InstructorSeminarTableRepository : JpaRepository<InstructorSeminarTableEntity, Long>

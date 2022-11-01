@@ -3,6 +3,8 @@ package com.wafflestudio.seminar.core.seminar.database
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.seminar.api.dto.CreateSeminarResponse
 import com.wafflestudio.seminar.core.seminar.domain.SeminarInfo
+import com.wafflestudio.seminar.core.seminar.domain.SeminarInstructorInfo
+import com.wafflestudio.seminar.core.seminar.domain.SeminarParticipantInfo
 import java.time.LocalTime
 import javax.persistence.*
 
@@ -21,18 +23,40 @@ class SeminarEntity(
     @OneToMany(mappedBy = "seminar")
     val instructorSet: MutableSet<InstructorSeminarTableEntity> = mutableSetOf();
     
-    fun toCreateSeminarResponse(): CreateSeminarResponse = CreateSeminarResponse(
-        id,
-        name,
-        capacity,
-        count,
-        time,
-        online,
-    )
+    fun toCreateSeminarResponse(): CreateSeminarResponse {
+        val instructorInfoList = mutableListOf<SeminarInstructorInfo>()
+        instructorSet.forEach {
+            instructorInfoList.add(it.toSeminarInstructorInfo())
+        }
+        
+        val participantInfoList = mutableListOf<SeminarParticipantInfo>()
+        participantSet.forEach {
+            participantInfoList.add(it.toSeminarParticipantInfo())
+        }
+        
+        return CreateSeminarResponse(
+            id,
+            name,
+            capacity,
+            count,
+            time,
+            online,
+            instructorInfoList,
+            participantInfoList,
+        )
+    }
     
-    fun toSeminarInfo(): SeminarInfo = SeminarInfo(
-        id,
-        name,
-        // TODO: instructors
-    )
+    fun toSeminarInfo(): SeminarInfo {
+        val instructorInfoList = mutableListOf<SeminarInstructorInfo>()
+        instructorSet.forEach { 
+            instructorInfoList.add(it.toSeminarInstructorInfo())
+        }
+        
+        return SeminarInfo(
+            id,
+            name,
+            instructorInfoList,
+            participantSet.size,
+        )
+    }
 }
