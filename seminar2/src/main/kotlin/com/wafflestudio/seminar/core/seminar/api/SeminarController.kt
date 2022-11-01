@@ -2,7 +2,6 @@ package com.wafflestudio.seminar.core.seminar.api
 
 import com.wafflestudio.seminar.common.Seminar403
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarDTO
-import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
 import com.wafflestudio.seminar.core.user.service.UserService
@@ -23,7 +22,7 @@ class SeminarController(
     }
     
     @GetMapping("/api/v1/seminar/{seminarId}")
-    fun getSeminar(@RequestAttribute userId: Long, @PathVariable seminarId: Long): SeminarEntity {
+    fun getSeminar(@RequestAttribute userId: Long, @PathVariable seminarId: Long): Seminar {
         return seminarService.getSeminar(seminarId)
     }
 }

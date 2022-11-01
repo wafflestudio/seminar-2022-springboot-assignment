@@ -9,7 +9,7 @@ data class Seminar (
     val capacity: Int,
     val count: Int,
     val time: String,
-    val online: Boolean? = true,
-    val instructors: MutableList<Instructor>? = mutableListOf(),
-    val participants: MutableList<Participant>? = mutableListOf(),
+    val online: Boolean = true,
+    val instructors: MutableList<Instructor> = mutableListOf(),
+    val participants: MutableList<Participant> = mutableListOf(),
 )

@@ -8,7 +8,7 @@ data class CreateSeminarDTO (
     val capacity: Int,
     val count: Int,
     val time: String,
-    val online: Boolean? = true,
+    val online: Boolean = true,
 ) {
     init {
         if (count <= 0) throw Seminar400("Seminar count 는 0 이상이어야 합니다.")
