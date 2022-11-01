@@ -8,12 +8,11 @@ import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
-import com.wafflestudio.seminar.core.user.domain.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 interface UserService {
-    fun getUser(id: Long): User
+    fun getUser(id: Long): UserEntity
     fun createUser(user: SignUpRequest): AuthToken
     fun loginUser(user: SignInRequest): AuthToken
 }
@@ -25,11 +24,11 @@ class UserServiceImpl(
     private val instructorService: InstructorService,
     private val authTokenService: AuthTokenService,
 ): UserService {
-    override fun getUser(id: Long): User {
+    override fun getUser(id: Long): UserEntity {
         val entity = userRepository.findById(id)
         if (entity.isEmpty) throw Seminar404("해당 id로 유저를 찾을 수 없습니다.")
         
-        return User(entity.get())
+        return entity.get()
     }
 
     @Transactional
@@ -76,9 +75,5 @@ class UserServiceImpl(
         if (entity.get().password != user.password) throw Seminar400("비밀번호가 틀렸습니다.")
         
         return authTokenService.generateTokenByUsername(entity.get().id)
-    }
-    
-    private fun User(entity: UserEntity) = entity.run {
-        User(id, username, email, password, participant, instructor)
     }
 }

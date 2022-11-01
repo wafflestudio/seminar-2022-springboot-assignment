@@ -2,8 +2,6 @@ package com.wafflestudio.seminar.core.seminar.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
-import com.wafflestudio.seminar.core.user.domain.Instructor
-import com.wafflestudio.seminar.core.user.domain.Participant
 import javax.persistence.*
 
 @Entity
@@ -17,10 +15,7 @@ class SeminarEntity (
     @OneToMany(mappedBy="seminar", cascade = [CascadeType.ALL])
     val userSeminars: MutableList<UserSeminarEntity> = mutableListOf()
 ): BaseTimeEntity() {
-    fun toSeminar(
-        instructors: MutableList<Instructor> = mutableListOf(),
-        participants: MutableList<Participant> = mutableListOf()
-    ): Seminar {
+    fun toSeminar(): Seminar {
         return Seminar(
             id = id,
             name = name,
@@ -28,8 +23,14 @@ class SeminarEntity (
             count = count,
             time = time,
             online = online,
-            instructors = instructors,
-            participants = participants
+            instructors = userSeminars
+                .filter { it.user.instructor != null }
+                .map { it.toInstructor() }
+                .toMutableList(),
+            participants = userSeminars
+                .filter { it.user.participant != null }
+                .map { it.toParticipant() }
+                .toMutableList()
         )
     }
 }

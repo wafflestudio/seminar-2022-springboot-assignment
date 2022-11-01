@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.user.database
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
+import com.wafflestudio.seminar.core.user.domain.User
 import javax.persistence.*
 
 @Entity
@@ -19,4 +20,15 @@ class UserEntity(
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
     val userSeminars: MutableList<UserSeminarEntity> = mutableListOf()
-): BaseTimeEntity()
+): BaseTimeEntity() {
+    fun toUser(): User {
+        return User(
+            id = id,
+            username = username,
+            email = email,
+            password = password,
+            participant = participant,
+            instructor = instructor
+        )
+    }
+}

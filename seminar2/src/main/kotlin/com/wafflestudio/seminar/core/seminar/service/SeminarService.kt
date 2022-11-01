@@ -6,7 +6,7 @@ import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarRepository
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
-import com.wafflestudio.seminar.core.user.domain.User
+import com.wafflestudio.seminar.core.user.database.UserEntity
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,32 +18,26 @@ class SeminarService(
     private val userSeminarRepository: UserSeminarRepository
 ) {
     fun getSeminar(id: Long): Seminar {
-        val seminalEntity = seminarRepository.findByIdOrNull(id) ?: throw Seminar400("$id 의 세미나는 존재하지 않습니다.")
-        val instructors = seminalEntity.userSeminars
-            .filter { it.user.instructor != null }
-            .map { it.toInstructor() }
-            .toMutableList()
-        val participants = seminalEntity.userSeminars
-            .filter { it.user.participant != null }
-            .map { it.toParticipant() }
-            .toMutableList()
-
-        return seminalEntity.toSeminar(instructors, participants)
+        val seminarEntity = seminarRepository.findByIdOrNull(id) ?: throw Seminar400("$id 의 세미나는 존재하지 않습니다.")
+        return seminarEntity.toSeminar()
+    }
+    
+    fun getAllSeminar(): List<Seminar> {
+        return seminarRepository.findAll().map { it.toSeminar() }
     }
     
     @Transactional
-    fun createSeminar(user: User, createSeminarDTO: CreateSeminarDTO): Seminar {
+    fun createSeminar(user: UserEntity, createSeminarDTO: CreateSeminarDTO): Seminar {
         val seminarEntity = seminarRepository.save(createSeminarDTO.toEntity())
         val userSeminarEntity = userSeminarRepository.save(UserSeminarEntity(
-            user = user.toEntity(),
+            user = user,
             seminar = seminarEntity,
             joinedAt = LocalDateTime.now(),
             isActive = false,
         ))
+        user.userSeminars.add(userSeminarEntity)
         seminarEntity.userSeminars.add(userSeminarEntity)
-        val seminar = seminarEntity.toSeminar()
-        seminar.instructors.add(userSeminarEntity.toInstructor())
         
-        return seminar
+        return seminarEntity.toSeminar()
     }
 }

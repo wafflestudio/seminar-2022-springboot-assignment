@@ -12,6 +12,6 @@ class UserController(
 ) {
     @GetMapping("/api/v1/user/{user_id}")
     fun getUser(@PathVariable("user_id") userId: Long): User {
-        return userService.getUser(userId)
+        return userService.getUser(userId).toUser()
     }
 }

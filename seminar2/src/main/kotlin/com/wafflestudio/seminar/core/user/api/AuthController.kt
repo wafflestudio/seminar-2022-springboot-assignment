@@ -25,6 +25,6 @@ class AuthController(
     @Authenticated
     @GetMapping("/api/v1/me")
     fun getMe(@RequestAttribute userId: Long): User {
-        return userService.getUser(userId)
+        return userService.getUser(userId).toUser()
     }
 }
