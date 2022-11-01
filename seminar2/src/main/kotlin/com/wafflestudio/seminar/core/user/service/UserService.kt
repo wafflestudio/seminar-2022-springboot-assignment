@@ -103,25 +103,20 @@ class UserServiceImpl(
         with (request) {
             if(this.username != null) targetUser.username = this.username
             if(this.password != null) targetUser.password = this.password
-            if(this.role != null) 
-                targetUser.role = when (this.role) {
-                    "PARTICIPANT" -> RoleType.PARTICIPANT
-                    "INSTRUCTOR" -> RoleType.INSTRUCTOR
-                    else -> targetUser.role
-                    }
-            when (targetUser.role) {
-                RoleType.PARTICIPANT -> {
-                    if(this.isRegistered != null)
-                        throw SeminarException(ErrorCode.EDIT_ISREG_FORBIDDEN)
-                    if(this.university != null)
-                        targetUser.participantProfile!!.university = this.university.trim()
-                }
-                RoleType.INSTRUCTOR -> {
-                    if(this.company != null)
-                        targetUser.instructorProfile!!.company = this.company.trim()
-                    if(this.year != null)
-                        targetUser.instructorProfile!!.year = this.year
-                }
+            
+            // user의 role field는 변경할 수 없는 거로 보는 게 맞을 듯
+            // 유저가 세미나 진행자일 수도 있고 참여자일 수도 있다는 점에서 해당 profile이 존재하는지 여부로 살펴보기
+            if(targetUser.participantProfile != null){
+                if(this.isRegistered != null)
+                    throw SeminarException(ErrorCode.EDIT_ISREG_FORBIDDEN)
+                if(this.university != null)
+                    targetUser.participantProfile?.university = this.university.trim()
+            }
+            if(targetUser.instructorProfile != null){
+                if(this.company != null)
+                    targetUser.instructorProfile!!.company = this.company.trim()
+                if(this.year != null)
+                    targetUser.instructorProfile!!.year = this.year
             }
         }
         userRepository.save(targetUser)

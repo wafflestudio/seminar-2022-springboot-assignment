@@ -10,6 +10,7 @@ import com.wafflestudio.seminar.core.user.domain.UserDTO
 import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.web.bind.annotation.*
 import javax.transaction.Transactional
+import javax.validation.Valid
 
 @RestController
 class UserController (
@@ -31,7 +32,7 @@ class UserController (
     fun editProfile(
         @RequestHeader("Authorization") accessToken: String,
         @UserContext userId: Long,
-        @RequestBody request: EditRequest
+        @Valid @RequestBody request: EditRequest
     ) : UserDTO {
         if(request.email != null) throw SeminarException(ErrorCode.EDIT_EMAIL_FORBIDDEN)
         return userService.editProfile(userId, request)
