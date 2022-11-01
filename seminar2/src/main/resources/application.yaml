@@ -5,10 +5,8 @@ spring:
     properties:
       hibernate:
         show_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
-      
+      ddl-auto: create-drop
 
 auth.jwt:
   jwtSecret: w9z$B&E)H@McQfTjWnZr4u7x!A%D*F-J
@@ -31,4 +29,4 @@ spring:
         show_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: update

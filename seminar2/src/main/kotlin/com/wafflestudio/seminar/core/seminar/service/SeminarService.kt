@@ -50,6 +50,7 @@ class SeminarService(
     }
 
     // TODO 다양한 방식에 따른 쿼리 수를 설명할 수 있어야 한다.
+    @Transactional(readOnly = true)
     fun getSeminarList(request: GetSeminarRequest): List<Seminar> {
         val (name, order) = request
         val isAscending = order == "earliest"
@@ -58,6 +59,8 @@ class SeminarService(
 
         // userSeminar의 user를 한번에 모두 가져와서 딕셔너리에 담아둠
         val userIds = seminars.flatMap { it.userSeminars.map { it.userId } }
+
+        // FIXME : N+1 문제가 나는 포인트 (see findAllWithProfiles)
         val userMap = userRepository.findAllById(userIds).associateBy { it.id }
 
         // 조합해서 반환

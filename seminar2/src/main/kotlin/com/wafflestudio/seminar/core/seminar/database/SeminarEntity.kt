@@ -74,4 +74,17 @@ class SeminarEntity(
             throw Seminar400("세미나 정원이 다 찼습니다.")
         }
     }
+
+    companion object {
+        fun fixture(
+            creator: UserEntity,
+            name: String = "",
+            capacity: Int = 0,
+            count: Int = 0,
+            time: LocalTime = LocalTime.now(),
+            online: Boolean = true,
+        ): SeminarEntity {
+            return SeminarEntity(name, capacity, count, time, online, creator)
+        }
+    }
 }
