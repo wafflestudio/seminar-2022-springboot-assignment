@@ -14,6 +14,15 @@ open class Seminar409(msg: String) : SeminarException(msg, HttpStatus.CONFLICT)
 object AuthTokenMissingException :
     Seminar401("Authorization token is missing")
 
+// 403
+object NotAllowedToParticipateException :
+    Seminar403("Only users enrolled as participant can participate")
+object NotAllowedToCreateSeminarException :
+    Seminar403("Only instructors can create seminar")
+
+// 404
+object SeminarNotFoundException :
+    Seminar404("Seminar not found with given id")
 
 open class Seminar500(msg: String) : SeminarException(msg, HttpStatus.INTERNAL_SERVER_ERROR)
 

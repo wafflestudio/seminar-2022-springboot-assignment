@@ -8,6 +8,7 @@ plugins {
     kotlin("plugin.jpa") version "1.6.21"
     kotlin("plugin.allopen") version "1.3.71"
     kotlin("plugin.noarg") version "1.3.71"
+    kotlin("kapt") version "1.3.71"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
@@ -39,7 +40,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
-
+    
+    // QueryDSL
+    implementation("com.querydsl:querydsl-jpa:5.0.0")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     // Auth
     implementation("org.springframework.boot:spring-boot-starter-security")

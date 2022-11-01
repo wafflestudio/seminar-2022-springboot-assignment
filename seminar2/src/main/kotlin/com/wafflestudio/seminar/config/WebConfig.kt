@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.config
 
 import com.wafflestudio.seminar.common.*
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
+import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.MethodParameter
 import org.springframework.web.bind.support.WebDataBinderFactory
@@ -66,17 +67,32 @@ class AuthArgumentResolver(
 
 @Configuration
 class AuthInterceptor(
-    private val authTokenService: AuthTokenService
+    private val authTokenService: AuthTokenService,
+    private val userService: UserService,
 ): HandlerInterceptor {
     
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val handlerCasted = handler as? HandlerMethod ?: return true
         
         if (handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
-            authTokenService.verifyToken(
-                request.getHeader("Authorization")
-                    ?: throw AuthTokenMissingException
-            )
+            val authToken = request.getHeader("Authorization") 
+                ?: throw AuthTokenMissingException
+            
+            authTokenService.verifyToken(authToken)
+
+            if (handlerCasted.hasMethodAnnotation((AuthParticipant::class.java))) {
+                val userid = authTokenService.getCurrentUserId(authToken)
+                
+                if (userService.getUserById(userid).participant == null) {
+                    throw NotAllowedToParticipateException
+                }
+            } else if (handlerCasted.hasMethodAnnotation(AuthInstructor::class.java)) {
+                val userid = authTokenService.getCurrentUserId(authToken)
+
+                if (userService.getUserById(userid).instructor == null) {
+                    throw NotAllowedToCreateSeminarException
+                }
+            }
         }
         
         return super.preHandle(request, response, handler)
