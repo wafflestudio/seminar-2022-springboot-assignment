@@ -18,6 +18,7 @@ class UserSeminarEntity (
     @JoinColumn(name = "seminar_id")
     val seminar: SeminarEntity,
 
+    val role: String,
     val joinedAt: LocalDateTime,
     var droppedAt: LocalDateTime? = null,
     var isActive: Boolean = true,

@@ -12,4 +12,5 @@ data class Seminar (
     val online: Boolean = true,
     val instructors: MutableList<Instructor> = mutableListOf(),
     val participants: MutableList<Participant> = mutableListOf(),
+    val participantCount: Int = 0,
 )
