@@ -55,6 +55,11 @@ dependencies {
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    
+    // Mockk
+    val mockkVersion = "1.12.+"
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("com.ninja-squad:springmockk:3.1.1")
 
     // QueryDSL
     val querydslVersion = "5.0.0"
