@@ -14,4 +14,15 @@ class SeminarEntity (
     
     @OneToMany(mappedBy="seminar", cascade = [CascadeType.ALL])
     val userSeminars: MutableList<UserSeminarEntity> = mutableListOf()
-): BaseTimeEntity()
+): BaseTimeEntity() {
+    fun toSeminar(): Seminar {
+        return Seminar(
+            id = id,
+            name = name,
+            capacity = capacity,
+            count = count,
+            time = time,
+            online = online,
+        )
+    }
+}
