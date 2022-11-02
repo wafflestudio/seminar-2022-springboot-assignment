@@ -88,7 +88,7 @@ class UserServiceImpl(
             }
             updateRequest.year?.let {
                 user.instructorProfile!!.year = it
-            } ?: throw NullNumberException
+            }
         }
         
         return user.toUserInfo()

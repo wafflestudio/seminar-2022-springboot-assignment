@@ -11,6 +11,10 @@ open class Seminar404(msg: String) : SeminarException(msg, HttpStatus.NOT_FOUND)
 open class Seminar409(msg: String) : SeminarException(msg, HttpStatus.CONFLICT)
 
 // 400
+object BlankSeminarNameNotAllowedException :
+    Seminar400("Seminar name is not allowed to be empty string")
+object NoInstructingSeminarException :
+    Seminar400("No instructing seminar to update exists")
 object SeminarCapacityFullException :
     Seminar400("Seminar capacity is full")
 object AlreadyParticipatingException :
@@ -25,6 +29,8 @@ object AuthTokenMissingException :
     Seminar401("Authorization token is missing")
 
 // 403
+object NotAllowedToUpdateSeminarException :
+    Seminar403("Only instructors can update seminar info")
 object NotAllowedToParticipateException :
     Seminar403("Current user is not participant")
 object NotAllowedToInstructException :

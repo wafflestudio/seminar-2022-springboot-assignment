@@ -8,11 +8,11 @@ import javax.persistence.*
 @Entity
 @Table(name = "seminars")
 class SeminarEntity(
-    val name: String,
-    val capacity: Int,
-    val count: Int,
-    val time: LocalTime,
-    val online: Boolean,
+    var name: String,
+    var capacity: Int,
+    var count: Int,
+    var time: LocalTime,
+    var online: Boolean,
 ) : BaseTimeEntity() {
     @OneToMany(mappedBy = "seminar")
     val participantSet: MutableSet<ParticipantSeminarTableEntity> = mutableSetOf();

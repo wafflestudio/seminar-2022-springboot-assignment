@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.core.seminar.service
 
 import com.wafflestudio.seminar.common.*
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
+import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.domain.SeminarDetailInfo
 import com.wafflestudio.seminar.core.seminar.database.*
 import com.wafflestudio.seminar.core.seminar.domain.SeminarInfo
@@ -15,6 +16,7 @@ import java.time.LocalDateTime
 
 interface SeminarService {
     fun createSeminar(user_id: Long, createSeminarRequest: CreateSeminarRequest): SeminarDetailInfo
+    fun updateSeminar(user_id: Long, updateSeminarRequest: UpdateSeminarRequest): SeminarDetailInfo
     fun getSeminarOption(name: String?, order: String?): List<SeminarInfo>
     fun getSeminarById(seminar_id: Long): SeminarInfo
     fun participateSeminar(user_id: Long, seminar_id: Long): SeminarDetailInfo
@@ -46,6 +48,29 @@ class SeminarServiceImpl(
         seminarEntity.instructorSet.add(instructorSeminarTableEntity)
 
         return seminarEntity.toSeminarDetailInfo()
+    }
+
+    @Transactional
+    override fun updateSeminar(user_id: Long, updateSeminarRequest: UpdateSeminarRequest): SeminarDetailInfo {
+        if (updateSeminarRequest.name != null && updateSeminarRequest.name.isEmpty()) {
+            throw BlankSeminarNameNotAllowedException
+        }
+        val seminar = findSeminar(updateSeminarRequest.id)
+        val instructorSeminarTableEntity = instructorSeminarTableRepository.findByInstructorId(user_id)
+            ?: throw NoInstructingSeminarException
+        if (instructorSeminarTableEntity.seminar != seminar) {
+            throw NotAllowedToUpdateSeminarException
+        }
+        
+        seminar.let { 
+            it.name = updateSeminarRequest.name ?: it.name
+            it.capacity = updateSeminarRequest.capacity ?: it.capacity
+            it.count = updateSeminarRequest.count ?: it.count
+            it.time = updateSeminarRequest.time ?: it.time
+            it.online = updateSeminarRequest.online ?: it.online
+        }
+        
+        return seminar.toSeminarDetailInfo()
     }
 
     override fun getSeminarOption(name: String?, order: String?): List<SeminarInfo> {

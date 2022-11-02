@@ -4,4 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface ParticipantSeminarTableRepository : JpaRepository<ParticipantSeminarTableEntity, Long>
 
-interface InstructorSeminarTableRepository : JpaRepository<InstructorSeminarTableEntity, Long>
+interface InstructorSeminarTableRepository : JpaRepository<InstructorSeminarTableEntity, Long> {
+    fun findByInstructorId(instructor_id: Long): InstructorSeminarTableEntity?
+}
