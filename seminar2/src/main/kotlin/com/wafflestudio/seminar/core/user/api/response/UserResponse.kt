@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.user.domain.userResponse
+package com.wafflestudio.seminar.core.user.api.response
 
 import java.time.LocalDateTime
 
