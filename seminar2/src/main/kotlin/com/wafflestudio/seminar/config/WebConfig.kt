@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.config
 
 import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
+import com.wafflestudio.seminar.core.user.service.AuthException
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.MethodParameter
@@ -26,7 +27,7 @@ class WebConfig(
     }
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
-        resolvers.add(authArgumentResolver)
+        //resolvers.add(authArgumentResolver)
     }
 }
 
@@ -56,7 +57,7 @@ class AuthInterceptor (
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val handlerCasted = (handler as? HandlerMethod) ?: return true
         if(handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
-            val authToken = request.getHeader("Authorization")?: throw NullPointerException()
+            val authToken = request.getHeader("Authorization")?: throw AuthException("인증되지 않은 사용자입니다.")
             authTokenService.verifyToken(authToken)
         }
         return super.preHandle(request, response, handler)

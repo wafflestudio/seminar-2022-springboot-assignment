@@ -1,14 +1,19 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
+import java.time.Instant.now
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.chrono.ChronoLocalDate
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Service
@@ -25,23 +30,34 @@ class AuthTokenService(
    *   검증할지, 또 만료는 어떻게 시킬 수 있을지 고민해보아요.
    */
   fun generateTokenByEmail(email: String): AuthToken {
-    val claims: MutableMap<String, Any>
-    val expiryDate: Date
-    val timeNow = System.currentTimeMillis() + authProperties.jwtExpiration
-    expiryDate = Date(timeNow)
-    claims = mutableMapOf("email" to email, "expiryDate" to expiryDate)
-    val resultToken = Jwts.builder().addClaims(claims).signWith(signingKey).compact()
+    val headers: MutableMap<String, Any> = mutableMapOf(
+      Pair("alg", "HS256"),
+      Pair("typ", "JWT")
+    )
+    val claims: MutableMap<String, Any> = mutableMapOf("email" to email)
+    val resultToken = Jwts.builder()
+      .setHeader(headers)
+      .setExpiration(Date.from(now().plus(authProperties.jwtExpiration, ChronoUnit.SECONDS)))
+      .setIssuer(authProperties.issuer)
+      .addClaims(claims)
+      .signWith(signingKey)
+      .compact()
 
     return AuthToken(resultToken)
   }
 
   fun verifyToken(authToken: String) {
-    TODO()
+    try {
+      getCurrentUserId(authToken)
+    } catch(e: ExpiredJwtException) {
+      throw AuthException("만료된 토큰입니다.")
+    }
   }
 
   fun getCurrentUserId(authToken: String): Long {
-    val email = parse(authToken).body["email"]
-    return userRepository.findByEmail(email.toString())!!.id
+    val email = parse(authToken).body["email"].toString()
+    val user = userRepository.findByEmail(email) ?: throw AuthException("유효하지 않은 토큰입니다.")
+    return user.id
   }
 
   /**
@@ -49,7 +65,8 @@ class AuthTokenService(
    *   적절한 인증 처리가 가능하도록 구현해주세요!
    */
   private fun parse(authToken: String): Jws<Claims> {
+    if(!authToken.startsWith(tokenPrefix)) throw AuthException("Authorization Header의 형식이 잘못되었습니다.")
     val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
-    return Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(prefixRemoved)
+    return Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(prefixRemoved) ?: throw AuthException("유효하지 않은 토큰입니다.")
   }
 }
