@@ -25,6 +25,7 @@ class SeminarController(
     private val seminarService: SeminarService
 ) {
     
+    @Authenticated
     @AuthInstructor
     @PostMapping("/api/v1/seminar")
     fun createSeminar(

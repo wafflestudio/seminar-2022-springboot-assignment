@@ -34,6 +34,11 @@ class SeminarServiceImpl(
 
     @Transactional
     override fun createSeminar(user_id: Long, createSeminarRequest: CreateSeminarRequest): SeminarDetailInfo {
+        val user = findUser(user_id)
+        if (user.instructingSeminars.size > 0) {
+            throw MultipleInstructingSeminarException
+        }
+        
         val seminarEntity = seminarRepository.save(
             createSeminarRequest.toSeminarEntity()
         )
@@ -74,7 +79,9 @@ class SeminarServiceImpl(
     }
 
     override fun getSeminarOption(name: String?, order: String?): List<SeminarInfo> {
-        val seminarEntityList = seminarRepository.findByNameLatest(name)
+        val seminarEntityList = name
+            ?.let { seminarRepository.findByNameLatest(name) }
+            ?: seminarRepository.findAll()
 
         if (order == "earliest") {
             seminarEntityList.reverse()
@@ -109,6 +116,9 @@ class SeminarServiceImpl(
                     false -> throw DroppedSeminarException
                 }
             }
+        }
+        if (user.instructingSeminars.isNotEmpty() && user.instructingSeminars.first() == seminar) {
+            throw CannotParticipateInstructingSeminarException
         }
 
         val participantSeminarTableEntity = participantSeminarTableRepository.save(

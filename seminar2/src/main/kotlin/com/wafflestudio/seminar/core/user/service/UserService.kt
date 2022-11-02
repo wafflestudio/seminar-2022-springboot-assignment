@@ -61,6 +61,7 @@ class UserServiceImpl(
         return authTokenService.generateTokenByEmail(userEntity.email)
     }
 
+    @Transactional
     override fun getUserById(user_id: Long): UserInfo {
         return findUser(user_id).toUserInfo()
     }

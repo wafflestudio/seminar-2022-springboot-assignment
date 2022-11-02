@@ -37,6 +37,8 @@ object NotAllowedToInstructException :
     Seminar403("Current user is not instructor")
 object InstructorNotAllowedToDropException :
     Seminar403("Instructor cannot drop instructing seminar")
+object CannotParticipateInstructingSeminarException :
+    Seminar403("Cannot participate instructing seminar")
 
 // 404
 object SeminarNotFoundException :
