@@ -57,8 +57,8 @@ class SeminarController(
         @RequestBody @Valid joinSeminarRequest: JoinSeminarRequest,
     ): SeminarDetailInfo {
         return when (joinSeminarRequest.role) {
-            UserRole.Participant -> seminarService.participateSeminar(user_id, seminar_id)
-            UserRole.Instructor -> seminarService.instructSeminar(user_id, seminar_id)
+            UserRole.PARTICIPANT -> seminarService.participateSeminar(user_id, seminar_id)
+            UserRole.INSTRUCTOR -> seminarService.instructSeminar(user_id, seminar_id)
         }
     }
     
@@ -68,7 +68,7 @@ class SeminarController(
         @UserContext user_id: Long,
         @PathVariable seminar_id: Long,
     ): SeminarDetailInfo {
-        return dropSeminar(user_id, seminar_id)
+        return seminarService.dropSeminar(user_id, seminar_id)
     }
     
 }
