@@ -1,0 +1,32 @@
+spring:
+  profiles:
+    active: local
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+    hibernate:
+      ddl-auto: create-drop
+
+auth.jwt:
+  jwtSecret: w9z$B&E)H@McQfTjWnZr4u7x!A%D*F-J
+  issuer: seminar.wafflestudio.com
+  jwtExpiration: 6000
+      
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
+    username: root
+    password: seminar
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
