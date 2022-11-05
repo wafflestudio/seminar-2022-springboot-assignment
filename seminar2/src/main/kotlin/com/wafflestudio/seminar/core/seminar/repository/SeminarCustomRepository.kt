@@ -13,7 +13,7 @@ import com.wafflestudio.seminar.core.user.domain.enums.RoleType
 
 interface SeminarCustomRepository { 
     fun findSeminarById(seminarId: Long): SeminarDTO
-    fun findSeminarByName(name: String?, order: String?): List<SeminarGroupByDTO>?
+    fun findSeminarsContainingWord(word: String?, order: String?): List<SeminarGroupByDTO>
     fun checkCapacity(seminarId: Long): Long
 }
 
@@ -72,8 +72,7 @@ class SeminarCustomRepositoryImpl(
         return dto
     }
 
-
-    override fun findSeminarByName(name: String?, order: String?): List<SeminarGroupByDTO>? {
+    override fun findSeminarsContainingWord(word: String?, order: String?): List<SeminarGroupByDTO> {
         var dto = queryFactory
             .select(
                 Projections.fields(
@@ -91,7 +90,7 @@ class SeminarCustomRepositoryImpl(
             )
             .from(seminarEntity)
             .leftJoin(seminarEntity.userSeminarList, userSeminarEntity)
-            .where(seminarEntity.name.contains(name?:""))
+            .where(seminarEntity.name.contains(word?:""))
             .groupBy(seminarEntity.id)
             .orderBy(
                 when (order) {

@@ -1,9 +1,8 @@
 package com.wafflestudio.seminar.core.user.api.request
 
-import javax.validation.constraints.Pattern
 import javax.validation.constraints.Positive
 
-data class EditRequest(
+data class EditProfileRequest(
     val email: String? = null,
     val username: String? = null,
     val password: String? = null,

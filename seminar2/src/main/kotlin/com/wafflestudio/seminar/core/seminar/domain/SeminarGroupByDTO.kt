@@ -6,7 +6,6 @@ class SeminarGroupByDTO @QueryProjection constructor(
     var id: Long?=0,
     var name: String?="",
 ) {
-    var instructors: List<SeminarInstructorDTO>?=
-        emptyList()
+    var instructors: List<SeminarInstructorDTO>?= emptyList()
     var participantCount: Long?=0
 }

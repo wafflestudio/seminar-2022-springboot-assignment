@@ -2,7 +2,7 @@ package com.wafflestudio.seminar.core.seminar.api
 
 import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
-import com.wafflestudio.seminar.core.seminar.api.request.RegRequest
+import com.wafflestudio.seminar.core.seminar.api.request.RegisterRequest
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.seminar.domain.SeminarDTO
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
@@ -38,9 +38,9 @@ class SeminarController (
     @GetMapping("/api/v1/seminar")
     fun getSeminar(
         @RequestHeader("Authorization") accessToken: String,
-        @RequestParam name: String?,
+        @RequestParam word: String?,
         @RequestParam order: String?,
-    ) = seminarService.getSeminar(name, order)
+    ) = seminarService.findSeminarsContainingWord(word, order)
     
     
     @Authenticated
@@ -54,12 +54,12 @@ class SeminarController (
     @Transactional
     @Authenticated
     @PostMapping("/api/v1/seminar/{seminar_id}/user")
-    fun regSeminar(
+    fun registerSeminar(
         @RequestHeader("Authorization") accessToken: String,
         @UserContext userId: Long,
         @PathVariable("seminar_id") seminarId: Long,
-        @Valid @RequestBody request: RegRequest
-    ): Any? = seminarService.regSeminar(userId, seminarId, request)
+        @Valid @RequestBody request: RegisterRequest
+    ): Any? = seminarService.registerSeminar(userId, seminarId, request)
 
     
     @Transactional

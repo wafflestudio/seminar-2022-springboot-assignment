@@ -4,7 +4,7 @@ import com.wafflestudio.seminar.common.ErrorCode
 import com.wafflestudio.seminar.common.SeminarException
 import com.wafflestudio.seminar.core.UserSeminar.domain.UserSeminarEntity
 import com.wafflestudio.seminar.core.UserSeminar.repository.UserSeminarRepository
-import com.wafflestudio.seminar.core.seminar.api.request.RegRequest
+import com.wafflestudio.seminar.core.seminar.api.request.RegisterRequest
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.seminar.domain.SeminarDTO
 import com.wafflestudio.seminar.core.seminar.domain.SeminarEntity
@@ -15,15 +15,16 @@ import com.wafflestudio.seminar.core.user.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 interface SeminarService {
     fun makeSeminar(userId: Long, request: SeminarRequest): SeminarDTO
     fun editSeminar(userId: Long, request: SeminarDTO): SeminarDTO
     
-    fun getSeminar(name: String?, order: String?): Any?
+    fun findSeminarsContainingWord(word: String?, order: String?): List<SeminarGroupByDTO>
     fun findSeminarById(seminarId: Long) : SeminarDTO
     
-    fun regSeminar(userId: Long, seminarId: Long, request:RegRequest): Any?
+    fun registerSeminar(userId: Long, seminarId: Long, request:RegisterRequest): SeminarDTO
     fun dropSeminar(userId: Long, seminarId: Long): SeminarDTO
 }
 
@@ -89,8 +90,8 @@ class SeminarServiceImpl(
     
 
     // 세미나명에 name이 포함된 세미나가 전혀 없다면 빈 리스트를 반환
-    override fun getSeminar(name: String?, order: String?): List<SeminarGroupByDTO> =
-        seminarRepository.findSeminarByName(name, order)!!
+    override fun findSeminarsContainingWord(word: String?, order: String?): List<SeminarGroupByDTO> =
+        seminarRepository.findSeminarsContainingWord(word, order)
         
 
     override fun findSeminarById(seminarId: Long): SeminarDTO {
@@ -101,7 +102,7 @@ class SeminarServiceImpl(
     }
     
     
-    override fun regSeminar(userId: Long, seminarId: Long, request: RegRequest): Any? {
+    override fun registerSeminar(userId: Long, seminarId: Long, request: RegisterRequest): SeminarDTO {
         // 세미나 정보가 존재하는지 확인 -> 없으면 403 에러
         var seminar = seminarRepository.findByIdOrNull(seminarId)?:
             throw SeminarException(ErrorCode.SEMINAR_NOT_FOUND)
@@ -164,7 +165,10 @@ class SeminarServiceImpl(
             throw SeminarException(ErrorCode.CANNOT_DROP)
         // 드랍처리
         entity.isActive = false
-        entity.droppedAt = LocalDateTime.now()
+        entity.droppedAt = LocalDateTime.parse(
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        )
         userSeminarRepository.save(entity)
         
         return seminarRepository.findSeminarById(seminarId)

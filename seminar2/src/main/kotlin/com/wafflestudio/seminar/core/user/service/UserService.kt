@@ -3,9 +3,7 @@ package com.wafflestudio.seminar.core.user.service
 import com.wafflestudio.seminar.common.ErrorCode
 import com.wafflestudio.seminar.common.SeminarException
 import com.wafflestudio.seminar.config.AuthConfig
-import com.wafflestudio.seminar.core.user.api.request.EditRequest
-import com.wafflestudio.seminar.core.user.api.request.RegParRequest
-import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.domain.UserDTO
 import com.wafflestudio.seminar.core.user.domain.enums.RoleType
 import com.wafflestudio.seminar.core.user.domain.UserEntity
@@ -23,9 +21,9 @@ interface UserService {
     fun getMe(userId: Long): UserDTO
     
     fun getUserProfile(userId: Long, targetUserId: Long): UserDTO
-    fun editProfile(userId: Long, request: EditRequest): UserDTO
+    fun editProfile(userId: Long, request: EditProfileRequest): UserDTO
     
-    fun addParRole(userId: Long, request: RegParRequest): UserDTO
+    fun addParticipantRole(userId: Long, request: ParticipantRoleRequest): UserDTO
 }
 
 
@@ -96,7 +94,7 @@ class UserServiceImpl(
     }
     
     
-    override fun editProfile(userId: Long, request: EditRequest): UserDTO {
+    override fun editProfile(userId: Long, request: EditProfileRequest): UserDTO {
         var targetUser = userRepository.findById(userId).get()
         
         // (유형에 맞게) 수정을 요청한 필드에 대해 수정 작업
@@ -124,7 +122,7 @@ class UserServiceImpl(
     }
 
 
-    override fun addParRole(userId: Long, request: RegParRequest): UserDTO {
+    override fun addParticipantRole(userId: Long, request: ParticipantRoleRequest): UserDTO {
         var targetUser = userRepository.findById(userId).get()
         
         // 참여자 등록을 했다면, 참여자 프로필은 더이상 null 상태일 수 없음
