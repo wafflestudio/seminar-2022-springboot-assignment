@@ -103,7 +103,7 @@ class SeminarServiceImpl(
     
     
     override fun registerSeminar(userId: Long, seminarId: Long, request: RegisterRequest): SeminarDTO {
-        // 세미나 정보가 존재하는지 확인 -> 없으면 403 에러
+        // (예외 처리 1) 세미나 정보가 존재하는지 확인 -> 없으면 404 에러
         var seminar = seminarRepository.findByIdOrNull(seminarId)?:
             throw SeminarException(ErrorCode.SEMINAR_NOT_FOUND)
         // 유저 정보 찾기
@@ -111,8 +111,10 @@ class SeminarServiceImpl(
          
         // 기존 수강 이력 존재? - 중도 포기 or 현재 참여중
         val oldReg = userSeminarRepository.findByUser_IdAndSeminar_Id(user.id, seminarId)?.also {
-            if (it.role == PARTICIPANT && !it.isActive) // 이전에 중도포기했던 세미나
+            // (예외 처리 2) 수강생, 기 드랍 세미나의 재 수강 요청
+            if (it.role == PARTICIPANT && !it.isActive)
                 throw SeminarException(ErrorCode.ALREADY_DROPPED)
+            // (예외 처리 3) 수강생, 현재 참여하고 있는 세미나에 또 다시 수강 요청
             else
                 throw SeminarException(ErrorCode.ALREADY_PARTICIPATE)
         } // -> null이면 해당 강좌를 이전에 수강한 이력이 없는 거니까 상관없음. 그게 맞는 거임.
@@ -124,7 +126,7 @@ class SeminarServiceImpl(
             PARTICIPANT -> {
                 // 정말로 이 유저가 참여자인지 확인 -> ParticipantProfile을 가지고 있는지
                 if(user.participantProfile == null)
-                    throw SeminarException(ErrorCode.INVALID_REQUEST)
+                    throw SeminarException(ErrorCode.INVALID_REGISTER_REQUEST)
                 // 활성회원 여부 확인
                 if (user.participantProfile!!.isRegistered == false)
                     throw SeminarException(ErrorCode.NOT_REGISTERED)
@@ -138,7 +140,7 @@ class SeminarServiceImpl(
             INSTRUCTOR -> {
                 // 정말로 진행자 자격이 있는지 확인
                 if(user.instructorProfile == null)
-                    throw SeminarException(ErrorCode.INVALID_REQUEST)
+                    throw SeminarException(ErrorCode.INVALID_REGISTER_REQUEST)
                 // 담당하고 있는 세미나가 존재하는지 확인
                 if(userSeminarRepository.checkInstructingSeminars(user.id) > 0)
                     throw SeminarException(ErrorCode.ALREADY_INSTRUCTED)
@@ -153,17 +155,24 @@ class SeminarServiceImpl(
     }
     
     override fun dropSeminar(userId: Long, seminarId: Long): SeminarDTO {
-        // 해당 세미나가 존재하지 않음 -> 403 에러
+        // (예외 처리 1) 해당 세미나가 존재하지 않음 -> 404 에러
         if(!seminarRepository.existsById(seminarId))
             throw SeminarException(ErrorCode.SEMINAR_NOT_FOUND)
         
         // 드랍하려는 유저
         var user = userRepository.findById(userId).get()
-        var entity = userSeminarRepository.findByUser_IdAndSeminar_Id(user.id, seminarId)!!
-        // 그 유저가 만약 드랍하려고 하는 세미나의 진행자라면
+        var entity = userSeminarRepository.findByUser_IdAndSeminar_Id(user.id, seminarId) ?:
+            // (예외 처리 2) 본 세미나 참여 이력이 없음에도 드랍 요청 -> 400 에러
+            throw SeminarException(ErrorCode.NOT_PARTICIPATE_SEMINAR)
+        
+        // (예외 처리 3) 본 세미나 진행자의 드랍 요청 -> 400 에러
         if(entity.role == INSTRUCTOR)
-            throw SeminarException(ErrorCode.CANNOT_DROP)
+            throw SeminarException(ErrorCode.INSTRUCTOR_CANNOT_DROP)
+        
         // 드랍처리
+        // (예외 처리 3) 이미 드랍한 강의인데 재 드랍 요청 -> 400 에러
+        if(!entity.isActive) throw SeminarException(ErrorCode.ALREADY_DROPPED)
+        // 정상적인 드랍 요청 수행
         entity.isActive = false
         entity.droppedAt = LocalDateTime.parse(
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),

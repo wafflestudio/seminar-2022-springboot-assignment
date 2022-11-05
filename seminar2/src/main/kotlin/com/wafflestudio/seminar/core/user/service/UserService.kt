@@ -106,7 +106,7 @@ class UserServiceImpl(
             // 유저가 세미나 진행자일 수도 있고 참여자일 수도 있다는 점에서 해당 profile이 존재하는지 여부로 살펴보기
             if(targetUser.participantProfile != null){
                 if(this.isRegistered != null)
-                    throw SeminarException(ErrorCode.EDIT_ISREG_FORBIDDEN)
+                    throw SeminarException(ErrorCode.EDIT_REGISTRATION_FORBIDDEN)
                 if(this.university != null)
                     targetUser.participantProfile?.university = this.university.trim()
             }
