@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user
 
+import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
@@ -7,6 +8,7 @@ import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.domain.User
 import com.wafflestudio.seminar.core.user.service.UserService
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.`as`
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -69,5 +71,24 @@ internal class UserServiceTest @Autowired constructor(
         
         // then
         assertThat(result.email).isEqualTo("w1@affle.com")
+    }
+    
+    @Test
+    @Transactional
+    fun `테스트 4 - 프로필을 수정할 수 있다 + 진행자와 수강생 모두 작동`() {
+        // given
+        val request1 = userTestHelper.createInstructorUser("w1@affle.com", password = "1234", company = "waffle", year = 0)
+        val request2 = userTestHelper.createParticipantUser("w2@affle.com", password = "1234", university = "waffle")
+        val editRequest1 = EditProfileRequest("gyu", company = "waffle1", year = 1)
+        val editRequest2 = EditProfileRequest("seonggyu", university = "waffle1")   
+        
+        // when
+        val result1 = userService.editProfile(request1.id, editRequest1)
+        val result2 = userService.editProfile(request2.id, editRequest2)
+        
+        // then
+        assertThat(userRepository.findAll()).hasSize(2)
+        assertThat(editRequest1.company).isEqualTo("waffle1")
+        assertThat(editRequest2.university).isEqualTo("waffle1")
     }
 }
