@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component
 @SpringBootTest
 internal class UserServiceTest @Autowired constructor(
         private val userService: UserService,
+        private val userTestHelper: UserTestHelper,
         private val userRepository: UserRepository,
 ) {
 
@@ -41,4 +42,18 @@ internal class UserServiceTest @Autowired constructor(
         assertThat(userRepository.findAll()).hasSize(4)
     }
 
+    @Test
+    fun `테스트 2 - 유저를 만들고 로그인 할 수 있다`() {
+        // given
+        userTestHelper.createUser("w1@affle.com", password = "1234")
+        val request = SignInRequest("w1@affle.com", "1234")
+
+        // when
+
+        val result = userService.signIn(request)
+
+        // then
+        assertThat(result.accessToken).isNotEmpty
+        assertThat(userRepository.findAll()).hasSize(1)
+    }
 }
