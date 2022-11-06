@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.user
 
 import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
+import com.wafflestudio.seminar.core.user.api.request.RegisterParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
@@ -88,7 +89,24 @@ internal class UserServiceTest @Autowired constructor(
         
         // then
         assertThat(userRepository.findAll()).hasSize(2)
-        assertThat(editRequest1.company).isEqualTo("waffle1")
-        assertThat(editRequest2.university).isEqualTo("waffle1")
+        assertThat(request1.instructorProfile?.company).isEqualTo("waffle1")
+        assertThat(request2.participantProfile?.university).isEqualTo("waffle1")
+    }
+    
+    
+    @Test
+    @Transactional
+    fun `테스트 5 - 진행자도 수강생으로 등록할 수 있다`() {
+        
+        // given
+        val request = userTestHelper.createInstructorUser("w1@affle.com", password = "1234", company = "waffle", year = 0)
+        val participant = RegisterParticipantRequest("waffle")
+        
+        // when
+        val result = userService.registerParticipant(request.id,participant)
+    
+        // then
+        assertThat(userRepository.findAll()).hasSize(1)
+        assertThat(request.participantProfile?.university).isEqualTo("waffle")
     }
 }
