@@ -1,18 +1,38 @@
+#spring:
+#  profiles:
+#    active: dev
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
+#    username: root
+#    password: seminar
+#  jpa:
+#    properties:
+#      hibernate:
+#        show_sql: false
+#    hibernate:
+#      ddl-auto: update
+#issuer: WAFFLE_STUDIO
+#jwtSecret: WAFFLE_STUDIO_SPRING_AND_KOTLIN_SEMINAR_SECRET_KEY
+#jwtExpiration: 3600
+
+
+
+
 spring:
   profiles:
     active: dev
   datasource:
     url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
     username: root
-    password: seminar
+    password: toor
   jpa:
     properties:
       hibernate:
         show_sql: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
 
 auth.jwt:
-  issuer: WAFFLE_STUDIO
-  jwtSecret: WAFFLE_STUDIO_SPRING_AND_KOTLIN_SEMINAR_SECRET_KEY
-  jwtExpiration: 3600
+  jwtSecret: w9z$B&E)H@McQfTjWnZr4u7x!A%D*F-J
+  issuer: seminar.wafflestudio.com
+  jwtExpiration: 6000
