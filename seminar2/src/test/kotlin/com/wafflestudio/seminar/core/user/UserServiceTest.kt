@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import javax.transaction.Transactional
 
 @SpringBootTest
 internal class UserServiceTest @Autowired constructor(
@@ -55,5 +56,18 @@ internal class UserServiceTest @Autowired constructor(
         // then
         assertThat(result.accessToken).isNotEmpty
         assertThat(userRepository.findAll()).hasSize(1)
+    }
+    
+    @Test
+    @Transactional  // entity가 영속성의 컨텍스트에 있지 않기 때문에, transaction을 걸어 테스트동안 계속 유지하도록 해둠
+    fun `테스트 3 - 유저를 인증할 수 있다`(){
+        // given
+        val request = userTestHelper.createInstructorUser("w1@affle.com", password = "1234")
+        val id = request.id
+        // when
+        val result = userService.getProfile(id)
+        
+        // then
+        assertThat(result.email).isEqualTo("w1@affle.com")
     }
 }
