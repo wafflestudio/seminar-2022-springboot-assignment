@@ -1,20 +1,19 @@
 package com.wafflestudio.seminar.core.user.database
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import com.wafflestudio.seminar.common.BaseTimeEntity
+import javax.persistence.*
 
 @Entity
 class UserEntity(
     @Column(nullable=false)
-    val username: String,
+    var username: String,
     @Column(nullable=false, unique=true)
-    val email: String,
+    var email: String,
     @Column(nullable=false)
-    val password: String
-) {
-    @Id
-    @GeneratedValue
-    var id: Long? = null
+    var password: String,
+    @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.REMOVE])
+    var participantProfileEntity: ParticipantProfileEntity?,
+    @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.REMOVE])
+    var instructorProfileEntity: InstructorProfileEntity?
+) : BaseTimeEntity() {
 }
