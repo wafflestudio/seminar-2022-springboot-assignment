@@ -1,8 +1,12 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.common.Seminar403
+import com.wafflestudio.seminar.common.Seminar404
+import com.wafflestudio.seminar.core.user.repository.UserRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
@@ -11,37 +15,39 @@ import java.util.*
 @Service
 @EnableConfigurationProperties(AuthProperties::class)
 class AuthTokenService(
-  private val authProperties: AuthProperties,
+    private val authProperties: AuthProperties,
+    private val userRepository: UserRepository
 ) {
-  private val tokenPrefix = "Bearer "
-  private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
+    private val tokenPrefix = "Bearer "
+    private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
 
-  /**
-   * TODO Jwts.builder() 라이브러리를 통해서, 어떻게 필요한 정보를 토큰에 넣어 발급하고,
-   *   검증할지, 또 만료는 어떻게 시킬 수 있을지 고민해보아요.
-   */
-  fun generateTokenByUsername(username: String): AuthToken {
-    val claims: MutableMap<String, Any>
-    val expiryDate: Date
-    val resultToken = Jwts.builder().compact() 
+    fun generateTokenByEmail(email: String): AuthToken {
+        val claims = Jwts.claims()
+        claims["aud"] = userRepository.findByEmail(email)?.username ?: throw Seminar404("User not found")
+        val expiryDate = Date(Date().time + authProperties.jwtExpiration)
+        val resultToken = Jwts.builder()
+            .signWith(signingKey)
+            .setClaims(claims)
+            .setSubject(email)
+            .setIssuer(authProperties.issuer)
+            .setExpiration(expiryDate)
+            .setIssuedAt(Date())
+            .compact()
 
-    return AuthToken(resultToken)
-  }
+        return AuthToken(resultToken)
+    }
 
-  fun verifyToken(authToken: String) {
-    TODO()
-  }
+    fun verifyToken(authToken: String) {
+        parse(authToken)
+    }
 
-  fun getCurrentUserId(authToken: String): Long {
-    TODO()
-  }
+    fun getCurrentUserId(authToken: String): Long {
+        val userEmail = parse(authToken).body.subject
+        return userRepository.findByEmail(userEmail)?.id ?: throw Seminar404("User Authentication Failed")
+    }
 
-  /**
-   * TODO Jwts.parserBuilder() 빌더 패턴을 통해 토큰을 읽어올 수도 있습니다.
-   *   적절한 인증 처리가 가능하도록 구현해주세요!
-   */
-  private fun parse(authToken: String): Jws<Claims> {
-    val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
-    return Jwts.parserBuilder().build().parseClaimsJws(prefixRemoved)
-  }
+    private fun parse(authToken: String): Jws<Claims> {
+        val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
+        return Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(prefixRemoved)
+    }
 }
