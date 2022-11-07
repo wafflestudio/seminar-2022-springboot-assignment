@@ -2,9 +2,9 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/seminar2?createDatabaseIfNotExist=true  
     username: root
-    password: seminar
+    password: server
   jpa:
     properties:
       hibernate:
@@ -13,5 +13,7 @@ spring:
       ddl-auto: update
       
 auth.jwt:
-  jwtSecret: SEMINAR_SECRET_KEY
+  jwtSecret: SEMINAR_SECRET_KEY_SEMINAR_SECRET_KEY
+  issuer: root
+  jwtExpiration: 3000
   # TODO 누락된 정보를 추가해 주세요.

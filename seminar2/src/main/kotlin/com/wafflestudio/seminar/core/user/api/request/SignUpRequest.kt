@@ -1,7 +1,12 @@
 package com.wafflestudio.seminar.core.user.api.request
 
 data class SignUpRequest(
-    val email: String,
-    val username: String,
-    val password: String,
+    val username: String?,
+    val email: String?,
+    val password: String?,
+    val role: String?,
+    val university: String = "",
+    val isRegistered: Boolean = true,
+    val company: String = "",
+    val year: Long? = null,
 )

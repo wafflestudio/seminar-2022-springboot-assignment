@@ -1,13 +1,75 @@
 package com.wafflestudio.seminar.config
 
+import com.wafflestudio.seminar.common.Authenticated
+import com.wafflestudio.seminar.common.Seminar400
+import com.wafflestudio.seminar.common.UserContext
+import com.wafflestudio.seminar.core.user.service.AuthException
+import com.wafflestudio.seminar.core.user.service.AuthTokenService
+import io.jsonwebtoken.JwtException
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.MethodParameter
+import org.springframework.web.bind.support.WebDataBinderFactory
+import org.springframework.web.context.request.NativeWebRequest
+import org.springframework.web.method.HandlerMethod
+import org.springframework.web.method.support.HandlerMethodArgumentResolver
+import org.springframework.web.method.support.ModelAndViewContainer
+import org.springframework.web.servlet.HandlerInterceptor
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 @Configuration
-class WebConfig {
+class WebConfig(
+        private val authInterceptor: AuthInterceptor,
+        private val authArgumentResolver: AuthArgumentResolver,
+): WebMvcConfigurer {
+    override fun addInterceptors(registry: InterceptorRegistry) {
+        registry.addInterceptor(authInterceptor)
+    }
 
-    /**
-     * TODO 세미나 레포지토리를 참고해서,
-     *   헤더를 통한 JWT 인증이 가능하게끔 적절한 컴포넌트들을 구성해주세요.
-     */
-    
+    override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
+        resolvers.add(authArgumentResolver)
+    }
+}
+
+@Configuration
+class AuthArgumentResolver: HandlerMethodArgumentResolver {
+    override fun supportsParameter(parameter: MethodParameter): Boolean {
+        parameter.parameterType
+        parameter.hasMethodAnnotation(UserContext::class.java)
+        TODO("어떤 것들이 가능한지 알아보자.")
+    }
+
+    override fun resolveArgument(
+            parameter: MethodParameter,
+            mavContainer: ModelAndViewContainer?,
+            webRequest: NativeWebRequest,
+            binderFactory: WebDataBinderFactory?
+    ): Any? {
+        parameter.hasMethodAnnotation(UserContext::class.java)
+        TODO("어떤 값을 반환해서 넣어주면 될지 알아보자.")
+    }
+}
+
+@Configuration
+class AuthInterceptor(
+        private val authTokenService: AuthTokenService
+        ): HandlerInterceptor {
+
+    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+        val handlerCasted = (handler as? HandlerMethod) ?: return true
+
+        if (handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
+            val jwtToken = getJwtToken(request)
+            authTokenService.verifyToken(jwtToken)
+        }
+
+        return super.preHandle(request, response, handler)
+    }
+
+    private fun getJwtToken(request: HttpServletRequest): String {
+        return request.getHeader("token") ?: throw Seminar400("token 헤더가 존재하지 않습니다.")
+    }
 }
