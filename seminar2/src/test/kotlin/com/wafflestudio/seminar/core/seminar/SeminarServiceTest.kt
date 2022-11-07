@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.core.seminar
 
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.EditSeminarRequest
+import com.wafflestudio.seminar.core.seminar.api.request.JoinSeminarRequest
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
+import java.time.LocalTime
 import javax.transaction.Transactional
 
 @SpringBootTest
@@ -63,4 +65,22 @@ internal class SeminarServiceTest @Autowired constructor(
         seminarService.createSeminar(user.id, seminar)
         
     }
+    @Test
+    @Transactional
+    fun `세미나에 가입할 수 있다`() {
+        
+        // when
+        val instructor = userTestHelper.createInstructorUser("ins@tructor.com")
+        val participants = (1..10).map { userTestHelper.createParticipantUser("par@ticipant#$it.com") }
+        val seminar = CreateSeminarRequest("seminar1",30,16,"12:30")
+        val seminarEntity = seminarService.createSeminar(instructor.id,seminar)
+
+        
+        // then
+        val result = (0..9).map { seminarService.joinSeminar(seminarEntity.id, participants["$it".toInt()].id, JoinSeminarRequest("PARTICIPANT")) }
+               
+        assertThat(seminarRepository.findByIdOrNull(1)?.getParticipantCount()).isEqualTo(10)
+    }
+
+    
 }
