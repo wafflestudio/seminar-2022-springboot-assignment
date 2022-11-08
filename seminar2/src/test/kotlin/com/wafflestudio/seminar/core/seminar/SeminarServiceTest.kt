@@ -121,22 +121,41 @@ internal class SeminarServiceTest @Autowired constructor(
     @Transactional
     fun `세미나에 가입할 수 있다`() {
 
-        // when
+        // given
         val instructor = userTestHelper.createInstructorUser("ins@tructor.com")
         val participants = (1..10).map { userTestHelper.createParticipantUser("par@ticipant#$it.com") }
         val seminar = CreateSeminarRequest("seminar1", 30, 16, "12:30")
         val seminarEntity = seminarService.createSeminar(instructor.id, seminar)
 
 
-        // then
-
+        // when
         (0..9).map { seminarService.joinSeminar(seminarEntity.id, participants["$it".toInt()].id, JoinSeminarRequest("PARTICIPANT")) }
 
+        // then
         assertThat(seminarRepository.findByIdOrNull(1)?.getParticipantCount()).isEqualTo(10)
         
     }
 
 
+    @Test
+    @Transactional
+    fun `세미나를 드랍할 수 있다`() {
+        
+        // given
+        val instructor = userTestHelper.createInstructorUser("ins@tructor.com")
+        val participants = (1..10).map { userTestHelper.createParticipantUser("par@ticipant#$it.com") }
+        val seminar = CreateSeminarRequest("seminar1", 30, 16, "12:30")
+        val seminarEntity = seminarService.createSeminar(instructor.id, seminar)
+        (0..9).map { seminarService.joinSeminar(seminarEntity.id, participants["$it".toInt()].id, JoinSeminarRequest("PARTICIPANT")) }
+
+        // when
+        val result = seminarService.dropSeminar(1,2)
+        
+        // then
+        assertThat(seminarRepository.findByIdOrNull(1)?.getParticipantCount()).isEqualTo(9)
+        
+    }
+    
     private fun createSeminars(n: Int) {
 
         val user = userTestHelper.createInstructorUser("w$n@ffle.com", password = "1234")
