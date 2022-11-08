@@ -8,6 +8,7 @@ import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
 import com.wafflestudio.seminar.core.user.UserTestHelper
+import com.wafflestudio.seminar.global.HibernateQueryCounter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +23,7 @@ internal class SeminarServiceTest @Autowired constructor(
         private val seminarService: SeminarService,
         private val seminarRepository: SeminarRepository,
         private val userTestHelper: UserTestHelper,
+        private val hibernateQueryCounter: HibernateQueryCounter
 ) {
 
     @Test
@@ -68,6 +70,7 @@ internal class SeminarServiceTest @Autowired constructor(
         }
 
         // given
+        
         val result = seminarService.getSeminar(3)
 
         // then
@@ -82,9 +85,13 @@ internal class SeminarServiceTest @Autowired constructor(
         for (n: Int in 1..10) {
             createSeminars(n)
         }
-
+        
         // given
-        val result1 = seminarService.searchSeminar(null, null)
+
+        val (result1, queryCount) = hibernateQueryCounter.count {
+            seminarService.searchSeminar(null, null)
+        }
+        
         val result2 = seminarService.searchSeminar(null,"earliest")
 
 
@@ -93,6 +100,9 @@ internal class SeminarServiceTest @Autowired constructor(
         assertThat(result2).hasSize(10)
         assertThat(result1[1].name).isEqualTo("seminar9")
         assertThat(result2[1].name).isEqualTo("seminar2")
+        
+        
+        assertThat(queryCount).isEqualTo(1)
     }
 
 
@@ -112,7 +122,7 @@ internal class SeminarServiceTest @Autowired constructor(
         // then
         assertThat(result).hasSize(1)
         assertThat(result[0].name).isEqualTo("seminar2")
-
+        
     }
 
 
@@ -126,8 +136,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val participants = (1..10).map { userTestHelper.createParticipantUser("par@ticipant#$it.com") }
         val seminar = CreateSeminarRequest("seminar1", 30, 16, "12:30")
         val seminarEntity = seminarService.createSeminar(instructor.id, seminar)
-
-
+        
         // when
         (0..9).map { seminarService.joinSeminar(seminarEntity.id, participants["$it".toInt()].id, JoinSeminarRequest("PARTICIPANT")) }
 
