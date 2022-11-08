@@ -78,7 +78,7 @@ internal class UserServiceTest @Autowired constructor(
     @Transactional
     fun `테스트 4 - 프로필을 수정할 수 있다 + 진행자와 수강생 모두 작동`() {
         // given
-        val request1 = userTestHelper.createInstructorUser("w1@affle.com", password = "1234", company = "waffle", year = 0)
+        val request1 = userTestHelper.createInstructorUser("w1@affle.com", password = "1234", company = "waffle", year1 = 0)
         val request2 = userTestHelper.createParticipantUser("w2@affle.com", password = "1234", university = "waffle")
         val editRequest1 = EditProfileRequest("gyu", company = "waffle1", year = 1)
         val editRequest2 = EditProfileRequest("seonggyu", university = "waffle1")   
@@ -99,7 +99,7 @@ internal class UserServiceTest @Autowired constructor(
     fun `테스트 5 - 진행자도 수강생으로 등록할 수 있다`() {
         
         // given
-        val request = userTestHelper.createInstructorUser("w1@affle.com", password = "1234", company = "waffle", year = 0)
+        val request = userTestHelper.createInstructorUser("w1@affle.com", password = "1234", company = "waffle", year1 = 0)
         val participant = RegisterParticipantRequest("waffle")
         
         // when

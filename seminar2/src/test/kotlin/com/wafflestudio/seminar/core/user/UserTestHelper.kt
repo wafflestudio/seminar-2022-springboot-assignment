@@ -30,11 +30,11 @@ internal class UserTestHelper(
             password: String = "",
             role: String = "INSTRUCTOR",
             company: String = "",
-            year: Int = 0,
+            year1: Int = 0,
 
     ): UserEntity {
         val userEntity = UserEntity(email, username, passwordEncoder.encode(password), LocalDateTime.now(),participantProfile = null, instructorProfile = null)
-        val instructorProfile = InstructorProfileEntity(userEntity, company, year)
+        val instructorProfile = InstructorProfileEntity(userEntity, company, year1)
         userEntity.instructorProfile = instructorProfile
         instructorProfileRepository.save(instructorProfile)
         return userRepository.save(userEntity)

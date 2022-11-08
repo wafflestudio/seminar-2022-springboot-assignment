@@ -31,8 +31,26 @@ spring:
         show_sql: false
     hibernate:
       ddl-auto: create-drop
-
+      generate_statistics: true
 auth.jwt:
   jwtSecret: w9z$B&E)H@McQfTjWnZr4u7x!A%D*F-J
   issuer: seminar.wafflestudio.com
   jwtExpiration: 6000
+
+#  
+#spring:
+#  profiles:
+#    active: local
+#  jpa:
+#    properties:
+#      hibernate:
+#        show_sql: true
+#    hibernate:
+#      ddl-auto: create-drop
+#      generate_statistics: true
+#
+#auth.jwt:
+#  jwtSecret: w9z$B&E)H@McQfTjWnZr4u7x!A%D*F-J
+#  issuer: seminar.wafflestudio.com
+#  jwtExpiration: 6000
+

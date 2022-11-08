@@ -48,7 +48,7 @@ class UserAdapter(
             val instructorProfileEntity = InstructorProfileEntity(
                 user = userEntity,
                 company = company!!,
-                year = year
+                year1 = year
             )
             userEntity.instructorProfile = instructorProfileEntity
             instructorProfileRepository.save(instructorProfileEntity)
@@ -84,7 +84,7 @@ class UserAdapter(
         userEntity.participantProfile?.let { it.university = university }
         userEntity.instructorProfile?.let {
             it.company = company
-            it.year = year
+            it.year1 = year
         }
         userRepository.save(userEntity).toProfileResponse()
     }
