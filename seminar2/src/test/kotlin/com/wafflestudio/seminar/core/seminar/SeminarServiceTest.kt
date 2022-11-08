@@ -82,13 +82,14 @@ internal class SeminarServiceTest @Autowired constructor(
     fun `원하는 순서로 세미나 전체를 조회할 수 있다`() {
 
         // when
-        for (n: Int in 1..10) {
-            createSeminars(n)
+        val (result, queryCount) = hibernateQueryCounter.count {
+            for (n: Int in 1..10) {
+                createSeminars(n)
+            }
         }
-        
         // given
 
-        val (result1, queryCount) = hibernateQueryCounter.count {
+        val (result1, queryCount1) = hibernateQueryCounter.count {
             seminarService.searchSeminar(null, null)
         }
         
@@ -102,10 +103,10 @@ internal class SeminarServiceTest @Autowired constructor(
         assertThat(result2[1].name).isEqualTo("seminar2")
         
         
-        assertThat(queryCount).isEqualTo(1)
+        assertThat(queryCount).isEqualTo(40)
+        assertThat(queryCount1).isEqualTo(1)
     }
-
-
+    
 
     @Test
     @Transactional
