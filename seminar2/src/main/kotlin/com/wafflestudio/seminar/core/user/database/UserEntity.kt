@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.user.domain.User
+import com.wafflestudio.seminar.core.userSeminar.database.UserSeminarEntity
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotNull

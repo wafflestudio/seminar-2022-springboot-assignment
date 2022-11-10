@@ -2,18 +2,17 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3307/seminar2?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
     username: root
-    password: 1234
+    password: seminar
   jpa:
     properties:
       hibernate:
         show_sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
 
 auth.jwt:
   jwtSecret: ah3fafk83fh38a4h8oa4gh8oa3kh8ag3al9g3ag39h
   issuer: leeeryboy
   jwtExpiration: 3600000
-  # TODO 누락된 정보를 추가해 주세요.

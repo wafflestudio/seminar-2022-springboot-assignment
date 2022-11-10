@@ -1,6 +1,7 @@
-package com.wafflestudio.seminar.core.user.domain
+package com.wafflestudio.seminar.core.seminar.domain
 
-import java.time.LocalDateTime
+import com.wafflestudio.seminar.core.userSeminar.domain.SeminarInstructor
+import com.wafflestudio.seminar.core.userSeminar.domain.SeminarParticipant
 import java.time.LocalTime
 
 data class Seminar(

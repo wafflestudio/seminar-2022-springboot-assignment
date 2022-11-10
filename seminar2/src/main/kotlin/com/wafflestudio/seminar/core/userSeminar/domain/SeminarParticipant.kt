@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.core.user.domain
+package com.wafflestudio.seminar.core.userSeminar.domain
 
 import java.time.LocalDateTime
 

@@ -1,11 +1,12 @@
-package com.wafflestudio.seminar.core.user.database
+package com.wafflestudio.seminar.core.seminar.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
-import com.wafflestudio.seminar.core.user.api.response.SeminarResponse
+import com.wafflestudio.seminar.core.seminar.api.response.SeminarResponse
+import com.wafflestudio.seminar.core.userSeminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.Role
-import com.wafflestudio.seminar.core.user.domain.Seminar
-import com.wafflestudio.seminar.core.user.domain.SeminarInstructor
-import com.wafflestudio.seminar.core.user.domain.SeminarParticipant
+import com.wafflestudio.seminar.core.seminar.domain.Seminar
+import com.wafflestudio.seminar.core.userSeminar.domain.SeminarInstructor
+import com.wafflestudio.seminar.core.userSeminar.domain.SeminarParticipant
 import java.time.LocalTime
 import javax.persistence.CascadeType
 import javax.persistence.Entity

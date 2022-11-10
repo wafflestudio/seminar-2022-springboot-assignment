@@ -1,10 +1,10 @@
-package com.wafflestudio.seminar.core.user.repository
+package com.wafflestudio.seminar.core.userSeminar.repository
 
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.core.user.database.QSeminarEntity
 import com.wafflestudio.seminar.core.user.database.QUserEntity
 import com.wafflestudio.seminar.core.user.database.QUserSeminarEntity
-import com.wafflestudio.seminar.core.user.database.UserSeminarEntity
+import com.wafflestudio.seminar.core.userSeminar.database.UserSeminarEntity
 import org.springframework.stereotype.Repository
 
 @Repository

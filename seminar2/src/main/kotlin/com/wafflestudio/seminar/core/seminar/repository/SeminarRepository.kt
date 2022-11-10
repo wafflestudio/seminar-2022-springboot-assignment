@@ -1,6 +1,6 @@
-package com.wafflestudio.seminar.core.user.repository
+package com.wafflestudio.seminar.core.seminar.repository
 
-import com.wafflestudio.seminar.core.user.database.SeminarEntity
+import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface SeminarRepository : JpaRepository<SeminarEntity, Long> {

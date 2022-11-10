@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.user.domain.*
+import com.wafflestudio.seminar.core.userSeminar.domain.UserInstructorSeminar
 import javax.persistence.*
 
 @Entity

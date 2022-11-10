@@ -1,11 +1,9 @@
-package com.wafflestudio.seminar.core.user.repository
+package com.wafflestudio.seminar.core.seminar.repository
 
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.core.user.database.QSeminarEntity
-import com.wafflestudio.seminar.core.user.database.SeminarEntity
-import com.wafflestudio.seminar.core.user.domain.Seminar
+import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import org.springframework.stereotype.Repository
-import java.time.LocalTime
 
 @Repository
 class CustomSeminarRepositoryImpl(

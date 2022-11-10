@@ -1,6 +1,6 @@
-package com.wafflestudio.seminar.core.user.api.response
+package com.wafflestudio.seminar.core.seminar.api.response
 
-import com.wafflestudio.seminar.core.user.domain.SeminarInstructor
+import com.wafflestudio.seminar.core.userSeminar.domain.SeminarInstructor
 
 data class SeminarResponse(
     val id: Long,
