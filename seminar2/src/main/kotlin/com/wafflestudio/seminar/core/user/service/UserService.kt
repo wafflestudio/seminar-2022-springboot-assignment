@@ -10,7 +10,6 @@ import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 interface UserService {
     fun getUser(id: Long): UserEntity
@@ -36,13 +35,10 @@ class UserServiceImpl(
     override fun createUser(user: SignUpRequest): AuthToken {
         val entityByEmail = userRepository.findByEmail(user.email)
         if (entityByEmail != null) throw Seminar404("이미 존재하는 이메일입니다.")
-        val now = LocalDateTime.now()
         var newUser = UserEntity(
             username = user.username,
             email = user.email,
             password = user.password,
-            lastLogin = now,
-            dateJoined = now,
         )
 
         if (user.role == "participant") {
@@ -78,7 +74,7 @@ class UserServiceImpl(
         val entity = userRepository.findByEmail(user.email)
             ?: throw Seminar400("해당 email의 유저가 없습니다.")
         if (entity.password != user.password) throw Seminar400("비밀번호가 틀렸습니다.")
-        entity.lastLogin = LocalDateTime.now()
+        entity.updateLastLogin()
         
         return authTokenService.generateTokenByUsername(entity.id)
     }

@@ -10,20 +10,21 @@ class UserEntity(
     val username: String,
     val email: String,
     val password: String,
-    var lastLogin: LocalDateTime,
-    val dateJoined: LocalDateTime,
 
-    @OneToOne(cascade = [CascadeType.ALL], optional = true)
+    @OneToOne(cascade = [CascadeType.ALL], optional = true, orphanRemoval = true)
     @JoinColumn(name = "participant_id")
     var participant: ParticipantEntity? = null,
 
-    @OneToOne(cascade = [CascadeType.ALL], optional = true)
+    @OneToOne(cascade = [CascadeType.ALL], optional = true, orphanRemoval = true)
     @JoinColumn(name = "instructor_id")
     var instructor: InstructorEntity? = null,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
     val userSeminars: MutableList<UserSeminarEntity> = mutableListOf()
 ): BaseTimeEntity() {
+    var lastLogin: LocalDateTime = LocalDateTime.now()
+    val dateJoined: LocalDateTime = LocalDateTime.now()
+    
     fun toUser(): User {
         val seminars = userSeminars.filter { it.role == "participant" }.map { it.toParticipant() }
         val instructingSeminars = userSeminars.filter { it.role == "instructor" }.map { it.toInstructor() }
@@ -38,4 +39,9 @@ class UserEntity(
             instructor = instructor?.toInstructor(instructingSeminars),
         )
     }
+    
+    fun updateLastLogin() {
+        lastLogin = LocalDateTime.now()
+    }
+    
 }
