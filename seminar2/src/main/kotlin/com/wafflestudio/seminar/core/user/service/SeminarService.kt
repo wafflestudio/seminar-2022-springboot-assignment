@@ -33,6 +33,7 @@ class SeminarService(
 
     
     
+    // Query Count 예상: 8, 실제: 10
     fun createSeminar(seminar: SeminarRequest, token: String): GetSeminarInfo {
         //todo: online 여부 외에는 하나라도 빠지면 400으로 응답하며, 적절한 에러 메시지를 포함합니다.
         //todo: name에 0글자가 오는 경우, capacity와 count에 양의 정수가 아닌 값이 오는 경우는 400으로 응답합니다.
@@ -46,15 +47,18 @@ class SeminarService(
                 throw Seminar400("형식에 맞지 않게 입력하지 않은 값이 있습니다")
             }
         }
-        
+
+        // Query #1 -> [N+1] but was 2: fetching instructor profile
         if(userRepository.findByEmail(authTokenService.getCurrentEmail(token))?.instructor == null) {
             throw Seminar403("진행자만 세미나를 생성할 수 있습니다")
         }
-        
-        
+
+        // Query #2
         val saveSeminarEntity = seminarRepository.save(SeminarEntity(seminar, token))
+        // Query #3, #4, #5 -> [N+1] but was 4:  fetching instructor profile
         userSeminarRepository.save(userSeminarInstructorEntity(seminar, token))
 
+        // Query #6, #7
         val seminarInfoDto = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
             qSeminarEntity,
@@ -71,6 +75,7 @@ class SeminarService(
         val userSeminarEntity = seminarInfoDto[0].userSeminarEntity
         val userEntity = seminarInfoDto[0].userEntity
 
+        // Query #8
         val studentList = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
             qSeminarEntity,
@@ -87,6 +92,8 @@ class SeminarService(
             val studentEntity = studentList[i].userEntity
             val studentSeminarEntity = studentList[i].userSeminarEntity
             newList.add(
+                // companion object와 queryDSL의 projection을 함께 사용하여 보다 간결하게 작성할 수 있을 것 같습니다.
+                // 과제 레포의 (branch: asmt2) Seminar.of 및 SeminarEntity.toDto()를 참고하시면 좋을 것 같습니다.
                 StudentDto(
                     studentEntity?.id,
                     studentEntity?.username,
@@ -98,7 +105,9 @@ class SeminarService(
                 )
             )
         }
-        
+
+        // companion object와 queryDSL의 projection을 함께 사용하여 보다 간결하게 작성할 수 있을 것 같습니다.
+        // 과제 레포의 (branch: asmt2) Seminar.of 및 SeminarEntity.toDto()를 참고하시면 좋을 것 같습니다.
         return GetSeminarInfo(
             seminarEntity?.id,
             seminarEntity?.name,
@@ -117,8 +126,6 @@ class SeminarService(
             },newList
 
         )
-
-
     }
     
     fun updateSeminar(seminar: SeminarRequest, token: String): UpdateSeminarInfo {
