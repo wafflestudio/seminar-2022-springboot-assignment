@@ -12,7 +12,7 @@ class InstructorProfileEntity(
     @Column
     var company: String? = "",
 
-    @Column
+    @Column(name = "instructing_year")
     var year: Int? = null ,
 
 
