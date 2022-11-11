@@ -4,6 +4,7 @@ import com.wafflestudio.seminar.common.SeminarException
 import com.wafflestudio.seminar.core.UserSeminar.domain.UserSeminarEntity
 import com.wafflestudio.seminar.core.UserSeminar.repository.UserSeminarRepository
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
+import com.wafflestudio.seminar.core.seminar.domain.SeminarDTO
 import com.wafflestudio.seminar.core.seminar.domain.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.domain.SeminarInstructorDTO
 import com.wafflestudio.seminar.core.seminar.repository.SeminarRepository
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
+import javax.transaction.Transactional
 
 @SpringBootTest
 internal class SeminarServiceTest @Autowired constructor(
@@ -31,9 +33,9 @@ internal class SeminarServiceTest @Autowired constructor(
     
     @AfterEach
     fun clear() {
+        userSeminarRepository.deleteAll()
         userRepository.deleteAll()
         seminarRepository.deleteAll()
-        userSeminarRepository.deleteAll()
     }
 
     /**
@@ -100,8 +102,84 @@ internal class SeminarServiceTest @Autowired constructor(
     }
 
 
+    /**
+     * Testing editSeminar
+     */
+    // FIXME
+    @Transactional
+    @Test
+    fun `Could edit seminar properly`() {
+        // given
+        val (instructorList, participantList) = initializeUsers()
+        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
+        
+        // when
+        val instructor = instructorList[0]
+        val originalSeminar = seminarList[0]
+        val edittedSeminarDTO = SeminarDTO(
+                id = originalSeminar.id,
+                name = "editseminar",
+                capacity = 111,
+                count = 111,
+                time = "22:22",
+                online = false
+        )
+        
+        val edittedSeminarReturn = seminarService.editSeminar(instructor.id, edittedSeminarDTO)
 
-    private fun initializeUsers(): Pair<List<UserEntity>, List<UserEntity>> {
+        // then
+        assertThat(edittedSeminarReturn.id).isEqualTo(edittedSeminarDTO.id)
+        assertThat(edittedSeminarReturn.name).isEqualTo(edittedSeminarDTO.name)
+        assertThat(edittedSeminarReturn.capacity).isEqualTo(edittedSeminarDTO.capacity)
+        assertThat(edittedSeminarReturn.count).isEqualTo(edittedSeminarDTO.count)
+        assertThat(edittedSeminarReturn.time).isEqualTo(edittedSeminarDTO.time)
+        assertThat(edittedSeminarReturn.online).isEqualTo(edittedSeminarDTO.online)
+    }
+    
+    @Test
+    fun `Throw Exception when user is not instructor`() {
+        // given
+        val (_, participantList) = initializeUsers()
+        
+        // when
+        val participant = participantList[0]
+        val edittedSeminarDTO = SeminarDTO(
+                id = 1,
+                name = "editseminar",
+                capacity = 111,
+                count = 111,
+                time = "22:22",
+                online = false
+        )
+        
+        // then
+        assertThrows<SeminarException> {seminarService.editSeminar(participant.id, edittedSeminarDTO)}
+    }
+    
+    @Test
+    fun `Throw Exception if seminar's instructor is not user`() {
+        // given
+        val (instructorList, _) = initializeUsers()
+        val (seminarList, _) = initializeSeminars(instructorList)
+        
+        // when
+        val instructor1 = instructorList[1]
+        val seminar0 = seminarList[0]
+        val edittedSeminarDTO = SeminarDTO(
+                id = seminar0.id,
+                name = "editseminar",
+                capacity = 111,
+                count = 111,
+                time = "22:22",
+                online = false
+        )
+        
+        // then
+        assertThrows<SeminarException> { seminarService.editSeminar(instructor1.id, edittedSeminarDTO) }
+    }
+
+
+    fun initializeUsers(): Pair<List<UserEntity>, List<UserEntity>> {
         val instructorList = (0 .. 2).map {i ->
             seminarTestHelper.createInstructor(
                     "inst${i}@inst.com",
@@ -125,7 +203,7 @@ internal class SeminarServiceTest @Autowired constructor(
         return Pair(instructorList, participantList)
     }
     
-    private fun initializeSeminars(userList: List<UserEntity>): Pair<List<SeminarEntity>, List<UserSeminarEntity>> {
+    fun initializeSeminars(userList: List<UserEntity>): Pair<List<SeminarEntity>, List<UserSeminarEntity>> {
         val seminarList = (0..2).map { i ->
             seminarTestHelper.createSeminar(
                     name = "testseminar${i}",
