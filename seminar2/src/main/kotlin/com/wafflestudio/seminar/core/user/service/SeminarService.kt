@@ -299,11 +299,14 @@ class SeminarService(
         return seminars
     }
 
+    // Query Count 예상: 2, 실제: 65
+    // fetch시 orderBy 부분만 다르고 중복되는 코드가 너무 많습니다.
+    // 일괄적으로 orderBy로 fetch한 후 reverse()를 사용하시면 좋을 것 같습니다.
     fun getSeminarByName(name: String, order: String, token: String):GetSeminarInfoByName{
         val seminarInfoDto : List<SeminarInfoDto>
-        
-        
+
         if(order=="earliest") {
+            // Query #1 [N+1] fetch join을 사용하지 않았습니다.
             seminarInfoDto = queryFactory.select(Projections.constructor(
                 SeminarInfoDto::class.java,
                 qSeminarEntity,
@@ -319,6 +322,7 @@ class SeminarService(
             val userSeminarEntity = seminarInfoDto[0].userSeminarEntity
             val userEntity = seminarInfoDto[0].userEntity
 
+            // Query #2 [N+1] fetch join을 사용하지 않았습니다.
             val studentList = queryFactory.select(Projections.constructor(
                 SeminarInfoDto::class.java,
                 qSeminarEntity,
@@ -329,7 +333,6 @@ class SeminarService(
                 .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
                 .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.name.contains(name))
                 .where(qUserSeminarEntity.role.eq("participant")).fetch()
-
 
             val newList = mutableListOf<StudentDto>()
 
@@ -344,7 +347,6 @@ class SeminarService(
                         studentSeminarEntity?.joinedAt,
                         studentSeminarEntity?.isActive,
                         studentSeminarEntity?.droppedAt
-
                     )
                 )
             }
@@ -425,8 +427,6 @@ class SeminarService(
 
     }
 
-
- 
     fun joinSeminar(id: Long, role: Map<String, String>, token: String): JoinSeminarInfo {
         
         val seminarFindByIdEntity = seminarRepository.findById(id)

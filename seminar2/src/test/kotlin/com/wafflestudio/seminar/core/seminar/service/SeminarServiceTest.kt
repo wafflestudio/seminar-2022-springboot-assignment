@@ -217,7 +217,7 @@ internal class SeminarServiceTest @Autowired constructor(
         }
 
         // Then
-        assertThat(response.name).isEqualTo("spring")
+        assertThat(response.name).isEqualTo("spring#0")
         assertThat(response.instructors).hasSize(1)
         assertThat(response.participants).hasSize(10)
         assertThat(queryCount).isEqualTo(4) // [N+1] but was 15
@@ -227,8 +227,6 @@ internal class SeminarServiceTest @Autowired constructor(
     @Test
     fun `(getSeminarById) seminar_id에 해당하는 Seminar가 없는 경우 404로 응답`() {
         // Given
-        val seminar = SeminarEntity("spring", 30, 6, "19:00", false)
-        seminarRepository.save(seminar)
         val id = 100L
 
         // When
@@ -246,7 +244,7 @@ internal class SeminarServiceTest @Autowired constructor(
     @Test
     fun `(getSeminars) 전체 세미나 불러오기`() {
         // Given
-        createSeminars()
+        createFixtures(3)
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
@@ -254,23 +252,7 @@ internal class SeminarServiceTest @Autowired constructor(
         }
 
         // Then
-        assertThat(response).hasSize(10)
-        assertThat(queryCount).isEqualTo(1) // [N+1] but was 15
-    }
-
-    // Passed
-    @Test
-    fun `(getSeminars) 특정 string을 포함한 세미나 불러오기`() {
-        // Given
-        createSeminars()
-
-        // When
-        val (response, queryCount) = hibernateQueryCounter.count {
-            seminarService.getSeminars("token")
-        }
-
-        // Then
-        assertThat(response).hasSize(10)
+        assertThat(response).hasSize(3)
         assertThat(queryCount).isEqualTo(1) // [N+1] but was 15
     }
 
@@ -278,14 +260,24 @@ internal class SeminarServiceTest @Autowired constructor(
     * getSeminarByName()
     */
 
+    // Failed: [N+1]
     @Test
-    fun getSeminarByName() {
+    fun `(getSeminarByName) 특정 string을 포함한 세미나 불러오기`() {
         // Given
+        createFixtures(3)
+        val name = "spring"
+        val order = "earliest"
 
         // When
+        val (response, queryCount) = hibernateQueryCounter.count {
+            seminarService.getSeminarByName(name, order, "token")
+        }
 
         // Then
+        // assertThat(response).hasSize(3) return값의 자료형이 스펙에 맞지 않습니다.
+        assertThat(queryCount).isEqualTo(2) // [N+1] but was 15
     }
+
 
     /*
     * joinSeminar()
@@ -313,21 +305,18 @@ internal class SeminarServiceTest @Autowired constructor(
         // Then
     }
 
-    private fun createFixtures() {
-        val instructor = userTestHelper.createInstructor("ins@tructor.com")
-        val participants = (1..10).map { userTestHelper.createParticipant("par@ticipant#$it.com") }
+    private fun createFixtures(num: Int = 1) {
+        for (i in 0 until num) {
+            val instructor = userTestHelper.createInstructor("instructor#$i@snu.ac.kr")
+            val participants = (1..10).map { userTestHelper.createParticipant("participant#$it@snu.ac.kr") }
 
-        val seminar = SeminarEntity("spring", 30, 6, "19:00", false)
-        val userSeminarList: MutableList<UserSeminarEntity> =
-            participants.map { UserSeminarEntity(it, seminar, "participant", LocalDateTime.now()) } as MutableList<UserSeminarEntity>
-        userSeminarList.add(UserSeminarEntity(instructor, seminar, "instructor", LocalDateTime.now()))
-        seminar.userSeminars = userSeminarList
-        seminarRepository.save(seminar)
-        userSeminarList.forEach { userSeminarRepository.save(it) }
-    }
-
-    private fun createSeminars() {
-        val seminarList = (1..10).map { SeminarEntity("spring$it", 30, 6, "19:00", false) }
-        seminarList.forEach {seminarRepository.save(it)}
+            val seminar = SeminarEntity("spring#$i", 30, 6, "19:00", false)
+            val userSeminarList: MutableList<UserSeminarEntity> =
+                participants.map { UserSeminarEntity(it, seminar, "participant", LocalDateTime.now()) } as MutableList<UserSeminarEntity>
+            userSeminarList.add(UserSeminarEntity(instructor, seminar, "instructor", LocalDateTime.now()))
+            seminar.userSeminars = userSeminarList
+            seminarRepository.save(seminar)
+            userSeminarList.forEach { userSeminarRepository.save(it) }
+        }
     }
 }
