@@ -13,6 +13,7 @@ import com.wafflestudio.seminar.core.user.repository.ParticipantProfileRepositor
 import com.wafflestudio.seminar.core.user.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import javax.transaction.Transactional
 
 @Component
 class SeminarTestHelper @Autowired constructor(
@@ -32,10 +33,9 @@ class SeminarTestHelper @Autowired constructor(
         val user = createUser(email, username, password, RoleType.INSTRUCTOR)
         val instructorProfile = createInstructorProfile(company, year, user)
         user.instructorProfile = instructorProfile
-        userRepository.save(user)
-        return user
+        return userRepository.save(user)
     }
-    
+
     fun createParticipant(
             email: String,
             username: String,
@@ -46,10 +46,9 @@ class SeminarTestHelper @Autowired constructor(
         val user = createUser(email, username, password, RoleType.PARTICIPANT)
         val participantProfile = createParticipantProfile(university, isRegistered, user)
         user.participantProfile = participantProfile
-        userRepository.save(user)
-        return user
+        return userRepository.save(user)
     }
-    
+
     fun createUser(
             email: String,
             username: String,
@@ -57,21 +56,21 @@ class SeminarTestHelper @Autowired constructor(
             role: RoleType,
     ) = UserEntity(
             email, username, password, role
-    ).also { userRepository.save(it) }
-    
+    ).let { userRepository.save(it) }
+
     fun createInstructorProfile(
             company: String,
             year: Int,
             user: UserEntity,
     ) = InstructorProfile(company, year, user)
-            .also { instructorProfileRepository.save(it) }
-    
+            .let { instructorProfileRepository.save(it) }
+
     fun createParticipantProfile(
             university: String,
             isRegistered: Boolean,
             user: UserEntity,
     ) = ParticipantProfile(university, isRegistered, user)
-            .also { participantProfileRepository.save(it) }
+            .let { participantProfileRepository.save(it) }
 
     fun createSeminar(
             name: String,
@@ -82,11 +81,20 @@ class SeminarTestHelper @Autowired constructor(
             online: Boolean,
     ) = SeminarEntity(
             name, instructor, capacity, count, time, online
-    ).also { seminarRepository.save(it) }
+    ).let { seminarRepository.save(it) }
 
     fun createUserSeminarEntity(
             user: UserEntity,
             seminar: SeminarEntity,
-    ) = UserSeminarEntity(user, seminar)
-            .also { userSeminarRepository.save(it) }
+    ): UserSeminarEntity {
+        val userSeminar = UserSeminarEntity(user, seminar)
+        
+        user.seminarList = mutableListOf(userSeminar)
+        userRepository.save(user)
+        
+        seminar.userSeminarList = mutableListOf(userSeminar)
+        seminarRepository.save(seminar)
+        
+        return userSeminarRepository.save(userSeminar)
+    }
 }
