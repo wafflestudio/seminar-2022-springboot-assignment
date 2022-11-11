@@ -270,9 +270,10 @@ class SeminarService(
             studentList
         )
     }
-    
-    fun getSeminars(token: String): List<GetSeminars> {
 
+    // Query Count 예상: 1, 실제: 1
+    fun getSeminars(token: String): List<GetSeminars> {
+        // Query #1
         val seminarList = queryFactory.select(Projections.constructor(
             SeminarDto::class.java,
             qSeminarEntity
@@ -284,8 +285,6 @@ class SeminarService(
 
         for(i in 0 until seminarList.size) {
             val seminarEntity = seminarList[i].seminarEntity
-            
-
             seminars.add(
                 GetSeminars(
                     seminarEntity?.id,
@@ -298,11 +297,7 @@ class SeminarService(
             )
         }
         return seminars
-       
-        
     }
-    
-     
 
     fun getSeminarByName(name: String, order: String, token: String):GetSeminarInfoByName{
         val seminarInfoDto : List<SeminarInfoDto>

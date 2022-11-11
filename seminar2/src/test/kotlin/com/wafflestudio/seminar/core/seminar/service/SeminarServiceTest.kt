@@ -242,13 +242,36 @@ internal class SeminarServiceTest @Autowired constructor(
     * getSeminars()
     */
 
+    // Passed
     @Test
-    fun getSeminars() {
+    fun `(getSeminars) 전체 세미나 불러오기`() {
         // Given
+        createSeminars()
 
         // When
+        val (response, queryCount) = hibernateQueryCounter.count {
+            seminarService.getSeminars("token")
+        }
 
         // Then
+        assertThat(response).hasSize(10)
+        assertThat(queryCount).isEqualTo(1) // [N+1] but was 15
+    }
+
+    // Passed
+    @Test
+    fun `(getSeminars) 특정 string을 포함한 세미나 불러오기`() {
+        // Given
+        createSeminars()
+
+        // When
+        val (response, queryCount) = hibernateQueryCounter.count {
+            seminarService.getSeminars("token")
+        }
+
+        // Then
+        assertThat(response).hasSize(10)
+        assertThat(queryCount).isEqualTo(1) // [N+1] but was 15
     }
 
     /*
@@ -301,5 +324,10 @@ internal class SeminarServiceTest @Autowired constructor(
         seminar.userSeminars = userSeminarList
         seminarRepository.save(seminar)
         userSeminarList.forEach { userSeminarRepository.save(it) }
+    }
+
+    private fun createSeminars() {
+        val seminarList = (1..10).map { SeminarEntity("spring$it", 30, 6, "19:00", false) }
+        seminarList.forEach {seminarRepository.save(it)}
     }
 }

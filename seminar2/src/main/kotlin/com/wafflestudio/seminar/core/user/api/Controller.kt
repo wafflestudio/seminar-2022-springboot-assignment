@@ -67,7 +67,11 @@ class Controller(
         return seminarService.getSeminarById(seminar_id,token)
     }
     
-    
+
+    /*
+    * 해당하는 api가 없습니다.
+    * seminars -> seminar로 수정되어야 합니다.
+    */
     @GetMapping("seminars")
     fun getSeminars(@RequestHeader("Authentication") token: String): List<GetSeminars>{
         return seminarService.getSeminars(token)
@@ -75,7 +79,6 @@ class Controller(
     
     @GetMapping("seminar")
     fun getSeminarByName(@RequestParam name: String, @RequestParam order: String, @RequestHeader("Authentication") token: String): GetSeminarInfoByName {
-
         return seminarService.getSeminarByName(name, order, token)
     }
     
