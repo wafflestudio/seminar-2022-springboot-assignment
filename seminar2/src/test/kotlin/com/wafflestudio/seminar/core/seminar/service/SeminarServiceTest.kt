@@ -51,7 +51,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Failed: [N+1]
     @Test
-    fun `(createSeminar) 세미나 생성`() {
+    fun `(createSeminar) 세미나 생성하기`() {
         // Given
         val seminarRequest = SeminarRequest("spring", 30, 6, "19:00", false)
         
@@ -118,7 +118,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Failed: [N+1]
     @Test
-    fun `(updateSeminar) 세미나 수정`() {
+    fun `(updateSeminar) 세미나 수정하기`() {
         // Given
         seminarRepository.save(SeminarEntity("spring", 30, 6, "19:00", false))
         val seminarRequest = SeminarRequest("spring", 300, 60, "20:00", true)
@@ -225,7 +225,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Passed
     @Test
-    fun `(getSeminarById) seminar_id에 해당하는 Seminar가 없는 경우 404로 응답`() {
+    fun `(getSeminarById) 해당하는 Seminar가 없는 경우 404로 응답`() {
         // Given
         val id = 100L
 
@@ -253,7 +253,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // Then
         assertThat(response).hasSize(3)
-        assertThat(queryCount).isEqualTo(1) // [N+1] but was 15
+        assertThat(queryCount).isEqualTo(1)
     }
 
     /*
@@ -275,21 +275,167 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // Then
         // assertThat(response).hasSize(3) return값의 자료형이 스펙에 맞지 않습니다.
-        assertThat(queryCount).isEqualTo(2) // [N+1] but was 15
+        assertThat(queryCount).isEqualTo(2) // [N+1] but was 65
     }
-
 
     /*
     * joinSeminar()
     */
 
+    // Failed: [N+1]
     @Test
-    fun joinSeminar() {
+    fun `(joinSeminar) 세미나 수강하기`() {
         // Given
+        createFixtures()
+        val participant = userTestHelper.createParticipant("participant@snu.ac.kr")
+        given(authTokenService.getCurrentUserId(anyString())).willReturn(participant.id)
+        val role = mapOf<String, String>("role" to "participant")
 
         // When
+        val (response, queryCount) = hibernateQueryCounter.count {
+            seminarService.joinSeminar(1, role, "token")
+        }
 
         // Then
+        assertThat(response.participants).hasSize(11)
+        assertThat(queryCount).isEqualTo(17) // [N+1] but was 29
+    }
+
+    // Failed: [N+1]
+    @Test
+    fun `(joinSeminar) 세미나 함께 진행하기`() {
+        // Given
+        createFixtures()
+        val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
+        given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
+        val role = mapOf<String, String>("role" to "instructor")
+
+        // When
+        val (response, queryCount) = hibernateQueryCounter.count {
+            seminarService.joinSeminar(1, role, "token")
+        }
+
+        // Then
+        assertThat(response.instructors).hasSize(2)
+        assertThat(queryCount).isEqualTo(17) // [N+1] but was 29
+    }
+
+    // Passed
+    @Test
+    fun `(joinSeminar) 해당하는 Seminar가 없는 경우 404로 응답`() {
+        // Given
+        val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
+        given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
+        val role = mapOf<String, String>("role" to "instructor")
+
+        // When
+        val response = assertThrows<Seminar404> { seminarService.joinSeminar(100, role, "token") }
+
+        // Then
+        assertThat(response.message).isEqualTo("해당하는 세미나가 없습니다.")
+    }
+
+    // Passed
+    @Test
+    fun `(joinSeminar) role이 잘못된 경우 400으로 응답`() {
+        // Given
+        createFixtures()
+        val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
+        given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
+        val role = mapOf<String, String>("role" to "instructorr")
+
+        // When
+        val response = assertThrows<Seminar400> { seminarService.joinSeminar(1, role, "token") }
+
+        // Then
+        assertThat(response.message).isEqualTo("진행자 혹은 수강자가 아닙니다.")
+    }
+
+    // Passed
+    @Test
+    fun `(joinSeminar) 해당하는 자격을 가지지 못한 경우 403으로 응답`() {
+        // Given
+        createFixtures()
+        val participant = userRepository.save(UserEntity("", "", "", LocalDate.now()))
+        given(authTokenService.getCurrentUserId(anyString())).willReturn(participant.id)
+        val role = mapOf<String, String>("role" to "participant")
+
+        // When
+        val response = assertThrows<Seminar403> { seminarService.joinSeminar(1, role, "token") }
+
+        // Then
+        assertThat(response.message).isEqualTo("수강생이 아닙니다")
+    }
+
+    // Failed: 403으로 응답해야 하는데 400으로 응답함
+    @Test
+    fun `(joinSeminar) 활성회원이 아닌 사용자가 세미나에 참여하는 요청을 하는 경우 403으로 응답`() {
+        // Given
+        createFixtures()
+        val participant = userTestHelper.createParticipant("participant@snu.ac.kr", isRegistered = false)
+        given(authTokenService.getCurrentUserId(anyString())).willReturn(participant.id)
+        val role = mapOf<String, String>("role" to "participant")
+
+        // When
+        val response = assertThrows<Seminar403> { seminarService.joinSeminar(1, role, "token") }
+
+        // Then
+        assertThat(response.message).isEqualTo("등록되어 있지 않습니다")
+    }
+
+    // Passed
+    @Test
+    fun `(joinSeminar) 세미나가 이미 가득 찬 경우 400으로 응답`() {
+        // Given
+        createFixtures()
+        val role = mapOf<String, String>("role" to "participant")
+        val participant1 = userTestHelper.createParticipant("participant1@snu.ac.kr")
+        given(authTokenService.getCurrentUserId(anyString())).willReturn(participant1.id)
+
+        seminarService.joinSeminar(1, role, "token")
+
+        val participant2 = userTestHelper.createParticipant("participant2@snu.ac.kr")
+        given(authTokenService.getCurrentUserId(anyString())).willReturn(participant2.id)
+
+        // When
+        val response = assertThrows<Seminar400> { seminarService.joinSeminar(1, role, "token") }
+
+        // Then
+        assertThat(response.message).isEqualTo("세미나의 인원이 다 찼습니다")
+    }
+
+    // Passed
+    @Test
+    fun `(joinSeminar) 진행자가 이미 담당하고 있는 세미나가 있는 경우 400으로 응답`() {
+        // Given
+        createFixtures()
+        val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
+        given(authTokenService.getCurrentEmail(anyString())).willReturn("instructor@snu.ac.kr")
+        seminarService.createSeminar(SeminarRequest("test",10, 10, "10:00"), "token")
+
+        given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
+        val role = mapOf<String, String>("role" to "instructor")
+
+        // When
+        val response = assertThrows<Seminar400> { seminarService.joinSeminar(1, role, "token") }
+
+        // Then
+        assertThat(response.message).isEqualTo("이미 다른 세미나를 진행하고 있습니다.")
+    }
+
+    // Passed
+    @Test
+    fun `(joinSeminar) 이미 참여하고 있는 경우 400으로 응답`() {
+        // Given
+        createFixtures()
+        given(authTokenService.getCurrentUserId(anyString())).willReturn(5)
+        val role = mapOf<String, String>("role" to "participant")
+
+        // When
+        val response = assertThrows<Seminar400> { seminarService.joinSeminar(1, role, "token") }
+
+        // Then
+        assertThat(response.message).isEqualTo("이미 세미나에 참여하고 있습니다")
     }
 
     /*
@@ -310,7 +456,7 @@ internal class SeminarServiceTest @Autowired constructor(
             val instructor = userTestHelper.createInstructor("instructor#$i@snu.ac.kr")
             val participants = (1..10).map { userTestHelper.createParticipant("participant#$it@snu.ac.kr") }
 
-            val seminar = SeminarEntity("spring#$i", 30, 6, "19:00", false)
+            val seminar = SeminarEntity("spring#$i", 11, 6, "19:00", false)
             val userSeminarList: MutableList<UserSeminarEntity> =
                 participants.map { UserSeminarEntity(it, seminar, "participant", LocalDateTime.now()) } as MutableList<UserSeminarEntity>
             userSeminarList.add(UserSeminarEntity(instructor, seminar, "instructor", LocalDateTime.now()))

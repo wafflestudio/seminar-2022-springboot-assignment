@@ -36,9 +36,9 @@ internal class UserTestHelper @Autowired constructor(
         username: String = "",
         password: String = "",
         university: String = "",
-        isActive: Boolean = true,
+        isRegistered: Boolean = true,
     ): UserEntity {
-        val participant = ParticipantProfileEntity(university, isActive)
+        val participant = ParticipantProfileEntity(university, isRegistered)
         return userRepository.save(UserEntity(username, email, password, LocalDate.now(), participant = participant))
     }
 }

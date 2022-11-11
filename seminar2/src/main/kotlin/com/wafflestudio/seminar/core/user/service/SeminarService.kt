@@ -306,7 +306,7 @@ class SeminarService(
         val seminarInfoDto : List<SeminarInfoDto>
 
         if(order=="earliest") {
-            // Query #1 [N+1] fetch join을 사용하지 않았습니다.
+            // Query #1 -> [N+1] fetch join을 사용하지 않았습니다.
             seminarInfoDto = queryFactory.select(Projections.constructor(
                 SeminarInfoDto::class.java,
                 qSeminarEntity,
@@ -322,7 +322,7 @@ class SeminarService(
             val userSeminarEntity = seminarInfoDto[0].userSeminarEntity
             val userEntity = seminarInfoDto[0].userEntity
 
-            // Query #2 [N+1] fetch join을 사용하지 않았습니다.
+            // Query #2 -> [N+1] fetch join을 사용하지 않았습니다.
             val studentList = queryFactory.select(Projections.constructor(
                 SeminarInfoDto::class.java,
                 qSeminarEntity,
@@ -427,13 +427,14 @@ class SeminarService(
 
     }
 
+    // Query Count 예상: 17, 실제: 29
     fun joinSeminar(id: Long, role: Map<String, String>, token: String): JoinSeminarInfo {
-        
+        // Query #1
         val seminarFindByIdEntity = seminarRepository.findById(id)
-        
+        // Query #2
         val userFindByIdEntity = userRepository.findById(authTokenService.getCurrentUserId(token))
 
-        
+        // Query #3 -> [N+1]
         if(userSeminarRepository.findByUser(userFindByIdEntity.get())?.filter { 
             it.seminar.id == id && it.isActive == true
                 
@@ -447,12 +448,14 @@ class SeminarService(
             
         }
         if(userFindByIdEntity.get().participant != null) {
-            
+
+            // TODO 비활성(미등록) 사용자의 경우 400이 아니라 403으로 응답해야 합니다.
             if(userFindByIdEntity.get().participant?.isRegistered == false) {
                 throw Seminar400("등록되어 있지 않습니다")
             }
         }
 
+        // Query #4
         if(userSeminarRepository.findByUser(userFindByIdEntity.get())?.filter {
                 it.isActive == false
             } != emptyList<UserSeminarEntity>()) {
@@ -464,9 +467,15 @@ class SeminarService(
         if(role["role"] == "participant"){
             
             if(userFindByIdEntity.get().participant != null) {
+                // Query #5
                 saveUserSeminarEntity = userSeminarRepository.save(
                     UserSeminarEntity(
+                        // Query #6
+                        // 불필요한 query인 것 같습니다.
+                        // 위에서 이미 구해놓으신 userFindByIdEntity를 사용하시면 될 것 같습니다.
                         user = userRepository.findById(authTokenService.getCurrentUserId(token)).get(),
+                        // Query #7
+                        // 마찬가지로 seminarFindByIdEntity를 사용하시면 될 것 같습니다.
                         seminar = seminarRepository.findById(id).get(),
                         role = "participant",
                         joinedAt = LocalDateTime.now(),
@@ -476,7 +485,6 @@ class SeminarService(
                 )
                 
             } else {
-                
                 throw Seminar403("수강생이 아닙니다")
             }
             
@@ -505,6 +513,7 @@ class SeminarService(
             throw Seminar400("진행자 혹은 수강자가 아닙니다.")
         }
 
+        // Query #8
         val seminarList = queryFactory.select(Projections.constructor(
             SeminarDto::class.java,
             qSeminarEntity
@@ -513,7 +522,8 @@ class SeminarService(
             .where(qSeminarEntity.id.eq(id)).fetch()
 
         val seminarEntity = seminarList[0].seminarEntity
-        
+
+        // Query #9 -> [N+1] but was 2
         val instructorList = queryFactory.select(Projections.constructor(
             UserSeminarAndUserDto::class.java,
             qUserSeminarEntity,
@@ -539,11 +549,11 @@ class SeminarService(
                     teacherEntity?.username,
                     teacherEntity?.email,
                     teacherSeminarEntity?.joinedAt
-
                 )
             )
         }
-        
+
+        // Query #10 -> [N+1] but was 11
         val participantList = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
             qSeminarEntity,
@@ -573,12 +583,14 @@ class SeminarService(
                 )
             )
         }
-        
+
+        // Query #11
         if(studentList.size > seminarRepository.findById(id).get().capacity!!) {
                 userSeminarRepository.delete(saveUserSeminarEntity)
                 throw Seminar400("세미나의 인원이 다 찼습니다")
         }
-        
+
+        // Query #12 ~ 17
         return JoinSeminarInfo(
             id = seminarRepository.findById(id).get().id,
             name = seminarRepository.findById(id).get().name,
