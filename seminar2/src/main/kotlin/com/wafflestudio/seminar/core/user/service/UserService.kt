@@ -1,7 +1,6 @@
 package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.common.Seminar400
-import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.core.user.api.request.CreateInstructorDTO
 import com.wafflestudio.seminar.core.user.api.request.CreateParticipantDTO
 import com.wafflestudio.seminar.core.user.api.request.SignInRequest
@@ -26,7 +25,7 @@ class UserServiceImpl(
 ): UserService {
     override fun getUser(id: Long): UserEntity {
         val userEntity = userRepository.findById(id)
-        if (userEntity.isEmpty) throw Seminar404("해당 id로 유저를 찾을 수 없습니다.")
+        if (userEntity.isEmpty) throw Seminar400("해당 id로 유저를 찾을 수 없습니다.")
         
         return userEntity.get()
     }
@@ -34,7 +33,7 @@ class UserServiceImpl(
     @Transactional
     override fun createUser(user: SignUpRequest): AuthToken {
         val entityByEmail = userRepository.findByEmail(user.email)
-        if (entityByEmail != null) throw Seminar404("이미 존재하는 이메일입니다.")
+        if (entityByEmail != null) throw Seminar400("이미 존재하는 이메일입니다.")
         var newUser = UserEntity(
             username = user.username,
             email = user.email,
