@@ -41,21 +41,20 @@ internal class SeminarServiceTest @Autowired constructor(
      */
 
     @Test
-    fun `Can make seminar when user is instructor, and didn't instruct other seminar`() {
+    fun `Could make seminar when user is instructor, and didn't instruct other seminar`() {
         // given
         val (instructorList, participantList) = initializeUsers()
         
         // when
         val instructor = instructorList[0]
-        val (newSeminar, cnt) = queryCounter.count {
-            seminarService.makeSeminar(instructor.id, SeminarRequest(
+        val newSeminar = seminarService.makeSeminar(instructor.id, SeminarRequest(
                     name = "unitseminar",
                     capacity = 11,
                     count = 11,
                     time = "11:11",
                     online = true
                 )
-            ) }
+            )
         
         // then
         assertThat(newSeminar.name).isEqualTo("unitseminar")
@@ -70,7 +69,7 @@ internal class SeminarServiceTest @Autowired constructor(
     @Test
     fun `Throw Exception when user is not INSTRUCTOR`() {
         // given
-        val (instructorList, participantList) = initializeUsers()
+        val (_, participantList) = initializeUsers()
         
         // when
         val participant = participantList[0]
@@ -86,8 +85,8 @@ internal class SeminarServiceTest @Autowired constructor(
     @Test
     fun `Throw Exception when user is already instructing other seminar`() {
         // given
-        val (instructorList, participantList) = initializeUsers()
-        val (seminarList, _) = initializeSeminars(instructorList)
+        val (instructorList, _) = initializeUsers()
+        val (_, _) = initializeSeminars(instructorList)
         
         // when
         val instructor = instructorList[0]
@@ -99,8 +98,9 @@ internal class SeminarServiceTest @Autowired constructor(
                     request = SeminarRequest("", 1, 1, "11:11"))
         }
     }
-    
-    
+
+
+
     private fun initializeUsers(): Pair<List<UserEntity>, List<UserEntity>> {
         val instructorList = (0 .. 2).map {i ->
             seminarTestHelper.createInstructor(
