@@ -12,6 +12,7 @@ import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.database.UserSeminarRepository
 import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.dto.seminar.*
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.*
@@ -127,7 +128,8 @@ class SeminarService(
 
         )
     }
-    
+
+    // Query Count 예상: 4, 실제: 5
     fun updateSeminar(seminar: SeminarRequest, token: String): UpdateSeminarInfo {
 
         if(seminar.name == null || seminar.capacity == null || seminar.count == null || seminar.time == null ) {
@@ -140,10 +142,19 @@ class SeminarService(
             }
         }
 
+        // Query #1 -> [N+1] but was 2: fetching instructor profile
         if(userRepository.findByEmail(authTokenService.getCurrentEmail(token))?.instructor == null) {
             throw Seminar403("세미나를 수정할 자격이 없습니다")
         }
+
+        /*
+        * TODO: 스펙에 따르면 해당 세미나를 만든 사람이 아니면 세미나를 수정할 수 없는데
+        *       그 부분을 처리하는 코드가 없습니다.
+        *       지금으로서는 instructor 자격만 있으면
+        *       누구나 세미나를 수정할 수 있게 구현되어 있습니다.
+        */
         
+        // Query #2
         val seminarEntity = seminarRepository.findByName(seminar.name)
         
         seminarEntity.let { 
@@ -154,6 +165,8 @@ class SeminarService(
             it.online = seminar.online
         }
         
+        // Query #3, #4
+        // query count와는 상관없는 얘기지만, @Transactional을 사용하여 save문을 생략하실 수도 있습니다.
         seminarRepository.save(seminarEntity)
         
         return UpdateSeminarInfo(
@@ -163,7 +176,6 @@ class SeminarService(
             seminarEntity.count,
             seminarEntity.time,
             seminarEntity.online,
-            
         )
     }
 
