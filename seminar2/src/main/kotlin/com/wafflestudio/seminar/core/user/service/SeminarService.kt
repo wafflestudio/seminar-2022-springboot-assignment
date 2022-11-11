@@ -603,12 +603,15 @@ class SeminarService(
             participants = studentList
         )
     }
-    
+
+    // Query Count 예상: 7, 실제: 19
     fun dropSeminar(id: Long, token: String) : GetSeminarInfo{
+        // Query #1 -> [N+1] but was 2: fetching participant profile
         val findByEmailEntity = userRepository.findByEmail(authTokenService.getCurrentEmail(token))
 
         if(findByEmailEntity?.let {
-                    userSeminarRepository.findByUser(it)?.filter {
+                // Query #2
+                userSeminarRepository.findByUser(it)?.filter {
                         it.seminar.id == id
                     }
                 } == emptyList<UserSeminarEntity>()){
@@ -616,12 +619,14 @@ class SeminarService(
         }
         
         if(findByEmailEntity?.let {
-                    userSeminarRepository.findByUser(it)?.filter {
+                // Query #3
+                userSeminarRepository.findByUser(it)?.filter {
                         it.role == "instructor"
                     }
                 } != emptyList<UserSeminarEntity>()){
             throw Seminar403("진행자는 세미나를 드랍할 수 없습니다")
         }
+        // Query #4 -> [N+1] but was 2: fetching participant profile
         val seminarInfoDto = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
             qSeminarEntity,
@@ -640,7 +645,9 @@ class SeminarService(
         
         userSeminarEntity?.isActive = false
         userSeminarEntity?.droppedAt = LocalDateTime.now()
+        // Query #5, #6
         userSeminarEntity?.let { userSeminarRepository.save(it) }
+        // Query #7 -> [N+1] but was 11
         val studentList = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
             qSeminarEntity,
@@ -664,7 +671,6 @@ class SeminarService(
                     studentSeminarEntity?.joinedAt,
                     studentSeminarEntity?.isActive,
                     studentSeminarEntity?.droppedAt
-
                 )
             )
         }
@@ -683,26 +689,18 @@ class SeminarService(
                     userEntity?.email,
                     userSeminarEntity?.joinedAt
                 )
-
             },newList
-
         )
     }
-    
-    
-     
-     
+
     
     private fun SeminarEntity(seminar: SeminarRequest, token: String) = seminar.run{
         com.wafflestudio.seminar.core.user.domain.SeminarEntity(
-
             name = seminar.name,
             capacity = seminar.capacity,
             count = seminar.count,
             time = seminar.time,//LocalTime.parse(seminar.time, DateTimeFormatter.ISO_TIME),
             online = true,
-          
-
         )
     }
 
@@ -716,7 +714,4 @@ class SeminarService(
             droppedAt = null
         )
     }
-
-   
-
 }

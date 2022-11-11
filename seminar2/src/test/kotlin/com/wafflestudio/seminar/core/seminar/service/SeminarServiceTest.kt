@@ -438,17 +438,70 @@ internal class SeminarServiceTest @Autowired constructor(
         assertThat(response.message).isEqualTo("이미 세미나에 참여하고 있습니다")
     }
 
+    // Passed
+    @Test
+    fun `(joinSeminar) 이전에 드랍했던 세미나인 경우 400으로 응답`() {
+        // Given
+        createFixtures()
+        given(authTokenService.getCurrentUserId(anyString())).willReturn(3)
+        given(authTokenService.getCurrentEmail(anyString())).willReturn("participant#1@snu.ac.kr")
+        seminarService.dropSeminar(1, "token")
+        val role = mapOf<String, String>("role" to "participant")
+
+        // When
+        val response = assertThrows<Seminar400> { seminarService.joinSeminar(1, role, "token") }
+
+        // Then
+        assertThat(response.message).isEqualTo("드랍한 세미나는 다시 신청할 수 없습니다")
+    }
+
     /*
     * dropSeminar()
     */
 
+    // Failed: [N+1]
     @Test
-    fun dropSeminar() {
+    fun `(dropSeminar) 세미나 드랍하기`() {
         // Given
+        createFixtures()
+        given(authTokenService.getCurrentEmail(anyString())).willReturn("participant#1@snu.ac.kr")
 
         // When
+        val (response, queryCount) = hibernateQueryCounter.count {
+            seminarService.dropSeminar(1, "token")
+        }
 
         // Then
+        assertThat(response.participants!!.find {it.email == "participant#1@snu.ac.kr"}!!.isActive).isEqualTo(false)
+        assertThat(queryCount).isEqualTo(7) // [N+1] but was 19
+    }
+
+    // Passed
+    @Test
+    fun `(dropSeminar) 해당하는 세미나가 없는 경우 404로 응답`() {
+        // Given
+        createFixtures()
+        given(authTokenService.getCurrentEmail(anyString())).willReturn("participant#1@snu.ac.kr")
+
+        // When
+        val response = assertThrows<Seminar404> { seminarService.dropSeminar(100, "token") }
+
+        // Then
+        assertThat(response.message).isEqualTo("해당 세미나를 신청한 적이 없습니다")
+    }
+
+    // Passed
+    @Test
+    fun `(dropSeminar) 세미나 진행자가 요청하는 경우 403으로 응답`() {
+        // Given
+        createFixtures()
+        given(authTokenService.getCurrentEmail(anyString())).willReturn("instructor#1@snu.ac.kr")
+
+        // When
+        val response = assertThrows<Seminar403> { seminarService.dropSeminar(1, "token") }
+
+        // Then
+        assertThat(response.message).isEqualTo("진행자는 세미나를 드랍할 수 없습니다")
     }
 
     private fun createFixtures(num: Int = 1) {
