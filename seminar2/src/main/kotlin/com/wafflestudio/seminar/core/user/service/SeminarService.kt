@@ -179,12 +179,13 @@ class SeminarService(
         )
     }
 
-
+    // Query Count 예상: 4, 실제: 15
     fun getSeminarById(id: Long, token: String):GetSeminarInfo{
-
+        // Query #1
         if(seminarRepository.findById(id).isEmpty){
             throw Seminar404("해당하는 세미나가 없습니다")
         }
+        // Query #2
         val seminarList = queryFactory.select(Projections.constructor(
             SeminarDto::class.java,
             qSeminarEntity
@@ -196,6 +197,8 @@ class SeminarService(
         
         val seminarEntity = seminarList[0].seminarEntity
 
+        // Query #3 -> [N+1] but was 2: fetch join을 사용하지 않았습니다.
+        // 과제 레포의 (branch: asmt2) findAllWithProfiles()를 참고하시면 좋을 것 같습니다.
         val instructorList = queryFactory.select(Projections.constructor(
             UserSeminarAndUserDto::class.java,
             qUserSeminarEntity,
@@ -222,6 +225,13 @@ class SeminarService(
             )
         }
         
+        /*
+        * instructorList는 UserSeminar Table에서 UserEntity를 inner join하여 fetch하는 반면
+        * participantList는 Seminar Table에서 UserSeminarEntity를 inner join하고
+        * 다시 UserSeminarEntity에 대해 UserEntity를 inner join하고 있습니다.
+        * participantList도 같은 방식으로 UserSeminar Table에서 UserEntity를 inner join하여 바로 fetch해도 될 것 같습니다.
+        */
+        // Query #4 -> [N+1] but was 11: fetch join을 사용하지 않았습니다.
         val participantList = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
             qSeminarEntity,
@@ -232,8 +242,6 @@ class SeminarService(
             .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
             .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.id.eq(id))
             .where(qUserSeminarEntity.role.eq("participant")).fetch()
-
-        
         
         val studentList = mutableListOf<StudentDto>()
 
@@ -248,7 +256,6 @@ class SeminarService(
                     studentSeminarEntity?.joinedAt,
                     studentSeminarEntity?.isActive,
                     studentSeminarEntity?.droppedAt
-
                 )
             )
         }
@@ -261,13 +268,8 @@ class SeminarService(
             seminarEntity?.online,
             teacherList,
             studentList
-
         )
-
     }
-
-
- 
     
     fun getSeminars(token: String): List<GetSeminars> {
 

@@ -3,15 +3,13 @@ package com.wafflestudio.seminar.core.seminar.service
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar403
+import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.core.user.UserTestHelper
 import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.user.database.SeminarRepository
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.database.UserSeminarRepository
-import com.wafflestudio.seminar.core.user.domain.InstructorProfileEntity
-import com.wafflestudio.seminar.core.user.domain.ParticipantProfileEntity
-import com.wafflestudio.seminar.core.user.domain.SeminarEntity
-import com.wafflestudio.seminar.core.user.domain.UserEntity
+import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
 import com.wafflestudio.seminar.core.user.service.SeminarService
 import com.wafflestudio.seminar.global.HibernateQueryCounter
@@ -25,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDateTime
 
 @SpringBootTest
 internal class SeminarServiceTest @Autowired constructor(
@@ -52,7 +51,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Failed: [N+1]
     @Test
-    fun `(Create) 세미나 생성`() {
+    fun `(createSeminar) 세미나 생성`() {
         // Given
         val seminarRequest = SeminarRequest("spring", 30, 6, "19:00", false)
         
@@ -68,7 +67,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Passed
     @Test
-    fun `(Create) request body에 필수 정보가 누락되면 400으로 응답`() {
+    fun `(createSeminar) request body에 필수 정보가 누락되면 400으로 응답`() {
         // Given
         val seminarRequest = SeminarRequest(null, 30, 6, "19:00", false)
 
@@ -81,7 +80,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Passed
     @Test
-    fun `(Create) name에 0글자가 오는 경우, capacity와 count에 양의 정수가 아닌 값이 오는 경우는 400으로 응답`() {
+    fun `(createSeminar) name에 0글자가 오는 경우, capacity와 count에 양의 정수가 아닌 값이 오는 경우는 400으로 응답`() {
         // Given
         val seminarRequest1 = SeminarRequest("", 30, 6, "19:00", false)
         val seminarRequest2 = SeminarRequest("spring", 0, 6, "19:00", false)
@@ -100,7 +99,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Passed
     @Test
-    fun `(Create) 진행자 자격이 없는 User가 요청하면 403으로 응답`() {
+    fun `(createSeminar) 진행자 자격이 없는 User가 요청하면 403으로 응답`() {
         // Given
         userRepository.deleteAll()
         userTestHelper.createParticipant("email@snu.ac.kr")
@@ -119,7 +118,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Failed: [N+1]
     @Test
-    fun `(Update) 세미나 수정`() {
+    fun `(updateSeminar) 세미나 수정`() {
         // Given
         seminarRepository.save(SeminarEntity("spring", 30, 6, "19:00", false))
         val seminarRequest = SeminarRequest("spring", 300, 60, "20:00", true)
@@ -139,7 +138,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Passed
     @Test
-    fun `(Update) request body에 필수 정보가 누락되면 400으로 응답`() {
+    fun `(updateSeminar) request body에 필수 정보가 누락되면 400으로 응답`() {
         // Given
         val seminarRequest = SeminarRequest(null, 30, 6, "19:00", false)
 
@@ -152,7 +151,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Passed
     @Test
-    fun `(Update) name에 0글자가 오는 경우, capacity와 count에 양의 정수가 아닌 값이 오는 경우는 400으로 응답`() {
+    fun `(updateSeminar) name에 0글자가 오는 경우, capacity와 count에 양의 정수가 아닌 값이 오는 경우는 400으로 응답`() {
         // Given
         val seminarRequest1 = SeminarRequest("", 30, 6, "19:00", false)
         val seminarRequest2 = SeminarRequest("spring", 0, 6, "19:00", false)
@@ -171,7 +170,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Passed
     @Test
-    fun `(Update) 진행자 자격이 없는 User가 요청하면 403으로 응답`() {
+    fun `(updateSeminar) 진행자 자격이 없는 User가 요청하면 403으로 응답`() {
         // Given
         userRepository.deleteAll()
         userTestHelper.createParticipant("email@snu.ac.kr")
@@ -186,7 +185,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Failed: 에러가 발생하지 않고 정상적으로 수행됨
     @Test
-    fun `(Update) 해당 세미나를 만들지 않은 User가 요청하면 403으로 응답`() {
+    fun `(updateSeminar) 해당 세미나를 만들지 않은 User가 요청하면 403으로 응답`() {
         // Given
         userRepository.deleteAll()
         userTestHelper.createInstructor("email@snu.ac.kr")
@@ -205,13 +204,38 @@ internal class SeminarServiceTest @Autowired constructor(
     * getSeminarById()
     */
 
+    // Failed: [N+1]
     @Test
-    fun getSeminarById() {
+    fun `(getSeminarById) seminar id로 세미나 불러오기`() {
         // Given
+        createFixtures()
+        val id = 1L
 
         // When
+        val (response, queryCount) = hibernateQueryCounter.count {
+            seminarService.getSeminarById(id, "token")
+        }
 
         // Then
+        assertThat(response.name).isEqualTo("spring")
+        assertThat(response.instructors).hasSize(1)
+        assertThat(response.participants).hasSize(10)
+        assertThat(queryCount).isEqualTo(4) // [N+1] but was 15
+    }
+
+    // Passed
+    @Test
+    fun `(getSeminarById) seminar_id에 해당하는 Seminar가 없는 경우 404로 응답`() {
+        // Given
+        val seminar = SeminarEntity("spring", 30, 6, "19:00", false)
+        seminarRepository.save(seminar)
+        val id = 100L
+
+        // When
+        val response = assertThrows<Seminar404> { seminarService.getSeminarById(id, "token") }
+
+        // Then
+        assertThat(response.message).isEqualTo("해당하는 세미나가 없습니다")
     }
 
     /*
@@ -264,5 +288,18 @@ internal class SeminarServiceTest @Autowired constructor(
         // When
 
         // Then
+    }
+
+    private fun createFixtures() {
+        val instructor = userTestHelper.createInstructor("ins@tructor.com")
+        val participants = (1..10).map { userTestHelper.createParticipant("par@ticipant#$it.com") }
+
+        val seminar = SeminarEntity("spring", 30, 6, "19:00", false)
+        val userSeminarList: MutableList<UserSeminarEntity> =
+            participants.map { UserSeminarEntity(it, seminar, "participant", LocalDateTime.now()) } as MutableList<UserSeminarEntity>
+        userSeminarList.add(UserSeminarEntity(instructor, seminar, "instructor", LocalDateTime.now()))
+        seminar.userSeminars = userSeminarList
+        seminarRepository.save(seminar)
+        userSeminarList.forEach { userSeminarRepository.save(it) }
     }
 }
