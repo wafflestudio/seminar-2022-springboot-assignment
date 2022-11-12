@@ -31,7 +31,7 @@ internal class UserServiceTest @Autowired constructor(
         userService.createUser(request)
 
         // then
-        assertThat(userRepository.findAll()).isEqualTo(1)
+        assertThat(userRepository.findAll()).hasSize(1)
     }
 
     @Test

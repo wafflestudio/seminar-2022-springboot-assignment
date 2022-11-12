@@ -15,7 +15,9 @@ internal class UserTestHelper @Autowired constructor(
         email: String,
         username: String = "",
         password: String = "",
+        
     ): UserEntity {
+        
         return userRepository.save(UserEntity(email, username, passwordEncoder.encode(password)))
     }
 

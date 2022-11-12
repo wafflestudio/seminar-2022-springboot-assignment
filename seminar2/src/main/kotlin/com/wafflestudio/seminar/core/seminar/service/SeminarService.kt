@@ -61,7 +61,7 @@ class SeminarService(
         val userIds = seminars.flatMap { it.userSeminars.map { it.userId } }
 
         // FIXME : N+1 문제가 나는 포인트 (see findAllWithProfiles)
-        val userMap = userRepository.findAllById(userIds).associateBy { it.id }
+        val userMap = userRepository.findAllWithProfiles(userIds).associateBy { it.id }
 
         // 조합해서 반환
         return seminars.map { seminar ->
