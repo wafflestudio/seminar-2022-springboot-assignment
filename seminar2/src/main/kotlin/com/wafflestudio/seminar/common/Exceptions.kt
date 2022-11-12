@@ -20,7 +20,7 @@ enum class ErrorCode(
     ALREADY_PARTICIPATE(HttpStatus.BAD_REQUEST, "현재 참여 중인 세미나입니다."),
     ALREADY_INSTRUCTED(HttpStatus.BAD_REQUEST, "현재 담당하는 세미나가 존재합니다."),
     ALREADY_DROPPED(HttpStatus.BAD_REQUEST, "중도포기했던 강좌로 재참여가 불가합니다."),
-    NOT_PARTICIPATE_SEMINAR(HttpStatus.BAD_REQUEST, "수강 이력이 존재하지 않습니다."),
+    NOT_PARTICIPATED_SEMINAR(HttpStatus.OK, "수강 이력이 존재하지 않습니다."),
     
     // 401 UNAUTHORIZED
     NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "일치하지 않는 비밀번호입니다."),

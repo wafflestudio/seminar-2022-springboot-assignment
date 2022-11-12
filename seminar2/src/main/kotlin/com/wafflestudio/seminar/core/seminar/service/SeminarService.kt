@@ -162,8 +162,8 @@ class SeminarServiceImpl(
         // 드랍하려는 유저
         var user = userRepository.findById(userId).get()
         var entity = userSeminarRepository.findByUser_IdAndSeminar_Id(user.id, seminarId) ?:
-            // (예외 처리 2) 본 세미나 참여 이력이 없음에도 드랍 요청 -> 400 에러
-            throw SeminarException(ErrorCode.NOT_PARTICIPATE_SEMINAR)
+            // (예외 처리 2) 본 세미나 참여 이력이 없음에도 드랍 요청 -> 그냥 무시 (status 200)
+            throw SeminarException(ErrorCode.NOT_PARTICIPATED_SEMINAR)
         
         // (예외 처리 3) 본 세미나 진행자의 드랍 요청 -> 400 에러
         if(entity.role == INSTRUCTOR)
