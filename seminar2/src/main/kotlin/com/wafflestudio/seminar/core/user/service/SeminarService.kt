@@ -5,8 +5,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar403
 import com.wafflestudio.seminar.common.Seminar404
+//import com.wafflestudio.seminar.core.seminar.database.QSeminarEntity
+//import com.wafflestudio.seminar.core.seminar.database.QUserSeminarEntity
 import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.user.api.response.*
+//import com.wafflestudio.seminar.core.user.database.QUserEntity
 import com.wafflestudio.seminar.core.user.database.SeminarRepository
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.database.UserSeminarRepository
@@ -36,9 +39,7 @@ class SeminarService(
     
     // Query Count 예상: 8, 실제: 10
     fun createSeminar(seminar: SeminarRequest, token: String): GetSeminarInfo {
-        //todo: online 여부 외에는 하나라도 빠지면 400으로 응답하며, 적절한 에러 메시지를 포함합니다.
-        //todo: name에 0글자가 오는 경우, capacity와 count에 양의 정수가 아닌 값이 오는 경우는 400으로 응답합니다.
-        //todo: 세미나 진행자 자격을 가진 User만 요청할 수 있으며, 그렇지 않은 경우 403으로 응답
+       
         if(seminar.name == null || seminar.capacity == null || seminar.count == null || seminar.time == null ) {
             throw Seminar400("입력하지 않은 값이 있습니다")
             
@@ -48,17 +49,19 @@ class SeminarService(
                 throw Seminar400("형식에 맞지 않게 입력하지 않은 값이 있습니다")
             }
         }
-
+        
+ 
         // Query #1 -> [N+1] but was 2: fetching instructor profile
         if(userRepository.findByEmail(authTokenService.getCurrentEmail(token))?.instructor == null) {
             throw Seminar403("진행자만 세미나를 생성할 수 있습니다")
         }
-
+        
+        
         // Query #2
         val saveSeminarEntity = seminarRepository.save(SeminarEntity(seminar, token))
         // Query #3, #4, #5 -> [N+1] but was 4:  fetching instructor profile
         userSeminarRepository.save(userSeminarInstructorEntity(seminar, token))
-
+        
         // Query #6, #7
         val seminarInfoDto = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
@@ -67,8 +70,8 @@ class SeminarService(
             qUserEntity
         ))
             .from(qSeminarEntity)
-            .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
-            .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.id.eq(saveSeminarEntity.id))
+            .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id)).fetchJoin()
+            .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.id.eq(saveSeminarEntity.id)).fetchJoin()
             .where(qUserSeminarEntity.role.eq("instructor")).fetch()
         
 
@@ -84,8 +87,9 @@ class SeminarService(
             qUserEntity
         ))
             .from(qSeminarEntity)
-            .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
-            .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.name.eq(seminar.name)).where(qUserSeminarEntity.role.eq("participant")).fetch()
+            .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id)).fetchJoin()
+            .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).fetchJoin()
+                .where(qSeminarEntity.name.eq(seminar.name)).where(qUserSeminarEntity.role.eq("participant")).fetch()
 
         val newList = mutableListOf<StudentDto>()
 
@@ -141,21 +145,27 @@ class SeminarService(
                 throw Seminar400("형식에 맞지 않게 입력하지 않은 값이 있습니다")
             }
         }
-
+        
         // Query #1 -> [N+1] but was 2: fetching instructor profile
         if(userRepository.findByEmail(authTokenService.getCurrentEmail(token))?.instructor == null) {
+            println(token)
+            println(authTokenService.getCurrentEmail(token))
             throw Seminar403("세미나를 수정할 자격이 없습니다")
         }
 
-        /*
-        * TODO: 스펙에 따르면 해당 세미나를 만든 사람이 아니면 세미나를 수정할 수 없는데
-        *       그 부분을 처리하는 코드가 없습니다.
-        *       지금으로서는 instructor 자격만 있으면
-        *       누구나 세미나를 수정할 수 있게 구현되어 있습니다.
-        */
+        
+            
+        
+         
+                       
         
         // Query #2
+        
         val seminarEntity = seminarRepository.findByName(seminar.name)
+
+        if(userSeminarRepository.findAll().none { it.user?.email == authTokenService.getCurrentEmail(token) }) {
+            throw Seminar403("진행자만 세미나를 생성할 수 있습니다")
+        }
         
         seminarEntity.let { 
             it.name = seminar.name

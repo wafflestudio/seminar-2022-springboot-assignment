@@ -5,6 +5,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar401
 import com.wafflestudio.seminar.common.Seminar409
+//import com.wafflestudio.seminar.core.seminar.database.QSeminarEntity
+//import com.wafflestudio.seminar.core.seminar.database.QUserSeminarEntity
 import com.wafflestudio.seminar.core.user.api.request.BeParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.UpdateProfileRequest
 import com.wafflestudio.seminar.core.user.api.response.GetProfile

@@ -27,7 +27,7 @@ class UserEntity(
     @JoinColumn(name="participant_id")
     var participant: ParticipantProfileEntity? = null,
 
-    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name="instructor_id")
     var instructor: InstructorProfileEntity? = null,
 
