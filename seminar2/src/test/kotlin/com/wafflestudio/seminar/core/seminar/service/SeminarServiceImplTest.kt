@@ -8,9 +8,16 @@ import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
 import com.wafflestudio.seminar.core.seminar.api.response.SeminarResponse
 import com.wafflestudio.seminar.core.user.domain.Role
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
+import com.wafflestudio.seminar.core.seminar.repository.SeminarRepository
+import com.wafflestudio.seminar.core.user.repository.CustomUserRepository
+import com.wafflestudio.seminar.core.user.repository.InstructorProfileRepository
+import com.wafflestudio.seminar.core.user.repository.ParticipantProfileRepository
+import com.wafflestudio.seminar.core.user.repository.UserRepository
 import com.wafflestudio.seminar.core.user.service.UserService
+import com.wafflestudio.seminar.core.userSeminar.repository.UserSeminarRepository
 import com.wafflestudio.seminar.global.HibernateQueryCounter
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,12 +25,25 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
-@Transactional
 internal class SeminarServiceImplTest @Autowired constructor(
     private val userService: UserService,
     private val seminarService: SeminarService,
     private val hibernateQueryCounter: HibernateQueryCounter,
+    private val userRepository: UserRepository,
+    private val seminarRepository: SeminarRepository,
+    private val userSeminarRepository: UserSeminarRepository,
+    private val participantProfileRepository: ParticipantProfileRepository,
+    private val instructorProfileRepository: InstructorProfileRepository
 ) {
+
+    @BeforeEach
+    fun refresh() {
+        userRepository.deleteAll()
+        seminarRepository.deleteAll()
+        userSeminarRepository.deleteAll()
+        participantProfileRepository.deleteAll()
+        instructorProfileRepository.deleteAll()
+    }
 
     //    fun createSeminar(userId: Long, createSeminarRequest: CreateSeminarRequest): Seminar
     @Test
@@ -43,9 +63,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
         assertThat(findSeminar.capacity).isEqualTo(createSeminar!!.capacity)
         assertThat(findSeminar.count).isEqualTo(createSeminar!!.count)
         assertThat(findSeminar.time).isEqualTo(createSeminar!!.time)
-        // user 조회 -> 1 , userProfile 조회 -> 1 : 2번
-        // seminar 저장 -> 1, userSeminar 저장 -> 1 : 2번 => 총 4번
-//        assertThat(count).isEqualTo(4)
+
+        assertThat(count).isEqualTo(3)
     }
 
     @Test
@@ -112,7 +131,6 @@ internal class SeminarServiceImplTest @Autowired constructor(
 //        assertThat(queryCount).isEqualTo(6)
         assertThat(seminar.name).isEqualTo("seminar1")
     }
-
 
     @Test
     fun 세미나_불러오기_실패_아이디에_해당하는_세미나_없음() {
@@ -218,7 +236,6 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val queryCount = hibernateQueryCounter.count {
             joinSeminar = seminarService.joinSeminar(parti1, seminar.id, Role.PARTICIPANT)
         }.queryCount
-
 
         assertThat(joinSeminar!!.id).isEqualTo(seminar.id)
         assertThat(joinSeminar!!.name).isEqualTo(seminar.name)
