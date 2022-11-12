@@ -326,6 +326,116 @@ internal class SeminarServiceTest @Autowired constructor(
         assertEquals(exception.errorCode.httpStatus,  HttpStatus.NOT_FOUND)
     }
     
+    @Test
+    fun `Throw 403 when participant is not active while registering seminar`() {
+        // given
+        val (instructorList, participantList) = initializeUsers()
+        val (seminarList, _) = initializeSeminars(instructorList)
+        val unregisteredParticipant = seminarTestHelper.createParticipant(
+                email =  "a@a.com",
+                username = "hh",
+                password = "dd",
+                university = "NAKSUNG",
+                isRegistered = false
+        )
+        
+        // when
+        // then
+        val exception = assertThrows<SeminarException> {
+            seminarService.registerSeminar(
+                    unregisteredParticipant.id, seminarList[0].id, RegisterRequest(RoleType.PARTICIPANT)
+            )
+        }
+        assertEquals(exception.errorCode.httpStatus, HttpStatus.FORBIDDEN)
+    }
+    
+    @Test
+    fun `Throw 403 when user register with wrong profile while registering seminar`() {
+        // given
+        val (instructorList, participantList) = initializeUsers()
+        val (seminarList, _) = initializeSeminars(instructorList)
+        
+        // when
+        val newInstructor = seminarTestHelper.createInstructor(
+                email = "a@a.com",
+                username = "sd",
+                password = "sorryforlate",
+                company =  "com",
+                year = 2022
+        )
+        
+        // then
+        // instructor -> participant
+        val exceptionInstructorToParticipant = assertThrows<SeminarException> {
+            seminarService.registerSeminar(
+                    newInstructor.id, seminarList[0].id, RegisterRequest(RoleType.PARTICIPANT)
+            )
+        }
+        assertEquals(exceptionInstructorToParticipant.errorCode.httpStatus, HttpStatus.FORBIDDEN)
+        
+        // participant -> instructor
+        val exceptionParticipantToInstructor = assertThrows<SeminarException> {
+            seminarService.registerSeminar(
+                    participantList[0].id, seminarList[0].id, RegisterRequest(RoleType.INSTRUCTOR)
+            )
+        }
+        assertEquals(exceptionParticipantToInstructor.errorCode.httpStatus, HttpStatus.FORBIDDEN)
+    }
+    
+    @Test
+    fun `Throw 400 if seminar is full while registering seminar`() {
+        // given
+        val (instructorList, participantList) = initializeUsers()
+        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
+        val seminar = seminarRepository.save(seminarList[0].apply { capacity = 0 })
+        
+        // when
+        // then
+        val exception = assertThrows<SeminarException> {  
+            seminarService.registerSeminar(participantList[0].id, seminar.id, RegisterRequest(RoleType.PARTICIPANT))
+        }
+        assertEquals(exception.errorCode.httpStatus, HttpStatus.BAD_REQUEST)
+    }
+    
+    @Test
+    fun `Throw 400 if instructor already instruct other seminar while registering seminar`() {
+        // given 
+        val (instructorList, participantList) = initializeUsers()
+        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
+        
+        // when
+        // then
+        val exception = assertThrows<SeminarException> {
+            seminarService.registerSeminar(instructorList[0].id, seminarList[1].id, RegisterRequest(RoleType.INSTRUCTOR))
+        }
+        
+        assertEquals(exception.errorCode.httpStatus, HttpStatus.BAD_REQUEST)
+    }
+    
+    @Test
+    fun `Throw 400 if already registered in same seminar while registering seminar`() {
+        // given 
+        val (instructorList, participantList) = initializeUsers()
+        val (seminarList, _) = initializeSeminars(instructorList)
+        
+        // when
+        val instructor = instructorList[0]
+        val participant = participantList[0]
+        val seminar = seminarList[0]
+        seminarTestHelper.createUserSeminarEntity(participant, seminar)
+        
+        // then
+        val exceptionInstructorSameSeminar = assertThrows<SeminarException> {
+            seminarService.registerSeminar(instructor.id, seminar.id, RegisterRequest(RoleType.INSTRUCTOR))
+        }
+        assertEquals(exceptionInstructorSameSeminar.errorCode.httpStatus, HttpStatus.BAD_REQUEST)
+        
+        val exceptionParticipantSameSeminar = assertThrows<SeminarException> {
+            seminarService.registerSeminar(participant.id, seminar.id, RegisterRequest(RoleType.PARTICIPANT))
+        }
+        assertEquals(exceptionParticipantSameSeminar.errorCode.httpStatus, HttpStatus.BAD_REQUEST)
+    }
+    
     
     fun initializeUsers(): Pair<List<UserEntity>, List<UserEntity>> {
         val instructorList = (0 .. 2).map {i ->
