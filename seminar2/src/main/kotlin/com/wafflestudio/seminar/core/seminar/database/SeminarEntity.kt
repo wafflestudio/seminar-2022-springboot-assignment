@@ -13,7 +13,7 @@ class SeminarEntity (
     val time: String,
     val online: Boolean = true,
     
-    @OneToMany(mappedBy="seminar")
+    @OneToMany(mappedBy="seminar", fetch = FetchType.LAZY)
     val userSeminars: MutableList<UserSeminarEntity> = mutableListOf()
 ): BaseTimeEntity() {
     fun toSeminar(): Seminar {

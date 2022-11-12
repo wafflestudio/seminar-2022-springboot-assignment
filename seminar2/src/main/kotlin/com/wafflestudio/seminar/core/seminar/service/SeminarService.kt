@@ -3,11 +3,13 @@ package com.wafflestudio.seminar.core.seminar.service
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarDTO
 import com.wafflestudio.seminar.core.seminar.api.request.JoinSeminarDTO
+import com.wafflestudio.seminar.core.seminar.database.SeminarDslRepository
 import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarRepository
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
 import com.wafflestudio.seminar.core.user.database.UserEntity
+import com.wafflestudio.seminar.core.user.database.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,23 +17,22 @@ import java.time.LocalDateTime
 
 @Service
 class SeminarService(
+    private val userRepository: UserRepository,
     private val seminarRepository: SeminarRepository,
+    private val seminarDslRepository: SeminarDslRepository,
     private val userSeminarRepository: UserSeminarRepository
 ) {
     fun getSeminar(id: Long): Seminar {
         val seminarEntity = seminarRepository.findByIdOrNull(id) ?: throw Seminar400("$id 의 세미나는 존재하지 않습니다.")
         return seminarEntity.toSeminar()
     }
-    
-    @Transactional
-    fun getAllSeminar(name: String, order: String): List<Seminar> {
-        val seminars = seminarRepository.findAll()
-            .filter { it.name.contains(name) }
-            .sortedBy { it.createdAt }
-            .map { it.toSeminar() }
-            .reversed()
 
-        return if (order =="earliest") seminars.reversed() else seminars
+    @Transactional(readOnly = true)
+    fun getSeminarList(name: String, order: String): List<Seminar> {
+        val isAscending = order == "earliest"
+        val seminars = seminarDslRepository.getList(name, isAscending)
+        
+        return seminars.map { it.toSeminar() }
     }
     
     @Transactional

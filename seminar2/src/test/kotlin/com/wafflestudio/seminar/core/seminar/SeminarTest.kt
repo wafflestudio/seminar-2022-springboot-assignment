@@ -30,37 +30,23 @@ internal class SeminarServiceTest @Autowired constructor(
     }
     
     @Test
-    fun `전체 세미나를 조회할 수 있다`() {
+    fun `세미나 조회 - 전체 세미나를 조회할 수 있다`() {
         // given
         createFixtures()
         
         // when
         val (result, queryCount) = hibernateQueryCounter.count {
-            seminarService.getAllSeminar("", "")
+            seminarService.getSeminarList("", "")
         }
 
         // then
         assertThat(result).hasSize(1)
-        assertThat(queryCount).isEqualTo(3)
-    }
-
-    @Test
-    fun `쿼리 방식에 따라 시간차이가 난다`() {
-        // given
-        createFixtures()
-
-        // when
-        val firstResult = measureTimeMillis { seminarService.getAllSeminar("", "") }
-//        val secondResult = measureTimeMillis { seminarService.getSeminarListWithFetchJoin(GetSeminarRequest(null, null)) }
-
-        // then
-        println(firstResult)
-//        println(secondResult)
-//        assertThat(secondResult).isLessThan(firstResult)
+        assertThat(queryCount).isEqualTo(13)
     }
     
     private fun createFixtures() {
-        val seminar = seminarTestHelper.createSeminar("test seminar")
+        val seminar = seminarTestHelper.createSeminar("seminar#1")
+        val seminar2 = seminarTestHelper.createSeminar("seminar#2")
         val instructor = userTestHelper.createInstructor("instructor@email.com")
         val instructorUserSeminar = UserSeminarEntity(user = instructor, seminar = seminar, role = "instructor")
         userSeminarRepository.save(instructorUserSeminar)

@@ -28,7 +28,7 @@ class SeminarController(
         @RequestParam("name", defaultValue = "", required = false) name: String,
         @RequestParam("order", defaultValue = "", required = false) order: String
     ): List<Seminar> {
-        return seminarService.getAllSeminar(name, order)
+        return seminarService.getSeminarList(name, order)
     }
     
     @GetMapping("/api/v1/seminar/{seminarId}")
