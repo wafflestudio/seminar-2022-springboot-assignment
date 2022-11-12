@@ -61,7 +61,7 @@ class SeminarServiceImpl(
     }
 
     override fun editSeminar(userId: Long, editSeminarRequest: EditSeminarRequest): Seminar {
-        val seminarEntity = seminarRepository.findByIdOrNull(editSeminarRequest.id)
+        val seminarEntity = customSeminarRepository.findByIdWithUserSeminarAndUser(editSeminarRequest.id!!)
             ?: throw Seminar404("No existing seminar with id: ${editSeminarRequest.id}")
         if (seminarEntity.creatorId != userId) {
             throw Seminar403("You are not the creator of this seminar")
@@ -93,7 +93,7 @@ class SeminarServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getSeminars(name: String, order: String): List<SeminarResponse> {
-        val seminarEntities = customSeminarRepository.findByNameWithOrder(name, order)
+        val seminarEntities = customSeminarRepository.findByNameAndOrder(name, order)
         val seminars = ArrayList<SeminarResponse>()
         for (seminarEntity in seminarEntities) {
             seminars.add(seminarEntity.toSeminarResponse())

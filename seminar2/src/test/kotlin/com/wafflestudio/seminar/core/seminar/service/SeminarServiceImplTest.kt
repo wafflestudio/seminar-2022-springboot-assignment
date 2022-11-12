@@ -88,7 +88,10 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val seminar = createSeminar(instId)
         val request = EditSeminarRequest(seminar.id, "editSeminar", 20, 10, "12:30", false)
 
-        seminarService.editSeminar(instId, request)
+        val count = hibernateQueryCounter.count {
+            seminarService.editSeminar(instId, request)
+        }.queryCount
+
         val findSeminar = seminarService.getSeminar(seminar.id)
 
         assertThat(findSeminar.name).isEqualTo(request.name)
@@ -96,6 +99,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
         assertThat(findSeminar.count).isEqualTo(request.count)
         assertThat(findSeminar.time).isEqualTo(request.time)
         assertThat(findSeminar.online).isFalse
+
+        assertThat(count).isEqualTo(2)
     }
 
     @Test
