@@ -57,15 +57,15 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    //QueryDsl
+    // QueryDsl
     val querydslVersion = "5.0.0"
     implementation("com.querydsl:querydsl-jpa:$querydslVersion")
     kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa")
 
-    //AOP
+    // AOP
     implementation("org.springframework.boot:spring-boot-starter-aop")
 
-    //Validation
+    // Validation
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     // Test
