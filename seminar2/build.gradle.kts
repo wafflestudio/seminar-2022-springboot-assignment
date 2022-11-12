@@ -9,6 +9,8 @@ plugins {
     kotlin("plugin.allopen") version "1.3.71"
     kotlin("plugin.noarg") version "1.3.71"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+
+    kotlin("kapt") version "1.7.10"
 }
 
 apply {
@@ -39,8 +41,6 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
 
-
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // Auth
     implementation("org.springframework.boot:spring-boot-starter-security")
 
@@ -52,9 +52,29 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
+
+    // Mockk
+    val mockkVersion = "1.12.+"
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("com.ninja-squad:springmockk:3.1.1")
+
+    // QueryDSL
+    val querydslVersion = "5.0.0"
+    implementation("com.querydsl:querydsl-jpa:$querydslVersion")
+    implementation("com.querydsl:querydsl-core:$querydslVersion")
+    kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa")
+    kapt(group = "com.querydsl", name = "querydsl-apt", classifier = "jpa")
+}
+
+// QueryDSL
+sourceSets {
+    named("main") {
+        java.srcDir("$buildDir/generated/source/kapt/main")
+    }
 }
 
 tasks.withType<KotlinCompile> {
