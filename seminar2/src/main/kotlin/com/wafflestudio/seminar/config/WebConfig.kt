@@ -17,7 +17,6 @@ import org.springframework.web.method.support.ModelAndViewContainer
 import org.springframework.web.servlet.HandlerInterceptor
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import java.util.Optional
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -49,14 +48,14 @@ class AuthArgumentResolver(
         mavContainer: ModelAndViewContainer?,
         webRequest: NativeWebRequest,
         binderFactory: WebDataBinderFactory?
-    ): Optional<UserEntity> {
+    ): UserEntity {
         val authToken = (webRequest as ServletWebRequest).request.getAttribute("jwt")
-            
+        
         authToken?.let {
             val email = authTokenService.getCurrentUserEmail(it.toString())
-            return userRepository.findByEmail(email)
+            return userRepository.findByEmail(email) ?: throw AuthException("유저를 찾을 수 없습니다")
         }
-        return Optional.empty()
+        throw AuthException("유저를 찾을 수 없습니다")
     }
 }
 

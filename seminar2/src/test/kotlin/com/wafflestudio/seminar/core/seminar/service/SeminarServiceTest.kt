@@ -8,7 +8,6 @@ import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import org.springframework.beans.factory.annotation.Autowired
 import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
-import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -59,9 +58,9 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // then
 //        assertThat(seminarRepository.findByName(request.name!!)).isNotEmpty
-//        assertEquals(seminarRepository.findByName(request.name!!).get().capacity, request.capacity)
-//        assertEquals(seminarRepository.findByName(request.name!!).get().count, request.count)
-//        assertEquals(seminarRepository.findByName(request.name!!).get().online, request.online)
+        assertEquals(seminarRepository.findByName(request.name!!)!!.capacity, request.capacity)
+        assertEquals(seminarRepository.findByName(request.name!!)!!.count, request.count)
+        assertEquals(seminarRepository.findByName(request.name!!)!!.online, request.online)
     }
 
     @Test

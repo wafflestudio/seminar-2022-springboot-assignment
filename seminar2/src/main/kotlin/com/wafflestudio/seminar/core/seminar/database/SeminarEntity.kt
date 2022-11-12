@@ -2,7 +2,6 @@ package com.wafflestudio.seminar.core.seminar.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarRequest
-import com.wafflestudio.seminar.core.user.database.UserEntity
 import javax.persistence.*
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
@@ -16,12 +15,12 @@ class SeminarEntity(
     @field:Min(1) var count: Int,
     var time: String,
     var online: Boolean = true,
-    
+
     @OneToMany(mappedBy = "seminar", cascade = [CascadeType.REMOVE])
-    var users: MutableList<UserSeminarEntity> = mutableListOf(),
-    
-    
-) : BaseTimeEntity() {
+    var userSeminars: MutableList<UserSeminarEntity> = mutableListOf(),
+
+
+    ) : BaseTimeEntity() {
     
     fun update(request: UpdateSeminarRequest) {
         this.name = request.name ?: this.name

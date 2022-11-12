@@ -43,23 +43,15 @@ class AuthController(
     @LogExecutionTime
     @Authenticated
     @GetMapping("/api/v1/me")
-    fun getMe(@UserContext user: Optional<UserEntity>): ResponseEntity<UserProfile> {
-        if (user.isEmpty) {
-            throw AuthException("유저를 찾을 수 없습니다")
-        }
-        val userMe = user.get()
-        
-        return ResponseEntity.ok(userService.createUserProfileFromUser(userMe))
+    fun getMe(@UserContext user: UserEntity): ResponseEntity<UserProfile> {
+        return ResponseEntity.ok(userService.createUserProfileFromUser(user))
     }
     
     @LogExecutionTime
     @Authenticated
     @PutMapping("/api/v1/me")
-    fun updateMe(@UserContext user: Optional<UserEntity>, @Valid @RequestBody request: UpdateUserRequest) : ResponseEntity<UserProfile> {
-        if (user.isEmpty) {
-            throw AuthException("유저를 찾을 수 없습니다")
-        }
-        val updatedUserProfile = userService.updateUser(user.get(), request)
+    fun updateMe(@UserContext user: UserEntity, @Valid @RequestBody request: UpdateUserRequest) : ResponseEntity<UserProfile> {
+        val updatedUserProfile = userService.updateUser(user, request)
         return ResponseEntity.ok(updatedUserProfile)
     }
 }

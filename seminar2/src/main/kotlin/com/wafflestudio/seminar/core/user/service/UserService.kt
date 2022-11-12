@@ -303,21 +303,18 @@ class UserService(
     
     fun validateSignUpRequest(request: SignUpRequest) {
         validateYearPositive(request.year)
-        val userEntityByEmail: Optional<UserEntity> = userRepository.findByEmail(request.email)
-        if (userEntityByEmail.isPresent) {
+        val userEntityByEmail: UserEntity? = userRepository.findByEmail(request.email)
+        if (userEntityByEmail != null) {
             throw Seminar409("중복된 email 주소입니다. 다른 email을 시도해주세요")
         }
     }
     
     fun validateSignInRequest(request: SignInRequest) : UserEntity {
-        val userEntity: Optional<UserEntity> = userRepository.findByEmail(request.email)
-        if (userEntity.isEmpty) {
-            throw Seminar404("해당 user email을 찾을 수 없습니다")
-        }
+        val userEntity: UserEntity = userRepository.findByEmail(request.email) ?: throw Seminar404("해당 user email을 찾을 수 없습니다")
 
-        if (!passwordEncoder.matches(request.password, userEntity.get().password)) {
+        if (!passwordEncoder.matches(request.password, userEntity.password)) {
             throw Seminar401("패스워드가 일치하지 않습니다")
         }
-        return userEntity.get()
+        return userEntity
     }
 }

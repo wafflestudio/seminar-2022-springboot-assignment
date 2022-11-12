@@ -47,11 +47,11 @@ class CreateRandomDummy(
             )
             
             
-            val user = userRepository.findByEmail(email)
+            val user = userRepository.findByEmail(email)!!
             
             if (role == UserRole.INSTRUCTOR && Random.nextDouble() < 0.5) {
                 userService.registerParticipantForInstructor(
-                    user.get(),
+                    user,
                     RegisterParticipantRequest(
                         university = "SNU",
                         isRegistered = true
@@ -63,7 +63,7 @@ class CreateRandomDummy(
             var newSeminarId: Long = -1
             if (role != UserRole.PARTICIPANT && Random.nextDouble() < 0.5) {
                 seminarService.createSeminar(
-                    user.get(),
+                    user,
                     SeminarRequest(
                         name = listOf("Spring", "Django", "React", "Android", "iOS").random() + index.toString(),
                         capacity = (10..30).random(),
@@ -86,7 +86,7 @@ class CreateRandomDummy(
                                     seminarId = seminarIdList.filter { id ->
                                         id != newSeminarId
                                     }.random(),
-                                    user = user.get(),
+                                    user = user,
                                     request = ParticipateSeminarRequest(
                                         role = listOf(UserRole.INSTRUCTOR, UserRole.PARTICIPANT).random(),
                                     )
@@ -102,7 +102,7 @@ class CreateRandomDummy(
                                 seminarId = seminarIdList.filter { id ->
                                     id != newSeminarId
                                 }.random(),
-                                user = user.get(),
+                                user = user,
                                 request = ParticipateSeminarRequest(
                                     role = UserRole.PARTICIPANT,
                                 )

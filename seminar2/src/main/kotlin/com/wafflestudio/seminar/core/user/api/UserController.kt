@@ -40,27 +40,21 @@ class UserController(
     @Authenticated
     @PostMapping("/api/v1/user/participant")
     fun registerParticipantForInstructor(
-        @UserContext user: Optional<UserEntity>, @Valid @RequestBody request: RegisterParticipantRequest
+        @UserContext user: UserEntity, @Valid @RequestBody request: RegisterParticipantRequest
     ) : ResponseEntity<UserProfile> {
-        if (user.isEmpty) {
-            throw AuthException("유저를 찾을 수 없습니다")
-        }
-        return ResponseEntity.ok(userService.registerParticipantForInstructor(user.get(), request))
+        return ResponseEntity.ok(userService.registerParticipantForInstructor(user, request))
     }
     
     @LogExecutionTime
     @Authenticated
     @DeleteMapping("/api/v1/user")
     fun deleteUser(
-        @UserContext user: Optional<UserEntity>
+        @UserContext user: UserEntity
     ) : ResponseEntity<Map<String, Long>>{
-        if (user.isEmpty) {
-            throw AuthException("유저를 찾을 수 없습니다")
-        }
-        userService.deleteUser(user.get())
+        userService.deleteUser(user)
         return ResponseEntity.ok(
             mapOf(
-                "deleted_user_id" to user.get().id
+                "deleted_user_id" to user.id
             )
         )
     }

@@ -26,53 +26,41 @@ class SeminarController(
     @Authenticated
     @PostMapping("/api/v1/seminar")
     fun createSeminar(
-        @UserContext user: Optional<UserEntity>,
+        @UserContext user: UserEntity,
         @Valid @RequestBody seminarRequest: SeminarRequest
     ) : ResponseEntity<SeminarInfo> {
-        if (user.isEmpty) {
-            throw AuthException("유저를 찾을 수 없습니다")
-        }
-        return ResponseEntity.ok(seminarService.createSeminar(user.get(), seminarRequest))
+        return ResponseEntity.ok(seminarService.createSeminar(user, seminarRequest))
     }
 
     @LogExecutionTime
     @Authenticated
     @PutMapping("/api/v1/seminar")
     fun updateSeminar(
-        @UserContext user: Optional<UserEntity>,
+        @UserContext user: UserEntity,
         @Valid @RequestBody seminarRequest: UpdateSeminarRequest
     ) : ResponseEntity<SeminarInfo> {
-        if (user.isEmpty) {
-            throw AuthException("유저를 찾을 수 없습니다")
-        }
-        return ResponseEntity.ok(seminarService.updateSeminar(user.get(), seminarRequest))
+        return ResponseEntity.ok(seminarService.updateSeminar(user, seminarRequest))
     }
     
     @LogExecutionTime
     @Authenticated
     @PostMapping("/api/v1/seminar/{seminarId}/user")
     fun participateSeminar(
-        @UserContext user: Optional<UserEntity>,
+        @UserContext user: UserEntity,
         @PathVariable seminarId: Long,
         @Valid @RequestBody request: ParticipateSeminarRequest
     ) : ResponseEntity<SeminarInfo> {
-        if (user.isEmpty) {
-            throw AuthException("유저를 찾을 수 없습니다")
-        }
-        return ResponseEntity.ok(seminarService.participateSeminar(seminarId, user.get(), request))
+        return ResponseEntity.ok(seminarService.participateSeminar(seminarId, user, request))
     }
     
     @LogExecutionTime
     @Authenticated
     @DeleteMapping("/api/v1/seminar/{seminarId}/user")
     fun dropSeminar(
-        @UserContext user: Optional<UserEntity>,
+        @UserContext user: UserEntity,
         @PathVariable seminarId: Long,
     ) : ResponseEntity<SeminarInfo?> {
-        if (user.isEmpty) {
-            throw AuthException("유저를 찾을 수 없습니다")
-        }
-        return ResponseEntity.ok(seminarService.dropSeminar(user.get(), seminarId))
+        return ResponseEntity.ok(seminarService.dropSeminar(user, seminarId))
     }
     
     @LogExecutionTime
@@ -98,13 +86,10 @@ class SeminarController(
     @Authenticated
     @DeleteMapping("api/v1/seminar/{seminarId}")
     fun deleteSeminar(
-        @UserContext user: Optional<UserEntity>,
+        @UserContext user: UserEntity,
         @PathVariable seminarId: Long
     ) : ResponseEntity<Map<String, Long>> {
-        if (user.isEmpty) {
-            throw AuthException("유저를 찾을 수 없습니다")
-        }
-        seminarService.deleteSeminar(user.get(), seminarId)
+        seminarService.deleteSeminar(user, seminarId)
         return ResponseEntity.ok(
             mapOf(
                 "deleted_seminar_id" to seminarId 
