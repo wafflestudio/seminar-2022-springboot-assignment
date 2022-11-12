@@ -16,7 +16,7 @@ class SeminarEntity(
     var time: String,
     var online: Boolean = true,
 
-    @OneToMany(mappedBy = "seminar", cascade = [CascadeType.REMOVE])
+    @OneToMany(mappedBy = "seminar", cascade = [CascadeType.REMOVE], fetch = FetchType.LAZY)
     var userSeminars: MutableList<UserSeminarEntity> = mutableListOf(),
 
 

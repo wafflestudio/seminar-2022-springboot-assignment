@@ -275,7 +275,6 @@ class UserService(
     
     @Transactional
     fun deleteUser(user: UserEntity) {
-        println("Try delete user id : ${user.id}")
         when (user.role) {
             UserRole.PARTICIPANT -> {
                 participantProfileRepository.deleteByUserId(user.id)        
@@ -288,8 +287,6 @@ class UserService(
                 instructorProfileRepository.deleteByUserId(user.id)
             }
         }
-        println("profile delete succeed!")
-        
         userRepository.delete(user)
     }
     

@@ -63,7 +63,6 @@ class SeminarService(
         val userSeminarEntity: UserSeminarEntity = userSeminarRepository.findUserSeminarByUserIdAndIsParticipantAndIsActive(
             user.id, false, true
         ) ?: throw Seminar404("진행하고 있는 세미나가 없습니다.")
-        println("세미나 아이디: ${seminarRequest.id}")
         if (userSeminarEntity.seminar!!.id != seminarRequest.id) {
             throw Seminar400("세미나 아이디가 잘못됐습니다")
         }
@@ -104,7 +103,7 @@ class SeminarService(
                 throw Seminar400("정원이 다 찼습니다")
             }
         }
-        val seminarsConnectedByUser = userSeminarRepository.findUserSeminarsByUserId(user.id)
+        val seminarsConnectedByUser = userSeminarRepository.findAllByUserId(user.id)
         
         if (request.role == UserRole.PARTICIPANT) {
             seminarsConnectedByUser.forEach {
@@ -142,8 +141,6 @@ class SeminarService(
     @Transactional
     fun dropSeminar(user: UserEntity, seminarId: Long) : SeminarInfo? { 
         val seminar = seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 seminar id가 존재하지 않습니다")
-        println("user id: ${user.id}")
-        println("seminar id: ${seminarId}")
         val userSeminarEntity = userSeminarRepository.findUserSeminarByUserIdAndSeminarId(user.id, seminarId)
             ?: return null
         if (!userSeminarEntity.isParticipant) throw Seminar403("세미나 진행자는 세미나를 드랍할 수 없습니다")
@@ -163,6 +160,7 @@ class SeminarService(
             ?: throw Seminar403("세미나를 없앨 권한이 없습니다")
         if (!userSeminarEntity.isActive) throw Seminar403("비활성화된 사용자는 세미나를 없앨 수 없습니다")
         if (userSeminarEntity.isParticipant) throw Seminar403("참여자는 세미나를 없앨 권한이 없습니다")
+        
         seminarRepository.delete(seminar)
     }
     
