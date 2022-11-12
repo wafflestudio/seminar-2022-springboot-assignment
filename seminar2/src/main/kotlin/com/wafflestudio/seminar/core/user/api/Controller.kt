@@ -67,15 +67,22 @@ class Controller(
         return seminarService.getSeminarById(seminar_id,token)
     }
     
-    
+
+    /*
+    * TODO: 해당하는 api가 없습니다.
+    *       seminars -> seminar로 수정되어야 합니다.
+    */
     @GetMapping("seminars")
     fun getSeminars(@RequestHeader("Authentication") token: String): List<GetSeminars>{
         return seminarService.getSeminars(token)
     }
-    
+
+    /*
+    * TODO: name과 order는 없을 수도 있기 때문에 nullable하게 선언되어야 합니다.
+    *       또한 스펙에 따르면 return값은 GetSeminarInfoByName이 아니라 List<GetSeminarInfoByName>이어야 합니다.
+    */
     @GetMapping("seminar")
     fun getSeminarByName(@RequestParam name: String, @RequestParam order: String, @RequestHeader("Authentication") token: String): GetSeminarInfoByName {
-
         return seminarService.getSeminarByName(name, order, token)
     }
     

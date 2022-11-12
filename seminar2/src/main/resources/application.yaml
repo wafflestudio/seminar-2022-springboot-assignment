@@ -1,19 +1,35 @@
 spring:
   profiles:
-    active: dev
-  datasource:
-    url: jdbc:mysql://localhost:3308/seminar2?serverTimezone=UTC
-    username: root
-    password: 1234
+    active: local
   jpa:
     properties:
       hibernate:
         show_sql: true
     hibernate:
-      ddl-auto: update
-      
+      ddl-auto: create-drop
+
 auth.jwt:
-  jwtSecret: SEMINAR_SECRET_KEYfkrhsksmsakfgoTekdkfrpTsi
-  issuer: TEST
-  jwtExpiration: 86400
-  # TODO 누락된 정보를 추가해 주세요.
+  jwtSecret: w9z$B&E)H@McQfTjWnZr4u7x!A%D*F-J
+  issuer: seminar.wafflestudio.com
+  jwtExpiration: 6000
+
+#---
+
+#spring:
+#  profiles:
+#    active: dev
+#  datasource:
+#    url: jdbc:mysql://localhost:3308/seminar2?serverTimezone=UTC
+#    username: root
+#    password: 1234
+#  jpa:
+#    properties:
+#      hibernate:
+#        show_sql: true
+#    hibernate:
+#      ddl-auto: update
+#
+#auth.jwt:
+#  jwtSecret: SEMINAR_SECRET_KEYfkrhsksmsakfgoTekdkfrpTsi
+#  issuer: TEST
+#  jwtExpiration: 86400
