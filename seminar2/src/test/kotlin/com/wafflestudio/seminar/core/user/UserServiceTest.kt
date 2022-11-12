@@ -22,7 +22,7 @@ internal class UserServiceTest @Autowired constructor(
 ) {
     @BeforeEach
     fun cleanUp() {
-        userRepository.deleteAll()
+        userTestHelper.deleteAllUser()
     }
 
     @Test

@@ -23,6 +23,7 @@ class SeminarService(
         return seminarEntity.toSeminar()
     }
     
+    @Transactional
     fun getAllSeminar(name: String, order: String): List<Seminar> {
         val seminars = seminarRepository.findAll()
             .filter { it.name.contains(name) }
@@ -40,8 +41,6 @@ class SeminarService(
             user = user,
             seminar = seminarEntity,
             role = "instructor",
-            joinedAt = LocalDateTime.now(),
-            isActive = true,
         ))
         user.userSeminars.add(userSeminarEntity)
         seminarEntity.userSeminars.add(userSeminarEntity)
@@ -85,8 +84,6 @@ class SeminarService(
             user = userEntity,
             seminar = seminarEntity,
             role = role,
-            joinedAt = LocalDateTime.now(),
-            isActive = true,
         )
         seminarEntity.userSeminars.add(userSeminar)
         userEntity.userSeminars.add(userSeminar)

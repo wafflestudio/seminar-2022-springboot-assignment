@@ -12,6 +12,10 @@ import java.time.LocalDateTime
 internal class UserTestHelper @Autowired constructor(
     private val userRepository: UserRepository,
 ) {
+    fun deleteAllUser() {
+        userRepository.deleteAll()
+    }
+    
     fun createUser(
         email: String,
         username: String = "",
