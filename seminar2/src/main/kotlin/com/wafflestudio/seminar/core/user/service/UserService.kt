@@ -120,13 +120,48 @@ class UserService(
         }
     }
     
+//    fun getAllUsers(page: Int, size: Int) : Page<UserProfile> {
+//        return userRepository.findAll(PageRequest.of(page, size, Sort.by("id").descending())).map { 
+//            createUserProfileFromUser(it)
+//        }
+//    }
+    
     fun getAllUsers(page: Int, size: Int) : Page<UserProfile> {
-        return userRepository.findAll(PageRequest.of(page, size, Sort.by("id").descending())).map { 
-            createUserProfileFromUser(it)
+        /* 기존 getAllUsers()는 각 user에 대해 profile db에 접근하는 query가 날라가서 query 횟수가 너무 많았다
+        *  QueryDSL을 사용하여 이 횟수를 줄였다. 
+        *  하지만 여전히 N+1 문제가 남아있다. user.userSeminars를 호출할때마다 queryr가 날라간다는 점인데,
+        *  이 문제를 해결하기 위해서는, fetchJoin()가 필요하다. 하지만 fetchJoin()와 pageable은 함께 사용할 수 없다
+        *  그래서 현재 코드는 pageable을 위해 fetchJoin() 를 포기하였다
+        * TODO! : 이 문제를 어떻게 해결할 지 질문
+        */
+        val ret = userRepository.getAllUsersWithProfile(PageRequest.of(page, size, Sort.by("id").descending()))
+        return ret.map {
+            when (it.user!!.role) {
+                UserRole.PARTICIPANT -> {
+                    UserProfile.from(
+                        it.user!!, 
+                        ParticipantProfile.from(it, SeminarProfile.from(it.user!!.userSeminars))
+                    )
+                }
+                UserRole.INSTRUCTOR -> {
+                    UserProfile.from(
+                        it.user!!,
+                        InstructorProfile.from(it, SeminarProfileForInstructor.from(it.user!!.userSeminars))
+                    )
+                }
+                UserRole.BOTH -> {
+                    UserProfile.from(
+                        it.user!!,
+                        ParticipantProfile.from(it, SeminarProfile.from(it.user!!.userSeminars)),
+                        InstructorProfile.from(it, SeminarProfileForInstructor.from(it.user!!.userSeminars))
+                    )
+                }
+            }
         }
-    } 
+    }
 
-    fun createUserProfileFromUser(user: UserEntity) : UserProfile {
+
+        fun createUserProfileFromUser(user: UserEntity) : UserProfile {
         return when (user.role) {
             UserRole.PARTICIPANT -> {
                 UserProfile.from(
@@ -222,7 +257,6 @@ class UserService(
     
     @Transactional
     fun updateUser(user: UserEntity, request: UpdateUserRequest) : UserProfile {
-        // TODO user table 을 업데이트 하면 PROFILE table의 modified_at도 업데이트 해야되나?
         request.username?.let { 
             user.username = request.username
         }

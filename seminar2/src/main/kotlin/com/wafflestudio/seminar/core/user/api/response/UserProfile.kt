@@ -2,7 +2,9 @@ package com.wafflestudio.seminar.core.user.api.response
 
 import com.wafflestudio.seminar.core.profile.database.InstructorProfileEntity
 import com.wafflestudio.seminar.core.profile.database.ParticipantProfileEntity
+import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.database.UserEntity
+import com.wafflestudio.seminar.core.user.database.UserQueryVO
 import java.time.LocalDateTime
 
 data class UserProfile(
@@ -52,7 +54,27 @@ data class SeminarProfile(
     val joinedAt: LocalDateTime?,
     val isActive: Boolean,
     val droppedAt: LocalDateTime?
-)
+) {
+    companion object {
+        fun from(userSeminars: MutableList<UserSeminarEntity>) : MutableList<SeminarProfile> {
+            val seminarProfiles = mutableListOf<SeminarProfile>()
+            userSeminars.forEach {
+                if (it.isParticipant) {
+                    seminarProfiles.add(
+                        SeminarProfile(
+                            id = it.seminar!!.id,
+                            name = it.seminar!!.name,
+                            joinedAt = it.createdAt,
+                            isActive = it.isActive,
+                            droppedAt = it.droppedAt
+                        )
+                    )
+                }
+            }
+            return seminarProfiles
+        }
+    }
+}
 
 data class ParticipantProfile(
     val id: Long,
@@ -72,6 +94,24 @@ data class ParticipantProfile(
                 seminars = seminars
             )
         }
+        
+        fun from(
+            userQuery: UserQueryVO,
+            seminars: MutableList<SeminarProfile>
+        ) : ParticipantProfile {
+            return ParticipantProfile(
+                id = userQuery.participantId!!,
+                university = userQuery.user!!.university,
+                isRegistered = userQuery.user!!.isRegistered,
+                seminars = seminars
+            )
+        }
+        
+//        fun from(
+//            userEntity: UserEntity,
+//            seminars: MutableList<SeminarProfile>
+//        ) : ParticipantProfile {
+//        }
     }
 }
 
@@ -79,7 +119,25 @@ data class SeminarProfileForInstructor(
     val id: Long,
     val name: String,
     val joinedAt: LocalDateTime?
-)
+) {
+    companion object {
+        fun from(
+            userSeminars: MutableList<UserSeminarEntity>
+        ) : SeminarProfileForInstructor? {
+//            val userSeminars = userSeminarRepository.findAllByUserId(user.id)
+            var instructingSeminar: SeminarProfileForInstructor? = null
+            
+            userSeminars.firstOrNull { !it.isParticipant }?.let {
+                instructingSeminar = SeminarProfileForInstructor(
+                    id = it.seminar!!.id,
+                    name = it.seminar!!.name,
+                    joinedAt = it.createdAt
+                )
+            }
+            return instructingSeminar
+        }
+    }
+}
 
 data class InstructorProfile (
     val id: Long,
@@ -96,6 +154,18 @@ data class InstructorProfile (
                 id = instructorProfileEntity.id,
                 company = instructorProfileEntity.user!!.company,
                 year = instructorProfileEntity.user!!.year,
+                instructingSeminars = instructionSeminars
+            )
+        }
+
+        fun from(
+            userQuery: UserQueryVO,
+            instructionSeminars: SeminarProfileForInstructor?
+        ) : InstructorProfile {
+            return InstructorProfile(
+                id = userQuery.instructorId!!,
+                company = userQuery.user!!.company,
+                year = userQuery.user!!.year,
                 instructingSeminars = instructionSeminars
             )
         }

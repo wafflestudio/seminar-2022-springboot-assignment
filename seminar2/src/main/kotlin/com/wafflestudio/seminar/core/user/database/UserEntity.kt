@@ -24,7 +24,7 @@ class UserEntity(
     var company: String = "",
     var year: Int? = null,
 
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.REMOVE], fetch = FetchType.LAZY)
-    var seminars: MutableList<UserSeminarEntity> = mutableListOf()
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.REMOVE])
+    var userSeminars: MutableList<UserSeminarEntity> = mutableListOf()
 ) : BaseTimeEntity() {
 }

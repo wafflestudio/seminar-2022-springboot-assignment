@@ -140,7 +140,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val (result, queryCount) = hibernateQueryCounter.count {
             seminarService.getSeminar(seminar.id)
         }
-        assertThat(queryCount).isEqualTo(1) // TODO!: query count가 2 여야 될 것 같은데 오히려 1이 나옴
+        assertThat(queryCount).isEqualTo(1) // TODO!: 질문! query count가 2 여야 될 것 같은데 오히려 1이 나옴
         assertThat(result.id).isEqualTo(seminar.id)
     }
 
