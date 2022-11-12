@@ -3,6 +3,7 @@ package com.wafflestudio.seminar.core.seminar.service
 import com.wafflestudio.seminar.common.SeminarException
 import com.wafflestudio.seminar.core.UserSeminar.domain.UserSeminarEntity
 import com.wafflestudio.seminar.core.UserSeminar.repository.UserSeminarRepository
+import com.wafflestudio.seminar.core.seminar.api.request.RegisterRequest
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.seminar.domain.SeminarDTO
 import com.wafflestudio.seminar.core.seminar.domain.SeminarEntity
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import javax.transaction.Transactional
 
 @SpringBootTest
@@ -70,7 +72,7 @@ internal class SeminarServiceTest @Autowired constructor(
     }
     
     @Test
-    fun `Throw Exception when user is not INSTRUCTOR while creating seminar`() {
+    fun `Throw 403 when user is not INSTRUCTOR while creating seminar`() {
         // given
         val (_, participantList) = initializeUsers()
         
@@ -78,15 +80,16 @@ internal class SeminarServiceTest @Autowired constructor(
         val participant = participantList[0]
         
         // then
-        assertThrows<SeminarException> {
+        val exception = assertThrows<SeminarException> {
             seminarService.makeSeminar(
                     userId = participant.id,
                     request = SeminarRequest("", 1, 1, "11:11"))
         }
+        assertEquals(exception.errorCode.httpStatus, HttpStatus.FORBIDDEN)
     }
     
     @Test
-    fun `Throw Exception when user is already instructing other seminar while creating seminar`() {
+    fun `Throw 400 when user is already instructing other seminar while creating seminar`() {
         // given
         val (instructorList, _) = initializeUsers()
         val (_, _) = initializeSeminars(instructorList)
@@ -95,11 +98,12 @@ internal class SeminarServiceTest @Autowired constructor(
         val instructor = instructorList[0]
         
         // then
-        assertThrows<SeminarException> {
+        val exception = assertThrows<SeminarException> {
             seminarService.makeSeminar(
                     userId = instructor.id,
                     request = SeminarRequest("", 1, 1, "11:11"))
         }
+        assertEquals(exception.errorCode.httpStatus, HttpStatus.BAD_REQUEST)
     }
 
 
@@ -138,7 +142,7 @@ internal class SeminarServiceTest @Autowired constructor(
     }
     
     @Test
-    fun `Throw Exception when user is not instructor while editting seminar`() {
+    fun `Throw 403 when user is not instructor while editting seminar`() {
         // given
         val (_, participantList) = initializeUsers()
         
@@ -154,11 +158,12 @@ internal class SeminarServiceTest @Autowired constructor(
         )
         
         // then
-        assertThrows<SeminarException> {seminarService.editSeminar(participant.id, edittedSeminarDTO)}
+        val exception = assertThrows<SeminarException> {seminarService.editSeminar(participant.id, edittedSeminarDTO)}
+        assertEquals(exception.errorCode.httpStatus, HttpStatus.FORBIDDEN)
     }
     
     @Test
-    fun `Throw Exception if seminar's instructor is not user while editting seminar`() {
+    fun `Throw 403 if seminar's instructor is not user while editting seminar`() {
         // given
         val (instructorList, _) = initializeUsers()
         val (seminarList, _) = initializeSeminars(instructorList)
@@ -176,7 +181,8 @@ internal class SeminarServiceTest @Autowired constructor(
         )
         
         // then
-        assertThrows<SeminarException> { seminarService.editSeminar(instructor1.id, edittedSeminarDTO) }
+        val exception = assertThrows<SeminarException> { seminarService.editSeminar(instructor1.id, edittedSeminarDTO) }
+        assertEquals(exception.errorCode.httpStatus, HttpStatus.FORBIDDEN)
     }
 
 
@@ -255,14 +261,72 @@ internal class SeminarServiceTest @Autowired constructor(
     }
     
     @Test
-    fun `Throw Exception when there is no seminar exists while finding seminar by id`() {
+    fun `Throw 404 when there is no seminar exists while finding seminar by id`() {
         // given
         // when
         // then
-        assertThrows<SeminarException>{seminarService.findSeminarById(1)}
+        val exception = assertThrows<SeminarException>{seminarService.findSeminarById(1)}
+        assertEquals(exception.errorCode.httpStatus, HttpStatus.NOT_FOUND)
     }
 
 
+    /**
+     * Test registerSeminar
+     */
+    
+    @Test
+    fun `Could register seminar as participant`() {
+        // given
+        val (instructorList, participantList) = initializeUsers()
+        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
+        val participant = participantList[0]
+        val seminar = seminarList[0]
+        val request = RegisterRequest(role=RoleType.PARTICIPANT)
+        
+        // when
+        val seminarDTO = seminarService.registerSeminar(participant.id, seminar.id, request)
+        
+        // then
+        assertThat(seminarDTO.participants).hasSize(1)
+        assertThat(seminarDTO.participants!![0]).extracting("id").isEqualTo(participant.id)
+    }
+    
+    @Test
+    fun `Could register seminar as instructor`() {
+        // given
+        val (instructorList, participantList) = initializeUsers()
+        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
+        val boaringInstructor = seminarTestHelper.createInstructor(
+                "boring@email.com",
+                "boaring",
+                "boaringpassword",
+                "boaringCompany",
+                2011
+        )
+        val seminar = seminarList[0]
+        val request = RegisterRequest(role=RoleType.INSTRUCTOR)
+
+        // when
+        val seminarDTO = seminarService.registerSeminar(boaringInstructor.id, seminar.id, request)
+
+        // then
+        assertThat(seminarDTO.instructors).hasSize(2)
+        assertThat(seminarDTO.instructors!![1]).extracting("id").isEqualTo(boaringInstructor.id)
+    }
+    
+    @Test
+    fun `Throw 404 when there is no seminar exists while registering seminar`() {
+        // given
+        val (_, _) = initializeUsers()
+        // when
+        // then
+        val exception = assertThrows<SeminarException> { 
+            seminarService.registerSeminar(1, 1, RegisterRequest(RoleType.INSTRUCTOR)) 
+        }
+        assertEquals(exception.errorCode.httpStatus,  HttpStatus.NOT_FOUND)
+    }
+    
+    
     fun initializeUsers(): Pair<List<UserEntity>, List<UserEntity>> {
         val instructorList = (0 .. 2).map {i ->
             seminarTestHelper.createInstructor(
