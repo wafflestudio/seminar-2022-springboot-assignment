@@ -22,7 +22,7 @@ import kotlin.math.min
 
 
 interface SeminarRepository : JpaRepository<SeminarEntity, Long>, SeminarRepositoryCustom {
-    fun findByName(name: String) : Optional<SeminarEntity>
+    fun findByName(name: String) : SeminarEntity?
 }
 
 interface SeminarRepositoryCustom {

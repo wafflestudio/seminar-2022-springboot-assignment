@@ -1,6 +1,8 @@
 package com.wafflestudio.seminar.core.seminar.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarRequest
+import com.wafflestudio.seminar.core.user.database.UserEntity
 import javax.persistence.*
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
@@ -20,4 +22,12 @@ class SeminarEntity(
     
     
 ) : BaseTimeEntity() {
+    
+    fun update(request: UpdateSeminarRequest) {
+        this.name = request.name ?: this.name
+        this.capacity = request.capacity ?: this.capacity
+        this.count = request.count ?: this.count
+        this.time = request.time ?: this.time
+        this.online = request.online ?: this.online
+    }
 }

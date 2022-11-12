@@ -22,7 +22,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.util.*
 import javax.transaction.Transactional
 
 @Service
@@ -34,10 +33,7 @@ class SeminarService(
     @Transactional
     fun createSeminar(user: UserEntity, seminarRequest: SeminarRequest) : SeminarInfo {
         validateUserSeminarRequest(user)
-        val seminarEntityByName : Optional<SeminarEntity> = seminarRepository.findByName(seminarRequest.name)
-        if (seminarEntityByName.isPresent) {
-            throw Seminar409("중복된 세미나 이름입니다")
-        }
+        if (seminarRepository.findByName(seminarRequest.name) != null) throw Seminar409("중복된 세미나 이름입니다")
         val now = LocalDateTime.now()
         val seminarEntity = seminarRepository.save(
             SeminarEntity(
@@ -83,22 +79,7 @@ class SeminarService(
         }
         
         val seminarEntity: SeminarEntity = userSeminarEntity.seminar!!
-        seminarRequest.name?.let { 
-            seminarEntity.name = it
-        }
-        seminarRequest.capacity?.let { 
-            seminarEntity.capacity = it
-        }
-        seminarRequest.count?.let { 
-            seminarEntity.count = it
-        }
-        seminarRequest.time?.let { 
-            seminarEntity.time = it
-        }
-        seminarRequest.online?.let { 
-            seminarEntity.online = it
-        }
-        seminarRepository.save(seminarEntity)
+        seminarEntity.update(request = seminarRequest)
         return SeminarInfo.from(seminarEntity, userSeminarsEntity)
     }
     

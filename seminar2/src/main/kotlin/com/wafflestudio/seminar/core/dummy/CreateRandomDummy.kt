@@ -21,7 +21,7 @@ class CreateRandomDummy(
     private val seminarService: SeminarService
 ) {
     
-    @EventListener(ApplicationStartedEvent::class)
+//    @EventListener(ApplicationStartedEvent::class)
     fun createDummyData() {
         val startIndex: Long = userRepository.findTopByOrderByIdDesc()?.id ?: 0
         val seminarIdList : MutableList<Long> = mutableListOf()
