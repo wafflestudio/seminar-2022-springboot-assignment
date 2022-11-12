@@ -1,7 +1,7 @@
 package com.wafflestudio.seminar.core.seminar.repository
 
 import com.querydsl.jpa.impl.JPAQueryFactory
-import com.wafflestudio.seminar.core.user.database.QSeminarEntity
+import com.wafflestudio.seminar.core.seminar.database.QSeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import org.springframework.stereotype.Repository
 
