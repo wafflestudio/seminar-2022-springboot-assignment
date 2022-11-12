@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 class UserEntity(
     @Column(nullable = false, unique = true)
     val email: String,
@@ -31,11 +31,11 @@ class UserEntity(
 
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "participant_profile_id", referencedColumnName = "id")
-    var participantProfile: ParticipantProfileEntity?,
+    var participantProfile: ParticipantProfileEntity? = null,
 
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "instructor_profile_id", referencedColumnName = "id")
-    var instructorProfile: InstructorProfileEntity?
+    var instructorProfile: InstructorProfileEntity? = null
 ) : BaseTimeEntity() {
     fun toProfileResponse(): ProfileResponse {
         val participatingSeminars: MutableList<ParticipatingSeminar> = mutableListOf()

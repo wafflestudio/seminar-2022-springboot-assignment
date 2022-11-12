@@ -32,7 +32,8 @@ class SeminarAdapter(
         } catch (e: DateTimeParseException) {
             throw Seminar400("세미나 시간 입력 형식이 잘못되었습니다.")
         }
-        val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
+        val userEntity =
+            userRepository.findByIdWithAllOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
         userEntity.instructorProfile ?: throw Seminar403("세미나 진행자만 세미나를 만들 수 있습니다.")
         userEntity.userSeminars.forEach {
             if (it.role == User.Role.INSTRUCTOR) {
@@ -58,10 +59,10 @@ class SeminarAdapter(
                 role = User.Role.INSTRUCTOR
             )
         )
+
         userEntity.userSeminars.add(userSeminarEntity)
         seminarEntity.userSeminars.add(userSeminarEntity)
-        userRepository.save(userEntity)
-        seminarRepository.save(seminarEntity).toSeminarResponse()
+        seminarEntity.toSeminarResponse()
     }
 
     @Transactional

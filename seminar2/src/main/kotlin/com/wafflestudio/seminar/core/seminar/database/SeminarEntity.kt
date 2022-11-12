@@ -15,16 +15,16 @@ import javax.persistence.Table
 @Entity
 @Table(name = "seminar")
 class SeminarEntity(
-    @OneToMany(mappedBy = "seminar", cascade = [CascadeType.ALL])
-    val userSeminars: MutableSet<UserSeminarEntity> = mutableSetOf(),
-
     var name: String,
     var capacity: Int,
     var count: Int,
     var time: LocalTime,
     var online: Boolean,
-    val creatorId: Long
+    val creatorId: Long,
 ) : BaseTimeEntity(), Comparable<SeminarEntity> {
+    @OneToMany(mappedBy = "seminar", cascade = [CascadeType.ALL])
+    val userSeminars: MutableSet<UserSeminarEntity> = mutableSetOf()
+
     fun toSeminarResponse(): SeminarResponse {
         val instructors: MutableList<Instructor> = mutableListOf()
         val participants: MutableList<Participant> = mutableListOf()

@@ -10,5 +10,6 @@ class InstructorProfileEntity(
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     val user: UserEntity? = null,
     var company: String,
+    @Column(name = "instructing_year")
     var year: Int?,
 ) : BaseTimeEntity()
