@@ -19,6 +19,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.*
+import javax.transaction.Transactional
 
 
 @Service
@@ -39,7 +40,7 @@ class SeminarService(
     
     // Query Count 예상: 8, 실제: 10
     fun createSeminar(seminar: SeminarRequest, token: String): GetSeminarInfo {
-       
+       println("캬악!")
         if(seminar.name == null || seminar.capacity == null || seminar.count == null || seminar.time == null ) {
             throw Seminar400("입력하지 않은 값이 있습니다")
             
@@ -55,12 +56,14 @@ class SeminarService(
         if(userRepository.findByEmail(authTokenService.getCurrentEmail(token))?.instructor == null) {
             throw Seminar403("진행자만 세미나를 생성할 수 있습니다")
         }
-        
+        println("하나?")
         
         // Query #2
         val saveSeminarEntity = seminarRepository.save(SeminarEntity(seminar, token))
+        println("seminar save")
         // Query #3, #4, #5 -> [N+1] but was 4:  fetching instructor profile
         userSeminarRepository.save(userSeminarInstructorEntity(seminar, token))
+        println("userSeminar save")
         
         // Query #6, #7
         val seminarInfoDto = queryFactory.select(Projections.constructor(
@@ -71,8 +74,9 @@ class SeminarService(
         ))
             .from(qSeminarEntity)
             .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id)).fetchJoin()
-            .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.id.eq(saveSeminarEntity.id)).fetchJoin()
-            .where(qUserSeminarEntity.role.eq("instructor")).fetch()
+            .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).fetchJoin()
+                .where(qSeminarEntity.id.eq(saveSeminarEntity.id),qUserSeminarEntity.role.eq("instructor"))
+            .fetch()
         
 
         val seminarEntity = seminarInfoDto[0].seminarEntity
@@ -80,6 +84,7 @@ class SeminarService(
         val userEntity = seminarInfoDto[0].userEntity
 
         // Query #8
+        
         val studentList = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
             qSeminarEntity,
@@ -94,22 +99,32 @@ class SeminarService(
         val newList = mutableListOf<StudentDto>()
 
         for(i in 0 until studentList.size){
-            val studentEntity = studentList[i].userEntity
-            val studentSeminarEntity = studentList[i].userSeminarEntity
+            val studentEntity = studentList[i].userEntity!!
+            val studentSeminarEntity = studentList[i].userSeminarEntity!!
             newList.add(
                 // companion object와 queryDSL의 projection을 함께 사용하여 보다 간결하게 작성할 수 있을 것 같습니다.
                 // 과제 레포의 (branch: asmt2) Seminar.of 및 SeminarEntity.toDto()를 참고하시면 좋을 것 같습니다.
-                StudentDto(
+                /*
+                    StudentDto(
                     studentEntity?.id,
                     studentEntity?.username,
                     studentEntity?.email,
                     studentSeminarEntity?.joinedAt,
                     studentSeminarEntity?.isActive,
                     studentSeminarEntity?.droppedAt
+                    
+                 
 
                 )
+                
+                 */
+                
+                 
+                 StudentDto.of(studentEntity, studentSeminarEntity)
             )
         }
+        
+         
 
         // companion object와 queryDSL의 projection을 함께 사용하여 보다 간결하게 작성할 수 있을 것 같습니다.
         // 과제 레포의 (branch: asmt2) Seminar.of 및 SeminarEntity.toDto()를 참고하시면 좋을 것 같습니다.
@@ -133,7 +148,9 @@ class SeminarService(
         )
     }
 
+    
     // Query Count 예상: 4, 실제: 5
+    @Transactional
     fun updateSeminar(seminar: SeminarRequest, token: String): UpdateSeminarInfo {
 
         if(seminar.name == null || seminar.capacity == null || seminar.count == null || seminar.time == null ) {
@@ -148,8 +165,7 @@ class SeminarService(
         
         // Query #1 -> [N+1] but was 2: fetching instructor profile
         if(userRepository.findByEmail(authTokenService.getCurrentEmail(token))?.instructor == null) {
-            println(token)
-            println(authTokenService.getCurrentEmail(token))
+          
             throw Seminar403("세미나를 수정할 자격이 없습니다")
         }
 
@@ -178,7 +194,7 @@ class SeminarService(
         // Query #3, #4
         // query count와는 상관없는 얘기지만, @Transactional을 사용하여 save문을 생략하실 수도 있습니다.
         seminarRepository.save(seminarEntity)
-        
+       println("ppp") 
         return UpdateSeminarInfo(
             seminarEntity.id,
             seminarEntity.name,
@@ -256,9 +272,10 @@ class SeminarService(
         val studentList = mutableListOf<StudentDto>()
 
         for(i in 0 until participantList.size){
-            val studentEntity = participantList[i].userEntity
-            val studentSeminarEntity = participantList[i].userSeminarEntity
+            val studentEntity = participantList[i].userEntity!!
+            val studentSeminarEntity = participantList[i].userSeminarEntity!!
             studentList.add(
+                    /*
                 StudentDto(
                     studentEntity?.id,
                     studentEntity?.username,
@@ -267,6 +284,9 @@ class SeminarService(
                     studentSeminarEntity?.isActive,
                     studentSeminarEntity?.droppedAt
                 )
+                
+                     */
+                StudentDto.of(studentEntity,studentSeminarEntity)
             )
         }
         return GetSeminarInfo(
@@ -579,9 +599,10 @@ class SeminarService(
         val studentList = mutableListOf<StudentDto>()
         
         for(i in 0 until participantList.size){
-            val studentEntity = participantList[i].userEntity
-            val studentSeminarEntity = participantList[i].userSeminarEntity
+            val studentEntity = participantList[i].userEntity ?: throw Seminar400("없음")
+            val studentSeminarEntity = participantList[i].userSeminarEntity ?: throw Seminar400("나도 없음")
             studentList.add(
+                    /*
                 StudentDto(
                     studentEntity?.id,
                     studentEntity?.username,
@@ -591,6 +612,9 @@ class SeminarService(
                     studentSeminarEntity?.droppedAt
                     
                 )
+                
+                     */
+            StudentDto.of(studentEntity,studentSeminarEntity)
             )
         }
 
@@ -671,9 +695,10 @@ class SeminarService(
         val newList = mutableListOf<StudentDto>()
 
         for(i in 0 until studentList.size){
-            val studentEntity = studentList[i].userEntity
-            val studentSeminarEntity = studentList[i].userSeminarEntity
+            val studentEntity = studentList[i].userEntity!!
+            val studentSeminarEntity = studentList[i].userSeminarEntity!!
             newList.add(
+                    /*
                 StudentDto(
                     studentEntity?.id,
                     studentEntity?.username,
@@ -682,6 +707,9 @@ class SeminarService(
                     studentSeminarEntity?.isActive,
                     studentSeminarEntity?.droppedAt
                 )
+                
+                     */
+                StudentDto.of(studentEntity, studentSeminarEntity)
             )
         }
 

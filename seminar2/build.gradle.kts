@@ -73,6 +73,9 @@ dependencies {
     val mockkVersion = "1.12.+"
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:3.1.1")
+    
+    // MapStruct
+    
 }
 
 tasks.withType<KotlinCompile> {
