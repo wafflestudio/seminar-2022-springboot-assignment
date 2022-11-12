@@ -69,7 +69,7 @@ internal class SeminarServiceTest @Autowired constructor(
     }
     
     @Test
-    fun `Throw Exception when user is not INSTRUCTOR`() {
+    fun `Throw Exception when user is not INSTRUCTOR while creating seminar`() {
         // given
         val (_, participantList) = initializeUsers()
         
@@ -85,7 +85,7 @@ internal class SeminarServiceTest @Autowired constructor(
     }
     
     @Test
-    fun `Throw Exception when user is already instructing other seminar`() {
+    fun `Throw Exception when user is already instructing other seminar while creating seminar`() {
         // given
         val (instructorList, _) = initializeUsers()
         val (_, _) = initializeSeminars(instructorList)
@@ -137,7 +137,7 @@ internal class SeminarServiceTest @Autowired constructor(
     }
     
     @Test
-    fun `Throw Exception when user is not instructor`() {
+    fun `Throw Exception when user is not instructor while editting seminar`() {
         // given
         val (_, participantList) = initializeUsers()
         
@@ -157,7 +157,7 @@ internal class SeminarServiceTest @Autowired constructor(
     }
     
     @Test
-    fun `Throw Exception if seminar's instructor is not user`() {
+    fun `Throw Exception if seminar's instructor is not user while editting seminar`() {
         // given
         val (instructorList, _) = initializeUsers()
         val (seminarList, _) = initializeSeminars(instructorList)
@@ -176,6 +176,59 @@ internal class SeminarServiceTest @Autowired constructor(
         
         // then
         assertThrows<SeminarException> { seminarService.editSeminar(instructor1.id, edittedSeminarDTO) }
+    }
+
+
+    /**
+     * Test findSeminarContainingWord
+     */
+    @Test
+    fun `Could find seminar containing word efficiently`() {
+        // given
+        val (instructorList, _) = initializeUsers()
+        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
+        val instructor = instructorList[1]
+        val seminar = seminarList[1]
+        val userSeminar = userSeminarList[1]
+        
+        // when
+        val (foundedSeminarList, cnt) = queryCounter.count {
+            seminarService.findSeminarsContainingWord("seminar1", order=null)
+        }
+        
+        // then
+        assertThat(foundedSeminarList).hasSize(1)
+        assertThat(foundedSeminarList[0]).extracting("id").isEqualTo(seminar.id)
+        assertThat(foundedSeminarList[0]).extracting("name").isEqualTo(seminar.name)
+        assertThat(foundedSeminarList[0]).extracting("participantCount").isEqualTo(0)
+        assertThat(foundedSeminarList[0].instructors).hasSize(1)
+        assertThat(foundedSeminarList[0].instructors?.get(0))
+                .extracting("id")
+                .isEqualTo(instructor.id)
+        assertThat(foundedSeminarList[0].instructors?.get(0))
+                .extracting("joinedAt")
+                .isEqualTo(userSeminar.joinedAt)
+        assertThat(cnt).isLessThanOrEqualTo(seminarList.size)
+    }
+    
+    @Test
+    fun `Could sort seminar eariliest efficiently`() {
+        // given
+        val (instructorList, _) = initializeUsers()
+        val (seminarList, _) = initializeSeminars(instructorList)
+        
+        // when
+        val (sortedSeminarList, cnt) = queryCounter.count {
+            seminarService.findSeminarsContainingWord(null, order="earliest")
+        }
+        
+        assertThat(sortedSeminarList).isSortedAccordingTo { o1, o2 -> 
+            seminarRepository.findByIdOrNull(o1.id)!!.createdAt!!.compareTo(
+                    seminarRepository.findByIdOrNull(o2.id)!!.createdAt!!
+            )
+        }
+        
+        assertThat(cnt).isLessThanOrEqualTo(seminarList.size)
     }
 
 
