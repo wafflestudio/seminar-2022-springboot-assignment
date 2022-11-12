@@ -15,6 +15,7 @@ import com.wafflestudio.seminar.global.HibernateQueryCounter
 import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -208,7 +209,7 @@ internal class SeminarServiceTest @Autowired constructor(
         assertThat(foundedSeminarList[0].instructors?.get(0))
                 .extracting("joinedAt")
                 .isEqualTo(userSeminar.joinedAt)
-        assertThat(cnt).isLessThanOrEqualTo(seminarList.size)
+        assertThat(cnt).isLessThanOrEqualTo(1)
     }
     
     @Test
@@ -228,7 +229,37 @@ internal class SeminarServiceTest @Autowired constructor(
             )
         }
         
-        assertThat(cnt).isLessThanOrEqualTo(seminarList.size)
+        
+        assertThat(cnt).isLessThanOrEqualTo(sortedSeminarList.size)
+    }
+
+
+    /**
+     * Test findSeminarById
+     */
+
+    @Test
+    fun `Could find seminar by id efficiently`() {
+        // given
+        val (instructorList, _) = initializeUsers()
+        val (seminarList, _) = initializeSeminars(instructorList)
+        val seminar = seminarList[0]
+        
+        // when
+        val (foundSeminarDTO, cnt) = queryCounter.count{
+            seminarService.findSeminarById(seminar.id) 
+        }
+        
+        assertThat(foundSeminarDTO).extracting("id").isEqualTo(seminar.id)
+        assertThat(cnt).isLessThanOrEqualTo(1)
+    }
+    
+    @Test
+    fun `Throw Exception when there is no seminar exists while finding seminar by id`() {
+        // given
+        // when
+        // then
+        assertThrows<SeminarException>{seminarService.findSeminarById(1)}
     }
 
 
