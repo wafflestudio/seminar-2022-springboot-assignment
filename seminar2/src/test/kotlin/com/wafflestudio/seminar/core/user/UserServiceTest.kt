@@ -118,4 +118,29 @@ internal class UserServiceTest @Autowired constructor(
         assertThat(userRepository.findAll()).hasSize(1)
     }
 
+    @Test
+    fun `로그인 - 잘못된 email 이면 400을 반환한다`() {
+        // given
+        userTestHelper.createUser("waffle@email.com", password = "1234")
+        val request = SignInRequest("waffle", "1234")
+        
+        // when
+        val throwable = catchThrowable { userService.loginUser(request) }
+        
+        // then
+        assertThat(throwable).isInstanceOf(Seminar400::class.java)
+    }
+
+    @Test
+    fun `로그인 - 잘못된 password 이면 400을 반환한다`() {
+        // given
+        userTestHelper.createUser("waffle@email.com", password = "1234")
+        val request = SignInRequest("waffle@email.com", "123")
+
+        // when
+        val throwable = catchThrowable { userService.loginUser(request) }
+
+        // then
+        assertThat(throwable).isInstanceOf(Seminar400::class.java)
+    }
 }
