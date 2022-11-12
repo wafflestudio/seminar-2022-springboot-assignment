@@ -13,6 +13,7 @@ import com.wafflestudio.seminar.core.seminar.repository.CustomSeminarRepository
 import com.wafflestudio.seminar.core.seminar.repository.SeminarRepository
 import com.wafflestudio.seminar.core.userSeminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.Role
+import com.wafflestudio.seminar.core.user.repository.CustomUserRepository
 import com.wafflestudio.seminar.core.userSeminar.repository.CustomUserSeminarRepository
 import com.wafflestudio.seminar.core.user.repository.UserRepository
 import com.wafflestudio.seminar.core.userSeminar.repository.UserSeminarRepository
@@ -28,12 +29,14 @@ class SeminarServiceImpl(
     private val userRepository: UserRepository,
     private val seminarRepository: SeminarRepository,
     private val userSeminarRepository: UserSeminarRepository,
+    private val customUserRepository: CustomUserRepository,
     private val customSeminarRepository: CustomSeminarRepository,
     private val customUserSeminarRepository: CustomUserSeminarRepository
 ) : SeminarService {
     override fun createSeminar(userId: Long, createSeminarRequest: CreateSeminarRequest): Seminar {
         val userEntity =
-            userRepository.findByIdOrNull(userId) ?: throw Seminar404("No existing user with id: ${userId}")
+            customUserRepository.findByIdWithUserSeminar(userId)
+                ?: throw Seminar404("No existing user with id: ${userId}")
         if (userEntity.instructorProfile == null) {
             throw Seminar403("Cannot create seminar. You don't have instructor profile")
         }
