@@ -47,8 +47,10 @@ class AuthServiceImpl(
                 signInRequest.email!!
         )
         // Update lastLogin when not null and password is correct
-        if (user == null || !encoder.matches(signInRequest.password!!, user.password)) {
-            throw AuthException("Email or Password Wrong.")
+        if (user == null) {
+            throw AuthException("Email Wrong.")
+        } else if (!encoder.matches(signInRequest.password!!, user.password)) {
+            throw AuthException("Password Wrong.")
         } else {
             // Update Last Login time
             user.lastLogin = LocalDateTime.now()
