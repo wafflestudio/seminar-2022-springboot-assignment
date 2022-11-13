@@ -59,7 +59,7 @@ class UserService(
             .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
             .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
             .where(qUserEntity.id.eq(id))
-            .where(qUserSeminarEntity.role.eq("participant")).fetch()
+            .where(qUserSeminarEntity.role.eq("PARTICIPANT")).fetch()
 
         val instructingSeminarsList = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
@@ -71,7 +71,7 @@ class UserService(
             .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
             .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
             .where(qUserEntity.id.eq(id))
-            .where(qUserSeminarEntity.role.eq("instructor")).fetch()
+            .where(qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
 
         val newListParticipant = mutableListOf<SeminarsDto>()
         val newListInstructor = mutableListOf<InstructingSeminarsDto>()
@@ -165,7 +165,7 @@ class UserService(
             .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
             .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
             .where(qUserEntity.email.eq(authTokenService.getCurrentEmail(token)))
-            .where(qUserSeminarEntity.role.eq("participant")).fetch()
+            .where(qUserSeminarEntity.role.eq("PARTICIPANT")).fetch()
 
         val instructingSeminarsList = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
@@ -177,7 +177,7 @@ class UserService(
             .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
             .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
             .where(qUserEntity.email.eq(authTokenService.getCurrentEmail(token)))
-            .where(qUserSeminarEntity.role.eq("instructor")).fetch()
+            .where(qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
 
         val newListParticipant = mutableListOf<SeminarsDto>()
         val newListInstructor = mutableListOf<InstructingSeminarsDto>()
@@ -325,7 +325,7 @@ class UserService(
             .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
             .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
             .where(qUserEntity.email.eq(authTokenService.getCurrentEmail(token)))
-            .where(qUserSeminarEntity.role.eq("participant")).fetch()
+            .where(qUserSeminarEntity.role.eq("PARTICIPANT")).fetch()
 
         val instructingSeminarsList = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
@@ -337,7 +337,7 @@ class UserService(
             .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
             .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
             .where(qUserEntity.email.eq(authTokenService.getCurrentEmail(token)))
-            .where(qUserSeminarEntity.role.eq("instructor")).fetch()
+            .where(qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
 
         val newListParticipant = mutableListOf<SeminarsDto>()
         val newListInstructor = mutableListOf<InstructingSeminarsDto>()

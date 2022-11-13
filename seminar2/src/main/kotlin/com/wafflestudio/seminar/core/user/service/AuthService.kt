@@ -27,12 +27,12 @@ class AuthService(
         if(userRepository.findByEmail(user.email) != null) {
             throw Seminar400("해당 아이디로 가입할 수 없습니다")
         }
-        return if(user.role == "participant"){
+        return if(user.role == "PARTICIPANT"){
              val encodedPassword = this.passwordEncoder.encode(user.password)
              userRepository.save(signupParticipantEntity(user,encodedPassword))
             
             
-        } else if(user.role == "instructor"){
+        } else if(user.role == "INSTRUCTOR"){
             val encodedPassword = this.passwordEncoder.encode(user.password)
             if (user.instructor?.year != null) {
                 

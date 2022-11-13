@@ -53,11 +53,11 @@ class SeminarService(
         if (userRepository.findByEmail(authTokenService.getCurrentEmail(token))?.instructor == null) {
             throw Seminar403("진행자만 세미나를 생성할 수 있습니다")
         }
-        
+
 
         // Query #2
         val saveSeminarEntity = seminarRepository.save(SeminarEntity(seminar, token))
-        
+
         // Query #3, #4, #5 -> [N+1] but was 4:  fetching instructor profile
         userSeminarRepository.save(userSeminarInstructorEntity(seminar, token))
 
@@ -65,8 +65,8 @@ class SeminarService(
 
         val seminarInfoDto = queryFactory.select(qSeminarEntity).from(qSeminarEntity)
                 .where(qSeminarEntity.id.eq(saveSeminarEntity.id)).fetch()
-       
-     
+
+
         val teacherDto = queryFactory.select(Projections.constructor(
                 TeacherDto::class.java,
                 qUserEntity.id,
@@ -75,7 +75,7 @@ class SeminarService(
                 qUserSeminarEntity.joinedAt
         )).from(qUserEntity)
                 .innerJoin(qUserSeminarEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
-                .where(qUserSeminarEntity.seminar.name.eq(seminar.name),qUserSeminarEntity.role.eq("instructor")).fetch()
+                .where(qUserSeminarEntity.seminar.name.eq(seminar.name), qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
         /*
         val seminarInfoDto = queryFactory.select(Projections.constructor(
             SeminarInfoDto::class.java,
@@ -86,7 +86,7 @@ class SeminarService(
             .from(qSeminarEntity)
             .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id)).fetchJoin()
             .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).fetchJoin()
-                .where(qSeminarEntity.id.eq(saveSeminarEntity.id),qUserSeminarEntity.role.eq("instructor"))
+                .where(qSeminarEntity.id.eq(saveSeminarEntity.id),qUserSeminarEntity.role.eq("INSTRUCTOR"))
             .fetch()
             
          */
@@ -95,47 +95,47 @@ class SeminarService(
         val seminarEntity = seminarInfoDto[0]
 
         // Query #8
-/*
-        val studentList = queryFactory.select(Projections.constructor(
-                SeminarInfoDto::class.java,
-                qSeminarEntity,
-                qUserSeminarEntity,
-                qUserEntity
-        ))
-                .from(qSeminarEntity)
-                .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id)).fetchJoin()
-                .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).fetchJoin()
-                .where(qSeminarEntity.name.eq(seminar.name)).where(qUserSeminarEntity.role.eq("participant")).fetch()
-
-        val newList = mutableListOf<StudentDto>()
-
-        for (i in 0 until studentList.size) {
-            val studentEntity = studentList[i].userEntity!!
-            val studentSeminarEntity = studentList[i].userSeminarEntity!!
-            newList.add(
-                    // companion object와 queryDSL의 projection을 함께 사용하여 보다 간결하게 작성할 수 있을 것 같습니다.
-                    // 과제 레포의 (branch: asmt2) Seminar.of 및 SeminarEntity.toDto()를 참고하시면 좋을 것 같습니다.
-                    /*
-                        StudentDto(
-                        studentEntity?.id,
-                        studentEntity?.username,
-                        studentEntity?.email,
-                        studentSeminarEntity?.joinedAt,
-                        studentSeminarEntity?.isActive,
-                        studentSeminarEntity?.droppedAt
-                        
-                     
-    
-                    )
-                    
-                     */
-
-
-                    StudentDto.of(studentEntity, studentSeminarEntity)
-            )
-        }
+        /*
+                val studentList = queryFactory.select(Projections.constructor(
+                        SeminarInfoDto::class.java,
+                        qSeminarEntity,
+                        qUserSeminarEntity,
+                        qUserEntity
+                ))
+                        .from(qSeminarEntity)
+                        .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id)).fetchJoin()
+                        .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).fetchJoin()
+                        .where(qSeminarEntity.name.eq(seminar.name)).where(qUserSeminarEntity.role.eq("PARTICIPANT")).fetch()
         
- */
+                val newList = mutableListOf<StudentDto>()
+        
+                for (i in 0 until studentList.size) {
+                    val studentEntity = studentList[i].userEntity!!
+                    val studentSeminarEntity = studentList[i].userSeminarEntity!!
+                    newList.add(
+                            // companion object와 queryDSL의 projection을 함께 사용하여 보다 간결하게 작성할 수 있을 것 같습니다.
+                            // 과제 레포의 (branch: asmt2) Seminar.of 및 SeminarEntity.toDto()를 참고하시면 좋을 것 같습니다.
+                            /*
+                                StudentDto(
+                                studentEntity?.id,
+                                studentEntity?.username,
+                                studentEntity?.email,
+                                studentSeminarEntity?.joinedAt,
+                                studentSeminarEntity?.isActive,
+                                studentSeminarEntity?.droppedAt
+                                
+                             
+            
+                            )
+                            
+                             */
+        
+        
+                            StudentDto.of(studentEntity, studentSeminarEntity)
+                    )
+                }
+                
+         */
 
 
         // companion object와 queryDSL의 projection을 함께 사용하여 보다 간결하게 작성할 수 있을 것 같습니다.
@@ -204,16 +204,8 @@ class SeminarService(
 
         // Query #3, #4
         // query count와는 상관없는 얘기지만, @Transactional을 사용하여 save문을 생략하실 수도 있습니다.
-        seminarRepository.save(seminarEntity)
-        println("ppp")
-        return UpdateSeminarInfo(
-                seminarEntity.id,
-                seminarEntity.name,
-                seminarEntity.capacity,
-                seminarEntity.count,
-                seminarEntity.time,
-                seminarEntity.online,
-        )
+
+        return UpdateSeminarInfo.of(seminarEntity)
     }
 
     // Query Count 예상: 4, 실제: 15
@@ -223,6 +215,10 @@ class SeminarService(
             throw Seminar404("해당하는 세미나가 없습니다")
         }
         // Query #2
+
+        val seminarList = queryFactory.select(qSeminarEntity).from(qSeminarEntity)
+                .where(qSeminarEntity.id.eq(id)).fetch()
+        /*
         val seminarList = queryFactory.select(Projections.constructor(
                 SeminarDto::class.java,
                 qSeminarEntity
@@ -231,23 +227,36 @@ class SeminarService(
                 .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
                 .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
                 .where(qSeminarEntity.id.eq(id)).fetch()
+          
+                
+         */
 
-        val seminarEntity = seminarList[0].seminarEntity
+        /*
+                val seminarInfoDto = queryFactory.select(qSeminarEntity).from(qSeminarEntity)
+                        .where(qSeminarEntity.id.eq(id)).fetch()
+        
+        
+         */
+        val seminarEntity = seminarList[0]
 
         // Query #3 -> [N+1] but was 2: fetch join을 사용하지 않았습니다.
         // 과제 레포의 (branch: asmt2) findAllWithProfiles()를 참고하시면 좋을 것 같습니다.
         val instructorList = queryFactory.select(Projections.constructor(
-                UserSeminarAndUserDto::class.java,
-                qUserSeminarEntity,
-                qUserEntity
+                TeacherDto::class.java,
+                qUserEntity.id,
+                qUserEntity.username,
+                qUserEntity.email,
+                qUserSeminarEntity.joinedAt
         ))
-                .from(qUserSeminarEntity)
-                .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
+                .from(qUserEntity)
+                .innerJoin(qUserSeminarEntity).on(qUserEntity.id.eq(qUserSeminarEntity.user.id)).fetchJoin()
                 .where(qUserSeminarEntity.seminar.id.eq(id))
-                .where(qUserSeminarEntity.role.eq("instructor")).fetch()
+                .where(qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
 
+        /*
         val teacherList = mutableListOf<TeacherDto>()
 
+        
         for (i in 0 until instructorList.size) {
             val teacherEntity = instructorList[i].userEntity
             val teacherSeminarEntity = instructorList[i].userSeminarEntity
@@ -261,6 +270,8 @@ class SeminarService(
                     )
             )
         }
+        
+         */
 
         /*
         * instructorList는 UserSeminar Table에서 UserEntity를 inner join하여 fetch하는 반면
@@ -270,16 +281,20 @@ class SeminarService(
         */
         // Query #4 -> [N+1] but was 11: fetch join을 사용하지 않았습니다.
         val participantList = queryFactory.select(Projections.constructor(
-                SeminarInfoDto::class.java,
-                qSeminarEntity,
-                qUserSeminarEntity,
-                qUserEntity
+                StudentDto::class.java,
+                qUserEntity.id,
+                qUserEntity.username,
+                qUserEntity.email,
+                qUserSeminarEntity.joinedAt,
+                qUserSeminarEntity.isActive,
+                qUserSeminarEntity.droppedAt
         ))
-                .from(qSeminarEntity)
-                .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
-                .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.id.eq(id))
-                .where(qUserSeminarEntity.role.eq("participant")).fetch()
+                .from(qUserEntity)
+                .innerJoin(qUserSeminarEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).fetchJoin()
+                .where(qUserSeminarEntity.seminar.id.eq(id), qUserSeminarEntity.role.eq("PARTICIPANT"))
+                .fetch()
 
+        /*
         val studentList = mutableListOf<StudentDto>()
 
         for (i in 0 until participantList.size) {
@@ -300,7 +315,11 @@ class SeminarService(
                     StudentDto.of(studentEntity, studentSeminarEntity)
             )
         }
-        return GetSeminarInfo(
+        
+         */
+        return GetSeminarInfo.of(seminarEntity, instructorList, participantList)
+
+        /*GetSeminarInfo(
                 seminarEntity?.id,
                 seminarEntity?.name,
                 seminarEntity?.capacity,
@@ -310,6 +329,8 @@ class SeminarService(
                 teacherList,
                 studentList
         )
+        
+         */
     }
 
     // Query Count 예상: 1, 실제: 1
@@ -373,7 +394,7 @@ class SeminarService(
                     .from(qSeminarEntity)
                     .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
                     .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.name.contains(name))
-                    .where(qUserSeminarEntity.role.eq("participant")).fetch()
+                    .where(qUserSeminarEntity.role.eq("PARTICIPANT")).fetch()
 
             val newList = mutableListOf<StudentDto>()
 
@@ -428,7 +449,7 @@ class SeminarService(
             ))
                     .from(qSeminarEntity)
                     .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
-                    .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.name.contains(name)).where(qUserSeminarEntity.role.eq("participant")).fetch()
+                    .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.name.contains(name)).where(qUserSeminarEntity.role.eq("PARTICIPANT")).fetch()
 
             val newList = mutableListOf<StudentDto>()
 
@@ -504,7 +525,7 @@ class SeminarService(
         }
         val saveUserSeminarEntity: UserSeminarEntity
 
-        if (role["role"] == "participant") {
+        if (role["role"] == "PARTICIPANT") {
 
             if (userFindByIdEntity.get().participant != null) {
                 // Query #5
@@ -517,7 +538,7 @@ class SeminarService(
                                 // Query #7
                                 // 마찬가지로 seminarFindByIdEntity를 사용하시면 될 것 같습니다.
                                 seminar = seminarRepository.findById(id).get(),
-                                role = "participant",
+                                role = "PARTICIPANT",
                                 joinedAt = LocalDateTime.now(),
                                 isActive = true,
                                 droppedAt = null
@@ -528,14 +549,14 @@ class SeminarService(
                 throw Seminar403("수강생이 아닙니다")
             }
 
-        } else if (role["role"] == "instructor") {
+        } else if (role["role"] == "INSTRUCTOR") {
             if (userFindByIdEntity.get().instructor != null) {
                 if (userSeminarRepository.findByUser(userFindByIdEntity.get()) == emptyList<UserSeminarEntity>()) {
                     saveUserSeminarEntity = userSeminarRepository.save(
                             UserSeminarEntity(
                                     user = userRepository.findById(authTokenService.getCurrentUserId(token)).get(),
                                     seminar = seminarRepository.findById(id).get(),
-                                    role = "instructor",
+                                    role = "INSTRUCTOR",
                                     joinedAt = LocalDateTime.now(),
                                     isActive = null,
                                     droppedAt = null
@@ -572,7 +593,7 @@ class SeminarService(
                 .from(qUserSeminarEntity)
                 .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
                 .where(qUserSeminarEntity.seminar.id.eq(id))
-                .where(qUserSeminarEntity.role.eq("instructor")).fetch()
+                .where(qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
 
 
         val teacherSeminarEntity = instructorList[0].userSeminarEntity
@@ -603,7 +624,7 @@ class SeminarService(
                 .from(qSeminarEntity)
                 .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
                 .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.id.eq(id))
-                .where(qUserSeminarEntity.role.eq("participant")).fetch()
+                .where(qUserSeminarEntity.role.eq("PARTICIPANT")).fetch()
 
 
         val studentList = mutableListOf<StudentDto>()
@@ -665,7 +686,7 @@ class SeminarService(
         if (findByEmailEntity?.let {
                     // Query #3
                     userSeminarRepository.findByUser(it)?.filter {
-                        it.role == "instructor"
+                        it.role == "INSTRUCTOR"
                     }
                 } != emptyList<UserSeminarEntity>()) {
             throw Seminar403("진행자는 세미나를 드랍할 수 없습니다")
@@ -700,7 +721,7 @@ class SeminarService(
         ))
                 .from(qSeminarEntity)
                 .innerJoin(qUserSeminarEntity).on(qSeminarEntity.id.eq(qUserSeminarEntity.seminar.id))
-                .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.id.eq(id)).where(qUserSeminarEntity.role.eq("participant")).fetch()
+                .innerJoin(qUserEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).where(qSeminarEntity.id.eq(id)).where(qUserSeminarEntity.role.eq("PARTICIPANT")).fetch()
 
         val newList = mutableListOf<StudentDto>()
 
@@ -756,7 +777,7 @@ class SeminarService(
         return UserSeminarEntity(
                 user = userRepository.findByEmail(authTokenService.getCurrentEmail(token)),
                 seminar = seminarRepository.findByName(seminar.name),
-                role = "instructor",
+                role = "INSTRUCTOR",
                 joinedAt = LocalDateTime.now(),
                 isActive = true,
                 droppedAt = null
