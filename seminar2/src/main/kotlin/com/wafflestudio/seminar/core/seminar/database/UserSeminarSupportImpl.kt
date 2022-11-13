@@ -65,18 +65,6 @@ class UserSeminarSupportImpl(
             ).fetchOne()
     }
 
-    override fun findAllSeminarByInstructorId(userId: Long): List<SeminarEntity> {
-        return queryFactory
-            .selectFrom(seminarEntity)
-            .rightJoin(userSeminarEntity)
-            .on(seminarEntity.id.eq(userSeminarEntity.seminar.id))
-            .where(
-                userSeminarEntity.isInstructor.isTrue,
-                userSeminarEntity.user.id.eq(userId)
-            )
-            .fetch()
-    }
-
     override fun findUserSeminarBySeminarIdAndUserId(seminarId: Long, userId: Long): UserSeminarEntity? {
         return queryFactory
             .selectFrom(userSeminarEntity)

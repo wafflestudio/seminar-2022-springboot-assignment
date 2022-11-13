@@ -7,6 +7,5 @@ interface UserSeminarSupport {
     fun findInstructorsById(seminarId: Long): List<Instructor>
     fun findParticipantsById(seminarId: Long): List<Participant>
     fun findActiveParticipantCountById(seminarId: Long): Long?
-    fun findAllSeminarByInstructorId(userId: Long): List<SeminarEntity>
     fun findUserSeminarBySeminarIdAndUserId(seminarId: Long, userId: Long): UserSeminarEntity?
 }
