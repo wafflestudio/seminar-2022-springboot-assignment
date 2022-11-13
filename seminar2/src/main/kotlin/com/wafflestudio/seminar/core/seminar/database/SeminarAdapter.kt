@@ -89,9 +89,11 @@ class SeminarAdapter(
         seminarRepository.save(seminarEntity).toSeminarResponse()
     }
 
+    @Transactional
     override fun getSeminar(seminarId: Long): SeminarResponse {
         val seminarEntity =
-            seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
+            seminarRepository.findByIdWithAllOrNull(seminarId)
+                ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
         return seminarEntity.toSeminarResponse()
     }
 
