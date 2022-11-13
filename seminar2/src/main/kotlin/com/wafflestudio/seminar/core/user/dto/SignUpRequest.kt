@@ -9,10 +9,7 @@ import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.service.UserException400
 import org.springframework.lang.Nullable
 import org.springframework.security.crypto.password.PasswordEncoder
-import javax.validation.constraints.Email
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.Positive
+import javax.validation.constraints.*
 
 data class SignUpRequest(
         @field: NotBlank(message = "Email should not be empty.")
@@ -25,7 +22,7 @@ data class SignUpRequest(
         @field: NotEmpty(message = "Password should not be empty.")
         val password: String? = null,
         
-        @field: NotBlank(message = "Role should not be empty.")
+        @field: Pattern(regexp = "participant|instructor", message = "Wrong role input given")
         val role: String? = null,
         
         // participant
@@ -75,7 +72,7 @@ data class SignUpRequest(
                                 instructorProfileRepository.save(instructorProfileEntity)
                                 userRepository.save(userEntity)
                         }
-                        else -> {
+                        else -> { // Cannot be executed
                                 throw UserException400("Wrong role input given")
                         }
                 }
