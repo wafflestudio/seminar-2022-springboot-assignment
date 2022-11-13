@@ -86,7 +86,7 @@ class SeminarServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getSeminar(seminarId: Long): Seminar {
-        val seminarEntity = seminarRepository.findByIdOrNull(seminarId)
+        val seminarEntity = customSeminarRepository.findByIdWithUserSeminarAndUser(seminarId)
             ?: throw Seminar404("No existing seminar with id: ${seminarId}")
         return seminarEntity.toDTO()
     }

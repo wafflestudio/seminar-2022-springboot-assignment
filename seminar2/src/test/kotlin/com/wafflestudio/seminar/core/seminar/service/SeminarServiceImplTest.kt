@@ -133,7 +133,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
         }.queryCount
 
         // N + 1 문제 발생 
-//        assertThat(queryCount).isEqualTo(6)
+        assertThat(queryCount).isEqualTo(1)
         assertThat(seminar.name).isEqualTo("seminar1")
     }
 
@@ -166,7 +166,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
 
         assertThat(seminars!![0].id).isEqualTo(seminar2.id)
         // N + 1 문제 발생
-//        assertThat(queryCount).isEqualTo(8)
+        assertThat(queryCount).isEqualTo(1)
     }
 
     @Test

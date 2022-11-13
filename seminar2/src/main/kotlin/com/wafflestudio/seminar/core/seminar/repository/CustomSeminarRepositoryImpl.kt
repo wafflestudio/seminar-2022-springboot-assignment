@@ -16,8 +16,20 @@ class CustomSeminarRepositoryImpl(
 
     override fun findByNameAndOrder(name: String, order: String): List<SeminarEntity> {
         val seminarEntity = QSeminarEntity.seminarEntity
+        val userSeminarEntity = QUserSeminarEntity.userSeminarEntity
+        val userEntity = QUserEntity.userEntity
+        val participantProfileEntity = QParticipantProfileEntity.participantProfileEntity
+        val instructorProfileEntity = QInstructorProfileEntity.instructorProfileEntity
         return queryFactory
             .selectFrom(seminarEntity)
+            .leftJoin(seminarEntity.userSeminars, userSeminarEntity)
+            .fetchJoin()
+            .leftJoin(userSeminarEntity.user, userEntity)
+            .fetchJoin()
+            .leftJoin(userEntity.participantProfile, participantProfileEntity)
+            .fetchJoin()
+            .leftJoin(userEntity.instructorProfile, instructorProfileEntity)
+            .fetchJoin()
             .where(seminarEntity.name.contains(name))
             .orderBy(
                 when (order) {
