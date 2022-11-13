@@ -58,7 +58,7 @@ internal class SeminarControllerTest @Autowired constructor(
         assertThat(seminar.count).isEqualTo(seminarMakeRequest.count)
         assertThat(seminar.time).isEqualTo(seminarMakeRequest.time)
         assertThat(seminar.online).isEqualTo(seminarMakeRequest.online)
-        val userSeminar = userSeminarRepository.findByUserEntityAndSeminar(user, seminar).get()
+        val userSeminar = userSeminarRepository.findByUserEntityIdAndSeminarId(user.id, seminar.id).get()
         assertThat(userSeminar.role).isEqualTo(Role.Instructor)
 
         //기존에 instructing 하는 세미나가 있는지 조회 쿼리 1
@@ -71,7 +71,7 @@ internal class SeminarControllerTest @Autowired constructor(
         //given
         val user = createInstructor("a@naver.com")
         seminarService.makeSeminar(user, createSeminarMakeRequest("Spring"))
-        val editSeminarRequest = EditSeminarRequest("New name", 123, 8)
+        val editSeminarRequest = EditSeminarRequest("New name", 123, 8, time = "12:30")
 
         //when
         var seminarId = 0L
@@ -198,7 +198,7 @@ internal class SeminarControllerTest @Autowired constructor(
 
         //then
         val seminarEntity = seminarRepository.findById(seminar.id!!).get()
-        val userSeminar = userSeminarRepository.findByUserEntityAndSeminar(participant, seminarEntity).get()
+        val userSeminar = userSeminarRepository.findByUserEntityIdAndSeminarId(participant.id, seminarEntity.id).get()
         assertThat(userSeminar.role).isEqualTo(Role.Participant)
 
         //유저, 세미나 조회 쿼리 2
@@ -223,7 +223,7 @@ internal class SeminarControllerTest @Autowired constructor(
 
         //then
         val seminarEntity = seminarRepository.findById(seminar.id!!).get()
-        val userSeminar = userSeminarRepository.findByUserEntityAndSeminar(instructor, seminarEntity).get()
+        val userSeminar = userSeminarRepository.findByUserEntityIdAndSeminarId(instructor.id, seminarEntity.id).get()
         assertThat(userSeminar.role).isEqualTo(Role.Instructor)
 
         //유저, 세미나 조회 쿼리 2
@@ -248,7 +248,7 @@ internal class SeminarControllerTest @Autowired constructor(
 
         //then
         val seminarEntity = seminarRepository.findById(seminar.id!!).get()
-        val userSeminar = userSeminarRepository.findByUserEntityAndSeminar(participant, seminarEntity).get()
+        val userSeminar = userSeminarRepository.findByUserEntityIdAndSeminarId(participant.id, seminarEntity.id).get()
         assertThat(userSeminar.isActive).isFalse
         assertThat(userSeminar.droppedAt).isNotNull
 
