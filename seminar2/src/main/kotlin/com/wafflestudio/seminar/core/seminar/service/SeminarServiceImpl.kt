@@ -28,7 +28,7 @@ class SeminarServiceImpl(
             throw Seminar403("세미나 진행자만 세미나를 생성할 수 있습니다.")
         }
 
-        seminarRepository.findSeminarsByInstructorId(instructorId)?.let { throw Seminar400("이미 참여하고 있는 세미나가 존재합니다.") }
+        seminarRepository.findSeminarByInstructorId(instructorId)?.let { throw Seminar400("이미 참여하고 있는 세미나가 존재합니다.") }
 
         if (createSeminarRequest.name == "" || createSeminarRequest.capacity!! <= 0 || createSeminarRequest.count!! <= 0 || createSeminarRequest.time == null) {
             throw Seminar400("필요한 정보를 모두 입력해주세요")
@@ -168,7 +168,7 @@ class SeminarServiceImpl(
             if (user!!.instructorProfileEntity == null) {
                 throw Seminar403("세미나 진행 자격이 없습니다.")
             }
-            if (userSeminarRepository.findAllSeminarByInstructorId(userId).isNotEmpty()) {
+            if (seminarRepository.findSeminarByInstructorId(userId) != null) {
                 throw Seminar400("이미 진행하는 세미나가 존재합니다.")
             }
             val newUserSeminarRelation = UserSeminarEntity(user = user, isInstructor = true, seminar = seminar)

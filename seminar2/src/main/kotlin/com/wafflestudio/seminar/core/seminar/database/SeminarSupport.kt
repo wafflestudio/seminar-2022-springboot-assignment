@@ -6,6 +6,6 @@ import com.wafflestudio.seminar.core.seminar.domain.SeminarForParticipantProfile
 interface SeminarSupport {
     fun findSeminarByName(seminarName: String): List<SeminarEntity>
     fun findSeminarsByParticipantId(participantId: Long): List<SeminarForParticipantProfile>
-    fun findSeminarsByInstructorId(instructorId: Long): SeminarForInstructorProfile?
+    fun findSeminarByInstructorId(instructorId: Long): SeminarForInstructorProfile?
 }
 
