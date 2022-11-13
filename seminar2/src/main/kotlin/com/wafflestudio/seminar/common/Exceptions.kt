@@ -15,7 +15,6 @@ enum class ErrorCode(
     REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "시간 초과로 인해 요청이 정상적으로 수행되지 않았습니다."),
     
     // 400 BAD_REQUEST: 잘못된 요청
-    INVALID_ROLE(HttpStatus.BAD_REQUEST, "올바른 참여자 유형 값을 입력해주세요."),
     FULL_CAPACITY(HttpStatus.BAD_REQUEST, "수강정원이 초과되었습니다."),
     ALREADY_PARTICIPATE(HttpStatus.BAD_REQUEST, "현재 참여 중인 세미나입니다."),
     ALREADY_INSTRUCTED(HttpStatus.BAD_REQUEST, "현재 담당하는 세미나가 존재합니다."),

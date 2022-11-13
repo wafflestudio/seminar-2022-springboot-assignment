@@ -10,6 +10,7 @@ import com.wafflestudio.seminar.core.seminar.domain.SeminarDTO
 import com.wafflestudio.seminar.core.seminar.domain.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.domain.SeminarGroupByDTO
 import com.wafflestudio.seminar.core.seminar.repository.SeminarRepository
+import com.wafflestudio.seminar.core.user.domain.enums.RoleType
 import com.wafflestudio.seminar.core.user.domain.enums.RoleType.*
 import com.wafflestudio.seminar.core.user.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
@@ -122,7 +123,7 @@ class SeminarServiceImpl(
         // 세미나 참여 & 세미나 함께 진행
         var newReg = UserSeminarEntity(user, seminar)
         
-        when (request.role) {
+        when (RoleType.valueOf(request.role!!)) {
             PARTICIPANT -> {
                 // 정말로 이 유저가 참여자인지 확인 -> ParticipantProfile을 가지고 있는지
                 if(user.participantProfile == null)

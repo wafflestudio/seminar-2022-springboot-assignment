@@ -6,6 +6,7 @@ import com.wafflestudio.seminar.config.AuthConfig
 import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.domain.UserDTO
 import com.wafflestudio.seminar.core.user.domain.enums.RoleType
+import com.wafflestudio.seminar.core.user.domain.enums.RoleType.*
 import com.wafflestudio.seminar.core.user.domain.UserEntity
 import com.wafflestudio.seminar.core.user.repository.UserRepository
 import com.wafflestudio.seminar.core.user.domain.profile.InstructorProfile
@@ -41,18 +42,13 @@ class UserServiceImpl(
                 throw SeminarException(ErrorCode.EMAIL_CONFLICT)
             }
             
-            lateinit var newUser: UserEntity
-            when (request.role) {
-                "PARTICIPANT" -> {
-                    newUser = UserEntity(this.email, this.username!!, encoder.encode(this.password), RoleType.PARTICIPANT)
-                    newUser.participantProfile =
+            val role = RoleType.valueOf(this.role!!)
+            val newUser = UserEntity(this.email, this.username!!, encoder.encode(this.password), role)
+            when (role) {
+                PARTICIPANT -> newUser.participantProfile =
                         ParticipantProfile(this.university?:"", this.isRegistered?:true, newUser)
-                }
-                "INSTRUCTOR" -> {
-                    newUser = UserEntity(this.email, this.username!!, encoder.encode(this.password), RoleType.INSTRUCTOR)
-                    newUser.instructorProfile =
+                INSTRUCTOR -> newUser.instructorProfile =
                         InstructorProfile(this.company?:"", this.year, newUser)
-                }
             }
             userRepository.save(newUser)
             
