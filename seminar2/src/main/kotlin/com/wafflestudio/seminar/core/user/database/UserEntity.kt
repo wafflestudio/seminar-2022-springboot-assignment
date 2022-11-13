@@ -3,6 +3,8 @@ package com.wafflestudio.seminar.core.user.database
 import com.wafflestudio.seminar.core.join.UserSeminarEntity
 import com.wafflestudio.seminar.core.profile.database.InstructorProfileEntity
 import com.wafflestudio.seminar.core.profile.database.ParticipantProfileEntity
+import org.hibernate.annotations.Cascade
+import org.hibernate.annotations.CascadeType
 import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -24,12 +26,15 @@ class UserEntity (
         var lastLogin: LocalDateTime? = null,
 
         @OneToMany(mappedBy = "user")
+        @Cascade(CascadeType.ALL)
         val seminars: MutableSet<UserSeminarEntity> = mutableSetOf(),
 
         @OneToOne(optional = true, mappedBy = "user")
+        @Cascade(CascadeType.ALL)
         var participantProfile: ParticipantProfileEntity? = null,
         
         @OneToOne(optional = true, mappedBy = "user")
+        @Cascade(CascadeType.ALL)
         var instructorProfile: InstructorProfileEntity? = null,
 ) {
     @CreationTimestamp @Column(nullable = false, updatable = false)

@@ -17,7 +17,6 @@ class ParticipantProfileEntity(
 
         @OneToOne
         @JoinColumn(name = "user_id")
-        @Cascade(CascadeType.ALL)
         val user: UserEntity,
 ): BaseTimeEntity() {
 }

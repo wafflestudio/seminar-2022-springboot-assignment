@@ -14,15 +14,11 @@ import javax.persistence.*
 class UserSeminarEntity(
         
         @ManyToOne
-//        @MapsId("user_id")
         @JoinColumn
-        @Cascade(CascadeType.ALL)
         val user: UserEntity,
 
         @ManyToOne
-//        @MapsId("seminar_id")
         @JoinColumn
-        @Cascade(CascadeType.ALL)
         val seminar: SeminarEntity,
 
         @Column(nullable = false)
@@ -33,11 +29,4 @@ class UserSeminarEntity(
 
         val role: String,
 ) : BaseTimeEntity() {
-//        @Column(name = "user_id")
-//        @GeneratedValue(strategy = GenerationType.IDENTITY)
-//        var userId: Long = 0L
-//
-//        @Column(name = "seminar_id")
-//        @GeneratedValue(strategy = GenerationType.IDENTITY)
-//        var seminarId: Long = 0L
 }

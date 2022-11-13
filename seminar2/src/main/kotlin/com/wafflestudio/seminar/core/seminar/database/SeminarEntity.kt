@@ -3,6 +3,8 @@ package com.wafflestudio.seminar.core.seminar.database
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.join.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.database.UserEntity
+import org.hibernate.annotations.Cascade
+import org.hibernate.annotations.CascadeType
 import javax.persistence.*
 
 @Entity
@@ -20,6 +22,7 @@ class SeminarEntity(
         var online: Boolean,
 
         @OneToMany(mappedBy = "seminar")
+        @Cascade(CascadeType.ALL)
         val users: MutableSet<UserSeminarEntity> = mutableSetOf(),
 
         @OneToOne
