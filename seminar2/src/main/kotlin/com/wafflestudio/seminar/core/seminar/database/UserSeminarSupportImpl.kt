@@ -55,10 +55,9 @@ class UserSeminarSupportImpl(
     override fun findActiveParticipantCountById(seminarId: Long): Long? {
         return queryFactory
             .select(userEntity.count())
-            .from(userEntity).rightJoin(userSeminarEntity)
-            .on(
-                userSeminarEntity.user.id.eq(userEntity.id)
-            )
+            .from(userEntity)
+            .rightJoin(userSeminarEntity)
+            .on(userSeminarEntity.user.id.eq(userEntity.id))
             .where(
                 userSeminarEntity.seminar.id.eq(seminarId),
                 userSeminarEntity.isInstructor.isFalse,
@@ -70,8 +69,11 @@ class UserSeminarSupportImpl(
         return queryFactory
             .selectFrom(seminarEntity)
             .rightJoin(userSeminarEntity)
-            .on(userSeminarEntity.user.id.eq(userId))
-            .where(userSeminarEntity.isInstructor.isTrue)
+            .on(seminarEntity.id.eq(userSeminarEntity.seminar.id))
+            .where(
+                userSeminarEntity.isInstructor.isTrue,
+                userSeminarEntity.user.id.eq(userId)
+            )
             .fetch()
     }
 
@@ -80,7 +82,8 @@ class UserSeminarSupportImpl(
             .selectFrom(userSeminarEntity)
             .where(userSeminarEntity.seminar.id.eq(seminarId))
             .rightJoin(userEntity)
-            .on(userSeminarEntity.user.id.eq(userId))
+            .on(userSeminarEntity.user.id.eq(userEntity.id))
+            .where(userEntity.id.eq(userId))
             .fetchOne()
     }
 
