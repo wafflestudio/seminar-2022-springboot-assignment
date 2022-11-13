@@ -12,7 +12,6 @@ import com.wafflestudio.seminar.core.seminar.domain.SeminarPort
 import com.wafflestudio.seminar.core.seminar.domain.SeminarResponse
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.domain.User
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -145,14 +144,14 @@ class SeminarAdapter(
 
     @Transactional
     override fun dropSeminar(seminarId: Long, userId: Long): SeminarResponse {
-        val seminarEntity =
-            seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
-        val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
+        val seminarEntity = seminarRepository.findByIdWithAllOrNull(seminarId)
+            ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
         val userSeminarEntity =
-            userEntity.userSeminars.find { it.seminar.id == seminarId } ?: throw Seminar200("해당 세미나에 참여하고 있지 않습니다.")
+            seminarEntity.userSeminars.find { it.user.id == userId } ?: throw Seminar200("해당 세미나에 참여하고 있지 않습니다.")
         if (userSeminarEntity.role == User.Role.INSTRUCTOR) throw Seminar403("해당 세미나의 진행자이므로 세미나를 드랍할 수 없습니다.")
         userSeminarEntity.isActive = false
         userSeminarEntity.droppedAt = LocalDateTime.now()
-        return userSeminarRepository.save(userSeminarEntity).seminar.toSeminarResponse()
+        userSeminarRepository.save(userSeminarEntity)
+        return seminarEntity.toSeminarResponse()
     }
 }
