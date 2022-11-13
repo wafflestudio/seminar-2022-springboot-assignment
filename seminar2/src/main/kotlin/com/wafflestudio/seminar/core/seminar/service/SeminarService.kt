@@ -46,6 +46,7 @@ class SeminarService(
         seminar.capacity = request.capacity
         seminar.count = request.count
         seminar.online = request.online
+        seminar.time = request.time
         return SeminarResponse.of(seminar)
     }
 
@@ -93,7 +94,7 @@ class SeminarService(
         val findUser = userRepository.findById(user.id).get()
         val seminar = seminarRepository.findById(seminarId)
             .orElseThrow { Seminar404("ID: $seminarId 인 해당하는 세미나가 존재하지 않습니다.") }
-        val _userSeminar = userSeminarRepository.findByUserEntityAndSeminar(findUser, seminar)
+        val _userSeminar = userSeminarRepository.findByUserEntityIdAndSeminarId(findUser.id, seminar.id)
         
         if (_userSeminar.isEmpty)
             return SeminarResponse.of(seminar)
@@ -123,7 +124,7 @@ class SeminarService(
     }
 
     private fun hasInstructSeminar(user: UserEntity): Boolean {
-        return userSeminarRepository.findByUserEntity(user)
+        return userSeminarRepository.findByUserEntityId(user.id)
             .stream()
             .anyMatch { e -> e.role == Role.Instructor }
     }
@@ -154,7 +155,7 @@ class SeminarService(
     }
 
     private fun alreadyJoined(user: UserEntity, seminar: Seminar): Boolean {
-        return userSeminarRepository.findByUserEntity(user)
+        return userSeminarRepository.findByUserEntityId(user.id)
             .stream()
             .anyMatch { e -> e.seminar == seminar }
     }
@@ -165,7 +166,7 @@ class SeminarService(
     }
 
     private fun findInstructUserSeminar(user: UserEntity): Optional<UserSeminar> {
-        return userSeminarRepository.findByUserEntity(user)
+        return userSeminarRepository.findByUserEntityId(user.id)
             .stream()
             .filter { it.role == Role.Instructor }
             .findAny()
