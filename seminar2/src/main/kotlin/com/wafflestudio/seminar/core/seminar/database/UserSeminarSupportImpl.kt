@@ -2,7 +2,6 @@ package com.wafflestudio.seminar.core.seminar.database
 
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
-import com.wafflestudio.seminar.core.seminar.database.QSeminarEntity.seminarEntity
 import com.wafflestudio.seminar.core.seminar.database.QUserSeminarEntity.userSeminarEntity
 import com.wafflestudio.seminar.core.user.database.QUserEntity.userEntity
 import com.wafflestudio.seminar.core.user.domain.*
