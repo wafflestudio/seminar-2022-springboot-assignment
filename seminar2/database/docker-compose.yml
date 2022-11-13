@@ -22,7 +22,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     volumes:
-      - db:/var/lib/mysql
+      - ./db:/var/lib/mysql
 
 volumes:
   db: 
