@@ -102,10 +102,11 @@ class SeminarServiceImpl(
     }
 
     override fun joinSeminar(userId: Long, seminarId: Long, role: Role): Seminar {
-        val seminarEntity = seminarRepository.findByIdOrNull(seminarId)
+        val seminarEntity = customSeminarRepository.findByIdWithUserSeminarAndUser(seminarId)
             ?: throw Seminar404("No existing seminar with id: ${seminarId}")
         val userEntity =
-            userRepository.findByIdOrNull(userId) ?: throw throw Seminar404("No existing user with id: ${userId}")
+            customUserRepository.findByIdWithUserSeminar(userId)
+                ?: throw throw Seminar404("No existing user with id: ${userId}")
         when (role) {
             Role.PARTICIPANT -> {
                 if (userEntity.participantProfile == null) {
@@ -145,7 +146,7 @@ class SeminarServiceImpl(
     }
 
     override fun dropSeminar(userId: Long, seminarId: Long): Seminar {
-        val seminarEntity = seminarRepository.findByIdOrNull(seminarId)
+        val seminarEntity = customSeminarRepository.findByIdWithUserSeminarAndUser(seminarId)
             ?: throw Seminar404("No existing seminar with id: ${seminarId}")
         val userSeminarEntity =
             customUserSeminarRepository.findByUserIdAndSeminarId(userId, seminarId) ?: throw Seminar200("")

@@ -227,7 +227,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
         assertThat(joinSeminar!!.name).isEqualTo(seminar.name)
         assertThat(joinSeminar!!.count).isEqualTo(seminar.count)
 
-        assertThat(joinSeminar!!.instructors.size).isEqualTo(2)
+//        assertThat(joinSeminar!!.instructors.size).isEqualTo(2)
+        assertThat(queryCount).isEqualTo(3)
     }
 
     @Test
@@ -247,6 +248,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
         assertThat(joinSeminar!!.count).isEqualTo(seminar.count)
 
         assertThat(joinSeminar!!.participants.size).isEqualTo(1)
+        assertThat(queryCount).isEqualTo(3)
     }
 
     //    fun dropSeminar(userId: Long, seminarId: Long): Seminar
@@ -259,12 +261,17 @@ internal class SeminarServiceImplTest @Autowired constructor(
         seminarService.joinSeminar(parti1, seminar.id, Role.PARTICIPANT)
         val joinSeminar = seminarService.joinSeminar(parti2, seminar.id, Role.PARTICIPANT)
 
-        val dropSeminar = seminarService.dropSeminar(parti1, joinSeminar.id)
+        var dropSeminar: Seminar? = null
+        val queryCount = hibernateQueryCounter.count {
+            dropSeminar = seminarService.dropSeminar(parti1, joinSeminar.id)
+        }.queryCount
 
-        println(dropSeminar.participants)
-        assertThat(dropSeminar.participants.size).isEqualTo(2)
-        assertThat(dropSeminar.participants[0].id).isEqualTo(parti1)
-        assertThat(dropSeminar.participants[0].isActive).isFalse
+        println(dropSeminar!!.participants)
+        assertThat(dropSeminar!!.participants.size).isEqualTo(2)
+        assertThat(dropSeminar!!.participants[0].id).isEqualTo(parti1)
+        assertThat(dropSeminar!!.participants[0].isActive).isFalse
+
+        assertThat(queryCount).isEqualTo(3)
     }
 
     private fun createInstructor(email: String, username: String): Long {
