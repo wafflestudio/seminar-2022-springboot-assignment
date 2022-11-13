@@ -179,7 +179,7 @@ class SeminarServiceImpl(
 
     override fun dropUserFromSeminar(seminarId: Long, meUser: UserEntity): Any {
         val seminar = seminarRepository.findByIdOrNull(seminarId)
-                ?: throw Seminar403("No seminar ${seminarId} exists.")
+                ?: throw Seminar404("No seminar ${seminarId} exists.")
         
         val userSeminar = userSeminarRepository.findByUserAndSeminarAndRole(meUser, seminar, PARTICIPANT)
                 ?.run{
