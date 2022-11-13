@@ -39,7 +39,6 @@ class SeminarService(
 
     // Query Count 예상: 8, 실제: 10
     fun createSeminar(seminar: SeminarRequest, token: String): GetSeminarInfo {
-        println("캬악!")
         if (seminar.name == null || seminar.capacity == null || seminar.count == null || seminar.time == null) {
             throw Seminar400("입력하지 않은 값이 있습니다")
 
@@ -61,7 +60,6 @@ class SeminarService(
         
         // Query #3, #4, #5 -> [N+1] but was 4:  fetching instructor profile
         userSeminarRepository.save(userSeminarInstructorEntity(seminar, token))
-        println("userSeminar save")
 
         // Query #6, #7
 

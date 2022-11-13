@@ -62,9 +62,7 @@ internal class SeminarServiceTest @Autowired constructor(
         }
         
         // Then
-        println(response.instructors?.get(0)?.email)
        assertThat(response.name).isEqualTo("spring")
-        println(queryCount)
       // assertThat(queryCount).isEqualTo(8) // [N+1] but was 10
     }
 
