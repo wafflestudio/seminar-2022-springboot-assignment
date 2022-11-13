@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.api
 
+import com.wafflestudio.seminar.common.LogExecutionTime
 import com.wafflestudio.seminar.common.LoginUser
 import com.wafflestudio.seminar.common.SeminarRequestBodyException
 import com.wafflestudio.seminar.core.user.dto.SignInRequest
@@ -20,6 +21,9 @@ class AuthController(
         private val authService: AuthService,
         private val userService: UserService
 ) {
+    private val log = org.slf4j.LoggerFactory.getLogger(javaClass)
+    
+    @LogExecutionTime
     @PostMapping("/api/v1/signup")
     fun signUp(@Valid @RequestBody signUpRequest: SignUpRequest, bindingResult: BindingResult): AuthToken {
 //        ("회원가입을 구현해주세요.")
@@ -30,6 +34,7 @@ class AuthController(
         return authService.createUserAndReturnToken(signUpRequest)
     }
 
+    @LogExecutionTime
     @PostMapping("/api/v1/signin")
     fun logIn(@Valid @RequestBody signInRequest: SignInRequest, bindingResult: BindingResult): Any {
 //        TODO("회원가입을 진행한 유저가 로그인할 경우, JWT를 생성해서 내려주세요.")
@@ -43,7 +48,8 @@ class AuthController(
             return ResponseEntity<String>(e.message, HttpStatus.UNAUTHORIZED)
         }
     }
-    
+
+    @LogExecutionTime
     @GetMapping("/api/v1/me")
     fun getMe(@LoginUser user: UserEntity?): Any {
 //        TODO("인증 토큰을 바탕으로 유저 정보를 적당히 처리해서, 본인이 잘 인증되어있음을 알려주세요.")

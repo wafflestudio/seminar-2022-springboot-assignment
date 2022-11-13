@@ -4,6 +4,11 @@ import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.service.AuthTokenExtractor
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
+import org.aspectj.lang.JoinPoint
+import org.aspectj.lang.ProceedingJoinPoint
+import org.aspectj.lang.annotation.Around
+import org.aspectj.lang.annotation.Aspect
+import org.slf4j.LoggerFactory
 import org.springframework.core.MethodParameter
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.support.WebDataBinderFactory
@@ -55,3 +60,28 @@ class LoginUserArgumentResolver(
     
     // private fun getUserIdFromToken...
 }
+
+// AOP Logger
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class LogExecutionTime
+
+@Aspect
+@Component
+class ExecutionTimeLogger {
+    private val log = LoggerFactory.getLogger(javaClass)
+    
+    @Around("@annotation(LogExecutionTime)")
+    @Throws(Throwable::class)
+    fun logExecutionTime(joinPoint: ProceedingJoinPoint): Any? {
+        val start = System.currentTimeMillis()
+        val proceed = joinPoint.proceed()
+        val executionTime = System.currentTimeMillis() - start
+        
+        log.info("${joinPoint.signature} executed in ${executionTime}ms")
+        
+        return proceed
+    }
+    
+}
+
