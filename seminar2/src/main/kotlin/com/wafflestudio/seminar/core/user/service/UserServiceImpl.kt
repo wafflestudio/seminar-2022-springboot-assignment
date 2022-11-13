@@ -138,16 +138,16 @@ class UserServiceImpl(
     
     private fun findUserProfile(user: UserEntity): User {
         val userId = user.id
-        if (user.participantProfileEntity != null && user.instructorProfileEntity != null) {
+        return if (user.participantProfileEntity != null && user.instructorProfileEntity != null) {
             val seminars = seminarRepository.findSeminarsByParticipantId(userId)
             val instructingSeminars = seminarRepository.findSeminarByInstructorId(userId)
-            return user.toDTO(seminars, instructingSeminars)
+            user.toDTO(seminars, instructingSeminars)
         } else if (user.participantProfileEntity == null) {
             val instructingSeminars = seminarRepository.findSeminarByInstructorId(userId)
-            return user.toDTO(seminars = null, instructingSeminars)
+            user.toDTO(seminars = null, instructingSeminars)
         } else {
             val seminars = seminarRepository.findSeminarsByParticipantId(userId)
-            return user.toDTO(seminars, null)
+            user.toDTO(seminars, null)
         }
     }
 }
