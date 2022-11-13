@@ -30,5 +30,7 @@ class UserSeminarEntity(
     
 ):BaseTimeEntity() {
 
-    
+    val isInstructor: Boolean
+        get() = role == "INSTRUCTOR"
+
 }

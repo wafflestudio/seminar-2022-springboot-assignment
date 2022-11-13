@@ -176,36 +176,34 @@ class SeminarService(
     }
 
     // Query Count 예상: 1, 실제: 1
+    @Transactional
     fun getSeminars(token: String): List<GetSeminarInfo> {
         // Query #1
-        val seminarList = queryFactory.select(qSeminarEntity).from(qSeminarEntity).fetch()
+        val seminarList = queryFactory.select(qSeminarEntity).from(qSeminarEntity)
+               // .leftJoin(qUserSeminarEntity).on(qUserSeminarEntity.seminar.eq(qSeminarEntity))
+            .fetch()
+        println("야옹")
 
-        val teacherDto = queryFactory.select(Projections.constructor(
-                TeacherDto::class.java,
-                qUserEntity.id, qUserEntity.username, qUserEntity.email, qUserSeminarEntity.joinedAt
-        ))
-                .from(qUserEntity)
-                .innerJoin(qUserSeminarEntity).on(qUserEntity.id.eq(qUserSeminarEntity.user.id)).fetchJoin()
-                .where(qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
-
-        val studentDto = queryFactory.select(Projections.constructor(
-                StudentDto::class.java,
-                qUserEntity.id, qUserEntity.username, qUserEntity.email,
-                qUserSeminarEntity.joinedAt, qUserSeminarEntity.isActive, qUserSeminarEntity.droppedAt
-        ))
-                .from(qUserEntity)
-                .innerJoin(qUserSeminarEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).fetchJoin()
-                .where(qUserSeminarEntity.role.eq("PARTICIPANT"))
-                .fetch()
+        val userIds = seminarList.map { it.userSeminars?.map { it.id } }
         
-        
-        seminarList.map { 
+        return seminarList.map { 
             seminarEntity ->
             val seminarUser = seminarEntity.userSeminars
-            val instructors = seminarUser?.filter { it.role == "INSTRUCTOR" } ?: throw Seminar400("가르치는 사람이 없음")
-            val participants = seminarUser?.filter { it.role == "PARTICIPANT" } ?: throw Seminar400("배우는 사람이 없음")
+            val instructors = seminarUser?.filter { it.isInstructor }?.map { 
+                TeacherDto(it.user?.id, it.user?.username, it.user?.email, it.joinedAt)
+            } ?: throw Seminar400("가르치는 사람이 없음")
+            val participants = seminarUser?.filter { it.role == "PARTICIPANT" }?.map {
+//                StudentDto(
+//                        it.user?.id, it.user?.username, it.user?.email,
+//                        it.joinedAt, it.isActive, it.droppedAt
+//                )
+                
+               StudentDto.of(it.user!!, it)
+            } ?: throw Seminar400("배우는 사람이 없음")
             
+            GetSeminarInfo.of(seminarEntity, instructors,participants)
         }
+        /*
         val seminars = mutableListOf<GetSeminars>()
 
         for (i in 0 until seminarList.size) {
@@ -222,6 +220,8 @@ class SeminarService(
             )
         }
         return emptyList()
+        
+         */
     }
 
     // Query Count 예상: 2, 실제: 65
