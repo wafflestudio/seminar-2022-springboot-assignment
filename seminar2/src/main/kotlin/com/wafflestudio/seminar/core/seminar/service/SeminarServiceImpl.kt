@@ -36,7 +36,7 @@ class SeminarServiceImpl(
 
         val regex = Regex("^[0-2][0-9]:[0-5][0-9]")
         if (!regex.matches(createSeminarRequest.time)) {
-            Seminar400("올바른 시간 값을 입력해주세요")
+            throw Seminar400("올바른 시간 값을 입력해주세요")
         }
         val newSeminar = SeminarEntity(
             seminarName = createSeminarRequest.name!!,
