@@ -14,10 +14,10 @@ class UserEntity (
     username: String,
     email: String,
     password: String,
-    @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.REMOVE])
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.REMOVE])
     @JoinColumn(name = "participant_profile_id")
     var participant: ParticipantProfile? = null,
-    @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.REMOVE]) 
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.REMOVE]) 
     @JoinColumn(name = "instructor_profile_id")
     var instructor: InstructorProfile? = null,
 ): BaseTimeEntity() 
