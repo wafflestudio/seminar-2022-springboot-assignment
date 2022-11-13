@@ -5,7 +5,7 @@ import com.wafflestudio.seminar.core.userSeminar.domain.UserInstructorSeminar
 data class InstructorProfile(
     val id: Long,
     val company: String = "",
-    val year: Int? = null,
+    val years: Int? = null,
     val seminars: List<UserInstructorSeminar> = ArrayList()
 ) {
 }

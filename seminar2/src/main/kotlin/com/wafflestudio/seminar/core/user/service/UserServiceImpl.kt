@@ -59,7 +59,7 @@ class UserServiceImpl(
         }
         if (userEntity.instructorProfile != null) {
             userEntity.instructorProfile!!.company = editProfileRequest.company
-            userEntity.instructorProfile!!.year = editProfileRequest.year
+            userEntity.instructorProfile!!.years = editProfileRequest.year
         }
     }
 

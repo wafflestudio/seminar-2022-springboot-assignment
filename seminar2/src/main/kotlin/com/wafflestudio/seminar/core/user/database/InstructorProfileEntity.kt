@@ -9,7 +9,7 @@ import javax.persistence.*
 @Table(name = "instructor_profile")
 class InstructorProfileEntity(
     var company: String = "",
-    var year: Int? = null,
+    var years: Int? = null,
 ) : BaseTimeEntity() {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -31,7 +31,7 @@ class InstructorProfileEntity(
         return InstructorProfile(
             id = id,
             company = company,
-            year = year,
+            years = years,
             seminars = seminars
         )
     }
