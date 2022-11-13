@@ -35,14 +35,13 @@ class SeminarController(
         @RequestParam("order") order: String?,
         @RequestParam("page", required = false, defaultValue = "1") page: Int?
     ): List<SeminarForList> {
-        if (order == "earliest") {
+        return if (order == "earliest") {
             val pageable = PageRequest.of(page!! - 1, 50, Sort.by("createdAt").descending())
-            return service.getAllSeminar(seminarName, order, pageable)
+            service.getAllSeminar(seminarName, order, pageable)
         } else {
             val pageable = PageRequest.of(page!! -1, 50)
-            return service.getAllSeminar(seminarName, order, pageable)
+            service.getAllSeminar(seminarName, order, pageable)
         }
-        
     }
 
     @Authenticated
