@@ -101,8 +101,9 @@ class SeminarAdapter(
     override fun searchSeminar(name: String?, order: String?): List<SearchSeminarResponse> {
         val seminars = mutableListOf<SearchSeminarResponse>()
         val seminarEntities: MutableList<SeminarEntity> =
-            if (name == null) seminarRepository.findAll() else seminarRepository.findContainingName(name)
-        if (order == "earliest") seminarEntities.sort() else seminarEntities.reverse()
+            if (name == null) seminarRepository.findAllWithAll() else seminarRepository.findAllContainingName(name)
+        seminarEntities.sort()
+        if (order != "earliest") seminarEntities.reverse()
         seminarEntities.forEach { seminars.add(it.toSearchSeminarResponse()) }
         return seminars
     }

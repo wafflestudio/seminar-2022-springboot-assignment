@@ -24,7 +24,7 @@ class SeminarService(
         return seminarPort.getSeminar(seminarId)
     }
 
-    fun searchSeminar(name: String?, order: String?): List<SearchSeminarResponse> {
+    fun searchSeminar(name: String? = null, order: String? = null): List<SearchSeminarResponse> {
         return seminarPort.searchSeminar(name = name, order = order)
     }
 

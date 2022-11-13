@@ -11,17 +11,27 @@ interface SeminarRepository : JpaRepository<SeminarEntity, Long>,
     SeminarRepositoryCustom
 
 interface SeminarRepositoryCustom {
-    fun findContainingName(name: String): MutableList<SeminarEntity>
+    fun findAllContainingName(name: String): MutableList<SeminarEntity>
 
     fun findByIdWithAllOrNull(seminarId: Long): SeminarEntity?
+
+    fun findAllWithAll(): MutableList<SeminarEntity>
 }
 
 @Component
 class SeminarRepositoryImpl(
     private val queryFactory: JPAQueryFactory
 ) : SeminarRepositoryCustom {
-    override fun findContainingName(name: String): MutableList<SeminarEntity> {
-        return queryFactory.selectFrom(seminar).where(seminar.name.contains(name)).fetch()
+    override fun findAllContainingName(name: String): MutableList<SeminarEntity> {
+        return queryFactory
+            .selectDistinct(seminar)
+            .from(seminar)
+            .leftJoin(seminar.userSeminars, userSeminar)
+            .fetchJoin()
+            .leftJoin(userSeminar.user, user)
+            .fetchJoin()
+            .where(seminar.name.contains(name))
+            .fetch()
     }
 
     override fun findByIdWithAllOrNull(seminarId: Long): SeminarEntity? {
@@ -34,5 +44,16 @@ class SeminarRepositoryImpl(
             .fetchJoin()
             .where(seminar.id.eq(seminarId))
             .fetchOne()
+    }
+
+    override fun findAllWithAll(): MutableList<SeminarEntity> {
+        return queryFactory
+            .selectDistinct(seminar)
+            .from(seminar)
+            .leftJoin(seminar.userSeminars, userSeminar)
+            .fetchJoin()
+            .leftJoin(userSeminar.user, user)
+            .fetchJoin()
+            .fetch()
     }
 }
