@@ -86,17 +86,7 @@ class UserServiceImpl(
     @LogExecutionTime
     override fun getProfile(userId: Long): User {
         val userInfo = userRepository.findByIdOrNull(userId) ?: throw User404("존재하지 않는 유저입니다.")
-        if (userInfo.participantProfileEntity != null && userInfo.instructorProfileEntity != null) {
-            val seminars = seminarRepository.findSeminarsByParticipantId(userId)
-            val instructingSeminars = seminarRepository.findSeminarsByInstructorId(userId)
-            return userInfo.toDTO(seminars, instructingSeminars)
-        } else if (userInfo.participantProfileEntity == null) {
-            val instructingSeminars = seminarRepository.findSeminarsByInstructorId(userId)
-            return userInfo.toDTO(seminars = null, instructingSeminars)
-        } else {
-            val seminars = seminarRepository.findSeminarsByParticipantId(userId)
-            return userInfo.toDTO(seminars, null)
-        }
+        return findUserProfile(userInfo)
     }
 
     @LogExecutionTime
@@ -123,17 +113,7 @@ class UserServiceImpl(
             }
         }
         userRepository.save(user)
-        if (user.participantProfileEntity != null && user.instructorProfileEntity != null) {
-            val seminars = seminarRepository.findSeminarsByParticipantId(userId)
-            val instructingSeminars = seminarRepository.findSeminarsByInstructorId(userId)
-            return user.toDTO(seminars, instructingSeminars)
-        } else if (user.participantProfileEntity == null) {
-            val instructingSeminars = seminarRepository.findSeminarsByInstructorId(userId)
-            return user.toDTO(seminars = null, instructingSeminars)
-        } else {
-            val seminars = seminarRepository.findSeminarsByParticipantId(userId)
-            return user.toDTO(seminars, null)
-        }
+        return findUserProfile(user)
     }
 
     @LogExecutionTime
@@ -152,7 +132,22 @@ class UserServiceImpl(
         userRepository.save(user)
         
         val seminars = seminarRepository.findSeminarsByParticipantId(userId)
-        val instructingSeminars = seminarRepository.findSeminarsByInstructorId(userId)
+        val instructingSeminars = seminarRepository.findSeminarByInstructorId(userId)
         return user.toDTO(seminars, instructingSeminars)
+    }
+    
+    private fun findUserProfile(user: UserEntity): User {
+        val userId = user.id
+        if (user.participantProfileEntity != null && user.instructorProfileEntity != null) {
+            val seminars = seminarRepository.findSeminarsByParticipantId(userId)
+            val instructingSeminars = seminarRepository.findSeminarByInstructorId(userId)
+            return user.toDTO(seminars, instructingSeminars)
+        } else if (user.participantProfileEntity == null) {
+            val instructingSeminars = seminarRepository.findSeminarByInstructorId(userId)
+            return user.toDTO(seminars = null, instructingSeminars)
+        } else {
+            val seminars = seminarRepository.findSeminarsByParticipantId(userId)
+            return user.toDTO(seminars, null)
+        }
     }
 }
