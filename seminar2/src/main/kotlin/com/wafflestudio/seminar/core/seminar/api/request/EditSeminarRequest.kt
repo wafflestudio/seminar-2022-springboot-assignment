@@ -11,5 +11,6 @@ data class EditSeminarRequest(
     @field: NotNull(message = "count값을 입력해주세요.")
     @field: Positive(message = "count값은 양수여야 합니다.")
     val count: Int,
-    val online: Boolean = true
+    val online: Boolean = true,
+    val time: String
 )
