@@ -16,10 +16,11 @@ data class GetSeminarInfo(
 ) {
     companion object {
         fun of(
-                entity: SeminarEntity,
-                instructors: List<TeacherDto>,
-                participants: List<StudentDto>,
-        ) = entity.run {
+                seminarEntity: SeminarEntity,
+                teacherEntity: List<TeacherDto>,
+                studentEntity: List<StudentDto>
+                
+        ) = seminarEntity.run {
             GetSeminarInfo(
                     id = id,
                     name = name,
@@ -27,8 +28,8 @@ data class GetSeminarInfo(
                     count = count,
                     capacity = capacity,
                     online = online,
-                    instructors = instructors,
-                    participants = participants,
+                    instructors = teacherEntity,
+                    participants = studentEntity,
             )
         }
     }
