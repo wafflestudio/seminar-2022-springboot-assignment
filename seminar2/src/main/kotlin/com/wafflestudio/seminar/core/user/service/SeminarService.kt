@@ -142,14 +142,14 @@ class SeminarService(
 
         // Query #3 -> [N+1] but was 2: fetch join을 사용하지 않았습니다.
         // 과제 레포의 (branch: asmt2) findAllWithProfiles()를 참고하시면 좋을 것 같습니다.
-        val instructorList = queryFactory.select(Projections.constructor(
+        val teacherDto = queryFactory.select(Projections.constructor(
                 TeacherDto::class.java,
                 qUserEntity.id, qUserEntity.username, qUserEntity.email, qUserSeminarEntity.joinedAt
         ))
                 .from(qUserEntity)
                 .innerJoin(qUserSeminarEntity).on(qUserEntity.id.eq(qUserSeminarEntity.user.id)).fetchJoin()
-                .where(qUserSeminarEntity.seminar.id.eq(id))
-                .where(qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
+                .where(qUserSeminarEntity.seminar.id.eq(id),qUserSeminarEntity.role.eq("INSTRUCTOR"))
+                .fetch()
 
        
 
@@ -160,7 +160,7 @@ class SeminarService(
         * participantList도 같은 방식으로 UserSeminar Table에서 UserEntity를 inner join하여 바로 fetch해도 될 것 같습니다.
         */
         // Query #4 -> [N+1] but was 11: fetch join을 사용하지 않았습니다.
-        val participantList = queryFactory.select(Projections.constructor(
+        val studentDto = queryFactory.select(Projections.constructor(
                 StudentDto::class.java,
                 qUserEntity.id, qUserEntity.username, qUserEntity.email,
                 qUserSeminarEntity.joinedAt, qUserSeminarEntity.isActive, qUserSeminarEntity.droppedAt
@@ -170,25 +170,46 @@ class SeminarService(
                 .where(qUserSeminarEntity.seminar.id.eq(id), qUserSeminarEntity.role.eq("PARTICIPANT"))
                 .fetch()
         
-        return GetSeminarInfo.of(seminarEntity, instructorList, participantList)
+        return GetSeminarInfo.of(seminarEntity, teacherDto, studentDto)
 
     
     }
 
     // Query Count 예상: 1, 실제: 1
-    fun getSeminars(token: String): List<GetSeminars> {
+    fun getSeminars(token: String): List<GetSeminarInfo> {
         // Query #1
-        val seminarList = queryFactory.select(Projections.constructor(
-                SeminarDto::class.java,
-                qSeminarEntity
-        ))
-                .from(qSeminarEntity)
-                .fetch()
+        val seminarList = queryFactory.select(qSeminarEntity).from(qSeminarEntity).fetch()
 
+        val teacherDto = queryFactory.select(Projections.constructor(
+                TeacherDto::class.java,
+                qUserEntity.id, qUserEntity.username, qUserEntity.email, qUserSeminarEntity.joinedAt
+        ))
+                .from(qUserEntity)
+                .innerJoin(qUserSeminarEntity).on(qUserEntity.id.eq(qUserSeminarEntity.user.id)).fetchJoin()
+                .where(qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
+
+        val studentDto = queryFactory.select(Projections.constructor(
+                StudentDto::class.java,
+                qUserEntity.id, qUserEntity.username, qUserEntity.email,
+                qUserSeminarEntity.joinedAt, qUserSeminarEntity.isActive, qUserSeminarEntity.droppedAt
+        ))
+                .from(qUserEntity)
+                .innerJoin(qUserSeminarEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).fetchJoin()
+                .where(qUserSeminarEntity.role.eq("PARTICIPANT"))
+                .fetch()
+        
+        
+        seminarList.map { 
+            seminarEntity ->
+            val seminarUser = seminarEntity.userSeminars
+            val instructors = seminarUser?.filter { it.role == "INSTRUCTOR" } ?: throw Seminar400("가르치는 사람이 없음")
+            val participants = seminarUser?.filter { it.role == "PARTICIPANT" } ?: throw Seminar400("배우는 사람이 없음")
+            
+        }
         val seminars = mutableListOf<GetSeminars>()
 
         for (i in 0 until seminarList.size) {
-            val seminarEntity = seminarList[i].seminarEntity
+            val seminarEntity = seminarList[i]
             seminars.add(
                     GetSeminars(
                             seminarEntity?.id,
@@ -200,7 +221,7 @@ class SeminarService(
                     )
             )
         }
-        return seminars
+        return emptyList()
     }
 
     // Query Count 예상: 2, 실제: 65

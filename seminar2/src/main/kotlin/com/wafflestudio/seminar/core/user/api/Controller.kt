@@ -73,7 +73,7 @@ class Controller(
     *       seminars -> seminar로 수정되어야 합니다.
     */
     @GetMapping("seminars")
-    fun getSeminars(@RequestHeader("Authorization") token: String): List<GetSeminars>{
+    fun getSeminars(@RequestHeader("Authorization") token: String): List<GetSeminarInfo>{
         return seminarService.getSeminars(token)
     }
 

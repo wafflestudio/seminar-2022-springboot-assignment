@@ -296,7 +296,7 @@ internal class SeminarServiceTest @Autowired constructor(
         createFixtures()
         val participant = userTestHelper.createParticipant("participant@snu.ac.kr")
         given(authTokenService.getCurrentUserId(anyString())).willReturn(participant.id)
-        val role = mapOf<String, String>("role" to "participant")
+        val role = mapOf<String, String>("role" to "PARTICIPANT")
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
@@ -316,7 +316,7 @@ internal class SeminarServiceTest @Autowired constructor(
         createFixtures()
         val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
         given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
-        val role = mapOf<String, String>("role" to "instructor")
+        val role = mapOf<String, String>("role" to "INSTRUCTOR")
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
@@ -334,7 +334,7 @@ internal class SeminarServiceTest @Autowired constructor(
         // Given
         val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
         given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
-        val role = mapOf<String, String>("role" to "instructor")
+        val role = mapOf<String, String>("role" to "INSTRUCTOR")
 
         // When
         val response = assertThrows<Seminar404> { seminarService.joinSeminar(100, role, "token") }
@@ -350,7 +350,7 @@ internal class SeminarServiceTest @Autowired constructor(
         createFixtures()
         val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
         given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
-        val role = mapOf<String, String>("role" to "instructorr")
+        val role = mapOf<String, String>("role" to "INSTRUCTOR")
 
         // When
         val response = assertThrows<Seminar400> { seminarService.joinSeminar(1, role, "token") }
@@ -366,7 +366,7 @@ internal class SeminarServiceTest @Autowired constructor(
         createFixtures()
         val participant = userRepository.save(UserEntity("", "", "", LocalDate.now()))
         given(authTokenService.getCurrentUserId(anyString())).willReturn(participant.id)
-        val role = mapOf<String, String>("role" to "participant")
+        val role = mapOf<String, String>("role" to "PARTICIPANT")
 
         // When
         val response = assertThrows<Seminar403> { seminarService.joinSeminar(1, role, "token") }
@@ -382,7 +382,7 @@ internal class SeminarServiceTest @Autowired constructor(
         createFixtures()
         val participant = userTestHelper.createParticipant("participant@snu.ac.kr", isRegistered = false)
         given(authTokenService.getCurrentUserId(anyString())).willReturn(participant.id)
-        val role = mapOf<String, String>("role" to "participant")
+        val role = mapOf<String, String>("role" to "PARTICIPANT")
 
         // When
         val response = assertThrows<Seminar403> { seminarService.joinSeminar(1, role, "token") }
@@ -396,7 +396,7 @@ internal class SeminarServiceTest @Autowired constructor(
     fun `(joinSeminar) 세미나가 이미 가득 찬 경우 400으로 응답`() {
         // Given
         createFixtures()
-        val role = mapOf<String, String>("role" to "participant")
+        val role = mapOf<String, String>("role" to "PARTICIPANT")
         val participant1 = userTestHelper.createParticipant("participant1@snu.ac.kr")
         given(authTokenService.getCurrentUserId(anyString())).willReturn(participant1.id)
 
@@ -422,7 +422,7 @@ internal class SeminarServiceTest @Autowired constructor(
         seminarService.createSeminar(SeminarRequest("test",10, 10, "10:00"), "token")
 
         given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
-        val role = mapOf<String, String>("role" to "instructor")
+        val role = mapOf<String, String>("role" to "INSTRUCTOR")
 
         // When
         val response = assertThrows<Seminar400> { seminarService.joinSeminar(1, role, "token") }
@@ -437,7 +437,7 @@ internal class SeminarServiceTest @Autowired constructor(
         // Given
         createFixtures()
         given(authTokenService.getCurrentUserId(anyString())).willReturn(5)
-        val role = mapOf<String, String>("role" to "participant")
+        val role = mapOf<String, String>("role" to "PARTICIPANT")
 
         // When
         val response = assertThrows<Seminar400> { seminarService.joinSeminar(1, role, "token") }
@@ -454,7 +454,7 @@ internal class SeminarServiceTest @Autowired constructor(
         given(authTokenService.getCurrentUserId(anyString())).willReturn(3)
         given(authTokenService.getCurrentEmail(anyString())).willReturn("participant#1@snu.ac.kr")
         seminarService.dropSeminar(1, "token")
-        val role = mapOf<String, String>("role" to "participant")
+        val role = mapOf<String, String>("role" to "PARTICIPANT")
 
         // When
         val response = assertThrows<Seminar400> { seminarService.joinSeminar(1, role, "token") }
@@ -519,8 +519,8 @@ internal class SeminarServiceTest @Autowired constructor(
 
             val seminar = SeminarEntity("spring#$i", 11, 6, "19:00", false)
             val userSeminarList: MutableList<UserSeminarEntity> =
-                participants.map { UserSeminarEntity(it, seminar, "participant", LocalDateTime.now()) } as MutableList<UserSeminarEntity>
-            userSeminarList.add(UserSeminarEntity(instructor, seminar, "instructor", LocalDateTime.now()))
+                participants.map { UserSeminarEntity(it, seminar, "PARTICIPANT", LocalDateTime.now()) } as MutableList<UserSeminarEntity>
+            userSeminarList.add(UserSeminarEntity(instructor, seminar, "INSTRUCTOR", LocalDateTime.now()))
             seminar.userSeminars = userSeminarList
             seminarRepository.save(seminar)
             userSeminarList.forEach { userSeminarRepository.save(it) }
