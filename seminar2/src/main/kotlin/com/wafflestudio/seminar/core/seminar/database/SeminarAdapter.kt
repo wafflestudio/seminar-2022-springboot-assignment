@@ -111,8 +111,10 @@ class SeminarAdapter(
     @Transactional
     override fun joinSeminar(seminarId: Long, userId: Long, joinSeminarRequest: JoinSeminarRequest): SeminarResponse {
         val seminarEntity =
-            seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
-        val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
+            seminarRepository.findByIdWithAllOrNull(seminarId)
+                ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
+        val userEntity =
+            userRepository.findByIdWithAllOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
         var userSeminarEntity = userEntity.userSeminars.find { it.seminar.id == seminarId }
         if (userSeminarEntity != null) {
             if (!userSeminarEntity.isActive) throw Seminar400("이전에 드랍한 세미나이므로 다시 참여할 수 없습니다.")
@@ -138,8 +140,7 @@ class SeminarAdapter(
         )
         userEntity.userSeminars.add(userSeminarEntity)
         seminarEntity.userSeminars.add(userSeminarEntity)
-        userRepository.save(userEntity)
-        return seminarRepository.save(seminarEntity).toSeminarResponse()
+        return seminarEntity.toSeminarResponse()
     }
 
     @Transactional
