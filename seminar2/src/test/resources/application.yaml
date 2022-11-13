@@ -1,16 +1,12 @@
 spring:
   profiles:
-    active: dev
-  datasource:
-    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
-    username: root
-    password: seminar
+    active: local
   jpa:
     properties:
       hibernate:
         show_sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
 
 auth.jwt:
   jwtSecret: ah3fafk83fh38a4h8oa4gh8oa3kh8ag3al9g3ag39h
