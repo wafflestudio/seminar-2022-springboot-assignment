@@ -7,10 +7,7 @@ import com.wafflestudio.seminar.core.user.domain.Instructor
 import com.wafflestudio.seminar.core.user.domain.Participant
 import com.wafflestudio.seminar.core.user.domain.User
 import java.time.LocalTime
-import javax.persistence.CascadeType
-import javax.persistence.Entity
-import javax.persistence.OneToMany
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "seminar")
@@ -22,7 +19,7 @@ class SeminarEntity(
     var online: Boolean,
     val creatorId: Long,
 ) : BaseTimeEntity(), Comparable<SeminarEntity> {
-    @OneToMany(mappedBy = "seminar", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "seminar", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
     val userSeminars: MutableSet<UserSeminarEntity> = mutableSetOf()
 
     fun toSeminarResponse(): SeminarResponse {

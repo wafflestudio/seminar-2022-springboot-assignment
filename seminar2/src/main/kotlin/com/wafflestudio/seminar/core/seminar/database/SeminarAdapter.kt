@@ -75,7 +75,8 @@ class SeminarAdapter(
             }
         }
         val seminarEntity =
-            seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
+            seminarRepository.findByIdWithAllOrNull(seminarId!!)
+                ?: throw Seminar404("해당 아이디(${seminarId})로 등록된 세미나가 없습니다.")
         if (userId != seminarEntity.creatorId) {
             throw Seminar403("세미나를 만든 사람이 아니면 수정을 할 수 없습니다.")
         }

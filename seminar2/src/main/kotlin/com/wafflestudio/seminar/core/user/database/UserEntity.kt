@@ -26,14 +26,14 @@ class UserEntity(
 
     var lastLogin: LocalDateTime,
 
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY, orphanRemoval = true)
     val userSeminars: MutableSet<UserSeminarEntity> = mutableSetOf(),
 
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "participant_profile_id", referencedColumnName = "id")
     var participantProfile: ParticipantProfileEntity? = null,
 
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_profile_id", referencedColumnName = "id")
     var instructorProfile: InstructorProfileEntity? = null
 ) : BaseTimeEntity() {

@@ -9,11 +9,11 @@ import javax.persistence.*
 @Entity
 @Table(name = "userSeminar")
 class UserSeminarEntity(
-    @ManyToOne(cascade = [CascadeType.ALL])
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     val user: UserEntity,
 
-    @ManyToOne(cascade = [CascadeType.ALL])
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seminar_id")
     val seminar: SeminarEntity,
 
@@ -21,5 +21,5 @@ class UserSeminarEntity(
     val role: User.Role,
     val joinedAt: LocalDateTime,
     var droppedAt: LocalDateTime? = null,
-    var isActive: Boolean
+    var isActive: Boolean = true
 ) : BaseTimeEntity() 
