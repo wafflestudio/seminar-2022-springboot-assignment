@@ -26,7 +26,7 @@ class UserSeminarEntity(
         val seminar: SeminarEntity,
 
         @Column(nullable = false)
-        var isActive: Boolean = false,
+        var isActive: Boolean = true,
 
         @Column(nullable = true)
         var droppedAt: LocalDateTime? = null,
