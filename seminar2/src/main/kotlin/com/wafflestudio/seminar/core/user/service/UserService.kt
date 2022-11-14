@@ -13,7 +13,7 @@ import com.wafflestudio.seminar.core.seminar.dto.InstructingSeminarResponse
 import com.wafflestudio.seminar.core.seminar.dto.ParticipantSeminarResponse
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
-import com.wafflestudio.seminar.core.user.dto.UserRequest
+import com.wafflestudio.seminar.core.user.dto.ModifyUserRequest
 import com.wafflestudio.seminar.core.user.dto.UserResponse
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -22,7 +22,7 @@ import javax.transaction.Transactional
 interface UserService {
     fun constructUserInformationById(userId: Long): UserResponse
     fun constructUserInformationByUser(user: UserEntity): UserResponse
-    fun modifyUserInformation(userRequest: UserRequest, meUser: UserEntity)
+    fun modifyUserInformation(modifyUserRequest: ModifyUserRequest, meUser: UserEntity)
     fun addToParticipantAndReturnUserInfo(
         participantProfileRequest: ParticipantProfileRequest,
         meUser: UserEntity
@@ -98,29 +98,29 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun modifyUserInformation(userRequest: UserRequest, meUser: UserEntity) {
+    override fun modifyUserInformation(modifyUserRequest: ModifyUserRequest, meUser: UserEntity) {
         val isParticipant: Boolean = meUser.participantProfile != null
         val isInstructor: Boolean = meUser.instructorProfile != null
 
         // Modify User Information
-        if (userRequest.username.isNotBlank()) {
-            meUser.username = userRequest.username
+        if (modifyUserRequest.username.isNotBlank()) {
+            meUser.username = modifyUserRequest.username
         }
-        if (userRequest.password.isNotEmpty()) {
-            meUser.password = encoder.encode(userRequest.password)
+        if (modifyUserRequest.password.isNotEmpty()) {
+            meUser.password = encoder.encode(modifyUserRequest.password)
         }
 
         // Modify Participant Information
         if (isParticipant) {
-            userRequest.university?.let { meUser.participantProfile!!.university = it }
+            modifyUserRequest.university?.let { meUser.participantProfile!!.university = it }
         }
 
         // Modify Instructor Information
         if (isInstructor) {
-            userRequest.company?.let { meUser.instructorProfile!!.company = it }
+            modifyUserRequest.company?.let { meUser.instructorProfile!!.company = it }
 
-            if (userRequest.year != null) {
-                if (userRequest.year <= 0) { throw UserException400("Not Appropriate Year given") } else { meUser.instructorProfile!!.year = userRequest.year }
+            if (modifyUserRequest.year != null) {
+                if (modifyUserRequest.year <= 0) { throw UserException400("Not Appropriate Year given") } else { meUser.instructorProfile!!.year = modifyUserRequest.year }
             }
         }
     }

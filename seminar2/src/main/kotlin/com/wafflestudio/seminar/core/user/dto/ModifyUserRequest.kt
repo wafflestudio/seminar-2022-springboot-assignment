@@ -2,7 +2,7 @@ package com.wafflestudio.seminar.core.user.dto
 
 import javax.validation.constraints.Positive
 
-data class UserRequest(
+data class ModifyUserRequest(
     val username: String = "",
     val password: String = "",
     val university: String? = null,

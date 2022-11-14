@@ -5,7 +5,7 @@ import com.wafflestudio.seminar.common.LoginUser
 import com.wafflestudio.seminar.common.SeminarRequestBodyException
 import com.wafflestudio.seminar.core.profile.dto.ParticipantProfileRequest
 import com.wafflestudio.seminar.core.user.database.UserEntity
-import com.wafflestudio.seminar.core.user.dto.UserRequest
+import com.wafflestudio.seminar.core.user.dto.ModifyUserRequest
 import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -28,14 +28,14 @@ class UserController(
     @LogExecutionTime
     @PutMapping("/api/v1/user/me")
     fun putUserInformation(
-        @Valid @RequestBody userRequest: UserRequest,
-        bindingResult: BindingResult,
-        @LoginUser meUser: UserEntity?,
+            @Valid @RequestBody modifyUserRequest: ModifyUserRequest,
+            bindingResult: BindingResult,
+            @LoginUser meUser: UserEntity?,
     ) = if (bindingResult.hasErrors()) {
         throw SeminarRequestBodyException(bindingResult.fieldErrors)
     } else {
         meUser?.let {
-            userService.modifyUserInformation(userRequest, meUser)
+            userService.modifyUserInformation(modifyUserRequest, meUser)
             ResponseEntity<String>("Modified", HttpStatus.OK)
         }
             ?: ResponseEntity<String>("Failed to get user information.", HttpStatus.UNAUTHORIZED)
