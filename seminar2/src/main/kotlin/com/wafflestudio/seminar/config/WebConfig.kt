@@ -1,11 +1,14 @@
 package com.wafflestudio.seminar.config
 
 import com.wafflestudio.seminar.common.Authenticated
+import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.common.UserContext
+import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.service.AuthException
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.MethodParameter
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.HandlerMethod
@@ -34,6 +37,7 @@ class WebConfig(
 @Configuration
 class AuthArgumentResolver(
     private val authTokenService: AuthTokenService,
+    private val userRepository: UserRepository,
 ) : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         return parameter.hasParameterAnnotation(UserContext::class.java)
@@ -49,7 +53,9 @@ class AuthArgumentResolver(
         val request = webRequest.getNativeRequest(HttpServletRequest::class.java)
         val jwtToken = request?.getHeader("Authorization")
             ?: throw AuthException("토큰 에러")
-        return authTokenService.getCurrentUserId(jwtToken)
+        val userId = authTokenService.getCurrentUserId(jwtToken)
+        userRepository.findByIdOrNull(userId) ?: throw Seminar404("존재하지 않는 userId 입니다")
+        return userId
     }
 }
 
