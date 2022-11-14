@@ -33,4 +33,7 @@ class UserSeminarEntity(
     val isInstructor: Boolean
         get() = role == "INSTRUCTOR"
 
+    val isParticipant: Boolean
+        get() = role == "PARTICIPANT"
+
 }

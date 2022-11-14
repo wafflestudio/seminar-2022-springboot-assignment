@@ -17,8 +17,8 @@ data class GetSeminarInfo(
     companion object {
         fun of(
                 seminarEntity: SeminarEntity,
-                teacherEntity: List<TeacherDto>,
-                studentEntity: List<StudentDto>
+                teacherEntity: List<TeacherDto>?,
+                studentEntity: List<StudentDto>?
                 
         ) = seminarEntity.run {
             GetSeminarInfo(

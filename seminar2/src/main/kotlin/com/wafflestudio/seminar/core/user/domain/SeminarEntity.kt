@@ -24,7 +24,7 @@ class SeminarEntity(
     @Column
     var online: Boolean? = true,
 
-    @OneToMany(mappedBy="seminar", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="seminar", orphanRemoval = true)
     var userSeminars: MutableList<UserSeminarEntity>?= null
 ) {
     @Id

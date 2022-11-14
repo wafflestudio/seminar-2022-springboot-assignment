@@ -68,12 +68,12 @@ class SeminarService(
 
 
         val teacherDto = queryFactory.select(Projections.constructor(
-                TeacherDto::class.java, 
+                TeacherDto::class.java,
                 qUserEntity.id, qUserEntity.username, qUserEntity.email, qUserSeminarEntity.joinedAt
         )).from(qUserEntity)
                 .innerJoin(qUserSeminarEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id))
                 .where(qUserSeminarEntity.seminar.name.eq(seminar.name), qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
-        
+
         val seminarEntity = seminarInfoDto[0]
 
         // Query #8
@@ -81,7 +81,7 @@ class SeminarService(
         // companion object와 queryDSL의 projection을 함께 사용하여 보다 간결하게 작성할 수 있을 것 같습니다.
         // 과제 레포의 (branch: asmt2) Seminar.of 및 SeminarEntity.toDto()를 참고하시면 좋을 것 같습니다.
         return GetSeminarInfo.of(seminarEntity, teacherDto, emptyList())
-       
+
     }
 
 
@@ -137,7 +137,7 @@ class SeminarService(
 
         val seminarList = queryFactory.select(qSeminarEntity).from(qSeminarEntity)
                 .where(qSeminarEntity.id.eq(id)).fetch()
-      
+
         val seminarEntity = seminarList[0]
 
         // Query #3 -> [N+1] but was 2: fetch join을 사용하지 않았습니다.
@@ -148,10 +148,9 @@ class SeminarService(
         ))
                 .from(qUserEntity)
                 .innerJoin(qUserSeminarEntity).on(qUserEntity.id.eq(qUserSeminarEntity.user.id)).fetchJoin()
-                .where(qUserSeminarEntity.seminar.id.eq(id),qUserSeminarEntity.role.eq("INSTRUCTOR"))
+                .where(qUserSeminarEntity.seminar.id.eq(id), qUserSeminarEntity.role.eq("INSTRUCTOR"))
                 .fetch()
 
-       
 
         /*
         * instructorList는 UserSeminar Table에서 UserEntity를 inner join하여 fetch하는 반면
@@ -169,40 +168,74 @@ class SeminarService(
                 .innerJoin(qUserSeminarEntity).on(qUserSeminarEntity.user.id.eq(qUserEntity.id)).fetchJoin()
                 .where(qUserSeminarEntity.seminar.id.eq(id), qUserSeminarEntity.role.eq("PARTICIPANT"))
                 .fetch()
-        
+
         return GetSeminarInfo.of(seminarEntity, teacherDto, studentDto)
 
-    
+
     }
 
     // Query Count 예상: 1, 실제: 1
     @Transactional
     fun getSeminars(token: String): List<GetSeminarInfo> {
         // Query #1
-        val seminarList = queryFactory.select(qSeminarEntity).from(qSeminarEntity)
-               // .leftJoin(qUserSeminarEntity).on(qUserSeminarEntity.seminar.eq(qSeminarEntity))
-            .fetch()
-        println("야옹")
 
-        val userIds = seminarList.map { it.userSeminars?.map { it.id } }
-        
-        return seminarList.map { 
-            seminarEntity ->
-            val seminarUser = seminarEntity.userSeminars
-            val instructors = seminarUser?.filter { it.isInstructor }?.map { 
-                TeacherDto(it.user?.id, it.user?.username, it.user?.email, it.joinedAt)
-            } ?: throw Seminar400("가르치는 사람이 없음")
-            val participants = seminarUser?.filter { it.role == "PARTICIPANT" }?.map {
+
+        val seminarList = queryFactory.select(qSeminarEntity).from(qSeminarEntity)
+                // .leftJoin(qUserSeminarEntity).on(qUserSeminarEntity.seminar.eq(qSeminarEntity)).fetchJoin()
+                .fetch()
+
+        val teacherList = queryFactory.select(
+                qUserSeminarEntity.seminar.id,
+                qUserEntity.id, qUserEntity.username, qUserEntity.email, qUserSeminarEntity.joinedAt).from(qUserSeminarEntity)
+                .leftJoin(qUserEntity).on(qUserSeminarEntity.user.eq(qUserEntity)).fetchJoin()
+                .where(qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
+
+        val studentList = queryFactory.select(
+                qUserSeminarEntity.seminar.id,
+                qUserEntity.id, qUserEntity.username, qUserEntity.email,
+                qUserSeminarEntity.joinedAt, qUserSeminarEntity.isActive, qUserSeminarEntity.droppedAt).from(qUserSeminarEntity)
+                .leftJoin(qUserEntity).on(qUserSeminarEntity.user.eq(qUserEntity)).fetchJoin()
+                .where(qUserSeminarEntity.role.eq("PARTICIPANT")).fetch()
+
+
+        val newTeacherList = teacherList.groupBy { it -> it[qUserSeminarEntity.seminar.id] }
+        val newStudentList = studentList.groupBy { it -> it[qUserSeminarEntity.seminar.id] }
+
+
+
+        return seminarList.map { seminarEntity ->
+            
+            val instructors = newTeacherList?.filter { it.key == seminarEntity.id }?.getOrDefault(seminarEntity.id,null)
+            val teacherDto = instructors?.map { TeacherDto(it[qUserEntity.id], it[qUserEntity.username], it[qUserEntity.email], it[qUserSeminarEntity.joinedAt]) }
+            val participants = newStudentList?.filter { it.key == seminarEntity.id }?.getOrDefault(seminarEntity.id,null)
+            val studentDto = participants?.map { StudentDto(it[qUserEntity.id], it[qUserEntity.username], it[qUserEntity.email], it[qUserSeminarEntity.joinedAt], it[qUserSeminarEntity.isActive],it[qUserSeminarEntity.droppedAt]) }
+
+            GetSeminarInfo.of(seminarEntity, teacherDto, studentDto)
+        }
+        /*
+    return seminarList.map { 
+        seminarEntity ->
+        val seminarUser = seminarEntity.userSeminars
+        println("1")
+        val instructors = seminarUser?.filter { it.role == "INSTRUCTOR" }?.map { 
+            TeacherDto(it.user?.id, it.user?.username, it.user?.email, it.joinedAt)
+        } ?: throw Seminar400("가르치는 사람이 없음")
+        println("2")
+        val participants = seminarUser?.filter { it.role == "PARTICIPANT" }?.map {
 //                StudentDto(
 //                        it.user?.id, it.user?.username, it.user?.email,
 //                        it.joinedAt, it.isActive, it.droppedAt
 //                )
-                
-               StudentDto.of(it.user!!, it)
-            } ?: throw Seminar400("배우는 사람이 없음")
             
-            GetSeminarInfo.of(seminarEntity, instructors,participants)
-        }
+           StudentDto.of(it.user!!, it)
+        } ?: throw Seminar400("배우는 사람이 없음")
+        println("3")
+        GetSeminarInfo.of(seminarEntity, instructors,participants)
+        
+         
+    }*/
+
+
         /*
         val seminars = mutableListOf<GetSeminars>()
 
@@ -222,6 +255,8 @@ class SeminarService(
         return emptyList()
         
          */
+
+
     }
 
     // Query Count 예상: 2, 실제: 65
