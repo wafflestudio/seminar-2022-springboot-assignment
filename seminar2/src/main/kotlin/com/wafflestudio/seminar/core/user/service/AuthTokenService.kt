@@ -52,10 +52,10 @@ class AuthTokenServiceImpl(
     }
 
     override fun getCurrentUserId(authToken: String): Long {
-        val userId = parse(authToken).body["userId"] as? Long
+        val userId = parse(authToken).body["userId"] as? Int
             ?: throw AuthException("잘못된 아이디에 대한 토큰입니다")
-        userRepository.findByIdOrNull(userId) ?: throw AuthException("잘못된 아이디에 대한 토큰입니다")
-        return userId
+        userRepository.findByIdOrNull(userId.toLong()) ?: throw AuthException("잘못된 아이디에 대한 토큰입니다")
+        return userId.toLong()
     }
 
     private fun parse(authToken: String): Jws<Claims> {
