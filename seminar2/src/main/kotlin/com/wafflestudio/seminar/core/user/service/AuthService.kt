@@ -37,7 +37,7 @@ class AuthService(
             if (user.instructor?.year != null) {
                 
                 if(user.instructor.year < 0){
-                    throw Seminar400("0 또는 양의 정수만 입력할 수 있습니다")
+                    throw Seminar400("연도에는 0 또는 양의 정수만 입력할 수 있습니다")
                 }
             }
             userRepository.save(signupInstructorEntity(user, encodedPassword))

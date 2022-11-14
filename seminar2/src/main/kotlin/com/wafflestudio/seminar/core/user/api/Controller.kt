@@ -35,9 +35,9 @@ class Controller(
     
     @Authenticated
     @GetMapping("user/{user_id}")
-    fun getProfile(@PathVariable user_id: Long, @RequestHeader("Authorization") token: String): GetProfile {
+    fun getProfile(@PathVariable user_id: Long, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetProfile {
         
-        return userService.getProfile(user_id,token)
+        return userService.getProfile(user_id,userId)
 
     }
     

@@ -286,7 +286,7 @@ class SeminarService(
                     userSeminarRepository.findByUser(it)?.filter {
                         it.seminar.id == id
                     }
-                } == emptyList<UserSeminarEntity>()) {
+                }.isNullOrEmpty()) {
             throw Seminar404("해당 세미나를 신청한 적이 없습니다")
         }
 
