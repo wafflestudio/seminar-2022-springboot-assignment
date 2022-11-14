@@ -19,7 +19,8 @@ class SeminarEntity (
     @OneToMany(
         mappedBy = "seminar",
         fetch = FetchType.LAZY,
-        cascade = arrayOf(CascadeType.REMOVE, CascadeType.PERSIST)
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
     )
-    var userSeminarList: MutableList<UserSeminarEntity>?= null
+    var userSeminarList: MutableList<UserSeminarEntity>? = mutableListOf()
 ) : BaseTimeEntity()

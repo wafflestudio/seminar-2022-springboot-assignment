@@ -35,8 +35,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
     @AfterEach
     fun clear() {
         userSeminarRepository.deleteAll()
-        userRepository.deleteAll()
         seminarRepository.deleteAll()
+        userRepository.deleteAll()
     }
 
     /**
@@ -50,14 +50,15 @@ internal class SeminarServiceImplTest @Autowired constructor(
         
         // when
         val instructor = instructorList[0]
-        val newSeminar = seminarService.makeSeminar(instructor.id, SeminarRequest(
-                    name = "unitseminar",
-                    capacity = 11,
-                    count = 11,
-                    time = "11:11",
-                    online = true
-                )
+        val newSeminar = seminarService.makeSeminar(instructor.id,
+            SeminarRequest(
+                name = "unitseminar",
+                capacity = 11,
+                count = 11,
+                time = "11:11",
+                online = true
             )
+        )
         
         // then
         assertThat(newSeminar.name).isEqualTo("unitseminar")
@@ -80,8 +81,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
         // then
         val exception = assertThrows<SeminarException> {
             seminarService.makeSeminar(
-                    userId = participant.id,
-                    request = SeminarRequest("", 1, 1, "11:11"))
+                userId = participant.id,
+                request = SeminarRequest("", 1, 1, "11:11"))
         }
         assertEquals(exception.errorCode.httpStatus, HttpStatus.FORBIDDEN)
     }
@@ -98,8 +99,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
         // then
         val exception = assertThrows<SeminarException> {
             seminarService.makeSeminar(
-                    userId = instructor.id,
-                    request = SeminarRequest("", 1, 1, "11:11"))
+                userId = instructor.id,
+                request = SeminarRequest("", 1, 1, "11:11"))
         }
         assertEquals(exception.errorCode.httpStatus, HttpStatus.BAD_REQUEST)
     }
@@ -217,7 +218,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     }
     
     @Test
-    fun `Could sort seminar eariliest efficiently`() {
+    fun `Could sort seminar earliest efficiently`() {
         // given
         val (instructorList, _) = initializeUsers()
         val (seminarList, _) = initializeSeminars(instructorList)
@@ -251,11 +252,18 @@ internal class SeminarServiceImplTest @Autowired constructor(
         
         // when
         val (foundSeminarDTO, cnt) = queryCounter.count{
-            seminarService.findSeminarById(seminar.id) 
+            seminarService.findSeminarById(seminar.id)
         }
         
         assertThat(foundSeminarDTO).extracting("id").isEqualTo(seminar.id)
-        assertThat(cnt).isLessThanOrEqualTo(1)
+        /* 쿼리 실행 횟수 = 총 4번
+        - 해당 id를 가진 세미나가 존재하는지 확인 -> 쿼리 1번 실행 : seminarRepository.existsById(seminarId)
+        - 존재한다면, 그 세미나 정보 가져오기 -> 쿼리 3번 실행    : seminarRepository.findSeminarById(seminarId)
+          + (1) 해당 세미나 id 값 가져오기
+          + (2) 해당 세미나를 진행하는 instructor 정보 가져오기 
+          + (3) 해당 세미나에 참여했던 + 하던 participant 정보 가져오기
+        */
+        assertThat(cnt).isLessThanOrEqualTo(4)
     }
     
     @Test
@@ -295,11 +303,11 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val (instructorList, participantList) = initializeUsers()
         val (seminarList, userSeminarList) = initializeSeminars(instructorList)
         val boaringInstructor = seminarTestHelper.createInstructor(
-                "boring@email.com",
-                "boaring",
-                "boaringpassword",
-                "boaringCompany",
-                2011
+            "boring@email.com",
+            "boaring",
+            "boaringpassword",
+            "boaringCompany",
+            2011
         )
         val seminar = seminarList[0]
         val request = RegisterRequest(role="INSTRUCTOR")
@@ -390,7 +398,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
         // when
         // then
         val exception = assertThrows<SeminarException> {  
-            seminarService.registerSeminar(participantList[0].id, seminar.id, RegisterRequest(role="PARTICPANT"))
+            seminarService.registerSeminar(participantList[0].id, seminar.id, RegisterRequest(role="PARTICIPANT"))
         }
         assertEquals(exception.errorCode.httpStatus, HttpStatus.BAD_REQUEST)
     }

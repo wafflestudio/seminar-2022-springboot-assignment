@@ -13,7 +13,6 @@ import com.wafflestudio.seminar.core.user.repository.ParticipantProfileRepositor
 import com.wafflestudio.seminar.core.user.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import javax.transaction.Transactional
 
 @Component
 class SeminarTestHelper @Autowired constructor(
@@ -50,50 +49,43 @@ class SeminarTestHelper @Autowired constructor(
     }
 
     fun createUser(
-            email: String,
-            username: String,
-            password: String,
-            role: RoleType,
+        email: String,
+        username: String,
+        password: String,
+        role: RoleType,
     ) = UserEntity(
             email, username, password, role
     ).let { userRepository.save(it) }
 
     fun createInstructorProfile(
-            company: String,
-            year: Int,
-            user: UserEntity,
+        company: String,
+        year: Int,
+        user: UserEntity,
     ) = InstructorProfile(company, year, user)
-            .let { instructorProfileRepository.save(it) }
 
     fun createParticipantProfile(
-            university: String,
-            isRegistered: Boolean,
-            user: UserEntity,
+        university: String,
+        isRegistered: Boolean,
+        user: UserEntity,
     ) = ParticipantProfile(university, isRegistered, user)
-            .let { participantProfileRepository.save(it) }
 
     fun createSeminar(
-            name: String,
-            instructor: String,
-            capacity: Long,
-            count: Long,
-            time: String,
-            online: Boolean,
+        name: String,
+        instructor: String,
+        capacity: Long,
+        count: Long,
+        time: String,
+        online: Boolean,
     ) = SeminarEntity(
             name, instructor, capacity, count, time, online
     ).let { seminarRepository.save(it) }
 
     fun createUserSeminarEntity(
-            user: UserEntity,
-            seminar: SeminarEntity,
+        user: UserEntity,
+        seminar: SeminarEntity,
     ): UserSeminarEntity {
         val userSeminar = UserSeminarEntity(user, seminar)
-        
-        user.seminarList = mutableListOf(userSeminar)
-        userRepository.save(user)
-        
-        seminar.userSeminarList = mutableListOf(userSeminar)
-        seminarRepository.save(seminar)
+        userSeminar.role = user.role
         
         return userSeminarRepository.save(userSeminar)
     }

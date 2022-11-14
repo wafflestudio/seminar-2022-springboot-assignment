@@ -29,28 +29,32 @@ class UserEntity(
     @OneToMany(
         mappedBy = "user",
         fetch = FetchType.LAZY,
-        cascade = arrayOf(CascadeType.REMOVE, CascadeType.PERSIST)
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
     )
-    var seminarList: MutableList<UserSeminarEntity>? = null,
+    var seminarList: MutableList<UserSeminarEntity>? = mutableListOf(),
     @OneToOne(
         mappedBy = "user",
         fetch = FetchType.LAZY,
-        cascade = arrayOf(CascadeType.REMOVE, CascadeType.PERSIST)
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
     )
     var participantProfile: ParticipantProfile? = null,
     @OneToOne(
         mappedBy = "user",
         fetch = FetchType.LAZY,
-        cascade = arrayOf(CascadeType.REMOVE, CascadeType.PERSIST)
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true
     )
     var instructorProfile: InstructorProfile? = null,
-) {
+
+    ) {
     
     @CreatedDate
     var dateJoined: LocalDate? = LocalDate.now()
-    
+
     @CreatedDate
-    var lastLogin: LocalDateTime? = LocalDateTime.parse(
+    var lastLogin: LocalDateTime = LocalDateTime.parse(
         LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     )
