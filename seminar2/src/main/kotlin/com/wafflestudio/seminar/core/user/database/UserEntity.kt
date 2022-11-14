@@ -8,7 +8,7 @@ import com.wafflestudio.seminar.core.user.domain.User
 import javax.persistence.*
 
 @Entity
-@Table(name = "user")
+@Table(name = "`user`")
 @JsonIdentityInfo(generator = IntSequenceGenerator::class, property = "id")
 data class UserEntity(
     @Column(name = "email", unique = true, nullable = false)

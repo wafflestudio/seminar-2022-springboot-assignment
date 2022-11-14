@@ -17,7 +17,7 @@ data class InstructorProfileEntity(
     val user: UserEntity,
     @Column(name = "company")
     var company: String = "",
-    @Column(name = "year")
+    @Column(name = "`year`")
     var year: Int? = null,
 ) : BaseTimeEntity() {
 
