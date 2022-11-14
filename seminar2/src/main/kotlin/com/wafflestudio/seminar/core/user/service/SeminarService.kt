@@ -65,9 +65,7 @@ class SeminarService(
 
         // Query #6, #7
 
-        val seminarInfoDto = queryFactory.select(seminarEntity).from(seminarEntity)
-                .where(seminarEntity.id.eq(saveSeminarEntity.id)).fetch()
-
+        val seminarInfoDto = seminarDslRepository.getListById(saveSeminarEntity.id)
 
         val teacherDto = queryFactory.select(Projections.constructor(
                 TeacherDto::class.java,
@@ -76,6 +74,8 @@ class SeminarService(
                 .innerJoin(userSeminarEntity).on(userSeminarEntity.user.id.eq(userEntity.id))
                 .where(userSeminarEntity.seminar.name.eq(seminar.name), userSeminarEntity.role.eq("INSTRUCTOR")).fetch()
 
+        
+        
         val seminarEntity = seminarInfoDto[0]
 
         // Query #8
@@ -138,8 +138,7 @@ class SeminarService(
         }
         // Query #2
 
-        val seminarList = queryFactory.select(seminarEntity).from(seminarEntity)
-                .where(seminarEntity.id.eq(id)).fetch()
+        val seminarList = seminarDslRepository.getListById(id)
 
         val seminarEntity = seminarList[0]
 
@@ -154,6 +153,7 @@ class SeminarService(
                 .where(userSeminarEntity.seminar.id.eq(id), userSeminarEntity.role.eq("INSTRUCTOR"))
                 .fetch()
 
+        
 
         /*
         * instructorList는 UserSeminar Table에서 UserEntity를 inner join하여 fetch하는 반면
@@ -455,8 +455,7 @@ class SeminarService(
         userSeminar?.isActive = false
         userSeminar?.droppedAt = LocalDateTime.now()
 
-        val seminarList = queryFactory.select(seminarEntity).from(seminarEntity)
-                .where(seminarEntity.id.eq(id)).fetch()
+        val seminarList = seminarDslRepository.getListById(id)
 
         val seminarEntity = seminarList[0]
 

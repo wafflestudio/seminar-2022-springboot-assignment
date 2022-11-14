@@ -1,17 +1,21 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.querydsl.core.Tuple
+import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
+import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.user.domain.QSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.QUserEntity.userEntity
 import com.wafflestudio.seminar.core.user.domain.QUserSeminarEntity.userSeminarEntity
+import com.wafflestudio.seminar.core.user.dto.seminar.TeacherDto
 import org.springframework.stereotype.Component
 
 @Component
 class UserSeminarDslRepository(
         private val queryFactory: JPAQueryFactory
 ) {
+    
     fun getInstructorList(name: String?, order: String?) : List<Tuple> {
 
         return if(order == "earliest") {
