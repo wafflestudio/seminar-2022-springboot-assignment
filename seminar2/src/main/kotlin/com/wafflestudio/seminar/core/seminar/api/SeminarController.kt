@@ -5,7 +5,9 @@ import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.seminar.api.request.EditSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.RoleRequest
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
+import com.wafflestudio.seminar.core.seminar.domain.Seminar
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
+import org.springframework.data.domain.PageRequest
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -20,29 +22,33 @@ class SeminarController(
         @UserContext userId: Long,
         @Valid @RequestBody seminarRequest: SeminarRequest,
     ) = seminarService.makeSeminar(userId, seminarRequest)
-    
+
     @Authenticated
     @PutMapping("/")
     fun editSeminar(
         @UserContext userId: Long,
         @Valid @RequestBody seminarRequest: EditSeminarRequest,
     ) = seminarService.editSeminar(userId, seminarRequest)
-    
+
     @Authenticated
     @GetMapping("/{seminar_id}/")
     fun getSeminar(
         @UserContext userId: Long,
         @PathVariable("seminar_id") seminarId: Long,
-    ) = seminarService.getSeminar(userId, seminarId)
+    ) = seminarService.getSeminar(seminarId)
 
     @Authenticated
     @GetMapping("/")
     fun getAllSeminar(
         @UserContext userId: Long,
-        @RequestParam("name", defaultValue = "", required = false) name: String,
-        @RequestParam("order", defaultValue = "", required = false) order: String,
-    ) = seminarService.getAllSeminar(userId, name, order)
-    
+        @RequestParam("name", required = false) name: String?,
+        @RequestParam("order", required = false) order: String?,
+        @RequestParam("page", required = false, defaultValue = "1") page: Int
+    ): List<Seminar> {
+        val pageRequest = PageRequest.of(page - 1, 50)
+        return seminarService.getAllSeminar(name, order, pageRequest)
+    }
+
     @Authenticated
     @PostMapping("/{seminar_id}/user/")
     fun addSeminar(
