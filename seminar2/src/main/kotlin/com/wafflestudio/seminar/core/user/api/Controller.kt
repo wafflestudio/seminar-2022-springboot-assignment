@@ -90,7 +90,7 @@ class Controller(
     */
     
     @PostMapping("seminar/{seminar_id}/user")
-    fun joinSeminar(@PathVariable seminar_id: Long, @RequestBody role: Map<String,String>, @RequestHeader("Authorization") token: String): JoinSeminarInfo{
+    fun joinSeminar(@PathVariable seminar_id: Long, @RequestBody role: Map<String,String>, @RequestHeader("Authorization") token: String): GetSeminarInfo{
         
         return seminarService.joinSeminar(seminar_id,role, token)
     }

@@ -250,72 +250,52 @@ class SeminarService(
 
     @Transactional
     // Query Count 예상: 17, 실제: 29
-    fun joinSeminar(id: Long, role: Map<String, String>, token: String): JoinSeminarInfo {
+    fun joinSeminar(id: Long, role: Map<String, String>, token: String): GetSeminarInfo {
 
         // Query #1
-        val seminarFindByIdEntity = seminarRepository.findByIdOrNull(id) ?: throw Seminar404("해당하는 세미나가 없습니다.")
+        val seminar = seminarRepository.findByIdOrNull(id) ?: throw Seminar404("해당하는 세미나가 없습니다.")
         // Query #2
-        val userFindByIdEntity = userRepository.findByIdOrNull(authTokenService.getCurrentUserId(token))
+        val user = userRepository.findByIdOrNull(authTokenService.getCurrentUserId(token))
                 ?: throw Seminar403("등록되어 있지 않습니다")
 
         // Query #3 -> [N+1]
-        if (!userSeminarRepository.findByUser(userFindByIdEntity)?.filter { it.seminar.id == id && it.isActive == true }.isNullOrEmpty()) {
+        if (!userSeminarRepository.findByUser(user)?.filter { it.seminar.id == id && it.isActive == true }.isNullOrEmpty()) {
             throw Seminar400("이미 세미나에 참여하고 있습니다")
         }
-
-
+        
         // Query #4
-        if (!userSeminarRepository.findByUser(userFindByIdEntity)?.filter { it.isActive == false }.isNullOrEmpty()) {
+        if (!userSeminarRepository.findByUser(user)?.filter { it.isActive == false }.isNullOrEmpty()) {
             throw Seminar400("드랍한 세미나는 다시 신청할 수 없습니다")
         }
+        
         val saveUserSeminarEntity: UserSeminarEntity
 
         if (role["role"] == "PARTICIPANT") {
 
-            if (userFindByIdEntity.participant == null) {
+            if (user.participant == null) {
                 throw Seminar403("참가자로 등록되어 있지 않습니다")
-                // TODO 비활성(미등록) 사용자의 경우 400이 아니라 403으로 응답해야 합니다.
 
             } else {
-                if (userFindByIdEntity.participant?.isRegistered == false) {
+                if (user.participant?.isRegistered == false) {
                     throw Seminar403("활성회원이 아닙니다")
                 }
             }
             // Query #5
             saveUserSeminarEntity = userSeminarRepository.save(
-                    UserSeminarEntity(
-                            // Query #6
-                            // 불필요한 query인 것 같습니다.
-                            // 위에서 이미 구해놓으신 userFindByIdEntity를 사용하시면 될 것 같습니다.
-                            user = userFindByIdEntity,
-                            // Query #7
-                            // 마찬가지로 seminarFindByIdEntity를 사용하시면 될 것 같습니다.
-                            seminar = seminarFindByIdEntity,
-                            role = "PARTICIPANT",
-                            joinedAt = LocalDateTime.now(),
-                            isActive = true,
-                            droppedAt = null
-                    )
+                    UserSeminarEntity.participant(user,seminar)
             )
 
 
         } else if (role["role"] == "INSTRUCTOR") {
-            if (userFindByIdEntity.instructor == null) {
+            if (user.instructor == null) {
                 throw Seminar403("진행자로 등록되어 있지 않습니다")
             }
-            if (!userSeminarRepository.findByUser(userFindByIdEntity).isNullOrEmpty()) {
+            if (!userSeminarRepository.findByUser(user).isNullOrEmpty()) {
                 throw Seminar400("이미 다른 세미나를 진행하고 있습니다.")
             }
 
             saveUserSeminarEntity = userSeminarRepository.save(
-                    UserSeminarEntity(
-                            user = userFindByIdEntity,
-                            seminar = seminarFindByIdEntity,
-                            role = "INSTRUCTOR",
-                            joinedAt = LocalDateTime.now(),
-                            isActive = null,
-                            droppedAt = null
-                    )
+                    UserSeminarEntity.instructor(user,seminar)
             )
 
         } else {
@@ -415,17 +395,7 @@ class SeminarService(
         }
 
         // Query #12 ~ 17
-        return JoinSeminarInfo(
-                id = seminarRepository.findById(id).get().id,
-                name = seminarRepository.findById(id).get().name,
-                capacity = seminarRepository.findById(id).get().capacity,
-                count = seminarRepository.findById(id).get().count,
-                time = seminarRepository.findById(id).get().time,
-                online = seminarRepository.findById(id).get().online,
-                instructors = teacherDto,
-
-                participants = studentDto
-        )
+        return GetSeminarInfo.of(seminar, teacherDto, studentDto)
     }
     
  

@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.core.user.api.response
 
+import com.wafflestudio.seminar.core.user.domain.SeminarEntity
 import com.wafflestudio.seminar.core.user.dto.seminar.StudentDto
 import com.wafflestudio.seminar.core.user.dto.seminar.TeacherDto
 
@@ -12,4 +13,5 @@ data class JoinSeminarInfo(
     val online: Boolean? = true,
     val instructors: List<TeacherDto>?,
     val participants: List<StudentDto>?
-)
+) {
+}
