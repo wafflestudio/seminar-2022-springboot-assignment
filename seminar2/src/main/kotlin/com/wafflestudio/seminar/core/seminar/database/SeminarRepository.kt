@@ -25,9 +25,11 @@ interface SeminarRepositoryCustom {
 class SeminarRepositoryCustomImpl(
     private val jpaQueryFactory: JPAQueryFactory,
 ) : SeminarRepositoryCustom {
+
     override fun queryWithNameByOrder(name: String, order: String): MutableList<SeminarEntity> {
-        return jpaQueryFactory
-            .selectFrom(seminarEntity)
+        val queryResult = jpaQueryFactory
+            .select(seminarEntity)
+            .from(seminarEntity, userSeminarEntity, userEntity)
             .where(seminarEntity.name.contains(name))
             .orderBy(
                 if (order == ASC) {
@@ -36,7 +38,12 @@ class SeminarRepositoryCustomImpl(
                     seminarEntity.createdAt.desc()
                 }
             )
+            .leftJoin(seminarEntity.users, userSeminarEntity)
+            .fetchJoin()
+            .leftJoin(userSeminarEntity.user, userEntity)
+            .fetchJoin()
             .fetch()
+        return queryResult
     }
 
     override fun querySeminarDetail(seminarId: Long):

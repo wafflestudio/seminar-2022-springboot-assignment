@@ -118,12 +118,14 @@ class SeminarServiceImpl(
         order: String
     ): List<SeminarQueryElementResponse> {
         val seminarList = seminarRepository.queryWithNameByOrder(name, order)
-        val seminarQueryResponseList = seminarList.map {
+        val seminarLinkedSet: LinkedHashSet<SeminarEntity> = linkedSetOf()
+        seminarList.forEach { seminarLinkedSet.add(it) }
+        val seminarQueryResponseList = seminarLinkedSet.map {
             SeminarQueryElementResponse(
                 id = it.id,
                 name = it.name,
-                instructors = userSeminarRepository
-                    .findAllBySeminarAndRole(it, INSTRUCTOR)
+                instructors = it.users
+                    .filter { us -> us.role == INSTRUCTOR }
                     .map { us ->
                         InstructorUserResponse(
                             id = us.user.id,
@@ -132,7 +134,7 @@ class SeminarServiceImpl(
                             joinedAt = us.createdAt!!,
                         )
                     },
-                participantCount = userSeminarRepository.countAllBySeminarAndRole(it, PARTICIPANT),
+                participantCount = it.users.filter { us -> us.role == PARTICIPANT }.size,
             )
         }
         return seminarQueryResponseList
