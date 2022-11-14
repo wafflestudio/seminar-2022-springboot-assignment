@@ -181,6 +181,10 @@ class SeminarServiceImpl(
         val seminar = seminarRepository.findByIdOrNull(seminarId)
                 ?: throw Seminar404("No seminar ${seminarId} exists.")
         
+        if (userSeminarRepository.existsByUserAndSeminarAndRole(meUser, seminar, INSTRUCTOR)) {
+            throw Seminar403("Seminar instructor cannot drop seminar.")
+        }
+        
         val userSeminar = userSeminarRepository.findByUserAndSeminarAndRole(meUser, seminar, PARTICIPANT)
                 ?.run{
                     isActive = false
@@ -188,6 +192,7 @@ class SeminarServiceImpl(
                     userSeminarRepository.save(this)
                     return makeSeminarDetail(seminar)
                 }
+        
         return ResponseEntity<Any>(HttpStatus.OK)
     }
     

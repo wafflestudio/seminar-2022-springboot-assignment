@@ -25,4 +25,6 @@ interface UserSeminarRepository: JpaRepository<UserSeminarEntity, Long> {
     
     fun findByUserAndSeminarAndRole(user: UserEntity, seminar: SeminarEntity, role: String)
         : UserSeminarEntity?
+    
+    fun existsByUserAndSeminarAndRole(user: UserEntity, seminar: SeminarEntity, role: String): Boolean
 }
