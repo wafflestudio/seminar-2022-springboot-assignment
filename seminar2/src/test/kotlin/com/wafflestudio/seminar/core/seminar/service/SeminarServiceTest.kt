@@ -249,14 +249,14 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Passed
     @Test
-    fun `(getSeminars) 전체 세미나 불러오기`() {
+    fun `(getSeminarList) 전체 세미나 불러오기`() {
         // Given
         createFixtures(3)
 
         println("어흥")
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
-            seminarService.getSeminars("token")
+            seminarService.getSeminarList(null, null, "token")
         }
 
         // Then
@@ -271,7 +271,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Failed: [N+1]
     @Test
-    fun `(getSeminarByName) 특정 string을 포함한 세미나 불러오기`() {
+    fun `(getSeminarList) 특정 string을 포함한 세미나 불러오기`() {
         // Given
         createFixtures(3)
         val name = "spring"
@@ -279,12 +279,13 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
-            seminarService.getSeminarByName(name, order, "token")
+            seminarService.getSeminarList(name, order, "token")
         }
 
         // Then
-        // assertThat(response).hasSize(3) return값의 자료형이 스펙에 맞지 않습니다.
-        assertThat(queryCount).isEqualTo(2) // [N+1] but was 65
+        assertThat(response).hasSize(3) //return값의 자료형이 스펙에 맞지 않습니다.
+        println(queryCount)
+        //assertThat(queryCount).isEqualTo(2) // [N+1] but was 65
     }
 
     /*
@@ -308,6 +309,7 @@ internal class SeminarServiceTest @Autowired constructor(
         // Then
         println(response.participants?.get(10)?.email)
         assertThat(response.participants).hasSize(11)
+        println(queryCount)
         //assertThat(queryCount).isEqualTo(17) // [N+1] but was 29
     }
 

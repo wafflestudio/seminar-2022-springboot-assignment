@@ -9,10 +9,8 @@ import com.wafflestudio.seminar.common.Seminar404
 //import com.wafflestudio.seminar.core.seminar.database.QUserSeminarEntity
 import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.user.api.response.*
+import com.wafflestudio.seminar.core.user.database.*
 //import com.wafflestudio.seminar.core.user.database.QUserEntity
-import com.wafflestudio.seminar.core.user.database.SeminarRepository
-import com.wafflestudio.seminar.core.user.database.UserRepository
-import com.wafflestudio.seminar.core.user.database.UserSeminarRepository
 import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.dto.seminar.*
 import org.springframework.data.repository.findByIdOrNull
@@ -29,6 +27,8 @@ class SeminarService(
         private val userSeminarRepository: UserSeminarRepository,
         private val userRepository: UserRepository,
         private val queryFactory: JPAQueryFactory,
+        private val seminarDslRepository: SeminarDslRepository,
+        private val userSeminarDslRepository: UserSeminarDslRepository
 ) {
 
 
@@ -176,26 +176,12 @@ class SeminarService(
 
     // Query Count 예상: 1, 실제: 1
     @Transactional
-    fun getSeminars(token: String): List<GetSeminarInfo> {
+    fun getSeminarList(name: String?, order: String?, token: String): List<GetSeminarInfo> {
         // Query #1
-
-
-        val seminarList = queryFactory.select(qSeminarEntity).from(qSeminarEntity)
-                // .leftJoin(qUserSeminarEntity).on(qUserSeminarEntity.seminar.eq(qSeminarEntity)).fetchJoin()
-                .fetch()
-
-        val teacherList = queryFactory.select(
-                qUserSeminarEntity.seminar.id,
-                qUserEntity.id, qUserEntity.username, qUserEntity.email, qUserSeminarEntity.joinedAt).from(qUserSeminarEntity)
-                .leftJoin(qUserEntity).on(qUserSeminarEntity.user.eq(qUserEntity)).fetchJoin()
-                .where(qUserSeminarEntity.role.eq("INSTRUCTOR")).fetch()
-
-        val studentList = queryFactory.select(
-                qUserSeminarEntity.seminar.id,
-                qUserEntity.id, qUserEntity.username, qUserEntity.email,
-                qUserSeminarEntity.joinedAt, qUserSeminarEntity.isActive, qUserSeminarEntity.droppedAt).from(qUserSeminarEntity)
-                .leftJoin(qUserEntity).on(qUserSeminarEntity.user.eq(qUserEntity)).fetchJoin()
-                .where(qUserSeminarEntity.role.eq("PARTICIPANT")).fetch()
+        
+        val seminarList = seminarDslRepository.getList(name, order)
+        val teacherList = userSeminarDslRepository.getInstructorList(name, order)
+        val studentList = userSeminarDslRepository.getParticipantList(name, order)
 
 
         val newTeacherList = teacherList.groupBy { it -> it[qUserSeminarEntity.seminar.id] }
@@ -262,7 +248,7 @@ class SeminarService(
     // Query Count 예상: 2, 실제: 65
     // fetch시 orderBy 부분만 다르고 중복되는 코드가 너무 많습니다.
     // 일괄적으로 orderBy로 fetch한 후 reverse()를 사용하시면 좋을 것 같습니다.
-    fun getSeminarByName(name: String, order: String, token: String): GetSeminarInfoByName {
+    fun getSeminarByName(name: String?, order: String?, token: String): GetSeminarInfoByName {
         val seminarInfoDto: List<SeminarInfoDto>
 
         if (order == "earliest") {
