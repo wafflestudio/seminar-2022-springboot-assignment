@@ -3,17 +3,22 @@ package com.wafflestudio.seminar.core.user.service
 import com.wafflestudio.seminar.common.ErrorCode
 import com.wafflestudio.seminar.common.SeminarException
 import com.wafflestudio.seminar.config.AuthConfig
+import com.wafflestudio.seminar.core.UserSeminar.repository.UserSeminarRepository
 import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.domain.UserDTO
 import com.wafflestudio.seminar.core.user.domain.enums.RoleType
 import com.wafflestudio.seminar.core.user.domain.enums.RoleType.*
 import com.wafflestudio.seminar.core.user.domain.UserEntity
+import com.wafflestudio.seminar.core.user.domain.profile.InstructorDTO
 import com.wafflestudio.seminar.core.user.repository.UserRepository
 import com.wafflestudio.seminar.core.user.domain.profile.InstructorProfile
+import com.wafflestudio.seminar.core.user.domain.profile.ParticipantDTO
 import com.wafflestudio.seminar.core.user.domain.profile.ParticipantProfile
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import org.springframework.transaction.annotation.Transactional
 
 
 interface UserService {
@@ -33,6 +38,7 @@ class UserServiceImpl(
     private val authConfig: AuthConfig,
     private val authTokenService: AuthTokenService,
     private val userRepository: UserRepository,
+    private val userSeminarRepository: UserSeminarRepository
 ): UserService {
     private val encoder = authConfig.passwordEncoder()
     
@@ -74,19 +80,38 @@ class UserServiceImpl(
         }
     }
     
-    override fun getMe(userId: Long): UserDTO =
-        userRepository.getUserProfile(userId)
+    
+    private fun UserEntity.toDTO(): UserDTO {
+        val user = userRepository.getUserProfile(id)
+        
+        val participantProfile = user.participantProfile?.run {
+            ParticipantDTO(
+                this.id, this.university, this.isRegistered,
+                userSeminarRepository.findParticipants(id)
+            )
+        }
+        
+        val instructorProfile = user.instructorProfile?.run {
+            InstructorDTO(
+                this.id, this.company, this.year,
+                userSeminarRepository.findInstructors(id)
+            )
+        }
+        
+        return UserDTO.of(user, participantProfile, instructorProfile)
+    }
+    
+    
+    
+    
+    override fun getMe(userId: Long): UserDTO
+        = userRepository.findByIdOrNull(userId)!!.toDTO()
     
     
     override fun getUserProfile(userId: Long, targetUserId: Long): UserDTO {
-        return with(userRepository) {
-            // 확인하려는 유저 정보가 DB 상에 존재하는가?
-            if(this.findById(targetUserId).isEmpty)
-                throw SeminarException(ErrorCode.USER_NOT_FOUND)
-            
-            // 최종적인 리턴값
-            this.getUserProfile(userId)
-        }
+        val user = userRepository.findByIdOrNull(targetUserId)?:
+            throw SeminarException(ErrorCode.USER_NOT_FOUND)
+        return user.toDTO()
     }
     
     
@@ -113,11 +138,12 @@ class UserServiceImpl(
                     targetUser.instructorProfile!!.year = this.year
             }
         }
-        userRepository.save(targetUser)
-        return userRepository.getUserProfile(targetUser.id)
+        val user = userRepository.save(targetUser)
+        return user.toDTO()
     }
 
 
+    @Transactional
     override fun addParticipantRole(userId: Long, request: ParticipantRoleRequest): UserDTO {
         var targetUser = userRepository.findById(userId).get()
         
@@ -127,7 +153,7 @@ class UserServiceImpl(
             
         targetUser.participantProfile =
             ParticipantProfile(request.university?:"", request.isRegistered?:true, targetUser)
-        userRepository.save(targetUser)
-        return userRepository.getUserProfile(targetUser.id)
+        val user = userRepository.save(targetUser)
+        return user.toDTO()
     }
 }

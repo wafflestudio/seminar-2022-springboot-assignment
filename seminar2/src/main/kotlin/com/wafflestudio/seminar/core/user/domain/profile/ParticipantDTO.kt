@@ -7,6 +7,7 @@ class ParticipantDTO @QueryProjection constructor(
     var id: Long?,
     var university: String?,
     var isRegistered: Boolean?,
-) {
     var seminars: List<ParticipantSeminarDTO>? = emptyList()
+) {
+    
 }

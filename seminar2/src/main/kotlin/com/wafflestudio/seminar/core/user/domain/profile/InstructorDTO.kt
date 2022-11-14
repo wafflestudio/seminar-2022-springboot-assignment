@@ -7,6 +7,5 @@ class InstructorDTO @QueryProjection constructor (
     var id: Long?,
     var company: String?,
     var year: Int?,
-) {
     var instructingSeminars: InstructorSeminarDTO ?= null
-}
+)

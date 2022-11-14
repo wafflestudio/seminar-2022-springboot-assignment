@@ -17,7 +17,29 @@ class SeminarDTO @QueryProjection constructor(
     )
     var time: String?,     // Seminar time
     var online: Boolean?,  // Seminar online
+
+    var instructors: List<SeminarInstructorDTO>? = emptyList(),
+    var participants: List<SeminarParticipantDTO>? = emptyList()
 ) {
-    var instructors: List<SeminarInstructorDTO>?= emptyList()
-    var participants: List<SeminarParticipantDTO>?= emptyList()
+
+    // fetchJoin을 사용하기 위한 method : Entity -> DTO 변환
+    companion object {
+        fun of(
+            seminar: SeminarEntity,
+            instructors: List<SeminarInstructorDTO>,
+            participants: List<SeminarParticipantDTO>
+        ) = seminar.run {
+            SeminarDTO(
+                id = this.id,
+                name = this.name,
+                capacity = this.capacity,
+                count = this.count,
+                time = this.time,
+                online = this.online,
+                instructors = instructors,
+                participants = participants
+            )
+        }
+    }
+    
 }

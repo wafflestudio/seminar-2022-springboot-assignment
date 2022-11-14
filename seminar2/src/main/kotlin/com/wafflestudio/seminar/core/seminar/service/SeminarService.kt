@@ -6,10 +6,9 @@ import com.wafflestudio.seminar.core.UserSeminar.domain.UserSeminarEntity
 import com.wafflestudio.seminar.core.UserSeminar.repository.UserSeminarRepository
 import com.wafflestudio.seminar.core.seminar.api.request.RegisterRequest
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
-import com.wafflestudio.seminar.core.seminar.domain.SeminarDTO
-import com.wafflestudio.seminar.core.seminar.domain.SeminarEntity
-import com.wafflestudio.seminar.core.seminar.domain.SeminarGroupByDTO
+import com.wafflestudio.seminar.core.seminar.domain.*
 import com.wafflestudio.seminar.core.seminar.repository.SeminarRepository
+import com.wafflestudio.seminar.core.user.domain.UserEntity
 import com.wafflestudio.seminar.core.user.domain.enums.RoleType
 import com.wafflestudio.seminar.core.user.domain.enums.RoleType.*
 import com.wafflestudio.seminar.core.user.repository.UserRepository
@@ -17,6 +16,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import org.springframework.transaction.annotation.Transactional
 
 interface SeminarService {
     fun makeSeminar(userId: Long, request: SeminarRequest): SeminarDTO
@@ -35,32 +35,65 @@ class SeminarServiceImpl(
     private val seminarRepository: SeminarRepository,
     private val userSeminarRepository: UserSeminarRepository
 ): SeminarService {
+
+    private fun SeminarEntity.toDTO(): SeminarDTO {
+        val userSeminars = userSeminarRepository.findBySeminar_Id(id)!!
+
+        val userIds = userSeminars.map { it.user.id }
+        val users = userRepository.findWithProfiles(userIds).associateBy { it.id }
+        val (instructors, participants) = userSeminars.partition { it.role == INSTRUCTOR }
+
+        val instructorProjections = instructors.map { inst -> SeminarInstructorDTO.of(users[inst.id]!!, inst) }
+        val participantProjections = participants.map { part -> SeminarParticipantDTO.of(users[part.id]!!, part) }
+        
+        return SeminarDTO.of(this, instructorProjections, participantProjections)
+    }
     
+    private fun SeminarEntity.toGroupDto(): SeminarGroupByDTO
+        = SeminarGroupByDTO.of(this.toDTO())
+    
+    
+    private fun checkInstructingSeminars(userId: Long): Int {
+        val seminars = userSeminarRepository.findByUser_Id(userId)
+            ?.filter { (it.role == INSTRUCTOR) && (it.isActive) }
+        return seminars?.size ?: 0
+    }
+    
+    private fun checkCapacity(seminarId: Long): Int {
+        val participants = userSeminarRepository.findBySeminar_Id(seminarId)
+            ?.filter{ (it.role == PARTICIPANT) && (it.isActive) }
+        return participants?.size ?: 0
+    }
+    
+    
+    
+    @Transactional
     override fun makeSeminar(userId: Long, request: SeminarRequest): SeminarDTO {
         val entity = userRepository.findById(userId).get()
-        if(entity.role != INSTRUCTOR)
+        if (entity.role != INSTRUCTOR)
             throw SeminarException(ErrorCode.MAKE_SEMINAR_FORBIDDEN)
-        if(userSeminarRepository.checkInstructingSeminars(entity.id) > 0)
+        if (checkInstructingSeminars(entity.id) > 0)
             throw SeminarException(ErrorCode.ALREADY_INSTRUCTED)
-        
+
         // 진행자 자격 여부 확인 완료
         var newSeminar: SeminarEntity = request.run {
             SeminarEntity(
-                name= this.name!!,
-                instructor= entity.username,
-                capacity= this.capacity!!,
-                count= this.count!!,
-                time= this.time!!,
-                online= this.online?: true
-            ) }
-        newSeminar.userSeminarList =
-            mutableListOf(UserSeminarEntity(user=entity, seminar=newSeminar))
+                name = this.name!!,
+                instructor = entity.username,
+                capacity = this.capacity!!,
+                count = this.count!!,
+                time = this.time!!,
+                online = this.online ?: true
+            )
+        }
+        newSeminar.userSeminarList = mutableListOf(UserSeminarEntity(user = entity, seminar = newSeminar))
+        val seminar = seminarRepository.save(newSeminar)
         
-        val seminarId = seminarRepository.save(newSeminar).id
-        return seminarRepository.findSeminarById(seminarId)
+        return seminar.toDTO()
     }
 
     
+    @Transactional
     override fun editSeminar(userId: Long, request: SeminarDTO): SeminarDTO {
         // request body에 seminar_id 값이 들어오지 않을 수도 있음
         // 현재 이 API를 요청한 유저가 instructor인지 확인
@@ -85,24 +118,30 @@ class SeminarServiceImpl(
         }
         
         // 수정된 버전, repository에다가 저장
-        seminarRepository.save(instructingSeminar)
-        return seminarRepository.findSeminarById(instructingSeminar.id)
+        val seminar = seminarRepository.save(instructingSeminar)
+        return seminar.toDTO()
     }
     
 
     // 세미나명에 name이 포함된 세미나가 전혀 없다면 빈 리스트를 반환
-    override fun findSeminarsContainingWord(word: String?, order: String?): List<SeminarGroupByDTO> =
-        seminarRepository.findSeminarsContainingWord(word, order)
+    @Transactional(readOnly = true)
+    override fun findSeminarsContainingWord(word: String?, order: String?): List<SeminarGroupByDTO> {
+        val seminars = seminarRepository.findSeminarsContainingWord(word, order)
+        
+        return seminars.map { seminar -> seminar.toGroupDto() }
+    }
         
 
+    @Transactional(readOnly = true)
     override fun findSeminarById(seminarId: Long): SeminarDTO {
-        if(!seminarRepository.existsById(seminarId))
+        val seminar = seminarRepository.findByIdOrNull(seminarId) ?:
             throw SeminarException(ErrorCode.SEMINAR_NOT_FOUND)
-        else
-            return seminarRepository.findSeminarById(seminarId)
+        
+        return seminar.toDTO()
     }
     
     
+    @Transactional
     override fun registerSeminar(userId: Long, seminarId: Long, request: RegisterRequest): SeminarDTO {
         // (예외 처리 1) 세미나 정보가 존재하는지 확인 -> 없으면 404 에러
         var seminar = seminarRepository.findByIdOrNull(seminarId)?:
@@ -132,7 +171,7 @@ class SeminarServiceImpl(
                 if (user.participantProfile!!.isRegistered == false)
                     throw SeminarException(ErrorCode.NOT_REGISTERED)
                 // 세미나 정원 확인
-                if(seminarRepository.checkCapacity(seminarId) >= seminar.capacity)
+                if(checkCapacity(seminarId) >= seminar.capacity)
                     throw SeminarException(ErrorCode.FULL_CAPACITY)
                 
                 // 최종적으로 세미나 등록
@@ -143,7 +182,7 @@ class SeminarServiceImpl(
                 if(user.instructorProfile == null)
                     throw SeminarException(ErrorCode.INVALID_REGISTER_REQUEST)
                 // 담당하고 있는 세미나가 존재하는지 확인
-                if(userSeminarRepository.checkInstructingSeminars(user.id) > 0)
+                if(checkInstructingSeminars(user.id) > 0)
                     throw SeminarException(ErrorCode.ALREADY_INSTRUCTED)
                 
                 // 없다면 세미나 함께 진행하도록 등록
@@ -152,12 +191,14 @@ class SeminarServiceImpl(
         }
         userSeminarRepository.save(newReg)
         
-        return seminarRepository.findSeminarById(seminarId)
+        return seminar.toDTO()
     }
     
+    
+    @Transactional
     override fun dropSeminar(userId: Long, seminarId: Long): SeminarDTO {
         // (예외 처리 1) 해당 세미나가 존재하지 않음 -> 404 에러
-        if(!seminarRepository.existsById(seminarId))
+        val seminar = seminarRepository.findByIdOrNull(seminarId) ?:
             throw SeminarException(ErrorCode.SEMINAR_NOT_FOUND)
         
         // 드랍하려는 유저
@@ -181,6 +222,6 @@ class SeminarServiceImpl(
         )
         userSeminarRepository.save(entity)
         
-        return seminarRepository.findSeminarById(seminarId)
+        return seminar.toDTO()
     }
 }

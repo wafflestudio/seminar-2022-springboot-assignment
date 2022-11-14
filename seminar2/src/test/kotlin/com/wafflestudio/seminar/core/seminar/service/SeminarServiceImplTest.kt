@@ -206,7 +206,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
         assertThat(foundedSeminarList).hasSize(1)
         assertThat(foundedSeminarList[0]).extracting("id").isEqualTo(seminar.id)
         assertThat(foundedSeminarList[0]).extracting("name").isEqualTo(seminar.name)
-        assertThat(foundedSeminarList[0]).extracting("participantCount").isEqualTo(0)
+        assertThat(foundedSeminarList[0]).extracting("participantCount").isEqualTo(0L)
         assertThat(foundedSeminarList[0].instructors).hasSize(1)
         assertThat(foundedSeminarList[0].instructors?.get(0))
                 .extracting("id")
@@ -224,9 +224,11 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val (seminarList, _) = initializeSeminars(instructorList)
         
         // when
+        println("시작은 어디니 !")
         val (sortedSeminarList, cnt) = queryCounter.count {
             seminarService.findSeminarsContainingWord(null, order="earliest")
         }
+        println("끝이 어디야 ?!")
         
         assertThat(sortedSeminarList).isSortedAccordingTo { o1, o2 -> 
             seminarRepository.findByIdOrNull(o1.id)!!.createdAt!!.compareTo(
