@@ -1,18 +1,16 @@
 package com.wafflestudio.seminar.core.user
 
-import com.wafflestudio.seminar.core.user.database.UserEntity
-import com.wafflestudio.seminar.core.user.database.UserRepository
-import com.wafflestudio.seminar.core.user.database.profile.InstructorProfileEntity
-import com.wafflestudio.seminar.core.user.database.profile.ParticipantProfileEntity
+import com.wafflestudio.seminar.core.user.database.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 
 @Component
 internal class UserTestHelper @Autowired constructor(
     private val passwordEncoder: PasswordEncoder,
     private val userRepository: UserRepository,
+    private val participantProfileRepository: ParticipantProfileRepository,
+    private val instructorProfileRepository: InstructorProfileRepository,
 ) {
     fun createUser(
         email: String,
@@ -21,12 +19,9 @@ internal class UserTestHelper @Autowired constructor(
     ): UserEntity {
         return userRepository.save(
             UserEntity(
-                username,
                 email,
+                username,
                 passwordEncoder.encode(password),
-                null,
-                null,
-                LocalDateTime.now()
             )
         )
     }
@@ -36,18 +31,14 @@ internal class UserTestHelper @Autowired constructor(
         username: String = "",
         password: String = "",
         company: String = "",
-        year: Long? = null,
+        year: Int? = null,
     ): UserEntity {
-        return userRepository.save(
-            UserEntity(
-                username,
-                email,
-                passwordEncoder.encode(password),
-                InstructorProfileEntity(company, year as Int?),
-                null,
-                LocalDateTime.now()
-            )
+        val instructor = createUser(email, username, password)
+        instructor.instructorProfile = instructorProfileRepository.save(
+            InstructorProfileEntity(company, year)
         )
+        
+        return userRepository.save(instructor)
     }
 
     fun createParticipant(
@@ -57,15 +48,11 @@ internal class UserTestHelper @Autowired constructor(
         university: String = "",
         isActive: Boolean = true,
     ): UserEntity {
-        return userRepository.save(
-            UserEntity(
-                username,
-                email,
-                passwordEncoder.encode(password),
-                null,
-                ParticipantProfileEntity(isActive, university),
-                LocalDateTime.now()
-            )
+        val participant = createUser(email, username, password)
+        participant.participantProfile = participantProfileRepository.save(
+            ParticipantProfileEntity(university, isActive)
         )
+        
+        return userRepository.save(participant)
     }
 }

@@ -1,30 +1,30 @@
 package com.wafflestudio.seminar.core.user
 
 import com.wafflestudio.seminar.common.SeminarException
-import com.wafflestudio.seminar.core.user.api.request.EditProfileRequest
-import com.wafflestudio.seminar.core.user.api.request.LoginRequest
+import com.wafflestudio.seminar.core.user.api.request.LogInRequest
+import com.wafflestudio.seminar.core.user.api.request.ParticipantEnrollRequest
 import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.api.request.UpdateRequest
 import com.wafflestudio.seminar.core.user.database.UserRepository
-import com.wafflestudio.seminar.core.user.service.AuthService
+import com.wafflestudio.seminar.core.user.domain.UserRole
 import com.wafflestudio.seminar.core.user.service.AuthToken
 import com.wafflestudio.seminar.core.user.service.AuthTokenService
+import com.wafflestudio.seminar.core.user.service.UserService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.BDDMockito.anyString
-import org.mockito.Mockito.mock
 import org.mockito.kotlin.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
-import javax.servlet.http.HttpServletRequest
 
 @SpringBootTest
 internal class UserServiceTest @Autowired constructor(
-    private val authService: AuthService,
+    private val userService: UserService,
     private val userTestHelper: UserTestHelper,
     private val userRepository: UserRepository,
 ) {
@@ -33,7 +33,6 @@ internal class UserServiceTest @Autowired constructor(
 
     private val email = "example@email.com"
     private val password = "secret"
-    private val httpServletRequest = mock(HttpServletRequest::class.java)
 
     @BeforeEach
     fun cleanRepository() {
@@ -41,7 +40,7 @@ internal class UserServiceTest @Autowired constructor(
     }
 
     fun givenMockToken() {
-        given(authTokenService.generateTokenByUsername(anyString())).willReturn(AuthToken("AUTH_TOKEN"))
+        given(authTokenService.generateTokenByEmail(anyString())).willReturn(AuthToken("AUTH_TOKEN"))
     }
 
     fun givenDefaultCreatedParticipant() {
@@ -52,18 +51,14 @@ internal class UserServiceTest @Autowired constructor(
         userTestHelper.createInstructor(email, "default", password)
     }
 
-    fun givenServletRequestReturnEmail() {
-        given(httpServletRequest.getAttribute("email")).willReturn(email)
-    }
-
     @Test
     fun `회원가입 성공`() {
         // given
         givenMockToken()
-        val request = SignUpRequest(email, "", "", "PARTICIPANT", null, null, null, null)
+        val request = SignUpRequest(email, "", "", UserRole.PARTICIPANT, null, true, null, null)
 
         // when
-        val result = authService.signUp(request)
+        val result = userService.signUp(request)
 
         // then
         assertThat(result).isEqualTo("AUTH_TOKEN")
@@ -75,11 +70,11 @@ internal class UserServiceTest @Autowired constructor(
     fun `회원가입 실패 - 중복 이메일`() {
         // given
         givenDefaultCreatedParticipant()
-        val request = SignUpRequest(email, "", "", "PARTICIPANT", null, null, null, null)
+        val request = SignUpRequest(email, "", "", UserRole.PARTICIPANT, null, true, null, null)
 
         // when
         val exception = assertThrows<SeminarException> {
-            authService.signUp(request)
+            userService.signUp(request)
         }
 
         // then
@@ -91,10 +86,10 @@ internal class UserServiceTest @Autowired constructor(
         // given
         givenMockToken()
         givenDefaultCreatedParticipant()
-        val request = LoginRequest(email, password)
+        val request = LogInRequest(email, password)
 
         // when
-        val result = authService.login(request)
+        val result = userService.logIn(request)
 
         // then
         assertThat(result).isEqualTo("AUTH_TOKEN")
@@ -105,44 +100,38 @@ internal class UserServiceTest @Autowired constructor(
         // given
         givenMockToken()
         givenDefaultCreatedParticipant()
-        val request = LoginRequest(email, "")
+        val request = LogInRequest(email, "")
 
         // when
         val exception = assertThrows<SeminarException> {
-            authService.login(request)
+            userService.logIn(request)
         }
 
         // then
         assertThat(exception.status).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 
-    // TODO: 내 정보 조회 구현?
-
     @Test
-    @Transactional
     fun `유저 정보 조회 성공`() {
         // given
         givenDefaultCreatedParticipant()
         val userId = userRepository.findByEmail(email)!!.id
-        // FIXME: 사용하지 않는 HttpServletRequest?
 
         // when
-        val result = authService.getProfile(userId, httpServletRequest)
+        val result = userService.getUserById(userId)
 
         // then
         assertThat(result.email).isEqualTo(email)
     }
 
-    // TODO: Internal Server Error 발생, Error handling 필요
     @Test
-    @Transactional
     fun `유저 정보 조회 실패 - 존재하지 않는 유저`() {
         // given
         givenDefaultCreatedParticipant()
 
         // when
         val exception = assertThrows<SeminarException> {
-            authService.getProfile(0, httpServletRequest)
+            userService.getUserById(0)
         }
 
         // then
@@ -150,17 +139,16 @@ internal class UserServiceTest @Autowired constructor(
     }
 
     @Test
-    @Transactional
     fun `유저 정보 수정 성공`() {
         // given
         givenDefaultCreatedParticipant()
+        val userId = userRepository.findByEmail(email)!!.id
         val university = "university"
         val name = "name"
-        val request = EditProfileRequest(university, "company", 1, name)
-        givenServletRequestReturnEmail()
+        val request = UpdateRequest(name,null, university, null, null)
 
         // when
-        val result = authService.editProfile(httpServletRequest, request)
+        val result = userService.updateUser(userId, request)
 
         // then
         assertThat(result.username).isEqualTo(name)
@@ -170,19 +158,32 @@ internal class UserServiceTest @Autowired constructor(
     }
 
     @Test
-    @Transactional
     fun `유저 정보 수정 실패 - year 값이 음수`() {
         // given
         givenDefaultCreatedInstructor()
-        val request = EditProfileRequest("university", "company", -1, "name")
-        givenServletRequestReturnEmail()
+        val userId = userRepository.findByEmail(email)!!.id
+        val request = UpdateRequest(null, null, null, null, -1)
 
         // when
         val exception = assertThrows<SeminarException> {
-            authService.editProfile(httpServletRequest, request)
+            userService.updateUser(userId, request)
         }
 
         // then
         assertThat(exception.status).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+    
+    @Test
+    fun `진행자가 수강생으로 등록 성공`() {
+        // given
+        givenDefaultCreatedInstructor()
+        val userId = userRepository.findByEmail(email)!!.id
+        val request = ParticipantEnrollRequest(null, true)
+
+        // when
+        val result = userService.participantEnroll(userId, request)
+
+        // then
+        assertThat(result.participant).isNotNull
     }
 }

@@ -22,7 +22,7 @@ interface UserService {
 class UserServiceImpl(
     private val authTokenService: AuthTokenService,
     private val userRepository: UserRepository,
-    private val participantProfileRepository: ParticipateProfileRepository,
+    private val participantProfileRepository: ParticipantProfileRepository,
     private val instructorProfileRepository: InstructorProfileRepository,
     private val passwordEncoder: PasswordEncoder,
 ) : UserService {

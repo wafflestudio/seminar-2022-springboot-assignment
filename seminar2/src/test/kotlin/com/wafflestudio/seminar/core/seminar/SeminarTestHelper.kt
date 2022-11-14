@@ -1,26 +1,24 @@
 package com.wafflestudio.seminar.core.seminar
 
-import com.wafflestudio.seminar.core.maptable.SeminarUser
-import com.wafflestudio.seminar.core.maptable.SeminarUserRepository
-import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
-import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
-import com.wafflestudio.seminar.core.user.api.request.Role
+import com.wafflestudio.seminar.core.seminar.database.*
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalTime
 
 @Component
 internal class SeminarTestHelper @Autowired constructor(
     private val userRepository: UserRepository,
     private val seminarRepository: SeminarRepository,
-    private val seminarUserRepository: SeminarUserRepository,
+    private val instructorSeminarTableRepository: InstructorSeminarTableRepository,
 ) {
     fun createSeminar(
         name: String = "",
         capacity : Int = 10,
         count : Int = 1,
-        time : String = "00:00",
+        time : LocalTime = LocalTime.MIDNIGHT,
         online : Boolean = true,
         instructor: UserEntity,
     ): SeminarEntity {
@@ -33,19 +31,18 @@ internal class SeminarTestHelper @Autowired constructor(
                 online,
             )
         )
-
-        val seminarUser = seminarUserRepository.save(
-            SeminarUser(
-                seminar,
+        
+        val table = instructorSeminarTableRepository.save(
+            InstructorSeminarTableEntity(
                 instructor,
-                Role.Instructors
+                seminar,
             )
         )
-
-        instructor.seminarUser.add(seminarUser)
-        seminar.seminarUser.add(seminarUser)
-        userRepository.save(instructor)
-        seminarRepository.save(seminar)
+        
+//        instructor.instructingSeminars.add(table)
+//        seminar.instructorSet.add(table)
+//        userRepository.save(instructor)
+//        seminarRepository.save(seminar)
 
         return seminar
     }
