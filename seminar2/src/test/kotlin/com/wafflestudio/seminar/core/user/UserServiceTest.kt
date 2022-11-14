@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
-import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
 internal class UserServiceTest @Autowired constructor(
@@ -61,7 +60,7 @@ internal class UserServiceTest @Autowired constructor(
         val result = userService.signUp(request)
 
         // then
-        assertThat(result).isEqualTo("AUTH_TOKEN")
+        assertThat(result.accessToken).isEqualTo("AUTH_TOKEN")
         assertThat(userRepository.findAll()).hasSize(1)
         assertThat(userRepository.findByEmail(email)).isNotNull
     }
@@ -92,7 +91,7 @@ internal class UserServiceTest @Autowired constructor(
         val result = userService.logIn(request)
 
         // then
-        assertThat(result).isEqualTo("AUTH_TOKEN")
+        assertThat(result.accessToken).isEqualTo("AUTH_TOKEN")
     }
 
     @Test
@@ -155,22 +154,6 @@ internal class UserServiceTest @Autowired constructor(
         assertThat(result.participant).isNotNull
         assertThat(result.participant!!.university).isEqualTo(university)
         assertThat(result.instructor).isNull()
-    }
-
-    @Test
-    fun `유저 정보 수정 실패 - year 값이 음수`() {
-        // given
-        givenDefaultCreatedInstructor()
-        val userId = userRepository.findByEmail(email)!!.id
-        val request = UpdateRequest(null, null, null, null, -1)
-
-        // when
-        val exception = assertThrows<SeminarException> {
-            userService.updateUser(userId, request)
-        }
-
-        // then
-        assertThat(exception.status).isEqualTo(HttpStatus.BAD_REQUEST)
     }
     
     @Test

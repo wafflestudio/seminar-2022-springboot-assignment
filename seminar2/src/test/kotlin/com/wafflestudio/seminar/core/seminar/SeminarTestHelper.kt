@@ -2,15 +2,12 @@ package com.wafflestudio.seminar.core.seminar
 
 import com.wafflestudio.seminar.core.seminar.database.*
 import com.wafflestudio.seminar.core.user.database.UserEntity
-import com.wafflestudio.seminar.core.user.database.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalTime
 
 @Component
 internal class SeminarTestHelper @Autowired constructor(
-    private val userRepository: UserRepository,
     private val seminarRepository: SeminarRepository,
     private val instructorSeminarTableRepository: InstructorSeminarTableRepository,
 ) {
@@ -32,17 +29,12 @@ internal class SeminarTestHelper @Autowired constructor(
             )
         )
         
-        val table = instructorSeminarTableRepository.save(
+        instructorSeminarTableRepository.save(
             InstructorSeminarTableEntity(
                 instructor,
                 seminar,
             )
         )
-        
-//        instructor.instructingSeminars.add(table)
-//        seminar.instructorSet.add(table)
-//        userRepository.save(instructor)
-//        seminarRepository.save(seminar)
 
         return seminar
     }

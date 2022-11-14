@@ -78,6 +78,7 @@ class SeminarServiceImpl(
         return seminar.toSeminarDetailInfo()
     }
 
+    @Transactional
     override fun getSeminarOption(name: String?, order: String?): List<SeminarInfo> {
         val seminarEntityList = name
             ?.let { seminarRepository.findByNameLatest(name) }
@@ -95,6 +96,7 @@ class SeminarServiceImpl(
         return seminarInfoList
     }
 
+    @Transactional
     override fun getSeminarById(seminar_id: Long): SeminarInfo {
         return findSeminar(seminar_id).toSeminarInfo()
     }

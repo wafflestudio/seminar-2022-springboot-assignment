@@ -14,10 +14,10 @@ class SeminarEntity(
     var time: LocalTime,
     var online: Boolean,
 ) : BaseTimeEntity() {
-    @OneToMany(mappedBy = "seminar")
+    @OneToMany(mappedBy = "seminar", cascade = [CascadeType.REMOVE])
     val participantSet: MutableSet<ParticipantSeminarTableEntity> = mutableSetOf();
     
-    @OneToMany(mappedBy = "seminar")
+    @OneToMany(mappedBy = "seminar", cascade = [CascadeType.REMOVE])
     val instructorSet: MutableSet<InstructorSeminarTableEntity> = mutableSetOf();
     
     fun toSeminarDetailInfo(): SeminarDetailInfo {
