@@ -11,7 +11,10 @@ import org.springframework.stereotype.Component
 class SeminarDslRepository(
         private val queryFactory: JPAQueryFactory
 ) {
-    fun getList(name: String? , order: String?) : List<SeminarEntity>{
+    fun getListById(id: Long) : List<SeminarEntity> {
+        return queryFactory.select(seminarEntity).from(seminarEntity).where(seminarEntity.id.eq(id)).fetch()
+    }
+    fun getListByNameAndOrder(name: String? , order: String?) : List<SeminarEntity>{
         return if(order == "earliest"){
             queryFactory.select(seminarEntity).from(seminarEntity).where(name?.let { seminarEntity.name.contains(name) }).orderBy(seminarEntity.id.asc()).fetch()
         } else {

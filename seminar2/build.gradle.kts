@@ -65,6 +65,9 @@ dependencies {
     // ModelMapper
     implementation("org.modelmapper:modelmapper:2.1.1")
 
+    //javax.annotation.meta.When
+    implementation ("com.google.code.findbugs:jsr305:3.0.2")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
@@ -74,7 +77,7 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:3.1.1")
     
-    // MapStruct
+    
     
 }
 
