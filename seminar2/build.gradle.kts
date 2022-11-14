@@ -9,7 +9,7 @@ plugins {
     kotlin("plugin.jpa") version "1.6.21"
     kotlin("plugin.allopen") version "1.3.71"
     kotlin("plugin.noarg") version "1.3.71"
-    kotlin("kapt") version "1.3.61" //Queryds
+    kotlin("kapt") version "1.3.61" // Queryds
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
@@ -41,7 +41,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
-    
+
     implementation("javax.validation:validation-api")
 
     // QueryDSL
@@ -62,7 +62,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

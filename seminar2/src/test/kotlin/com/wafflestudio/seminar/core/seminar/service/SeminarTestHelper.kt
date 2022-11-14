@@ -63,8 +63,7 @@ internal class SeminarTestHelper @Autowired constructor(
         participantProfileRepository.save(participantProfileEntity)
         return userRepository.save(newUser)
     }
-    
-    
+
     @Transactional
     fun createSeminar(
         instructor: UserEntity,
@@ -72,31 +71,28 @@ internal class SeminarTestHelper @Autowired constructor(
         capacity: Int = 100,
         count: Int = 10,
         time: Int = 150,
-        online:Boolean = false
+        online: Boolean = false
     ): SeminarEntity {
-        
+
         val seminar = seminarRepository.save(
-                SeminarEntity(
-                    name = name,
-                    capacity = capacity, count = count,
-                    time = time, online = online,
-                    users = mutableSetOf(),
-                    created_user = instructor
-                )
+            SeminarEntity(
+                name = name,
+                capacity = capacity, count = count,
+                time = time, online = online,
+                users = mutableSetOf(),
+                created_user = instructor
             )
-        
+        )
+
         val userSeminar = userSeminarRepository.save(
             UserSeminarEntity(
                 user = instructor, seminar = seminar, role = INSTRUCTOR
             )
         )
-                
+
         return seminar.apply { this.users.add(userSeminar) }
     }
 
-    
-    
-    
     @Transactional
     fun joinSeminar(
         user: UserEntity,

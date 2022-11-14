@@ -3,9 +3,9 @@ package com.wafflestudio.seminar.core.user.api
 import com.wafflestudio.seminar.common.LogExecutionTime
 import com.wafflestudio.seminar.common.LoginUser
 import com.wafflestudio.seminar.common.SeminarRequestBodyException
+import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.dto.SignInRequest
 import com.wafflestudio.seminar.core.user.dto.SignUpRequest
-import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.service.AuthException
 import com.wafflestudio.seminar.core.user.service.AuthService
 import com.wafflestudio.seminar.core.user.service.AuthToken
@@ -18,11 +18,11 @@ import javax.validation.Valid
 
 @RestController
 class AuthController(
-        private val authService: AuthService,
-        private val userService: UserService
+    private val authService: AuthService,
+    private val userService: UserService
 ) {
     private val log = org.slf4j.LoggerFactory.getLogger(javaClass)
-    
+
     @LogExecutionTime
     @PostMapping("/api/v1/signup")
     fun signUp(@Valid @RequestBody signUpRequest: SignUpRequest, bindingResult: BindingResult): AuthToken {
@@ -30,7 +30,7 @@ class AuthController(
         if (bindingResult.hasErrors()) {
             throw SeminarRequestBodyException(bindingResult.fieldErrors)
         }
-        
+
         return authService.createUserAndReturnToken(signUpRequest)
     }
 
@@ -41,7 +41,7 @@ class AuthController(
         if (bindingResult.hasErrors()) {
             throw SeminarRequestBodyException(bindingResult.fieldErrors)
         }
-        
+
         return try {
             authService.findUserAndReturnToken(signInRequest)
         } catch (e: AuthException) {
@@ -53,7 +53,7 @@ class AuthController(
     @GetMapping("/api/v1/me")
     fun getMe(@LoginUser user: UserEntity?): Any {
 //        TODO("인증 토큰을 바탕으로 유저 정보를 적당히 처리해서, 본인이 잘 인증되어있음을 알려주세요.")
-        user?.let{ return userService.constructUserInformationByUser(it) }
-                ?: return ResponseEntity<String>("Unauthorized", HttpStatus.UNAUTHORIZED)
+        user?.let { return userService.constructUserInformationByUser(it) }
+            ?: return ResponseEntity<String>("Unauthorized", HttpStatus.UNAUTHORIZED)
     }
 }

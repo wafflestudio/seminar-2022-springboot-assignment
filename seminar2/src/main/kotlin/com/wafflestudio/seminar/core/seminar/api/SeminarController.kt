@@ -17,31 +17,31 @@ import javax.validation.Valid
 
 @RestController
 class SeminarController(
-        private val seminarService: SeminarService,
+    private val seminarService: SeminarService,
 ) {
     private val log = org.slf4j.LoggerFactory.getLogger(javaClass)
-    
+
     @LogExecutionTime
     @PostMapping("/api/v1/seminar")
     fun postSeminar(
-            @Valid @RequestBody seminarPostRequest: SeminarPostRequest,
-            bindingResult: BindingResult,
-            @LoginUser meUser: UserEntity?,
+        @Valid @RequestBody seminarPostRequest: SeminarPostRequest,
+        bindingResult: BindingResult,
+        @LoginUser meUser: UserEntity?,
     ) = if (bindingResult.hasErrors()) {
         throw SeminarRequestBodyException(bindingResult.fieldErrors)
     } else {
         meUser?.let {
             seminarService.createSeminarAndReturnSeminarDetail(seminarPostRequest, meUser)
         }
-                ?: ResponseEntity<String>("Failed to get current user info.", HttpStatus.UNAUTHORIZED)
+            ?: ResponseEntity<String>("Failed to get current user info.", HttpStatus.UNAUTHORIZED)
     }
 
     @LogExecutionTime
     @PutMapping("/api/v1/seminar")
     fun putSeminar(
-            @Valid @RequestBody seminarPutRequest: SeminarPutRequest,
-            bindingResult: BindingResult,
-            @LoginUser meUser: UserEntity?,
+        @Valid @RequestBody seminarPutRequest: SeminarPutRequest,
+        bindingResult: BindingResult,
+        @LoginUser meUser: UserEntity?,
     ) = if (bindingResult.hasErrors()) {
         throw SeminarRequestBodyException(bindingResult.fieldErrors)
     } else {
@@ -58,19 +58,19 @@ class SeminarController(
     @LogExecutionTime
     @GetMapping("/api/v1/seminar")
     fun getSeminarsWithQuery(
-            @RequestParam(name = "name") name: String?,
-            @RequestParam(name = "order") order: String?,
-    ) = seminarService.getSeminarListQueriedByNameAndOrder(name?:"", order?:"")
+        @RequestParam(name = "name") name: String?,
+        @RequestParam(name = "order") order: String?,
+    ) = seminarService.getSeminarListQueriedByNameAndOrder(name ?: "", order ?: "")
 
     @LogExecutionTime
     @PostMapping("/api/v1/seminar/{seminar_id}/user/")
     fun postUserToSeminar(
-            @PathVariable seminar_id: Long,
-            @Valid @RequestBody seminarRegisterRequest: SeminarRegisterRequest,
-            bindingResult: BindingResult,
-            @LoginUser meUser: UserEntity?,
+        @PathVariable seminar_id: Long,
+        @Valid @RequestBody seminarRegisterRequest: SeminarRegisterRequest,
+        bindingResult: BindingResult,
+        @LoginUser meUser: UserEntity?,
     ): Any {
-        meUser?.let{
+        meUser?.let {
             if (bindingResult.hasErrors()) {
                 throw SeminarRequestBodyException(bindingResult.fieldErrors)
             }
@@ -81,10 +81,10 @@ class SeminarController(
     @LogExecutionTime
     @DeleteMapping("/api/v1/seminar/{seminar_id}/user")
     fun deleteUserFromSeminar(
-            @PathVariable seminar_id: Long,
-            @LoginUser meUser: UserEntity?,
+        @PathVariable seminar_id: Long,
+        @LoginUser meUser: UserEntity?,
     ): Any {
-        meUser?.let{
+        meUser?.let {
             return seminarService.dropUserFromSeminar(seminar_id, meUser)
         } ?: return ResponseEntity<String>("Cannot found current user", HttpStatus.UNAUTHORIZED)
     }

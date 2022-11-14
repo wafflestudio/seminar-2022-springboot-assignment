@@ -16,31 +16,31 @@ import javax.servlet.http.HttpServletResponse
 
 @Configuration
 class WebConfig(
-        private val tokenVerifyInterceptor: TokenVerifyInterceptor,
-        private val loginUserArgumentResolver: LoginUserArgumentResolver
-): WebMvcConfigurer {
+    private val tokenVerifyInterceptor: TokenVerifyInterceptor,
+    private val loginUserArgumentResolver: LoginUserArgumentResolver
+) : WebMvcConfigurer {
 
     /**
      * TODO 세미나 레포지토리를 참고해서,
      *   헤더를 통한 JWT 인증이 가능하게끔 적절한 컴포넌트들을 구성해주세요.
      */
-    
+
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(tokenVerifyInterceptor)
-                .addPathPatterns("/api/v1/**")
-                .excludePathPatterns("/api/v1/signup", "/api/v1/signin")
+            .addPathPatterns("/api/v1/**")
+            .excludePathPatterns("/api/v1/signup", "/api/v1/signin")
     }
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
         resolvers.add(loginUserArgumentResolver)
     }
-    
+
 }
 
 @Component
 class TokenVerifyInterceptor(
-        private val authTokenService: AuthTokenService
-): HandlerInterceptor {
+    private val authTokenService: AuthTokenService
+) : HandlerInterceptor {
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val method = request.method
         // 사전요청 => pass
@@ -51,7 +51,7 @@ class TokenVerifyInterceptor(
             authTokenService.verifyToken(it)
         } ?: throw AuthException("Authentication Failed")
 
-        //TODO: ???
+        // TODO: ???
         return true
     }
 }

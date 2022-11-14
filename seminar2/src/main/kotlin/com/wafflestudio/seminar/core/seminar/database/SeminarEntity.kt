@@ -10,23 +10,22 @@ import javax.persistence.*
 @Entity
 @Table(name = "seminar")
 class SeminarEntity(
-        @Column(nullable = false)
-        var name: String,
+    @Column(nullable = false)
+    var name: String,
 
-        var capacity: Int,
+    var capacity: Int,
 
-        var count: Int,
+    var count: Int,
 
-        var time: Int, // Change to total minutes.
+    var time: Int, // Change to total minutes.
 
-        var online: Boolean,
+    var online: Boolean,
 
-        @OneToMany(mappedBy = "seminar")
-        @Cascade(CascadeType.ALL)
-        val users: MutableSet<UserSeminarEntity> = mutableSetOf(),
+    @OneToMany(mappedBy = "seminar")
+    @Cascade(CascadeType.ALL)
+    val users: MutableSet<UserSeminarEntity> = mutableSetOf(),
 
-        @OneToOne
-        @JoinColumn(name = "created_user_id")
-        val created_user: UserEntity,
-): BaseTimeEntity() {
-}
+    @OneToOne
+    @JoinColumn(name = "created_user_id")
+    val created_user: UserEntity,
+) : BaseTimeEntity()
