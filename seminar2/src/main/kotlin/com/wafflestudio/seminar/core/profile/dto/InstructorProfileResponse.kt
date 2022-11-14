@@ -6,5 +6,5 @@ data class InstructorProfileResponse(
     val id: Long,
     val company: String,
     val year: Int? = null,
-    val instructingSeminars: List<InstructingSeminarResponse> = listOf(),
+    val instructingSeminars: List<InstructingSeminarResponse>? = null,
 )
