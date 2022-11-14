@@ -14,7 +14,7 @@ auth.jwt:
   jwtExpiration: 6000
 
 ---
-#
+
 #spring:
 #  profiles:
 #    active: dev

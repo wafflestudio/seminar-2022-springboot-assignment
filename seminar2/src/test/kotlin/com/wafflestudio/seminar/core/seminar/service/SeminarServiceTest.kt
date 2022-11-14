@@ -23,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertThrows
+import org.springframework.data.repository.findByIdOrNull
 import java.time.LocalDateTime
 import javax.transaction.Transactional
 
@@ -253,7 +254,6 @@ internal class SeminarServiceTest @Autowired constructor(
         // Given
         createFixtures(3)
 
-        println("어흥")
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
             seminarService.getSeminarList(null, null, "token")
@@ -274,6 +274,7 @@ internal class SeminarServiceTest @Autowired constructor(
     fun `(getSeminarList) 특정 string을 포함한 세미나 불러오기`() {
         // Given
         createFixtures(3)
+        
         val name = "spring"
         val order = "earliest"
 
@@ -300,7 +301,6 @@ internal class SeminarServiceTest @Autowired constructor(
         val participant = userTestHelper.createParticipant("participant@snu.ac.kr")
         given(authTokenService.getCurrentUserId(anyString())).willReturn(participant.id)
         val role = mapOf<String, String>("role" to "PARTICIPANT")
-
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
             seminarService.joinSeminar(1, role, "token")
@@ -354,7 +354,7 @@ internal class SeminarServiceTest @Autowired constructor(
         createFixtures()
         val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
         given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
-        val role = mapOf<String, String>("role" to "INSTRUCTOR")
+        val role = mapOf<String, String>("role" to "INSTRUCTOR1")
 
         // When
         val response = assertThrows<Seminar400> { seminarService.joinSeminar(1, role, "token") }
@@ -376,7 +376,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val response = assertThrows<Seminar403> { seminarService.joinSeminar(1, role, "token") }
 
         // Then
-        assertThat(response.message).isEqualTo("수강생이 아닙니다")
+        assertThat(response.message).isEqualTo("참가자로 등록되어 있지 않습니다")
     }
 
     // Failed: 403으로 응답해야 하는데 400으로 응답함
@@ -392,7 +392,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val response = assertThrows<Seminar403> { seminarService.joinSeminar(1, role, "token") }
 
         // Then
-        assertThat(response.message).isEqualTo("등록되어 있지 않습니다")
+        assertThat(response.message).isEqualTo("활성회원이 아닙니다")
     }
 
     // Passed
@@ -526,7 +526,7 @@ internal class SeminarServiceTest @Autowired constructor(
                 participants.map { UserSeminarEntity(it, seminar, "PARTICIPANT", LocalDateTime.now()) } as MutableList<UserSeminarEntity>
             userSeminarList.add(UserSeminarEntity(instructor, seminar, "INSTRUCTOR", LocalDateTime.now()))
             seminar.userSeminars = userSeminarList
-            seminarRepository.save(seminar)
+            val seminarEntity = seminarRepository.save(seminar)
             userSeminarList.forEach { userSeminarRepository.save(it) }
         }
     }
