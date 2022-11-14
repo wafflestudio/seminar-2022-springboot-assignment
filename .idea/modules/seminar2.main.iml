@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module external.linked.project.id="seminar2:main" external.linked.project.path="$MODULE_DIR$/../../seminar2" external.root.project.path="$MODULE_DIR$/../../seminar2" external.system.id="GRADLE" external.system.module.group="com.wafflestudio" external.system.module.type="sourceSet" external.system.module.version="0.0.1-SNAPSHOT" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
+    <facet type="web" name="Web">
+      <configuration>
+        <webroots />
+      </configuration>
+    </facet>
+    <facet type="jpa" name="JPA">
+      <configuration>
+        <setting name="validation-enabled" value="true" />
+        <setting name="provider-name" value="Hibernate" />
+        <datasource-mapping />
+        <naming-strategy-map />
+      </configuration>
+    </facet>
+    <facet type="Spring" name="Spring">
+      <configuration />
+    </facet>
     <facet type="kotlin-language" name="Kotlin">
       <configuration version="5" platform="JVM 11" allPlatforms="JVM [11]" useProjectSettings="false">
         <compilerSettings>
@@ -160,7 +176,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../seminar2/src/main/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../seminar2/src/main/resources" type="java-resource" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="11" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
       <library name="Gradle: kaptGeneratedClasses">

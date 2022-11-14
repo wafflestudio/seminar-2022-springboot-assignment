@@ -38,6 +38,8 @@ dependencies {
     // Web & DB
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
 

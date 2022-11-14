@@ -2,6 +2,9 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="seminar1" target="11" />
+      <module name="seminar1.main" target="11" />
+      <module name="seminar1.test" target="11" />
       <module name="seminar2" target="11" />
       <module name="seminar2.main" target="11" />
       <module name="seminar2.test" target="11" />

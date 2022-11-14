@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.global
+package com.wafflestudio.seminar.core.global
 
 import org.hibernate.EmptyInterceptor
 import org.hibernate.cfg.AvailableSettings
