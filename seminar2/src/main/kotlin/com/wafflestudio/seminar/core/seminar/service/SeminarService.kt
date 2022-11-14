@@ -3,6 +3,8 @@ package com.wafflestudio.seminar.core.seminar.service
 import com.wafflestudio.seminar.common.*
 import com.wafflestudio.seminar.core.join.UserSeminarEntity
 import com.wafflestudio.seminar.core.join.UserSeminarRepository
+import com.wafflestudio.seminar.core.profile.database.InstructorProfileEntity
+import com.wafflestudio.seminar.core.profile.database.ParticipantProfileEntity
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
 import com.wafflestudio.seminar.core.seminar.database.changeTimeStringToMinutes
@@ -73,7 +75,7 @@ class SeminarServiceImpl(
         seminarRepository.save(seminar)
         userSeminarRepository.save(userSeminar)
         
-        return makeSeminarDetail(seminar)
+        return getSeminarDetailById(seminar.id)
     }
 
     @Transactional
@@ -98,14 +100,16 @@ class SeminarServiceImpl(
         }
         seminarRepository.save(seminar)
         
-        return makeSeminarDetail(seminar)
+        return getSeminarDetailById(seminar.id)
     }
 
 
     override fun getSeminarDetailById(seminarId: Long): SeminarDetailResponse {
-        val seminar = seminarRepository.findByIdOrNull(seminarId) 
+        val queryResult = seminarRepository.querySeminarDetail(seminarId)
                 ?: throw Seminar404("Seminar ${seminarId} does not exists.")
-        return makeSeminarDetail(seminar)
+        val seminar = queryResult.first
+        val userSeminarList = queryResult.second
+        return makeSeminarDetailFromQuery(seminar, userSeminarList)
     }
 
     override fun getSeminarListQueriedByNameAndOrder(
@@ -179,7 +183,7 @@ class SeminarServiceImpl(
         }
         
         // If reach to here, it means there was no problem.
-        return makeSeminarDetail(seminar)
+        return getSeminarDetailById(seminarId)
     }
 
     override fun dropUserFromSeminar(seminarId: Long, meUser: UserEntity): Any {
@@ -195,37 +199,38 @@ class SeminarServiceImpl(
                     isActive = false
                     droppedAt = LocalDateTime.now()
                     userSeminarRepository.save(this)
-                    return makeSeminarDetail(seminar)
+                    return getSeminarDetailById(seminarId)
                 }
         
         return ResponseEntity<Any>(HttpStatus.OK)
     }
     
-    fun makeSeminarDetail(seminar: SeminarEntity): SeminarDetailResponse {
-        val instructorUserSeminar = userSeminarRepository.findAllBySeminarAndRole(
-                seminar, INSTRUCTOR
-        )
-        val instructorUserResponseList = instructorUserSeminar.map {
-            InstructorUserResponse(
-                    id = it.user.id,
-                    username = it.user.username,
-                    email = it.user.email,
-                    joinedAt = it.createdAt!!,
-            )
-        }
+    fun makeSeminarDetailFromQuery(
+            seminar: SeminarEntity, 
+            userSeminarList: List<UserSeminarEntity>
+    ): SeminarDetailResponse {
+        val instructorUserResponseList: MutableList<InstructorUserResponse> = mutableListOf()
+        val participantUserResponseList: MutableList<ParticipantUserResponse> = mutableListOf()
         
-        val participantUserSeminar = userSeminarRepository.findAllBySeminarAndRole(
-                seminar, PARTICIPANT
-        )
-        val participantUserResponseList = participantUserSeminar.map {
-            ParticipantUserResponse(
-                    id = it.user.id,
-                    username = it.user.username,
-                    email = it.user.email,
-                    joinedAt = it.createdAt!!,
-                    isActive = it.isActive,
-                    droppedAt = it.droppedAt,
-            )
+        userSeminarList.forEach {
+            when (it.role) {
+                INSTRUCTOR -> instructorUserResponseList.add(InstructorUserResponse(
+                        id = it.user.id,
+                        username = it.user.username,
+                        email = it.user.email,
+                        joinedAt = it.createdAt!!,
+                    )
+                )
+                PARTICIPANT -> participantUserResponseList.add(ParticipantUserResponse(
+                        id = it.user.id,
+                        username = it.user.username,
+                        email = it.user.email,
+                        joinedAt = it.createdAt!!,
+                        isActive = it.isActive,
+                        droppedAt = it.droppedAt,
+                    )
+                )
+            }
         }
         
         val seminarDetailResponse = SeminarDetailResponse(
@@ -238,7 +243,6 @@ class SeminarServiceImpl(
                 instructors = instructorUserResponseList,
                 participants =  participantUserResponseList,
         )
-        
         return seminarDetailResponse
     }
 }
