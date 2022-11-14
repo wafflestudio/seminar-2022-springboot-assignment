@@ -30,8 +30,8 @@ class UserServiceImpl(
     }
 
     override fun editUser(userId: Long, userRequest: UserRequest): User {
-        val user = userRepository.findByIdOrNull(userId)
-            ?: throw AuthException("잘못된 유저에 대한 토큰입니다")
+        val user = userRepository.findByIdOrNull(userId)!!
+        
         user.participant?.let {
             user.participant!!.updateProfile(userRequest)
             participantRepository.save(user.participant!!)
@@ -45,8 +45,7 @@ class UserServiceImpl(
     }
 
     override fun registerToParticipate(userId: Long, participantRequest: ParticipantRequest): User {
-        val user = userRepository.findByIdOrNull(userId)
-            ?: throw AuthException("잘못된 유저에 대한 토큰입니다")
+        val user = userRepository.findByIdOrNull(userId)!!
         
         if (user.participant != null) {
             throw Seminar409("이미 참가자로 등록된 유저입니다")
