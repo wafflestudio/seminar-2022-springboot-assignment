@@ -70,29 +70,7 @@ class UserServiceImpl(
     override fun updateUser(user_id: Long, updateRequest: UpdateRequest): UserInfo {
         val user = findUser(user_id)
         
-        updateRequest.username?.let {
-            user.username = it
-        }
-        updateRequest.password?.let {
-            user.password = passwordEncoder.encode(it)
-        }
-        
-        if (user.participantProfile != null) {
-            updateRequest.university?.let {
-                user.participantProfile!!.university = it
-            }
-        }
-        
-        if (user.instructorProfile != null) {
-            updateRequest.company?.let {
-                user.instructorProfile!!.company = it
-            }
-            updateRequest.year?.let {
-                user.instructorProfile!!.year = it
-            }
-        }
-        
-        return user.toUserInfo()
+        return user.updateUser(updateRequest, passwordEncoder)
     }
 
     @Transactional

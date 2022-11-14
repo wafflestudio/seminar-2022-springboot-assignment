@@ -38,7 +38,7 @@ class SeminarServiceImpl(
         if (user.instructingSeminars.size > 0) {
             throw MultipleInstructingSeminarException
         }
-        
+
         val seminarEntity = seminarRepository.save(
             createSeminarRequest.toSeminarEntity()
         )
@@ -66,16 +66,8 @@ class SeminarServiceImpl(
         if (instructorSeminarTableEntity.seminar != seminar) {
             throw NotAllowedToUpdateSeminarException
         }
-        
-        seminar.let { 
-            it.name = updateSeminarRequest.name ?: it.name
-            it.capacity = updateSeminarRequest.capacity ?: it.capacity
-            it.count = updateSeminarRequest.count ?: it.count
-            it.time = updateSeminarRequest.time ?: it.time
-            it.online = updateSeminarRequest.online ?: it.online
-        }
-        
-        return seminar.toSeminarDetailInfo()
+
+        return seminar.updateSeminar(updateSeminarRequest)
     }
 
     @Transactional
@@ -111,12 +103,12 @@ class SeminarServiceImpl(
         if (seminar.capacity <= seminar.participantSet.size) {
             throw SeminarCapacityFullException
         }
-        user.participatingSeminars.forEach {
-            if (it.seminar == seminar) {
-                when (it.isActive) {
-                    true -> throw AlreadyParticipatingException
-                    false -> throw DroppedSeminarException
-                }
+        user.participatingSeminars.find {
+            it.seminar == seminar
+        }?.let {
+            when (it.isActive) {
+                true -> throw AlreadyParticipatingException
+                false -> throw DroppedSeminarException
             }
         }
         if (user.instructingSeminars.isNotEmpty() && user.instructingSeminars.first() == seminar) {
@@ -182,7 +174,7 @@ class SeminarServiceImpl(
 
     private fun findUser(user_id: Long): UserEntity = userRepository.findByIdOrNull(user_id)
         ?: throw UserNotFoundException
-    
+
     private fun findSeminar(seminar_id: Long): SeminarEntity = seminarRepository.findByIdOrNull(seminar_id)
         ?: throw SeminarNotFoundException
 }

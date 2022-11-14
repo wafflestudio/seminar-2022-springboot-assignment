@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.seminar.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.domain.*
 import java.time.LocalTime
 import javax.persistence.*
@@ -41,6 +42,16 @@ class SeminarEntity(
             instructorInfoList,
             participantInfoList,
         )
+    }
+    
+    fun updateSeminar(updateSeminarRequest: UpdateSeminarRequest): SeminarDetailInfo {
+        name = updateSeminarRequest.name ?: name
+        capacity = updateSeminarRequest.capacity ?: capacity
+        count = updateSeminarRequest.count ?: count
+        time = updateSeminarRequest.time ?: time
+        online = updateSeminarRequest.online ?: online
+        
+        return this.toSeminarDetailInfo()
     }
     
     fun toSeminarInfo(): SeminarInfo {

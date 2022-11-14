@@ -153,6 +153,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // then
         assertThat(result.name).isEqualTo(seminarName)
+        assertThat(table.participant.id).isEqualTo(userId)
         assertThat(table.isActive).isEqualTo(false)
         assertThat(exception.status).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(result.participants).hasSize(1)

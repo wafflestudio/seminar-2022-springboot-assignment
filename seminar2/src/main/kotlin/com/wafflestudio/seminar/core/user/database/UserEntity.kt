@@ -3,7 +3,9 @@ package com.wafflestudio.seminar.core.user.database
 import com.wafflestudio.seminar.common.BaseTimeEntity
 import com.wafflestudio.seminar.core.seminar.database.InstructorSeminarTableEntity
 import com.wafflestudio.seminar.core.seminar.database.ParticipantSeminarTableEntity
+import com.wafflestudio.seminar.core.user.api.request.UpdateRequest
 import com.wafflestudio.seminar.core.user.domain.UserInfo
+import org.springframework.security.crypto.password.PasswordEncoder
 import javax.persistence.*
 import javax.persistence.CascadeType
 
@@ -28,6 +30,20 @@ class UserEntity(
 
     @OneToMany(mappedBy = "instructor", cascade = [CascadeType.REMOVE])
     val instructingSeminars: MutableSet<InstructorSeminarTableEntity> = mutableSetOf();
+    
+    fun updateUser(updateRequest: UpdateRequest, passwordEncoder: PasswordEncoder): UserInfo {
+        username = updateRequest.username ?: username
+        password = updateRequest.password ?: passwordEncoder.encode(password)
+        participantProfile?.let {
+            it.university = updateRequest.university ?: it.university
+        }
+        instructorProfile?.let {
+            it.company = updateRequest.company ?: it.company
+            it.year = updateRequest.year ?: it.year
+        }
+        
+        return this.toUserInfo()
+    }
     
     fun toUserInfo(): UserInfo = UserInfo(
         id,
