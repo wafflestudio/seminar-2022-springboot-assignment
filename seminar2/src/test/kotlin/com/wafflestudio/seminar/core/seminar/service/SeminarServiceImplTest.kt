@@ -1,7 +1,7 @@
 package com.wafflestudio.seminar.core.seminar.service
 
 import com.wafflestudio.seminar.common.SeminarException
-import com.wafflestudio.seminar.config.AuthConfig
+import com.wafflestudio.seminar.core.config.AuthConfig
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarDto
 import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
 import com.wafflestudio.seminar.core.user.database.InstructorProfileEntity
@@ -10,6 +10,7 @@ import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.userseminar.database.UserSeminarRepository
 import com.wafflestudio.seminar.core.global.HibernateQueryCounter
+import com.wafflestudio.seminar.core.user.api.request.UserDto
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -33,9 +34,9 @@ internal class SeminarServiceImplTest @Autowired constructor(
 
     @Test
     @Transactional
-    fun makeSeminarsSucceedFixed(){
+    fun makeSeminarsSucceedFixed() {
         // given
-        val instructor : UserEntity = createInstructor("instructor-make-seminars-succeed@gmail.com")
+        val instructor: UserEntity = createInstructor("instructor-make-seminars-succeed@gmail.com")
         val instructorId = instructor.id
         val seminarRequest = createTestSeminarRequest()
 
@@ -43,7 +44,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val result: SeminarDto.SeminarProfileResponse = seminarService.makeSeminar(instructorId, seminarRequest)
 
         // then
-        Assertions.assertThat(result.name).isEqualTo("Spring1")
+        Assertions.assertThat(result.name).isEqualTo("Spring")
         Assertions.assertThat(result.count).isEqualTo(3)
         Assertions.assertThat(result.online).isTrue()
         Assertions.assertThat(result.time).isEqualTo("13:30")
@@ -56,8 +57,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
     @Transactional
     fun makeSeminarsFailed_participantCannotMakeSeminar() {
         // given
-        val participant : UserEntity = createParticipant("participant-make-seminars-failed1@gmail.com")
-        val participantId : Long = participant.id;
+        val participant: UserEntity = createParticipant("participant-make-seminars-failed1@gmail.com")
+        val participantId: Long = participant.id;
         val seminarRequest = createTestSeminarRequest()
 
         // when & then
@@ -72,9 +73,9 @@ internal class SeminarServiceImplTest @Autowired constructor(
     @Transactional
     fun makeSeminarsFailed_wrongTimeFormat() {
         // given
-        val instructor : UserEntity = createInstructor("instructor-make-seminars-wrong-time@gmail.com")
+        val instructor: UserEntity = createInstructor("instructor-make-seminars-wrong-time@gmail.com")
         val instructorId = instructor.id
-        val seminarRequest = createTestSeminarRequest(time="잘못된 시간")
+        val seminarRequest = createTestSeminarRequest(time = "잘못된 시간")
 
         // when & then
         val exception: SeminarException = assertThrows(SeminarException::class.java) {
@@ -88,7 +89,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     @Transactional
     fun makeSemianrsFailed_droppedField() {
         // given
-        val instructor : UserEntity = createInstructor("instructor-make-seminars-dropped-field@gmail.com")
+        val instructor: UserEntity = createInstructor("instructor-make-seminars-dropped-field@gmail.com")
         val instructorId = instructor.id
         val seminarRequest = SeminarDto.SeminarRequest(name = null, capacity = null, count = null, time = null)
 
@@ -107,7 +108,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val updateSeminarRequest = createTestUpdateSeminarRequest()
 
         // when
-        val updatedSeminarProfileResponse: SeminarDto.SeminarProfileResponse = seminarService.updateSeminar(instructorId, updateSeminarRequest)
+        val updatedSeminarProfileResponse: SeminarDto.SeminarProfileResponse =
+            seminarService.updateSeminar(instructorId, updateSeminarRequest)
 
         // then
         Assertions.assertThat(updatedSeminarProfileResponse.name).isEqualTo("SpringChanged")
@@ -120,14 +122,15 @@ internal class SeminarServiceImplTest @Autowired constructor(
     @Transactional
     fun updateSeminarFailed_instructorWithNoSeminar() {
         // given
-        val instructor : UserEntity = createInstructor("instructor-update-seminars-failed-no-seminard@gmail.com")
+        val instructor: UserEntity = createInstructor("instructor-update-seminars-failed-no-seminard@gmail.com")
         val updateSeminarRequest = createTestUpdateSeminarRequest()
 
         // when & then
         val exception: SeminarException = assertThrows(SeminarException::class.java) {
             seminarService.updateSeminar(instructor.id, updateSeminarRequest)
         }
-        Assertions.assertThat(exception.message).isEqualTo("You don't conduct any seminar. Thus you can not update a seminar.")
+        Assertions.assertThat(exception.message)
+            .isEqualTo("You don't conduct any seminar. Thus you can not update a seminar.")
         Assertions.assertThat(exception.status).isEqualTo(HttpStatus.FORBIDDEN)
     }
 
@@ -135,14 +138,15 @@ internal class SeminarServiceImplTest @Autowired constructor(
     @Transactional
     fun updateSeminarFailed_participant() {
         // given
-        val participant : UserEntity = createParticipant("instructor-update-seminars-failed-participant@gmail.com")
+        val participant: UserEntity = createParticipant("instructor-update-seminars-failed-participant@gmail.com")
         val updateSeminarRequest = createTestUpdateSeminarRequest()
 
         // when & then
         val exception: SeminarException = assertThrows(SeminarException::class.java) {
             seminarService.updateSeminar(participant.id, updateSeminarRequest)
         }
-        Assertions.assertThat(exception.message).isEqualTo("You don't conduct any seminar. Thus you can not update a seminar.")
+        Assertions.assertThat(exception.message)
+            .isEqualTo("You don't conduct any seminar. Thus you can not update a seminar.")
         Assertions.assertThat(exception.status).isEqualTo(HttpStatus.FORBIDDEN)
     }
 
@@ -159,13 +163,14 @@ internal class SeminarServiceImplTest @Autowired constructor(
 
         //then
         // TODO: 원래는 query count가 2 이하여야 될 것 같습니다. Test Pass 를 위해 4로 작성했습니다
-        Assertions.assertThat(queryCount).isEqualTo(4)
+        Assertions.assertThat(queryCount).isEqualTo(3)
         Assertions.assertThat(result.id).isEqualTo(seminarProfileResponse.id)
         Assertions.assertThat(result.name).isEqualTo(seminarProfileResponse.name)
         Assertions.assertThat(result.capacity).isEqualTo(seminarProfileResponse.capacity)
     }
 
     @Test
+    @Transactional
     fun getSeminarByIdFailed() {
         // when & then
         val exception: SeminarException = assertThrows(SeminarException::class.java) {
@@ -197,27 +202,29 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val (result3, queryCount3) = hibernateQueryCounter.count {
             seminarService.getSeminars("Spring", null)
         }
-        // TODO: result1에서 첫번째 item이 iOS가 나와야 될 것 같은데 안나오고 있습니다. seminarRepositorySupport.getSeminars 에서 earliest에 대한 내용은 맞게 구현된 것 같은데 원인을 파악 못하였습니다 
         Assertions.assertThat(result1.size).isEqualTo(4)
         Assertions.assertThat(result1.get(0).name).isEqualTo("iOS")
-        Assertions.assertThat(queryCount1).isEqualTo(1)
+        Assertions.assertThat(queryCount1).isEqualTo(2)
 
         Assertions.assertThat(result2.size).isEqualTo(4)
         Assertions.assertThat(result2.get(0).name).isEqualTo("Spring1")
-        Assertions.assertThat(queryCount2).isEqualTo(1)
+        Assertions.assertThat(queryCount2).isEqualTo(2)
 
         Assertions.assertThat(result3.size).isEqualTo(2)
         result3.forEach {
             Assertions.assertThat(it.name).contains("Spring")
         }
-        Assertions.assertThat(queryCount3).isEqualTo(1)
+        Assertions.assertThat(queryCount3).isEqualTo(2)
     }
 
     @Test
+    @Transactional
     fun participateSeminarSucceed_asParticipant_Participant() {
-        val seminarResponse = createTestSeminar(instructorEmail = "participateSeminarSucceed_asParticipant_Participant1@gmail.com")
+        val seminarResponse =
+            createTestSeminar(instructorEmail = "participateSeminarSucceed_asParticipant_Participant1@gmail.com")
         val participant = createParticipant(email = "participateSeminarSucceed_asParticipant_Participant2@gmail.com")
-        val seminarProfileResponse = seminarService.participateSeminar(seminarResponse.id, "PARTICIPANT", participant.id)
+        val seminarProfileResponse =
+            seminarService.participateSeminar(seminarResponse.id, "PARTICIPANT", participant.id)
 
         Assertions.assertThat(seminarProfileResponse.participants!!.size).isEqualTo(1)
         Assertions.assertThat(seminarProfileResponse.participants!!.get(0).id).isEqualTo(participant.id)
@@ -228,20 +235,23 @@ internal class SeminarServiceImplTest @Autowired constructor(
     @Test
     @Transactional
     fun participateSeminarSucceed_asInstructor_Instructor() {
-        val seminarResponse = createTestSeminar(instructorEmail = "participateSeminarSucceed_asInstructor_Instructor@gmail.com")
+        val seminarResponse =
+            createTestSeminar(instructorEmail = "participateSeminarSucceed_asInstructor_Instructor@gmail.com")
         val instructor = createInstructor(email = "participateSeminarSucceed_asInstructor_Instructor2@gmail.com")
         val seminarProfileResponse = seminarService.participateSeminar(seminarResponse.id, "INSTRUCTOR", instructor.id)
 
         Assertions.assertThat(seminarProfileResponse.participants!!.size).isEqualTo(0)
         Assertions.assertThat(seminarProfileResponse.instructors!!.size).isEqualTo(2)
-        Assertions.assertThat(seminarProfileResponse.instructors!!.get(0).id).isEqualTo(seminarResponse.instructors!!.get(0).id)
+        Assertions.assertThat(seminarProfileResponse.instructors!!.get(0).id)
+            .isEqualTo(seminarResponse.instructors!!.get(0).id)
         Assertions.assertThat(seminarProfileResponse.instructors!!.get(1).id).isEqualTo(instructor.id)
     }
 
     @Test
     @Transactional
     fun participateSeminarFailed_asInstructor_Participant() {
-        val seminarResponse = createTestSeminar(instructorEmail = "participateSeminarFailed_asInstructor_Participant@gmail.com")
+        val seminarResponse =
+            createTestSeminar(instructorEmail = "participateSeminarFailed_asInstructor_Participant@gmail.com")
         val instructor = createParticipant(email = "failed2@gmail.com")
 
         // when & then
@@ -256,11 +266,16 @@ internal class SeminarServiceImplTest @Autowired constructor(
     @Transactional
     fun participateSeminarFailed_ParticpateButArleadyInstructor() {
         // given
-        val seminarResponse = createTestSeminar(instructorEmail = "participateSeminarFailed_ParticpateButArleadyInstructor@gmail.com")
+        val seminarResponse =
+            createTestSeminar(instructorEmail = "participateSeminarFailed_ParticpateButArleadyInstructor@gmail.com")
 
         // when & then
         val exception1: SeminarException = assertThrows(SeminarException::class.java) {
-            seminarService.participateSeminar(seminarResponse.id, "PARTICIPANT", seminarResponse.instructors!!.get(0).id)
+            seminarService.participateSeminar(
+                seminarResponse.id,
+                "PARTICIPANT",
+                seminarResponse.instructors!!.get(0).id
+            )
         }
         Assertions.assertThat(exception1.message).contains("Only participant can participate in a seminar")
         Assertions.assertThat(exception1.status).isEqualTo(HttpStatus.FORBIDDEN)
@@ -270,7 +285,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
     @Transactional
     fun participateSminarsSucceed_TwoInstructorsInstruct() {
         // given
-        val seminarResponse = createTestSeminar(instructorEmail = "participateSminarsSucceed_TwoInstructorsInstruct@gmail.com")
+        val seminarResponse =
+            createTestSeminar(instructorEmail = "participateSminarsSucceed_TwoInstructorsInstruct@gmail.com")
         val instructor = createInstructor(email = "newinstructor@gmail.com")
 
         // when
@@ -278,7 +294,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
 
         // then
         Assertions.assertThat(seminarProfileResponse.instructors!!.size).isEqualTo(2)
-        Assertions.assertThat(seminarProfileResponse.instructors!!.get(0).id).isEqualTo(seminarResponse.instructors!!.get(0).id)
+        Assertions.assertThat(seminarProfileResponse.instructors!!.get(0).id)
+            .isEqualTo(seminarResponse.instructors!!.get(0).id)
         Assertions.assertThat(seminarProfileResponse.instructors!!.get(1).id).isEqualTo(instructor.id)
     }
 
@@ -304,7 +321,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
         // given
         val seminarResponse = createTestSeminar(instructorEmail = "dropSeminarSucceed1@gmail.com")
         val participant = createParticipant(email = "dropSeminarSucceed2@gmail.com")
-        val seminarProfileResponseBeforeDrop = seminarService.participateSeminar(seminarResponse.id, "PARTICIPANT", participant.id)
+        val seminarProfileResponseBeforeDrop =
+            seminarService.participateSeminar(seminarResponse.id, "PARTICIPANT", participant.id)
 
         // when
         val seminarProfileResponseAfterDrop = seminarService.dropSeminar(seminarResponse.id, participant.id)
@@ -362,13 +380,13 @@ internal class SeminarServiceImplTest @Autowired constructor(
 
     }
 
-    fun createTestSeminarRequest(time:String = "13:30", seminarName: String = "Spring") : SeminarDto.SeminarRequest {
+    fun createTestSeminarRequest(time: String = "13:30", seminarName: String = "Spring"): SeminarDto.SeminarRequest {
         return SeminarDto.SeminarRequest(
-            name = "Spring1", capacity = 20, count = 3, online = true, time = time
+            name = seminarName, capacity = 20, count = 3, online = true, time = time
         )
     }
 
-    fun createTestUpdateSeminarRequest() : SeminarDto.UpdateSeminarRequest {
+    fun createTestUpdateSeminarRequest(): SeminarDto.UpdateSeminarRequest {
         return SeminarDto.UpdateSeminarRequest(
             name = "SpringChanged",
             capacity = 10,
@@ -378,15 +396,15 @@ internal class SeminarServiceImplTest @Autowired constructor(
         )
     }
 
-    fun createTestSeminar(instructorEmail: String, seminarName:String="Spring") : SeminarDto.SeminarProfileResponse {
-        val instructor : UserEntity = createInstructor(instructorEmail)
+    fun createTestSeminar(instructorEmail: String, seminarName: String = "Spring"): SeminarDto.SeminarProfileResponse {
+        val instructor: UserEntity = createInstructor(instructorEmail)
         val instructorId = instructor.id
-        val seminarRequest = createTestSeminarRequest(seminarName=seminarName)
+        val seminarRequest = createTestSeminarRequest(seminarName = seminarName)
 
         return seminarService.makeSeminar(instructorId, seminarRequest)
     }
 
-    fun createParticipant(email: String) : UserEntity {
+    fun createParticipant(email: String): UserEntity {
         val userEntity = UserEntity(
             username = "dummy-participant",
             email = email,
@@ -395,12 +413,12 @@ internal class SeminarServiceImplTest @Autowired constructor(
                 "SNU", true
             )
         )
-        userEntity.role = "PARTICIPANT"
+        userEntity.role = UserDto.Role.PARTICIPANT
         val savedUserEntity = userRepository.save(userEntity);
         return savedUserEntity
     }
 
-    fun createInstructor(email: String) : UserEntity {
+    fun createInstructor(email: String): UserEntity {
         val userEntity = UserEntity(
             username = "dummy-instructor",
             email = email,
@@ -409,7 +427,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
                 "WaffleStudio", 4
             )
         )
-        userEntity.role = "INSTRUCTOR"
+        userEntity.role = UserDto.Role.INSTRUCTOR
         val savedUserEntity = userRepository.save(userEntity);
         return savedUserEntity
     }

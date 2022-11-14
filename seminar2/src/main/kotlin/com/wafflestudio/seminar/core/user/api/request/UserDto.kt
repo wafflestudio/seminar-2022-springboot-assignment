@@ -2,6 +2,8 @@ package com.wafflestudio.seminar.core.user.api.request
 
 import com.querydsl.core.annotations.QueryProjection
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarDto
+import com.wafflestudio.seminar.core.user.database.UserEntity
+import com.wafflestudio.seminar.core.userseminar.database.UserSeminarEntity
 import java.time.LocalDateTime
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.PositiveOrZero
@@ -16,7 +18,7 @@ class UserDto {
         @field:NotBlank(message = "You should write 'password'.")
         val password: String?,
         @field:NotBlank(message = "You should write 'role'.")
-        val role: String,
+        val role: Role,
         val university: String?,
         val isRegistered: Boolean?,
         val company: String?,
@@ -24,6 +26,10 @@ class UserDto {
         val year: Int?
     )
 
+    enum class Role {
+        PARTICIPANT, INSTRUCTOR
+    }
+    
     data class UpdateRequest(
         val username: String?,
         val password: String?,
@@ -88,8 +94,17 @@ class UserDto {
         val username: String,
         val email: String,
         val joinedAt: LocalDateTime
-    )
-
+    ) {
+        companion object {
+            fun of(userEntity: UserEntity, userSeminarEntity: UserSeminarEntity) =
+                SeminarInstructorProfileResponse(
+                    id = userSeminarEntity.id,
+                    username = userEntity.username,
+                    email = userEntity.email,
+                    joinedAt = userSeminarEntity.joinedAt!!,
+                )
+        }
+    }
 
 }
 

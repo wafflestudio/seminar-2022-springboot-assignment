@@ -11,7 +11,9 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="entityManagerFactory" />
+        </datasource-mapping>
         <naming-strategy-map />
       </configuration>
     </facet>
@@ -199,13 +201,22 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_11">
-    <output-test url="file://$MODULE_DIR$/../../seminar2/build/classes/java/test" />
+    <output-test url="file://$MODULE_DIR$/../../seminar2/build/classes/kotlin/test" />
     <exclude-output />
+    <content url="file://$MODULE_DIR$/../../seminar2/build/generated/source/kapt/test">
+      <sourceFolder url="file://$MODULE_DIR$/../../seminar2/build/generated/source/kapt/test" isTestSource="true" generated="true" />
+    </content>
     <content url="file://$MODULE_DIR$/../../seminar2/build/generated/source/kapt/test">
       <sourceFolder url="file://$MODULE_DIR$/../../seminar2/build/generated/source/kapt/test" isTestSource="true" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../seminar2/build/generated/source/kaptKotlin/test">
       <sourceFolder url="file://$MODULE_DIR$/../../seminar2/build/generated/source/kaptKotlin/test" isTestSource="true" generated="true" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../seminar2/build/generated/source/kaptKotlin/test">
+      <sourceFolder url="file://$MODULE_DIR$/../../seminar2/build/generated/source/kaptKotlin/test" isTestSource="true" generated="true" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../seminar2/src/test">
+      <sourceFolder url="file://$MODULE_DIR$/../../seminar2/src/test/kotlin" isTestSource="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../seminar2/src/test">
       <sourceFolder url="file://$MODULE_DIR$/../../seminar2/src/test/kotlin" isTestSource="true" />

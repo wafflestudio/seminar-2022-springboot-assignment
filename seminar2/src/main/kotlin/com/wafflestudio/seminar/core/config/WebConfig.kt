@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.config
+package com.wafflestudio.seminar.core.config
 
 import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext

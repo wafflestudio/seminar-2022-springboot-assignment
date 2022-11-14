@@ -13,13 +13,14 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
 
 interface UserRepository : JpaRepository<UserEntity, Long> {
-
+    
     fun findByEmail(email: String): UserEntity?
     fun existsByEmail(email: String): Boolean
 }
 
 interface UserRepositorySupport {
     fun getProfile(userId: Long): UserDto.UserProfileResponse
+    fun findAllWithUserIds(userIds: List<Long>): List<UserEntity>
 }
 
 @Component
@@ -28,6 +29,18 @@ class UserRepositorySupportImpl(
 ) : UserRepositorySupport {
     private val queryFactory = queryDslConfig.jpaQueryFactory()
 
+    override fun findAllWithUserIds(userIds: List<Long>): List<UserEntity> {
+        return queryFactory
+            .select(userEntity)
+            .from(userEntity)
+            .leftJoin(userEntity.instructorProfileEntity)
+            .fetchJoin()
+            .leftJoin(userEntity.participantProfileEntity)
+            .fetchJoin()
+            .where(userEntity.id.`in`(userIds))
+            .fetch()
+    }
+    
     override fun getProfile(userId: Long): UserDto.UserProfileResponse {
         val seminars = queryFactory
             .select(
@@ -42,7 +55,7 @@ class UserRepositorySupportImpl(
             )
             .from(userEntity)
             .rightJoin(userSeminarEntity)
-            .on(userSeminarEntity.`in`(userEntity.userSeminarEntities), userSeminarEntity.role.eq("PARTICIPANT"))
+            .on(userSeminarEntity.`in`(userEntity.userSeminarEntities), userSeminarEntity.role.eq(UserDto.Role.PARTICIPANT))
             .where(userEntity.id.eq(userId))
             .fetch()
 
@@ -57,7 +70,7 @@ class UserRepositorySupportImpl(
             )
             .from(userEntity)
             .rightJoin(userSeminarEntity)
-            .on(userSeminarEntity.`in`(userEntity.userSeminarEntities), userSeminarEntity.role.eq("INSTRUCTOR"))
+            .on(userSeminarEntity.`in`(userEntity.userSeminarEntities), userSeminarEntity.role.eq(UserDto.Role.INSTRUCTOR))
             .where(userEntity.id.eq(userId))
             .fetch()
 

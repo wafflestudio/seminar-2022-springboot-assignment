@@ -4,7 +4,7 @@ import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar401
 import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.common.Seminar409
-import com.wafflestudio.seminar.config.AuthConfig
+import com.wafflestudio.seminar.core.config.AuthConfig
 import com.wafflestudio.seminar.core.user.api.request.UserDto
 import com.wafflestudio.seminar.core.user.database.*
 import org.springframework.stereotype.Service
@@ -42,14 +42,14 @@ class UserServiceImpl(
             password = authConfig.passwordEncoder().encode(req.password)
         )
         when (req.role) {
-            "PARTICIPANT" -> {
+            UserDto.Role.PARTICIPANT -> {
                 userEntity.role = req.role
                 userEntity.participantProfileEntity = ParticipantProfileEntity(
                     university = req.university ?: "",
                     isRegistered = req.isRegistered ?: true
                 )
             }
-            "INSTRUCTOR" -> {
+            UserDto.Role.INSTRUCTOR -> {
                 userEntity.role = req.role
                 userEntity.instructorProfileEntity = InstructorProfileEntity(
                     company = req.company ?: "",

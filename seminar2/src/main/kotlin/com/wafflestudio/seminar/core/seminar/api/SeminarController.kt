@@ -4,6 +4,7 @@ import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarDto
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
+import com.wafflestudio.seminar.core.user.api.request.UserDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -45,7 +46,7 @@ class SeminarController(
         @RequestHeader(value = "Authorization") authorization: String,
         @RequestParam(name = "name", required = false) name: String?,
         @RequestParam(name = "order", required = false) earliest: String?
-    ): ResponseEntity<MutableList<SeminarDto.SeminarProfileSimplifiedResponse>> =
+    ): ResponseEntity<List<SeminarDto.SeminarProfileSimplifiedResponse>> =
         ResponseEntity(seminarService.getSeminars(name, earliest), HttpStatus.OK)
 
     @Authenticated

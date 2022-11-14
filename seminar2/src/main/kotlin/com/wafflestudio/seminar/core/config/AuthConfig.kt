@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.config
+package com.wafflestudio.seminar.core.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

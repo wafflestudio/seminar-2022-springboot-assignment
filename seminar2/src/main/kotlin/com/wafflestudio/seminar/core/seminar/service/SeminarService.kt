@@ -5,9 +5,11 @@ import com.wafflestudio.seminar.core.seminar.api.request.SeminarDto
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
 import com.wafflestudio.seminar.core.seminar.database.SeminarRepositorySupport
+import com.wafflestudio.seminar.core.user.api.request.UserDto
 import com.wafflestudio.seminar.core.user.database.*
 import com.wafflestudio.seminar.core.userseminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.userseminar.database.UserSeminarRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -20,7 +22,7 @@ interface SeminarService {
     fun makeSeminar(userId: Long, req: SeminarDto.SeminarRequest): SeminarDto.SeminarProfileResponse
     fun updateSeminar(userId: Long, req: SeminarDto.UpdateSeminarRequest): SeminarDto.SeminarProfileResponse
     fun getSeminarById(seminarId: Long): SeminarDto.SeminarProfileResponse
-    fun getSeminars(name: String?, earliest: String?): MutableList<SeminarDto.SeminarProfileSimplifiedResponse>
+    fun getSeminars(name: String?, earliest: String?): List<SeminarDto.SeminarProfileSimplifiedResponse>
     fun participateSeminar(seminarId: Long, role: String, userId: Long): SeminarDto.SeminarProfileResponse
     fun dropSeminar(seminarId: Long, userId: Long): SeminarDto.SeminarProfileResponse
 }
@@ -30,8 +32,10 @@ class SeminarServiceImpl(
     private val seminarRepository: SeminarRepository,
     private val userRepository: UserRepository,
     private val userSeminarRepository: UserSeminarRepository,
-    private val seminarRepositorySupport: SeminarRepositorySupport
+    private val seminarRepositorySupport: SeminarRepositorySupport,
+    private val userRepositorySupport: UserRepositorySupport,
 ) : SeminarService {
+
 
     @Transactional
     override fun makeSeminar(userId: Long, req: SeminarDto.SeminarRequest): SeminarDto.SeminarProfileResponse {
@@ -41,7 +45,7 @@ class SeminarServiceImpl(
             throw Seminar403("Only instructor can make a seminar.")
         }
         for (userSeminarEntity in userEntity.userSeminarEntities) {
-            if (userSeminarEntity.role == "INSTRUCTOR") {
+            if (userSeminarEntity.role == UserDto.Role.INSTRUCTOR) {
                 throw Seminar400("You are already conducting the other seminar. You can not conduct this seminar.")
             }
         }
@@ -60,14 +64,14 @@ class SeminarServiceImpl(
             managerId = userId
         )
         val userSeminarEntity = UserSeminarEntity(
-            role = "INSTRUCTOR",
+            role = UserDto.Role.INSTRUCTOR,
             isActive = true,
             userEntity = userEntity,
             seminarEntity = seminarEntity,
         )
-        val seminarId = seminarRepository.save(seminarEntity).id
+        seminarRepository.save(seminarEntity).id
         userSeminarRepository.save(userSeminarEntity)
-        return seminarRepositorySupport.getSeminarById(seminarId)
+        return seminarEntity.toDto()
     }
 
     @Transactional
@@ -88,46 +92,74 @@ class SeminarServiceImpl(
         req.time?.let { seminarEntity.time = it }
         req.online?.let { seminarEntity.online = it }
         seminarEntity.modifiedAt = LocalDateTime.now()
-        val seminarId = seminarRepository.save(seminarEntity).id
-        return seminarRepositorySupport.getSeminarById(seminarId)
+        seminarRepository.save(seminarEntity).id
+        return seminarEntity.toDto()
     }
 
     @Transactional
     override fun getSeminarById(seminarId: Long): SeminarDto.SeminarProfileResponse {
-        if (!seminarRepository.existsById(seminarId)) {
-            throw Seminar404("This seminar doesn't exist.")
-        }
-        return seminarRepositorySupport.getSeminarById(seminarId)
+        val seminar = seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("This seminar doesn't exist.")
+        return seminar.toDto()
+    }
+
+    private fun SeminarEntity.toDto(): SeminarDto.SeminarProfileResponse {
+        val userSeminars = userSeminarRepository.findAllBySeminarEntity_Id(id)
+        val (instructors, participants) = userSeminars!!.partition { us -> us.isInstructor }
+
+        val instructorProjections = seminarRepositorySupport.findInstructorProjections(instructors.map { it.id })
+        val participantProjections = seminarRepositorySupport.findParticipantProjections(participants.map { it.id })
+
+        return SeminarDto.SeminarProfileResponse.of(this, instructorProjections, participantProjections)
     }
 
     @Transactional
     override fun getSeminars(
         name: String?,
         earliest: String?
-    ): MutableList<SeminarDto.SeminarProfileSimplifiedResponse> {
-        val doEarliest: Boolean = earliest.equals("earliest")
-        return seminarRepositorySupport.getSeminars(name, doEarliest)
+    ): List<SeminarDto.SeminarProfileSimplifiedResponse> {
+        val isAscending: Boolean = earliest.equals("earliest")
+        val seminars = seminarRepositorySupport.getSeminarList(name, isAscending)
+
+        val userIds = seminars.flatMap { it.userSeminarEntities.map { it.userEntity.id } }
+        val userMap = userRepositorySupport.findAllWithUserIds(userIds).associateBy { it.id }
+
+        return seminars.map { seminar ->
+            val userSeminars = seminar.userSeminarEntities
+            val (instructors, participants) = userSeminars.partition { it.isInstructor }
+            val instructorProjections = instructors.map { inst ->
+                UserDto.SeminarInstructorProfileResponse.of(
+                    userMap[inst.userEntity.id]!!,
+                    inst
+                )
+            }
+            SeminarDto.SeminarProfileSimplifiedResponse.of(seminar, instructorProjections)
+        }
     }
 
     @Transactional
-    override fun participateSeminar(seminarId: Long, role: String, userId: Long): SeminarDto.SeminarProfileResponse {
-        if (!seminarRepository.existsById(seminarId)) {
-            throw Seminar404("This seminar doesn't exist.")
+    override fun participateSeminar(
+        seminarId: Long,
+        roleString: String,
+        userId: Long
+    ): SeminarDto.SeminarProfileResponse {
+        val role = when (roleString) {
+            "PARTICIPANT" -> UserDto.Role.PARTICIPANT
+            "INSTRUCTOR" -> UserDto.Role.INSTRUCTOR
+            else -> throw Seminar400("'role' should be either PARTICIPANT or INSTRUCTOR.")
         }
-        if (role != "PARTICIPANT" && role != "INSTRUCTOR") {
-            throw Seminar400("'role' should be either PARTICIPANT or INSTRUCTOR.")
-        }
+        val seminarEntity =
+            seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("This seminar doesn't exist.")
         val userEntity = userRepository.findById(userId).get()
-        val seminarEntity = seminarRepository.findById(seminarId).get()
-        for (userSeminarEntity in userEntity.userSeminarEntities) {
-            if (userSeminarEntity.seminarEntity == seminarEntity) {
-                if (userSeminarEntity.isActive)
-                    throw Seminar400("You are already in this seminar as a " + userSeminarEntity.role + ".")
-                else
-                    throw Seminar400("You dropped this seminar before. You can not participate in this seminar again.")
-            }
+        val userSeminar = userSeminarRepository.findByUserEntity_Id(userId)
+
+        if (userSeminar != null) {
+            if (userSeminar.isActive)
+                throw Seminar400("You are already in this seminar as a " + userSeminar.role + ".")
+            else
+                throw Seminar400("You dropped this seminar before. You can not participate in this seminar again.")
         }
-        if (role == "PARTICIPANT") {
+        
+        if (role == UserDto.Role.PARTICIPANT) {
             if (userEntity.participantProfileEntity == null) {
                 throw Seminar403("Only participant can participate in a seminar")
             }
@@ -144,7 +176,7 @@ class SeminarServiceImpl(
                 throw Seminar403("Only instructor can conduct a seminar.")
             }
             for (userSeminarEntity in userEntity.userSeminarEntities) {
-                if (userSeminarEntity.role == "INSTRUCTOR") {
+                if (userSeminarEntity.role == UserDto.Role.INSTRUCTOR) {
                     throw Seminar400("You are already conducting the other seminar. You can not conduct this seminar.")
                 }
             }
@@ -157,30 +189,27 @@ class SeminarServiceImpl(
             seminarEntity = seminarEntity,
         )
         userSeminarRepository.save(userSeminarEntity)
-        return seminarRepositorySupport.getSeminarById(seminarId)
+        return seminarEntity.toDto()
     }
 
     @Transactional
     override fun dropSeminar(seminarId: Long, userId: Long): SeminarDto.SeminarProfileResponse {
-        if (!seminarRepository.existsById(seminarId)) {
-            throw Seminar404("This seminar doesn't exist.")
-        }
-        val userEntity = userRepository.findById(userId).get()
-        if (userEntity.role == "INSTRUCTOR") {
+        val seminarEntity =
+            seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("This seminar doesn't exist.")
+        val userEntity = userRepository.findById(userId)!!.get()
+        if (userEntity.role == UserDto.Role.INSTRUCTOR) {
             throw Seminar403("Instructor can not drop the seminar.")
         }
-        val seminarEntity = seminarRepository.findById(seminarId).get()
-        for (userSeminarEntity in userEntity.userSeminarEntities) {
-            if (userSeminarEntity.seminarEntity == seminarEntity) {
-                userSeminarEntity.isActive = false
-                userSeminarEntity.droppedAt = LocalDateTime.now()
-                userSeminarEntity.modifiedAt = LocalDateTime.now()
-                seminarEntity.participantCount -= 1L
-                userSeminarRepository.save(userSeminarEntity)
-                break
-            }
-        }
-        return seminarRepositorySupport.getSeminarById(seminarId)
+        val userSeminarEntities = userSeminarRepository.findAllBySeminarEntity_Id(seminarId)
+        val userSeminarEntity = userSeminarEntities!!.find { it.userEntity.id == userId } ?: return seminarEntity.toDto()
+
+        userSeminarEntity.isActive = false
+        userSeminarEntity.droppedAt = LocalDateTime.now()
+        userSeminarEntity.modifiedAt = LocalDateTime.now()
+        seminarEntity.participantCount -= 1L
+        userSeminarRepository.save(userSeminarEntity)
+
+        return seminarEntity.toDto()
     }
 
 }

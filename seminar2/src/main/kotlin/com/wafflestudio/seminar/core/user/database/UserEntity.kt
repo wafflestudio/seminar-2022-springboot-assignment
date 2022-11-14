@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.user.database
 
 import com.wafflestudio.seminar.common.BaseTimeEntity
+import com.wafflestudio.seminar.core.user.api.request.UserDto
 import com.wafflestudio.seminar.core.userseminar.database.UserSeminarEntity
 import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
@@ -26,7 +27,7 @@ class UserEntity(
 
 ) : BaseTimeEntity() {
     
-    lateinit var role: String
+    lateinit var role: UserDto.Role
     
     @OneToMany(mappedBy = "userEntity", cascade = [CascadeType.REMOVE])
     var userSeminarEntities: MutableList<UserSeminarEntity> = mutableListOf()
