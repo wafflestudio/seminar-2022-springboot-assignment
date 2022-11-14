@@ -51,6 +51,10 @@ class SeminarServiceImpl(
         val instructorProfile = meUser.instructorProfile
                 ?: throw Seminar403("Not an instructor.")
         
+        if (userSeminarRepository.existsByUserAndRole(meUser, INSTRUCTOR)) {
+            throw Seminar400("Already instructing seminar")
+        }
+        
         val seminar = SeminarEntity(
                 name = seminarPostRequest.name,
                 capacity = seminarPostRequest.capacity!!,
@@ -135,6 +139,11 @@ class SeminarServiceImpl(
         if (userSeminarRepository.existsByUserAndSeminar(meUser, seminar)) {
             throw Seminar400("Already in Seminar")
         }
+
+        // if already instructing some seminar, throw error
+        if (userSeminarRepository.existsByUserAndRole(meUser, INSTRUCTOR)) {
+            throw Seminar400("Already instructor in other seminar")
+        }
         
         @Transactional
         fun attendSeminar(r: String) {
@@ -164,11 +173,7 @@ class SeminarServiceImpl(
                 }
             }
             INSTRUCTOR -> {
-                if (userSeminarRepository.existsByUserAndRole(meUser, INSTRUCTOR)) {
-                    throw Seminar400("Already instructor in other seminar")
-                } else {
-                    attendSeminar(INSTRUCTOR)
-                }
+                attendSeminar(INSTRUCTOR)
             }
             else -> throw Seminar400("Invalid role given.")
         }
