@@ -36,7 +36,6 @@ class UserController(
     } else {
         meUser?.let {
             userService.modifyUserInformation(modifyUserRequest, meUser)
-            ResponseEntity<String>("Modified", HttpStatus.OK)
         }
             ?: ResponseEntity<String>("Failed to get user information.", HttpStatus.UNAUTHORIZED)
     }

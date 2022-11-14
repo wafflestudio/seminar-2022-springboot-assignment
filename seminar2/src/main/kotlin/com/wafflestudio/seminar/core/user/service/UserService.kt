@@ -22,7 +22,7 @@ import javax.transaction.Transactional
 interface UserService {
     fun constructUserInformationById(userId: Long): UserResponse
     fun constructUserInformationByUser(user: UserEntity): UserResponse
-    fun modifyUserInformation(modifyUserRequest: ModifyUserRequest, meUser: UserEntity)
+    fun modifyUserInformation(modifyUserRequest: ModifyUserRequest, meUser: UserEntity): UserResponse
     fun addToParticipantAndReturnUserInfo(
         participantProfileRequest: ParticipantProfileRequest,
         meUser: UserEntity
@@ -98,7 +98,7 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun modifyUserInformation(modifyUserRequest: ModifyUserRequest, meUser: UserEntity) {
+    override fun modifyUserInformation(modifyUserRequest: ModifyUserRequest, meUser: UserEntity): UserResponse {
         val isParticipant: Boolean = meUser.participantProfile != null
         val isInstructor: Boolean = meUser.instructorProfile != null
 
@@ -123,6 +123,8 @@ class UserServiceImpl(
                 if (modifyUserRequest.year <= 0) { throw UserException400("Not Appropriate Year given") } else { meUser.instructorProfile!!.year = modifyUserRequest.year }
             }
         }
+        
+        return constructUserInformationByUser(meUser)
     }
 
     override fun addToParticipantAndReturnUserInfo(
