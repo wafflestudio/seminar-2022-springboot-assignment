@@ -17,11 +17,11 @@ import javax.persistence.MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
 abstract class BaseTimeEntity {
 
-    @CreatedDate @CreationTimestamp
+    @CreationTimestamp
     @Column(columnDefinition = "datetime(6) default '1999-01-01'")
     var createdAt: LocalDateTime? = null
 
-    @CreatedDate @UpdateTimestamp
+    @UpdateTimestamp
     @Column(columnDefinition = "datetime(6) default '1999-01-01'")
     var modifiedAt: LocalDateTime? = null
 
