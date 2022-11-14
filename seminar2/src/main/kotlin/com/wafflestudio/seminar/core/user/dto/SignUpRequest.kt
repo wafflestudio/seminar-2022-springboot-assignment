@@ -55,7 +55,6 @@ data class SignUpRequest(
                     userEntity
                 )
                 userEntity.participantProfile = participantProfileEntity
-                participantProfileRepository.save(participantProfileEntity)
                 userRepository.save(userEntity)
             }
             "instructor" -> {
@@ -70,7 +69,6 @@ data class SignUpRequest(
                     userEntity
                 )
                 userEntity.instructorProfile = instructorProfileEntity
-                instructorProfileRepository.save(instructorProfileEntity)
                 userRepository.save(userEntity)
             }
             else -> { // Cannot be executed
