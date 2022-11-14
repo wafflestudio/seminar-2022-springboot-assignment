@@ -1,11 +1,13 @@
 package com.wafflestudio.seminar.core.user.service
 
+import com.wafflestudio.seminar.core.user.database.UserRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Header
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -19,6 +21,7 @@ interface AuthTokenService {
 @EnableConfigurationProperties(AuthProperties::class)
 class AuthTokenServiceImpl(
     private val authProperties: AuthProperties,
+    private val userRepository: UserRepository,
 ) : AuthTokenService {
     private val tokenPrefix = "Bearer "
     private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
@@ -41,6 +44,7 @@ class AuthTokenServiceImpl(
     override fun verifyToken(authToken: String): Boolean {
         try {
             parse(authToken).body
+            getCurrentUserId(authToken)
         } catch (e: RuntimeException) {
             return false
         }
@@ -48,9 +52,10 @@ class AuthTokenServiceImpl(
     }
 
     override fun getCurrentUserId(authToken: String): Long {
-        val userId = parse(authToken).body["userId"] as? Int
+        val userId = parse(authToken).body["userId"] as? Long
             ?: throw AuthException("잘못된 아이디에 대한 토큰입니다")
-        return userId.toLong()
+        userRepository.findByIdOrNull(userId) ?: throw AuthException("잘못된 아이디에 대한 토큰입니다")
+        return userId
     }
 
     private fun parse(authToken: String): Jws<Claims> {
