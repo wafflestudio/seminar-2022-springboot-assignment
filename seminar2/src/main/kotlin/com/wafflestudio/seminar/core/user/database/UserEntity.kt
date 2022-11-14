@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
-@Table(name = "user")
+@Table(name = "`user`")
 class UserEntity(
     @Column(name = "email", unique = true)
     val email: String,

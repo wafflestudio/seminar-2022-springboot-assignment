@@ -8,7 +8,7 @@ class InstructorProfileEntity(
     @Column(name = "company")
     var company: String? = "",
 
-    @Column(name = "year")
+    @Column(name = "`year`")
     var year: Int? = null,
 
     ) {
