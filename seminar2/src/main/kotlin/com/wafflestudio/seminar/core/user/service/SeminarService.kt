@@ -35,7 +35,7 @@ class SeminarService(
 
     @Transactional
     // Query Count 예상: 8, 실제: 10
-    fun createSeminar(seminar: SeminarRequest, token: String): GetSeminarInfo {
+    fun createSeminar(seminar: SeminarRequest, userId: Long): GetSeminarInfo {
         if (seminar.name == null || seminar.capacity == null || seminar.count == null || seminar.time == null) {
             throw Seminar400("입력하지 않은 값이 있습니다")
 
@@ -47,16 +47,16 @@ class SeminarService(
         }
 
         // Query #1 -> [N+1] but was 2: fetching instructor profile
-        if (userRepository.findByEmail(authTokenService.getCurrentEmail(token))?.instructor == null) {
+        if (userRepository.findByIdOrNull(userId)?.instructor == null) {
             throw Seminar403("진행자만 세미나를 생성할 수 있습니다")
         }
 
 
         // Query #2
-        val saveSeminarEntity = seminarRepository.save(SeminarEntity(seminar, token))
+        val saveSeminarEntity = seminarRepository.save(SeminarEntity(seminar, userId))
 
         // Query #3, #4, #5 -> [N+1] but was 4:  fetching instructor profile
-        userSeminarRepository.save(userSeminarInstructorEntity(seminar, token))
+        userSeminarRepository.save(userSeminarInstructorEntity(seminar, userId))
 
         // Query #6, #7
 
@@ -82,7 +82,7 @@ class SeminarService(
 
     // Query Count 예상: 4, 실제: 5
     @Transactional
-    fun updateSeminar(seminar: SeminarRequest, token: String): UpdateSeminarInfo {
+    fun updateSeminar(seminar: SeminarRequest, userId: Long): UpdateSeminarInfo {
 
         if (seminar.name == null || seminar.capacity == null || seminar.count == null || seminar.time == null) {
             throw Seminar400("입력하지 않은 값이 있습니다")
@@ -95,7 +95,7 @@ class SeminarService(
         }
 
         // Query #1 -> [N+1] but was 2: fetching instructor profile
-        if (userRepository.findByEmail(authTokenService.getCurrentEmail(token))?.instructor == null) {
+        if (userRepository.findByIdOrNull(userId)?.instructor == null) {
             throw Seminar403("세미나를 수정할 자격이 없습니다")
         }
 
@@ -104,7 +104,7 @@ class SeminarService(
 
         val seminarEntity = seminarRepository.findByName(seminar.name)
 
-        if (userSeminarRepository.findAll().none { it.user?.email == authTokenService.getCurrentEmail(token) }) {
+        if (userSeminarRepository.findAll().none { it.user?.id == userId }) {
             throw Seminar403("진행자만 세미나를 생성할 수 있습니다")
         }
 
@@ -124,7 +124,7 @@ class SeminarService(
 
     // Query Count 예상: 4, 실제: 15
     @Transactional
-    fun getSeminarById(id: Long, token: String): GetSeminarInfo {
+    fun getSeminarById(id: Long): GetSeminarInfo {
         // Query #1
         if (seminarRepository.findById(id).isEmpty) {
             throw Seminar404("해당하는 세미나가 없습니다")
@@ -165,7 +165,7 @@ class SeminarService(
 
     // Query Count 예상: 1, 실제: 1
     @Transactional
-    fun getSeminarList(name: String?, order: String?, token: String): List<GetSeminarInfo> {
+    fun getSeminarList(name: String?, order: String?): List<GetSeminarInfo> {
         // Query #1
 
         val seminarList = seminarDslRepository.getListByNameAndOrder(name, order)
@@ -189,12 +189,12 @@ class SeminarService(
 
     @Transactional
     // Query Count 예상: 17, 실제: 29
-    fun joinSeminar(id: Long, role: Map<String, String>, token: String): GetSeminarInfo {
+    fun joinSeminar(id: Long, role: Map<String, String>, userId: Long): GetSeminarInfo {
 
         // Query #1
         val seminar = seminarRepository.findByIdOrNull(id) ?: throw Seminar404("해당하는 세미나가 없습니다.")
         // Query #2
-        val user = userRepository.findByIdOrNull(authTokenService.getCurrentUserId(token))
+        val user = userRepository.findByIdOrNull(userId)
                 ?: throw Seminar403("등록되어 있지 않습니다")
 
         // Query #3 -> [N+1]
@@ -277,9 +277,9 @@ class SeminarService(
 
     // Query Count 예상: 7, 실제: 19
     @Transactional
-    fun dropSeminar(id: Long, token: String): GetSeminarInfo {
+    fun dropSeminar(id: Long, userId: Long): GetSeminarInfo {
         // Query #1 -> [N+1] but was 2: fetching participant profile
-        val findByEmailEntity = userRepository.findByEmail(authTokenService.getCurrentEmail(token))
+        val findByEmailEntity = userRepository.findByIdOrNull(userId)
 
         if (findByEmailEntity?.let {
                     // Query #2
@@ -303,7 +303,7 @@ class SeminarService(
         // Query #7 -> [N+1] but was 11
         val seminar = seminarRepository.findByIdOrNull(id) ?: throw Seminar404("")
         val userSeminars = userSeminarRepository.findAllBySeminar(seminar)
-        val userSeminar = userSeminars?.find { it.user?.email == authTokenService.getCurrentEmail(token) }
+        val userSeminar = userSeminars?.find { it.user?.id == userId }
         userSeminar?.isActive = false
         userSeminar?.droppedAt = LocalDateTime.now()
 
@@ -333,7 +333,7 @@ class SeminarService(
     }
 
 
-    private fun SeminarEntity(seminar: SeminarRequest, token: String) = seminar.run {
+    private fun SeminarEntity(seminar: SeminarRequest, userId: Long) = seminar.run {
         com.wafflestudio.seminar.core.user.domain.SeminarEntity(
                 name = seminar.name,
                 capacity = seminar.capacity,
@@ -343,9 +343,9 @@ class SeminarService(
         )
     }
 
-    private fun userSeminarInstructorEntity(seminar: SeminarRequest, token: String): UserSeminarEntity {
+    private fun userSeminarInstructorEntity(seminar: SeminarRequest, userId: Long): UserSeminarEntity {
         return UserSeminarEntity(
-                user = userRepository.findByEmail(authTokenService.getCurrentEmail(token)),
+                user = userRepository.findByIdOrNull(userId),
                 seminar = seminarRepository.findByName(seminar.name),
                 role = "INSTRUCTOR",
                 joinedAt = LocalDateTime.now(),

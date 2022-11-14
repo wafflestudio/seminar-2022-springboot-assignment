@@ -1,6 +1,7 @@
 package com.wafflestudio.seminar.core.user.api
 
 import com.wafflestudio.seminar.common.Authenticated
+import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.api.response.*
 import com.wafflestudio.seminar.core.user.service.*
@@ -52,52 +53,39 @@ class Controller(
     }
     
     @PostMapping("seminar")
-    fun createSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authorization") token: String): GetSeminarInfo {
+    fun createSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetSeminarInfo {
         
-        return seminarService.createSeminar(seminar, token)
+        return seminarService.createSeminar(seminar, userId)
     }
 
     @PutMapping("seminar")
-    fun updateSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authorization") token: String): UpdateSeminarInfo {
+    fun updateSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): UpdateSeminarInfo {
 
-        return seminarService.updateSeminar(seminar, token)
+        return seminarService.updateSeminar(seminar, userId)
     }
     
     @GetMapping("seminar/{seminar_id}")
-    fun getSeminarById(@PathVariable seminar_id: Long, @RequestHeader("Authorization") token: String):GetSeminarInfo{
-        return seminarService.getSeminarById(seminar_id,token)
+    fun getSeminarById(@PathVariable seminar_id: Long):GetSeminarInfo{
+        return seminarService.getSeminarById(seminar_id)
     }
     
 
-    /*
-    * TODO: 해당하는 api가 없습니다.
-    *       seminars -> seminar로 수정되어야 합니다.
-    */
     @GetMapping("seminar")
-    fun getSeminarList(@RequestParam @Nullable name: String?, @RequestParam @Nullable order: String?, @RequestHeader("Authorization") token: String): List<GetSeminarInfo>{
-        return seminarService.getSeminarList(name, order, token)
+    fun getSeminarList(@RequestParam @Nullable name: String?, @RequestParam @Nullable order: String?): List<GetSeminarInfo>{
+        return seminarService.getSeminarList(name, order)
     }
 
-    
-    /*
-    * TODO: name과 order는 없을 수도 있기 때문에 nullable하게 선언되어야 합니다.
-    *       또한 스펙에 따르면 return값은 GetSeminarInfoByName이 아니라 List<GetSeminarInfoByName>이어야 합니다.
-    *//*
-    @GetMapping("seminar")
-    fun getSeminarByName(@RequestParam @Nullable name: String?, @RequestParam @Nullable order: String?, @RequestHeader("Authorization") token: String): GetSeminarInfoByName {
-        return seminarService.getSeminarByName(name, order, token)
-    }
-    */
+   
     
     @PostMapping("seminar/{seminar_id}/user")
-    fun joinSeminar(@PathVariable seminar_id: Long, @RequestBody role: Map<String,String>, @RequestHeader("Authorization") token: String): GetSeminarInfo{
+    fun joinSeminar(@PathVariable seminar_id: Long, @RequestBody role: Map<String,String>, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetSeminarInfo{
         
-        return seminarService.joinSeminar(seminar_id,role, token)
+        return seminarService.joinSeminar(seminar_id,role, userId)
     }
     
     @DeleteMapping("seminar/{seminar_id}/user")
-    fun dropSeminar(@PathVariable seminar_id: Long,@RequestHeader("Authorization") token: String): GetSeminarInfo {
-        return seminarService.dropSeminar(seminar_id,token)
+    fun dropSeminar(@PathVariable seminar_id: Long,@RequestHeader("Authorization") token: String, @UserContext userId: Long): GetSeminarInfo {
+        return seminarService.dropSeminar(seminar_id,userId)
         
     }
     

@@ -22,7 +22,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.`in`
 import org.junit.jupiter.api.assertThrows
+import org.mockito.BDDMockito.anyLong
 import org.springframework.data.repository.findByIdOrNull
 import java.time.LocalDateTime
 import javax.transaction.Transactional
@@ -60,7 +62,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
-            seminarService.createSeminar(seminarRequest, "token")
+            seminarService.createSeminar(seminarRequest, 1)
         }
 
         // Then
@@ -75,7 +77,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val seminarRequest = SeminarRequest(null, 30, 6, "19:00", false)
 
         // When
-        val response = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest, "token") }
+        val response = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest, 1) }
 
         // Then
         assertThat(response.message).isEqualTo("입력하지 않은 값이 있습니다")
@@ -90,9 +92,9 @@ internal class SeminarServiceTest @Autowired constructor(
         val seminarRequest3 = SeminarRequest("spring", 30, -2, "19:00", false)
 
         // When
-        val response1 = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest1, "token") }
-        val response2 = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest2, "token") }
-        val response3 = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest3, "token") }
+        val response1 = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest1, 1) }
+        val response2 = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest2, 1) }
+        val response3 = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest3, 1) }
 
         // Then
         assertThat(response1.message).isEqualTo("형식에 맞지 않게 입력하지 않은 값이 있습니다")
@@ -109,7 +111,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val seminarRequest = SeminarRequest("spring", 30, 6, "19:00", false)
 
         // When
-        val response = assertThrows<Seminar403> { seminarService.createSeminar(seminarRequest, "token") }
+        val response = assertThrows<Seminar403> { seminarService.createSeminar(seminarRequest, 1) }
 
         // Then
         assertThat(response.message).isEqualTo("진행자만 세미나를 생성할 수 있습니다")
@@ -123,14 +125,14 @@ internal class SeminarServiceTest @Autowired constructor(
     @Test
     fun `(updateSeminar) 세미나 수정하기`() {
         // Given
-        seminarService.createSeminar(SeminarRequest("spring", 30, 6, "19:00", false), "token")
+        seminarService.createSeminar(SeminarRequest("spring", 30, 6, "19:00", false), 1)
         val seminarRequest = SeminarRequest("spring", 300, 60, "20:00", true)
 
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
 
-            seminarService.updateSeminar(seminarRequest, "token")
+            seminarService.updateSeminar(seminarRequest, 1)
         }
 
         // Then
@@ -150,7 +152,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val seminarRequest = SeminarRequest(null, 30, 6, "19:00", false)
 
         // When
-        val response = assertThrows<Seminar400> { seminarService.updateSeminar(seminarRequest, "token") }
+        val response = assertThrows<Seminar400> { seminarService.updateSeminar(seminarRequest, 1) }
 
         // Then
         assertThat(response.message).isEqualTo("입력하지 않은 값이 있습니다")
@@ -165,9 +167,9 @@ internal class SeminarServiceTest @Autowired constructor(
         val seminarRequest3 = SeminarRequest("spring", 30, -2, "19:00", false)
 
         // When
-        val response1 = assertThrows<Seminar400> { seminarService.updateSeminar(seminarRequest1, "token") }
-        val response2 = assertThrows<Seminar400> { seminarService.updateSeminar(seminarRequest2, "token") }
-        val response3 = assertThrows<Seminar400> { seminarService.updateSeminar(seminarRequest3, "token") }
+        val response1 = assertThrows<Seminar400> { seminarService.updateSeminar(seminarRequest1, 1) }
+        val response2 = assertThrows<Seminar400> { seminarService.updateSeminar(seminarRequest2, 1) }
+        val response3 = assertThrows<Seminar400> { seminarService.updateSeminar(seminarRequest3, 1) }
 
         // Then
         assertThat(response1.message).isEqualTo("형식에 맞지 않게 입력하지 않은 값이 있습니다")
@@ -184,7 +186,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val seminarRequest = SeminarRequest("spring", 30, 6, "19:00", false)
 
         // When
-        val response = assertThrows<Seminar403> { seminarService.updateSeminar(seminarRequest, "token") }
+        val response = assertThrows<Seminar403> { seminarService.updateSeminar(seminarRequest, 1) }
 
         // Then
         assertThat(response.message).isEqualTo("세미나를 수정할 자격이 없습니다")
@@ -201,7 +203,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val seminarRequest = SeminarRequest("spring", 300, 60, "20:00", true)
 
         // When
-        val response = assertThrows<Seminar403> { seminarService.updateSeminar(seminarRequest, "token") }
+        val response = assertThrows<Seminar403> { seminarService.updateSeminar(seminarRequest, 2) }
 
         // Then
         assertThat(response.message).isEqualTo("진행자만 세미나를 생성할 수 있습니다")
@@ -220,7 +222,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
-            seminarService.getSeminarById(list[0].id, "token")
+            seminarService.getSeminarById(list[0].id)
         }
 
         // Then
@@ -238,7 +240,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val id = 100L
 
         // When
-        val response = assertThrows<Seminar404> { seminarService.getSeminarById(id, "token") }
+        val response = assertThrows<Seminar404> { seminarService.getSeminarById(id) }
 
         // Then
         assertThat(response.message).isEqualTo("해당하는 세미나가 없습니다")
@@ -257,7 +259,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
-            seminarService.getSeminarList(null, null, "token")
+            seminarService.getSeminarList(null, null)
         }
 
         // Then
@@ -281,7 +283,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
-            seminarService.getSeminarList(name, order, "token")
+            seminarService.getSeminarList(name, order)
         }
 
         // Then
@@ -301,11 +303,10 @@ internal class SeminarServiceTest @Autowired constructor(
         // Given
         val list = createFixtures()
         val participant = userTestHelper.createParticipant("participant@snu.ac.kr")
-        given(authTokenService.getCurrentUserId(anyString())).willReturn(participant.id)
         val role = mapOf<String, String>("role" to "PARTICIPANT")
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
-            seminarService.joinSeminar(list[0].id, role, "token")
+            seminarService.joinSeminar(list[0].id, role, participant.id)
         }
 
         // Then
@@ -321,12 +322,11 @@ internal class SeminarServiceTest @Autowired constructor(
         // Given
         val list = createFixtures()
         val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
-        given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
         val role = mapOf<String, String>("role" to "INSTRUCTOR")
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
-            seminarService.joinSeminar(list[0].id, role, "token")
+            seminarService.joinSeminar(list[0].id, role, instructor.id)
         }
 
         // Then
@@ -341,11 +341,10 @@ internal class SeminarServiceTest @Autowired constructor(
     fun `(joinSeminar) 해당하는 Seminar가 없는 경우 404로 응답`() {
         // Given
         val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
-        given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
         val role = mapOf<String, String>("role" to "INSTRUCTOR")
 
         // When
-        val response = assertThrows<Seminar404> { seminarService.joinSeminar(100, role, "token") }
+        val response = assertThrows<Seminar404> { seminarService.joinSeminar(100, role, instructor.id) }
 
         // Then
         assertThat(response.message).isEqualTo("해당하는 세미나가 없습니다.")
@@ -357,11 +356,10 @@ internal class SeminarServiceTest @Autowired constructor(
         // Given
         val list = createFixtures()
         val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
-        given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
         val role = mapOf<String, String>("role" to "INSTRUCTOR1")
 
         // When
-        val response = assertThrows<Seminar400> { seminarService.joinSeminar(list[0].id, role, "token") }
+        val response = assertThrows<Seminar400> { seminarService.joinSeminar(list[0].id, role, instructor.id) }
 
         // Then
         assertThat(response.message).isEqualTo("진행자 혹은 수강자가 아닙니다.")
@@ -373,11 +371,10 @@ internal class SeminarServiceTest @Autowired constructor(
         // Given
         val list = createFixtures()
         val participant = userRepository.save(UserEntity("", "", "", LocalDate.now()))
-        given(authTokenService.getCurrentUserId(anyString())).willReturn(participant.id)
         val role = mapOf<String, String>("role" to "PARTICIPANT")
 
         // When
-        val response = assertThrows<Seminar403> { seminarService.joinSeminar(list[0].id, role, "token") }
+        val response = assertThrows<Seminar403> { seminarService.joinSeminar(list[0].id, role, participant.id) }
 
         // Then
         assertThat(response.message).isEqualTo("참가자로 등록되어 있지 않습니다")
@@ -389,11 +386,10 @@ internal class SeminarServiceTest @Autowired constructor(
         // Given
         val list = createFixtures()
         val participant = userTestHelper.createParticipant("participant@snu.ac.kr", isRegistered = false)
-        given(authTokenService.getCurrentUserId(anyString())).willReturn(participant.id)
         val role = mapOf<String, String>("role" to "PARTICIPANT")
 
         // When
-        val response = assertThrows<Seminar403> { seminarService.joinSeminar(list[0].id, role, "token") }
+        val response = assertThrows<Seminar403> { seminarService.joinSeminar(list[0].id, role, participant.id) }
 
         // Then
         assertThat(response.message).isEqualTo("활성회원이 아닙니다")
@@ -406,15 +402,13 @@ internal class SeminarServiceTest @Autowired constructor(
         val list = createFixtures()
         val role = mapOf<String, String>("role" to "PARTICIPANT")
         val participant1 = userTestHelper.createParticipant("participant1@snu.ac.kr")
-        given(authTokenService.getCurrentUserId(anyString())).willReturn(participant1.id)
 
-        seminarService.joinSeminar(list[0].id, role, "token")
+        seminarService.joinSeminar(list[0].id, role, participant1.id)
 
         val participant2 = userTestHelper.createParticipant("participant2@snu.ac.kr")
-        given(authTokenService.getCurrentUserId(anyString())).willReturn(participant2.id)
 
         // When
-        val response = assertThrows<Seminar400> { seminarService.joinSeminar(list[0].id, role, "token") }
+        val response = assertThrows<Seminar400> { seminarService.joinSeminar(list[0].id, role, participant2.id) }
 
         // Then
         assertThat(response.message).isEqualTo("세미나의 인원이 다 찼습니다")
@@ -427,13 +421,13 @@ internal class SeminarServiceTest @Autowired constructor(
         val list = createFixtures()
         val instructor = userTestHelper.createInstructor("instructor@snu.ac.kr")
         given(authTokenService.getCurrentEmail(anyString())).willReturn("instructor@snu.ac.kr")
-        seminarService.createSeminar(SeminarRequest("test", 10, 10, "10:00"), "token")
+        seminarService.createSeminar(SeminarRequest("test", 10, 10, "10:00"), instructor.id)
 
         given(authTokenService.getCurrentUserId(anyString())).willReturn(instructor.id)
         val role = mapOf<String, String>("role" to "INSTRUCTOR")
 
         // When
-        val response = assertThrows<Seminar400> { seminarService.joinSeminar(list[0].id, role, "token") }
+        val response = assertThrows<Seminar400> { seminarService.joinSeminar(list[0].id, role,instructor.id) }
 
         // Then
         assertThat(response.message).isEqualTo("이미 다른 세미나를 진행하고 있습니다.")
@@ -448,7 +442,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val role = mapOf<String, String>("role" to "PARTICIPANT")
 
         // When
-        val response = assertThrows<Seminar400> { seminarService.joinSeminar(list[0].id, role, "token") }
+        val response = assertThrows<Seminar400> { seminarService.joinSeminar(list[0].id, role, 2) }
 
         // Then
         assertThat(response.message).isEqualTo("이미 세미나에 참여하고 있습니다")
@@ -462,11 +456,11 @@ internal class SeminarServiceTest @Autowired constructor(
         val id = list[0].id
         given(authTokenService.getCurrentUserId(anyString())).willReturn(list[0].userSeminars?.get(0)?.user?.id)
         given(authTokenService.getCurrentEmail(anyString())).willReturn("participant#1@snu.ac.kr")
-        seminarService.dropSeminar(id, "token")
+        seminarService.dropSeminar(id, 4)
         val role = mapOf<String, String>("role" to "PARTICIPANT")
 
         // When
-        val response = assertThrows<Seminar400> { seminarService.joinSeminar(id, role, "token") }
+        val response = assertThrows<Seminar400> { seminarService.joinSeminar(id, role, 4) }
 
         // Then
         
@@ -488,11 +482,11 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {
-            seminarService.dropSeminar(id, "token")
+            seminarService.dropSeminar(id, 3L)
         }
 
         // Then
-        assertThat(response.participants!!.find { it.email == "participant#1@snu.ac.kr" }!!.isActive).isEqualTo(false)
+        assertThat(response.participants!!.find { it.id == 3L }!!.isActive).isEqualTo(false)
         println(queryCount)
         // assertThat(queryCount).isEqualTo(7) // [N+1] but was 19
     }
@@ -505,7 +499,7 @@ internal class SeminarServiceTest @Autowired constructor(
         given(authTokenService.getCurrentEmail(anyString())).willReturn("participant#1@snu.ac.kr")
 
         // When
-        val response = assertThrows<Seminar404> { seminarService.dropSeminar(100, "token") }
+        val response = assertThrows<Seminar404> { seminarService.dropSeminar(100, 4) }
 
         // Then
         assertThat(response.message).isEqualTo("해당 세미나를 신청한 적이 없습니다")
@@ -519,13 +513,17 @@ internal class SeminarServiceTest @Autowired constructor(
         given(authTokenService.getCurrentEmail(anyString())).willReturn("instructor#1@snu.ac.kr")
 
         // When
-        val response = assertThrows<Seminar403> { seminarService.dropSeminar(list[0].id, "token") }
+        val response = assertThrows<Seminar403> { seminarService.dropSeminar(list[0].id, 2) }
 
         // Then
         assertThat(response.message).isEqualTo("진행자는 세미나를 드랍할 수 없습니다")
     }
 
 
+
+ 
+
+ 
     private fun createFixtures(num: Int = 1): List<SeminarEntity> {
 
         val list = mutableListOf<SeminarEntity>()
