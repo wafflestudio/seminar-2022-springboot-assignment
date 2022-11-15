@@ -9,7 +9,6 @@ import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarRepository
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
 import com.wafflestudio.seminar.core.user.database.UserEntity
-import com.wafflestudio.seminar.core.user.database.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,7 +16,6 @@ import java.time.LocalDateTime
 
 @Service
 class SeminarService(
-    private val userRepository: UserRepository,
     private val seminarRepository: SeminarRepository,
     private val seminarDslRepository: SeminarDslRepository,
     private val userSeminarRepository: UserSeminarRepository
@@ -102,10 +100,17 @@ class SeminarService(
         val seminarEntity = seminarRepository.findByIdOrNull(seminarId)
             ?: throw Seminar400("$seminarId 의 세미나는 존재하지 않습니다.")
 
-        val userSeminarEntity = userSeminarRepository.findAll()
+        val userSeminarEntityList = userSeminarRepository.findAll()
+        val userSeminarEntity = userSeminarEntityList
             .firstOrNull { it.user.id == userEntity.id && it.seminar.id == seminarId }
-            ?: return null
+            ?: throw Seminar400("세미나에 참여하고 있지 않습니다.")
 
+        val instructorUserSeminarEntityList = userSeminarEntityList
+            .filter { it.seminar.id == seminarId && it.role == "instructor" && it.isActive }
+        if (instructorUserSeminarEntityList.size == 1 && instructorUserSeminarEntityList[0].user.id == userEntity.id) {
+            throw Seminar400("세미나의 강사는 세미나를 드랍할 수 없습니다.")
+        }
+        
         if (!userSeminarEntity.isActive)
             throw Seminar400("이전에 이미 세미나를 드랍한 적이 있습니다.")
 
