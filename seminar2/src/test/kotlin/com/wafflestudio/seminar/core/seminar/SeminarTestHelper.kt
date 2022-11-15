@@ -2,6 +2,7 @@ package com.wafflestudio.seminar.core.seminar
 
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
+import com.wafflestudio.seminar.core.seminar.database.UserSeminarRepository
 import org.springframework.stereotype.Component
 
 @Component

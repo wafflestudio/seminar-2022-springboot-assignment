@@ -37,6 +37,10 @@ class SeminarService(
     
     @Transactional
     fun createSeminar(user: UserEntity, createSeminarDTO: CreateSeminarDTO): Seminar {
+        if (user.instructor == null) {
+            throw Seminar400("강사가 아닌 사용자는 세미나를 생성할 수 없습니다.")
+        }
+        
         val seminarEntity = seminarRepository.save(createSeminarDTO.toEntity())
         val userSeminarEntity = userSeminarRepository.save(UserSeminarEntity(
             user = user,
