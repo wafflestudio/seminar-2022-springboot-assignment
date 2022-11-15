@@ -41,7 +41,7 @@ internal class SeminarServiceTest @Autowired constructor(
         createFixtures()
         
         // when
-        val (result, queryCount) = hibernateQueryCounter.count {
+        val (result, queryCount) = hibernateQueryCounter.count<List<Seminar>> {
             seminarService.getSeminarList("", "")
         }
 
@@ -215,12 +215,76 @@ internal class SeminarServiceTest @Autowired constructor(
 
     @Test
     fun `세미나 드랍 - participant 가 세미나를 드랍할 수 있다`() {
-        throw NotImplementedError()
+        val participant: UserEntity = userTestHelper.createParticipant("participant@email.com", "", "", "", true)
+        val joinSeminarDTO = JoinSeminarDTO(role = "participant")
+        val seminar: SeminarEntity = seminarTestHelper.createSeminar("seminar#1", 100, 10, "00:00", true)
+
+        // when
+        seminarService.joinSeminar(participant, seminar.id, joinSeminarDTO)
+        seminarService.dropSeminar(participant, seminar.id)
+        
+        // then
+        val userSeminarList: List<UserSeminarEntity> = userSeminarRepository.findAll()
+        assertThat(userSeminarList).hasSize(1)
+        assertThat(userSeminarList[0].user.id).isEqualTo(participant.id)
+        assertThat(userSeminarList[0].seminar.id).isEqualTo(seminar.id)
+        assertThat(userSeminarList[0].isActive).isFalse()
+    }
+
+    @Test
+    fun `세미나 드랍 - 잘못된 seminar id 를 주면 400을 반환한다`() {
+        val participant: UserEntity = userTestHelper.createParticipant("participant@email.com", "", "", "", true)
+        val joinSeminarDTO = JoinSeminarDTO(role = "participant")
+        val seminar: SeminarEntity = seminarTestHelper.createSeminar("seminar#1", 100, 10, "00:00", true)
+
+        // when
+        seminarService.joinSeminar(participant, seminar.id, joinSeminarDTO)
+        val thrown: Throwable = Assertions.catchThrowable{ seminarService.dropSeminar(participant, seminar.id + 1) }
+        
+        // then
+        assertThat(thrown).isInstanceOf(Seminar400::class.java)
+    }
+
+    @Test
+    fun `세미나 드랍 - 참여하고 있지 않은 세미나면 400을 반환한다`() {
+        val participant: UserEntity = userTestHelper.createParticipant("participant@email.com", "", "", "", true)
+        val joinSeminarDTO = JoinSeminarDTO(role = "participant")
+        val seminar: SeminarEntity = seminarTestHelper.createSeminar("seminar#1", 100, 10, "00:00", true)
+
+        // when
+        val thrown: Throwable = Assertions.catchThrowable{ seminarService.dropSeminar(participant, seminar.id + 1) }
+
+        // then
+        assertThat(thrown).isInstanceOf(Seminar400::class.java)
+    }
+    
+    @Test
+    fun `세미나 드랍 - participant 가 세미나를 두 번 드랍할 수 없다`() {
+        val participant: UserEntity = userTestHelper.createParticipant("participant@email.com", "", "", "", true)
+        val joinSeminarDTO = JoinSeminarDTO(role = "participant")
+        val seminar: SeminarEntity = seminarTestHelper.createSeminar("seminar#1", 100, 10, "00:00", true)
+
+        // when
+        seminarService.joinSeminar(participant, seminar.id, joinSeminarDTO)
+        seminarService.dropSeminar(participant, seminar.id)
+        val thrown: Throwable = Assertions.catchThrowable{ seminarService.dropSeminar(participant, seminar.id) }
+
+        // then
+        assertThat(thrown).isInstanceOf(Seminar400::class.java)
     }
 
     @Test
     fun `세미나 드랍 - 마지막 instructor 는 세미나를 드랍할 수 없다`() {
-        throw NotImplementedError()
+        val instructor: UserEntity = userTestHelper.createInstructor("instructor@email.com", "", "","", null)
+        val joinSeminarDTO = JoinSeminarDTO(role = "instructor")
+        val seminar: SeminarEntity = seminarTestHelper.createSeminar("seminar#1", 100, 10, "00:00", true)
+
+        // when
+        seminarService.joinSeminar(instructor, seminar.id, joinSeminarDTO)
+        val thrown: Throwable = Assertions.catchThrowable{ seminarService.dropSeminar(instructor, seminar.id) }
+
+        // then
+        assertThat(thrown).isInstanceOf(Seminar400::class.java)
     }
     
     private fun createFixtures() {
