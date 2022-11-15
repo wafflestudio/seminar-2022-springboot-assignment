@@ -40,8 +40,10 @@ class UserCustomRepositoryImpl(
         return queryFactory
             .select(userEntity)
             .from(userEntity)
-            .leftJoin(userEntity.participantProfile).fetchJoin()
-            .leftJoin(userEntity.instructorProfile).fetchJoin()
+            .leftJoin(participantProfile)
+            .on(participantProfile.user.id.eq(userEntity.id)).fetchJoin()
+            .leftJoin(instructorProfile)
+            .on(instructorProfile.user.id.eq(userEntity.id)).fetchJoin()
             .where(userEntity.id.`in`(userIds))
             .fetch()
     }

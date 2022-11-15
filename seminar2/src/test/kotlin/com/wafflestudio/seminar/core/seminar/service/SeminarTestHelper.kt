@@ -13,6 +13,7 @@ import com.wafflestudio.seminar.core.user.repository.ParticipantProfileRepositor
 import com.wafflestudio.seminar.core.user.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class SeminarTestHelper @Autowired constructor(
@@ -22,6 +23,7 @@ class SeminarTestHelper @Autowired constructor(
         private val seminarRepository: SeminarRepository,
         private val userSeminarRepository: UserSeminarRepository,
 ) {
+    @Transactional
     fun createInstructor(
             email: String,
             username: String,
@@ -48,14 +50,16 @@ class SeminarTestHelper @Autowired constructor(
         return userRepository.save(user)
     }
 
+    @Transactional
     fun createUser(
         email: String,
         username: String,
         password: String,
         role: RoleType,
-    ) = UserEntity(
-            email, username, password, role
-    ).let { userRepository.save(it) }
+    ): UserEntity {
+        val user = UserEntity(email, username, password, role)
+        return userRepository.save(user)
+    }
 
     fun createInstructorProfile(
         company: String,
@@ -69,6 +73,7 @@ class SeminarTestHelper @Autowired constructor(
         user: UserEntity,
     ) = ParticipantProfile(university, isRegistered, user)
 
+    @Transactional
     fun createSeminar(
         name: String,
         instructor: String,
@@ -76,10 +81,10 @@ class SeminarTestHelper @Autowired constructor(
         count: Long,
         time: String,
         online: Boolean,
-    ) = SeminarEntity(
-            name, instructor, capacity, count, time, online
-    ).let { seminarRepository.save(it) }
+    ) = SeminarEntity(name, instructor, capacity, count, time, online)
+        .let { seminarRepository.save(it) }
 
+    @Transactional
     fun createUserSeminarEntity(
         user: UserEntity,
         seminar: SeminarEntity,

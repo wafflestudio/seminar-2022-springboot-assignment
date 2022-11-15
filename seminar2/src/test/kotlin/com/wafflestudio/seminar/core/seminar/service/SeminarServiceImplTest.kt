@@ -244,6 +244,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
      */
 
     @Test
+    @Transactional
     fun `Could find seminar by id efficiently`() {
         // given
         val (instructorList, _) = initializeUsers()
@@ -256,14 +257,11 @@ internal class SeminarServiceImplTest @Autowired constructor(
         }
         
         assertThat(foundSeminarDTO).extracting("id").isEqualTo(seminar.id)
-        /* 쿼리 실행 횟수 = 총 4번
-        - 해당 id를 가진 세미나가 존재하는지 확인 -> 쿼리 1번 실행 : seminarRepository.existsById(seminarId)
-        - 존재한다면, 그 세미나 정보 가져오기 -> 쿼리 3번 실행    : seminarRepository.findSeminarById(seminarId)
-          + (1) 해당 세미나 id 값 가져오기
-          + (2) 해당 세미나를 진행하는 instructor 정보 가져오기 
-          + (3) 해당 세미나에 참여했던 + 하던 participant 정보 가져오기
+        /* 쿼리 실행 횟수 = 총 2번
+        - 해당 id를 가진 세미나가 존재하는지 확인          -> 쿼리 1번 실행 : seminarRepository.existsById(seminarId)
+        - 존재한다면, 그 세미나 정보 가져와서 DTO로 내보내기 -> 쿼리 1번 실행    : seminarRepository.findSeminarById(seminarId)
         */
-        assertThat(cnt).isLessThanOrEqualTo(4)
+        assertThat(cnt).isEqualTo(2)
     }
     
     @Test
@@ -443,6 +441,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     }
     
     
+    @Transactional
     fun initializeUsers(): Pair<List<UserEntity>, List<UserEntity>> {
         val instructorList = (0 .. 2).map {i ->
             seminarTestHelper.createInstructor(

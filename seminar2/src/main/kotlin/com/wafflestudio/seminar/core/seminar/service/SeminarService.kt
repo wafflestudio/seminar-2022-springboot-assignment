@@ -37,7 +37,7 @@ class SeminarServiceImpl(
 ): SeminarService {
 
     private fun SeminarEntity.toDTO(): SeminarDTO {
-        val userSeminars = userSeminarRepository.findBySeminar_Id(id)!!
+        val userSeminars = userSeminarRepository.findAllBySeminar_Id(id)
 
         val userIds = userSeminars.map { it.user.id }
         val users = userRepository.findWithProfiles(userIds).associateBy { it.id }
@@ -54,15 +54,15 @@ class SeminarServiceImpl(
     
     
     private fun checkInstructingSeminars(userId: Long): Int {
-        val seminars = userSeminarRepository.findByUser_Id(userId)
-            ?.filter { (it.role == INSTRUCTOR) && (it.isActive) }
-        return seminars?.size ?: 0
+        val seminars = userSeminarRepository.findAllByUser_Id(userId)
+        return if (seminars.isEmpty()) 0
+            else seminars.filter { (it.role == INSTRUCTOR) && it.isActive }.size
     }
     
     private fun checkCapacity(seminarId: Long): Int {
-        val participants = userSeminarRepository.findBySeminar_Id(seminarId)
-            ?.filter{ (it.role == PARTICIPANT) && (it.isActive) }
-        return participants?.size ?: 0
+        val participants = userSeminarRepository.findAllBySeminar_Id(seminarId)
+            .filter{ (it.role == PARTICIPANT) && (it.isActive) }
+        return participants.size
     }
     
     
@@ -100,11 +100,9 @@ class SeminarServiceImpl(
         val instructor = userRepository.findById(userId).get()
         if (instructor.role != INSTRUCTOR) throw SeminarException(ErrorCode.EDIT_SEMINAR_FORBIDDEN)
         // 이 instructor가 가르치고 있는 세미나 확인
-        var instructingSeminar = userSeminarRepository.findByUser_Id(instructor.id)
-            ?.find { it.role == INSTRUCTOR && it.isActive }
-            ?.seminar 
-            // null -> 수정할 수 있는 세미나가 존재하지 않음. 403 에러 처리
-            ?: throw SeminarException(ErrorCode.EDIT_SEMINAR_FORBIDDEN)
+        val instructingSeminar = userSeminarRepository.findAllByUser_Id(instructor.id).run {
+            this.find{ it.role == INSTRUCTOR && it.isActive }?.seminar
+        }?: throw SeminarException(ErrorCode.EDIT_SEMINAR_FORBIDDEN)  // 담당 세미나 x. 즉, 수정 가능한 세미나 없음 -> 403 에러
         
         // 만약 request에 id (=seminar_id) 값이 들어왔다면, 유저가 가르치는 세미나의 id와 일치하는지 확인
         if (request.id != null && instructingSeminar.id != request.id) {
