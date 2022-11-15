@@ -10,16 +10,59 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Component
-class MemoryDB {
+class MemoryDB : SurveyResponseDB, OsDB {
     private val operatingSystems = mutableListOf<OperatingSystem>()
     private val surveyResponses = mutableListOf<SurveyResponse>()
 
+<<<<<<< HEAD
+    
+
+    override fun getOperatingSystems(): List<OperatingSystem> {
+        return operatingSystems
+    }
+
+    override fun getSurveyResponses(): List<SurveyResponse> {
+=======
     fun getOperatingSystems(): List<OperatingSystem> {
         return operatingSystems
     }
 
     fun getSurveyResponses(): List<SurveyResponse> {
+>>>>>>> 70abd32c4e04fc14d4120c219eb493f4add948bc
         return surveyResponses
+    }
+
+    override fun getSurveyResponseById(id: Long): SurveyResponse {
+        var result: SurveyResponse? = null
+        for (surveyResponse in surveyResponses) {
+            if (surveyResponse.id == id) {
+                result = surveyResponse
+                break
+            }
+        }
+        return result ?: throw IllegalArgumentException("id#${id} NOT FOUND")
+    }
+
+    override fun getOperatingSystemById(id: Long): OperatingSystem {
+        var result: OperatingSystem? = null
+        for (operatingSystem in operatingSystems) {
+            if (operatingSystem.id == id) {
+                result = operatingSystem
+                break
+            }
+        }
+        return result ?: throw IllegalArgumentException("ID#${id} NOT FOUND")
+    }
+
+    override fun getOperatingSystemByOSName(osName: String): OperatingSystem {
+        var result: OperatingSystem? = null
+        for (operatingSystem in operatingSystems) {
+            if (operatingSystem.osName == osName) {
+                result = operatingSystem
+                break
+            }
+        }
+        return result ?: throw IllegalArgumentException("OS Name\"${osName}\" NOT FOUND")
     }
 
     /**
@@ -48,7 +91,10 @@ class MemoryDB {
                 val rawSurveyResponse = it.split("\t")
                 SurveyResponse(
                     id = idx.toLong(),
-                    timestamp = LocalDateTime.parse(rawSurveyResponse[0], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    timestamp = LocalDateTime.parse(
+                        rawSurveyResponse[0],
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    ),
                     operatingSystem = operatingSystems.find { os -> os.osName == rawSurveyResponse[1] }!!,
                     springExp = rawSurveyResponse[2].toInt(),
                     rdbExp = rawSurveyResponse[3].toInt(),

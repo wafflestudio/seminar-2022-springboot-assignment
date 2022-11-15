@@ -1,5 +1,6 @@
 package com.wafflestudio.seminar.survey.domain
 
+import com.wafflestudio.seminar.user.domain.User
 import java.time.LocalDateTime
 
 data class SurveyResponse(
@@ -10,8 +11,9 @@ data class SurveyResponse(
     val programmingExp: Int,
     val major: String,
     val grade: String,
-    val timestamp: LocalDateTime,
+    val timestamp: LocalDateTime? = null,
     val backendReason: String? = null,
     val waffleReason: String? = null,
-    val somethingToSay: String? = null
+    val somethingToSay: String? = null,
+    val user: User? = null
 )

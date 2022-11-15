@@ -1,12 +1,12 @@
 package com.wafflestudio.seminar.survey.api
 
+import com.wafflestudio.seminar.survey.api.request.CreateSurveyRequest
 import com.wafflestudio.seminar.survey.service.SeminarService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import com.wafflestudio.seminar.exception.Seminar403
+import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("/api/v1")
 class SeminarController(
     private val service: SeminarService
 ) {
@@ -28,5 +28,18 @@ class SeminarController(
     fun getSurvey(
         @PathVariable surveyId: Long,
     ) = service.surveyResponse(surveyId)
+
+    @PostMapping("/survey")
+    fun postSurvey(
+        @RequestHeader(value = "X-User-ID", required = false) id : Long?,
+        @RequestBody req: CreateSurveyRequest
+    ) : String {
+        if (id == null) {
+            throw Seminar403("정의한 헤더가 존재하지 않습니다.")
+        } else {
+            return service.postSurvey(id, req)
+        }
+    }
+
 
 }
