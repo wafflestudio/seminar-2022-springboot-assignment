@@ -22,7 +22,6 @@ class UserSeminarCustomRepositoryImpl (
     private val queryFactory = queryDslConfig.jpaQueryFactory()
 
     override fun findInstructors(userId: Long): InstructorSeminarDTO? {
-        println("---------------findInstructors---------------")
         return queryFactory
             .select(
                 Projections.constructor(

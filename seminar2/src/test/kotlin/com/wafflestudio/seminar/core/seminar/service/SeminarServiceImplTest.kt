@@ -224,11 +224,9 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val (seminarList, _) = initializeSeminars(instructorList)
         
         // when
-        println("시작은 어디니 !")
         val (sortedSeminarList, cnt) = queryCounter.count {
             seminarService.findSeminarsContainingWord(null, order="earliest")
         }
-        println("끝이 어디야 ?!")
         
         assertThat(sortedSeminarList).isSortedAccordingTo { o1, o2 -> 
             seminarRepository.findByIdOrNull(o1.id)!!.createdAt!!.compareTo(
