@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
-import javax.transaction.Transactional
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
 internal class SeminarServiceImplTest @Autowired constructor(
@@ -187,6 +187,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
      * Test findSeminarContainingWord
      */
     @Test
+    @Transactional
     fun `Could find seminar containing word efficiently`() {
         // given
         val (instructorList, _) = initializeUsers()
@@ -212,10 +213,16 @@ internal class SeminarServiceImplTest @Autowired constructor(
         assertThat(foundedSeminarList[0].instructors?.get(0))
                 .extracting("joinedAt")
                 .isEqualTo(userSeminar!!.joinedAt)
-        assertThat(cnt).isLessThanOrEqualTo(1)
+        
+        /* 쿼리 실행 횟수 = 총 2번 (= 조건 충족 세미나 수 + 1)
+        - 해당 단어를 이름에 포함하는 세미나 조회   -> 쿼리 1번 실행 : seminarRepository.findSeminarsContainingWord(word, order)
+        - 해당 세미나에 참여한/했던 유저 정보 조회  -> 각각 쿼리 1번 실행, 총 세미나 수만큼 실행 : userRepository.findWithProfiles(userIds)
+        */
+        assertThat(cnt).isEqualTo(2)
     }
     
     @Test
+    @Transactional
     fun `Could sort seminar earliest efficiently`() {
         // given
         val (instructorList, _) = initializeUsers()
@@ -231,9 +238,12 @@ internal class SeminarServiceImplTest @Autowired constructor(
                     seminarRepository.findByIdOrNull(o2.id)!!.createdAt!!
             )
         }
-        
-        
-        assertThat(cnt).isLessThanOrEqualTo(sortedSeminarList.size)
+
+        /* 쿼리 실행 횟수 = 총 4번 (=세미나 수 + 1)
+        - 전체 세미나 조회             -> 쿼리 1번 실행 : seminarRepository.findSeminarsContainingWord(word, order)
+        - 세미나별로 참여 유저 정보 조회 -> 각각 쿼리 1번 실행, 총 세미나 수만큼 실행 : userRepository.findWithProfiles(userIds)
+        */
+        assertThat(cnt).isEqualTo(sortedSeminarList.size + 1)
     }
 
 
@@ -256,8 +266,8 @@ internal class SeminarServiceImplTest @Autowired constructor(
         
         assertThat(foundSeminarDTO).extracting("id").isEqualTo(seminar.id)
         /* 쿼리 실행 횟수 = 총 2번
-        - 해당 id를 가진 세미나가 존재하는지 확인          -> 쿼리 1번 실행 : seminarRepository.existsById(seminarId)
-        - 존재한다면, 그 세미나 정보 가져와서 DTO로 내보내기 -> 쿼리 1번 실행    : seminarRepository.findSeminarById(seminarId)
+        - 해당 id를 가진 세미나가 존재하는지 확인           -> 쿼리 1번 실행 : seminarRepository.existsById(seminarId)
+        - 존재한다면, 그 세미나 정보 가져와서 DTO로 내보내기  -> 쿼리 1번 실행 : seminarRepository.findSeminarById(seminarId)
         */
         assertThat(cnt).isEqualTo(2)
     }

@@ -34,15 +34,18 @@ class SeminarServiceImpl(
     private val seminarRepository: SeminarRepository,
     private val userSeminarRepository: UserSeminarRepository
 ): SeminarService {
-
-    private fun SeminarEntity.toDTO(): SeminarDTO {
-        val userSeminars = userSeminarRepository.findAllBySeminar_Id(id)
-
+    
+    private fun SeminarEntity.toDTO(
+        userSeminarList: MutableList<UserSeminarEntity>? = null
+    ): SeminarDTO {
+        val userSeminars = userSeminarList ?: userSeminarRepository.findAllBySeminar_Id(id)
+        
         val userIds = userSeminars.map { it.user.id }
         val users = userRepository.findWithProfiles(userIds).associateBy { it.id }
         val (instructors, participants) = userSeminars.partition { it.role == INSTRUCTOR }
-
+        
         val instructorProjections = instructors.map { inst -> SeminarInstructorDTO.of(users[inst.user.id]!!, inst) }
+        // 아직 해당 세미나의 참여자가 없을 수도 있음
         val participantProjections = 
             with(participants) {
                 if (participants.isEmpty()) null
@@ -52,8 +55,8 @@ class SeminarServiceImpl(
         return SeminarDTO.of(this, instructorProjections, participantProjections)
     }
     
-    private fun SeminarEntity.toGroupDto(): SeminarGroupByDTO
-        = SeminarGroupByDTO.of(this.toDTO())
+    private fun SeminarEntity.toGroupDto(userSeminarList: MutableList<UserSeminarEntity>?): SeminarGroupByDTO
+        = SeminarGroupByDTO.of(this.toDTO(userSeminarList))
     
     
     private fun checkInstructingSeminars(userId: Long): Int {
@@ -128,8 +131,7 @@ class SeminarServiceImpl(
     @Transactional(readOnly = true)
     override fun findSeminarsContainingWord(word: String?, order: String?): List<SeminarGroupByDTO> {
         val seminars = seminarRepository.findSeminarsContainingWord(word, order)
-        
-        return seminars.map { seminar -> seminar.toGroupDto() }
+        return seminars.map { seminar -> seminar.toGroupDto(seminar.userSeminarList) }
     }
         
 
