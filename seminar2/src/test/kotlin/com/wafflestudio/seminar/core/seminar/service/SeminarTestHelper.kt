@@ -1,15 +1,12 @@
 package com.wafflestudio.seminar.core.seminar.service
 
 import com.wafflestudio.seminar.core.UserSeminar.domain.UserSeminarEntity
-import com.wafflestudio.seminar.core.UserSeminar.repository.UserSeminarRepository
 import com.wafflestudio.seminar.core.seminar.domain.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.repository.SeminarRepository
 import com.wafflestudio.seminar.core.user.domain.UserEntity
 import com.wafflestudio.seminar.core.user.domain.enums.RoleType
 import com.wafflestudio.seminar.core.user.domain.profile.InstructorProfile
 import com.wafflestudio.seminar.core.user.domain.profile.ParticipantProfile
-import com.wafflestudio.seminar.core.user.repository.InstructorProfileRepository
-import com.wafflestudio.seminar.core.user.repository.ParticipantProfileRepository
 import com.wafflestudio.seminar.core.user.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -17,49 +14,43 @@ import org.springframework.transaction.annotation.Transactional
 
 @Component
 class SeminarTestHelper @Autowired constructor(
-        private val userRepository: UserRepository,
-        private val instructorProfileRepository: InstructorProfileRepository,
-        private val participantProfileRepository: ParticipantProfileRepository,
-        private val seminarRepository: SeminarRepository,
-        private val userSeminarRepository: UserSeminarRepository,
+    private val userRepository: UserRepository,
+    private val seminarRepository: SeminarRepository,
 ) {
     @Transactional
     fun createInstructor(
-            email: String,
-            username: String,
-            password: String,
-            company: String,
-            year: Int,
+        email: String,
+        username: String,
+        password: String,
+        company: String,
+        year: Int,
     ): UserEntity {
         val user = createUser(email, username, password, RoleType.INSTRUCTOR)
-        val instructorProfile = createInstructorProfile(company, year, user)
-        user.instructorProfile = instructorProfile
-        return userRepository.save(user)
-    }
-
-    fun createParticipant(
-            email: String,
-            username: String,
-            password: String,
-            university: String,
-            isRegistered: Boolean,
-    ): UserEntity {
-        val user = createUser(email, username, password, RoleType.PARTICIPANT)
-        val participantProfile = createParticipantProfile(university, isRegistered, user)
-        user.participantProfile = participantProfile
+        user.instructorProfile = createInstructorProfile(company, year, user)
         return userRepository.save(user)
     }
 
     @Transactional
+    fun createParticipant(
+        email: String,
+        username: String,
+        password: String,
+        university: String,
+        isRegistered: Boolean,
+    ): UserEntity {
+        val user = createUser(email, username, password, RoleType.PARTICIPANT)
+        user.participantProfile = createParticipantProfile(university, isRegistered, user)
+        return userRepository.save(user)
+    }
+
+
     fun createUser(
         email: String,
         username: String,
         password: String,
         role: RoleType,
-    ): UserEntity {
-        val user = UserEntity(email, username, password, role)
-        return userRepository.save(user)
-    }
+    ) = UserEntity(email, username, password, role)
+        .let { userRepository.save(it) }
 
     fun createInstructorProfile(
         company: String,
@@ -73,25 +64,32 @@ class SeminarTestHelper @Autowired constructor(
         user: UserEntity,
     ) = ParticipantProfile(university, isRegistered, user)
 
+    
     @Transactional
     fun createSeminar(
         name: String,
-        instructor: String,
+        instructor: UserEntity,
         capacity: Long,
         count: Long,
         time: String,
         online: Boolean,
-    ) = SeminarEntity(name, instructor, capacity, count, time, online)
-        .let { seminarRepository.save(it) }
+    ): SeminarEntity {
+        val seminar = SeminarEntity(name, instructor.username, capacity, count, time, online)
+        UserSeminarEntity(instructor, seminar).run {
+            seminar.userSeminarList = mutableListOf(this)
+            instructor.seminarList = mutableListOf(this)
+        }
+        //seminar.userSeminarList = mutableListOf(UserSeminarEntity(instructor, seminar))
+        
+        return seminarRepository.save(seminar)
+    }
 
     @Transactional
     fun createUserSeminarEntity(
         user: UserEntity,
         seminar: SeminarEntity,
-    ): UserSeminarEntity {
-        val userSeminar = UserSeminarEntity(user, seminar)
-        userSeminar.role = user.role
-        
-        return userSeminarRepository.save(userSeminar)
+    ) {
+        user.seminarList!!.add(UserSeminarEntity(user, seminar))
+        userRepository.save(user)  // 이렇게 해야 위 userSeminarEntity 정보가 repository에 저장되는 듯하다
     }
 }

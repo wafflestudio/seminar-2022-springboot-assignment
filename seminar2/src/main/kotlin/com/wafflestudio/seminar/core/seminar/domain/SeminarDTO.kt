@@ -27,7 +27,7 @@ class SeminarDTO @QueryProjection constructor(
         fun of(
             seminar: SeminarEntity,
             instructors: List<SeminarInstructorDTO>,
-            participants: List<SeminarParticipantDTO>
+            participants: List<SeminarParticipantDTO>?
         ) = seminar.run {
             SeminarDTO(
                 id = this.id,
@@ -37,7 +37,7 @@ class SeminarDTO @QueryProjection constructor(
                 time = this.time,
                 online = this.online,
                 instructors = instructors,
-                participants = participants
+                participants = participants?: listOf()
             )
         }
     }

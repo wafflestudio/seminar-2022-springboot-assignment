@@ -8,7 +8,6 @@ import com.wafflestudio.seminar.core.seminar.api.request.RegisterRequest
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.seminar.domain.*
 import com.wafflestudio.seminar.core.seminar.repository.SeminarRepository
-import com.wafflestudio.seminar.core.user.domain.UserEntity
 import com.wafflestudio.seminar.core.user.domain.enums.RoleType
 import com.wafflestudio.seminar.core.user.domain.enums.RoleType.*
 import com.wafflestudio.seminar.core.user.repository.UserRepository
@@ -43,8 +42,12 @@ class SeminarServiceImpl(
         val users = userRepository.findWithProfiles(userIds).associateBy { it.id }
         val (instructors, participants) = userSeminars.partition { it.role == INSTRUCTOR }
 
-        val instructorProjections = instructors.map { inst -> SeminarInstructorDTO.of(users[inst.id]!!, inst) }
-        val participantProjections = participants.map { part -> SeminarParticipantDTO.of(users[part.id]!!, part) }
+        val instructorProjections = instructors.map { inst -> SeminarInstructorDTO.of(users[inst.user.id]!!, inst) }
+        val participantProjections = 
+            with(participants) {
+                if (participants.isEmpty()) null
+                else this.map { part -> SeminarParticipantDTO.of(users[part.user.id]!!, part) }
+            }
         
         return SeminarDTO.of(this, instructorProjections, participantProjections)
     }
@@ -145,7 +148,7 @@ class SeminarServiceImpl(
         var seminar = seminarRepository.findByIdOrNull(seminarId)?:
             throw SeminarException(ErrorCode.SEMINAR_NOT_FOUND)
         // 유저 정보 찾기
-        var user = userRepository.findById(userId).get()
+        var user = userRepository.findByIdOrNull(userId)!!
          
         // 기존 수강 이력 존재? - 중도 포기 or 현재 참여중
         val oldReg = userSeminarRepository.findByUser_IdAndSeminar_Id(user.id, seminarId)?.also {
@@ -187,7 +190,9 @@ class SeminarServiceImpl(
                 newReg.role = INSTRUCTOR
             }
         }
-        userSeminarRepository.save(newReg)
+        //userSeminarRepository.save(newReg)
+        user.seminarList!!.add(newReg)
+        seminar.userSeminarList!!.add(newReg)
         
         return seminar.toDTO()
     }

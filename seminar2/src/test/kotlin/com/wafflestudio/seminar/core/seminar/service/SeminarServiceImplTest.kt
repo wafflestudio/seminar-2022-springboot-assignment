@@ -1,7 +1,6 @@
 package com.wafflestudio.seminar.core.seminar.service
 
 import com.wafflestudio.seminar.common.SeminarException
-import com.wafflestudio.seminar.core.UserSeminar.domain.UserSeminarEntity
 import com.wafflestudio.seminar.core.UserSeminar.repository.UserSeminarRepository
 import com.wafflestudio.seminar.core.seminar.api.request.RegisterRequest
 import com.wafflestudio.seminar.core.seminar.api.request.SeminarRequest
@@ -91,7 +90,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     fun `Throw 400 when user is already instructing other seminar while creating seminar`() {
         // given
         val (instructorList, _) = initializeUsers()
-        val (_, _) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         
         // when
         val instructor = instructorList[0]
@@ -110,12 +109,11 @@ internal class SeminarServiceImplTest @Autowired constructor(
      * Testing editSeminar
      */
     // FIXME
-    @Transactional
     @Test
     fun `Could edit seminar properly`() {
         // given
         val (instructorList, participantList) = initializeUsers()
-        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         
         // when
         val instructor = instructorList[0]
@@ -165,7 +163,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     fun `Throw 403 if seminar's instructor is not user while editting seminar`() {
         // given
         val (instructorList, _) = initializeUsers()
-        val (seminarList, _) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         
         // when
         val instructor1 = instructorList[1]
@@ -192,10 +190,10 @@ internal class SeminarServiceImplTest @Autowired constructor(
     fun `Could find seminar containing word efficiently`() {
         // given
         val (instructorList, _) = initializeUsers()
-        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         val instructor = instructorList[1]
         val seminar = seminarList[1]
-        val userSeminar = userSeminarList[1]
+        val userSeminar = userSeminarRepository.findByUser_IdAndSeminar_Id(instructor.id, seminar.id)
         
         // when
         val (foundedSeminarList, cnt) = queryCounter.count {
@@ -213,7 +211,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
                 .isEqualTo(instructor.id)
         assertThat(foundedSeminarList[0].instructors?.get(0))
                 .extracting("joinedAt")
-                .isEqualTo(userSeminar.joinedAt)
+                .isEqualTo(userSeminar!!.joinedAt)
         assertThat(cnt).isLessThanOrEqualTo(1)
     }
     
@@ -221,7 +219,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     fun `Could sort seminar earliest efficiently`() {
         // given
         val (instructorList, _) = initializeUsers()
-        val (seminarList, _) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         
         // when
         val (sortedSeminarList, cnt) = queryCounter.count {
@@ -248,7 +246,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     fun `Could find seminar by id efficiently`() {
         // given
         val (instructorList, _) = initializeUsers()
-        val (seminarList, _) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         val seminar = seminarList[0]
         
         // when
@@ -282,7 +280,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     fun `Could register seminar as participant`() {
         // given
         val (instructorList, participantList) = initializeUsers()
-        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         val participant = participantList[0]
         val seminar = seminarList[0]
         val request = RegisterRequest(role="PARTICIPANT")
@@ -299,23 +297,24 @@ internal class SeminarServiceImplTest @Autowired constructor(
     fun `Could register seminar as instructor`() {
         // given
         val (instructorList, participantList) = initializeUsers()
-        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
-        val boaringInstructor = seminarTestHelper.createInstructor(
+        val seminarList = initializeSeminars(instructorList)
+        
+        val boringInstructor = seminarTestHelper.createInstructor(
             "boring@email.com",
-            "boaring",
-            "boaringpassword",
-            "boaringCompany",
+            "boring",
+            "boringpassword",
+            "boringCompany",
             2011
         )
         val seminar = seminarList[0]
         val request = RegisterRequest(role="INSTRUCTOR")
 
         // when
-        val seminarDTO = seminarService.registerSeminar(boaringInstructor.id, seminar.id, request)
+        val seminarDTO = seminarService.registerSeminar(boringInstructor.id, seminar.id, request)
 
         // then
         assertThat(seminarDTO.instructors).hasSize(2)
-        assertThat(seminarDTO.instructors!![1]).extracting("id").isEqualTo(boaringInstructor.id)
+        assertThat(seminarDTO.instructors!![1]).extracting("id").isEqualTo(boringInstructor.id)
     }
     
     @Test
@@ -334,7 +333,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     fun `Throw 403 when participant is not active while registering seminar`() {
         // given
         val (instructorList, participantList) = initializeUsers()
-        val (seminarList, _) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         val unregisteredParticipant = seminarTestHelper.createParticipant(
                 email =  "a@a.com",
                 username = "hh",
@@ -357,7 +356,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     fun `Throw 403 when user register with wrong profile while registering seminar`() {
         // given
         val (instructorList, participantList) = initializeUsers()
-        val (seminarList, _) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         
         // when
         val newInstructor = seminarTestHelper.createInstructor(
@@ -390,7 +389,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     fun `Throw 400 if seminar is full while registering seminar`() {
         // given
         val (instructorList, participantList) = initializeUsers()
-        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         val seminar = seminarRepository.save(seminarList[0].apply { capacity = 0 })
         
         // when
@@ -405,7 +404,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
     fun `Throw 400 if instructor already instruct other seminar while registering seminar`() {
         // given 
         val (instructorList, participantList) = initializeUsers()
-        val (seminarList, userSeminarList) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         
         // when
         // then
@@ -417,10 +416,11 @@ internal class SeminarServiceImplTest @Autowired constructor(
     }
     
     @Test
+    @Transactional
     fun `Throw 400 if already registered in same seminar while registering seminar`() {
         // given 
         val (instructorList, participantList) = initializeUsers()
-        val (seminarList, _) = initializeSeminars(instructorList)
+        val seminarList = initializeSeminars(instructorList)
         
         // when
         val instructor = instructorList[0]
@@ -441,7 +441,6 @@ internal class SeminarServiceImplTest @Autowired constructor(
     }
     
     
-    @Transactional
     fun initializeUsers(): Pair<List<UserEntity>, List<UserEntity>> {
         val instructorList = (0 .. 2).map {i ->
             seminarTestHelper.createInstructor(
@@ -466,11 +465,11 @@ internal class SeminarServiceImplTest @Autowired constructor(
         return Pair(instructorList, participantList)
     }
     
-    fun initializeSeminars(userList: List<UserEntity>): Pair<List<SeminarEntity>, List<UserSeminarEntity>> {
+    fun initializeSeminars(userList: List<UserEntity>): List<SeminarEntity> {
         val seminarList = (0..2).map { i ->
             seminarTestHelper.createSeminar(
                     name = "testseminar${i}",
-                    instructor = "instname${i}",
+                    instructor = userList[i],
                     capacity = 10 + i.toLong(),
                     count = 10 + i.toLong(),
                     time = "11:1${i}",
@@ -478,11 +477,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
             )
         }
         
-        val userSeminarList = (0..2).map {i -> 
-            seminarTestHelper.createUserSeminarEntity(userList[i], seminarList[i])
-        }
-        
-        return Pair(seminarList, userSeminarList)
+        return seminarList
     }
     
 }
