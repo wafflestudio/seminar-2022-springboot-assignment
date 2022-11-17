@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class SeminarOneApplication
+class SeminarAssignmentTwo
 
 fun main(args: Array<String>) {
-    runApplication<SeminarOneApplication>(*args)
+    runApplication<SeminarAssignmentTwo>(*args)
 }
