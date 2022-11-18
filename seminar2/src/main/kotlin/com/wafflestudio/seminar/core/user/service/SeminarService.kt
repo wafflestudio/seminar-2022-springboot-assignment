@@ -35,13 +35,13 @@ class SeminarService(
 
     @Transactional
     // Query Count 예상: 8, 실제: 10
-    fun createSeminar(seminar: SeminarRequest, userId: Long): GetSeminarInfo {
-        if (seminar.name == null || seminar.capacity == null || seminar.count == null || seminar.time == null) {
+    fun createSeminar(request: SeminarRequest, userId: Long): GetSeminarInfo {
+        if (request.name == null || request.capacity == null || request.count == null || request.time == null) {
             throw Seminar400("입력하지 않은 값이 있습니다")
 
 
         } else {
-            if (seminar.name == "" || seminar.capacity <= 0 || seminar.count <= 0) {
+            if (request.name == "" || request.capacity <= 0 || request.count <= 0) {
                 throw Seminar400("형식에 맞지 않게 입력하지 않은 값이 있습니다")
             }
         }
@@ -53,9 +53,9 @@ class SeminarService(
 
 
         // Query #2
-        val saveSeminarEntity = seminarRepository.save(SeminarEntity(seminar, userId))
+        val saveSeminarEntity = seminarRepository.save(SeminarEntity(request))
         // Query #3, #4, #5 -> [N+1] but was 4:  fetching instructor profile
-        userSeminarRepository.save(userSeminarInstructorEntity(seminar, userId))
+        userSeminarRepository.save(userSeminarInstructorEntity(request, userId))
         // Query #6, #7
 
         val seminarInfoDto = seminarDslRepository.getListById(saveSeminarEntity.id)
@@ -64,7 +64,7 @@ class SeminarService(
                 userEntity.id, userEntity.username, userEntity.email, userSeminarEntity.joinedAt
         )).from(userEntity)
                 .innerJoin(userSeminarEntity).on(userSeminarEntity.user.id.eq(userEntity.id))
-                .where(userSeminarEntity.seminar.name.eq(seminar.name), userSeminarEntity.role.eq("INSTRUCTOR")).fetch()
+                .where(userSeminarEntity.seminar.name.eq(request.name), userSeminarEntity.role.eq("INSTRUCTOR")).fetch()
 
         val seminarEntity = seminarInfoDto[0]
 
@@ -78,14 +78,14 @@ class SeminarService(
 
     // Query Count 예상: 4, 실제: 5
     @Transactional
-    fun updateSeminar(seminar: SeminarRequest, userId: Long): UpdateSeminarInfo {
+    fun updateSeminar(request: SeminarRequest, userId: Long): UpdateSeminarInfo {
 
-        if (seminar.name == null || seminar.capacity == null || seminar.count == null || seminar.time == null) {
+        if (request.name == null || request.capacity == null || request.count == null || request.time == null) {
             throw Seminar400("입력하지 않은 값이 있습니다")
 
 
         } else {
-            if (seminar.name == "" || seminar.capacity <= 0 || seminar.count <= 0) {
+            if (request.name == "" || request.capacity <= 0 || request.count <= 0) {
                 throw Seminar400("형식에 맞지 않게 입력하지 않은 값이 있습니다")
             }
         }
@@ -98,18 +98,18 @@ class SeminarService(
 
         // Query #2
 
-        val seminarEntity = seminarRepository.findByName(seminar.name)
+        val seminarEntity = seminarRepository.findByName(request.name)
 
         if (userSeminarRepository.findAll().none { it.user?.id == userId }) {
             throw Seminar403("진행자만 세미나를 생성할 수 있습니다")
         }
 
         seminarEntity.let {
-            it.name = seminar.name
-            it.capacity = seminar.capacity
-            it.count = seminar.count
-            it.time = seminar.time
-            it.online = seminar.online
+            it.name = request.name
+            it.capacity = request.capacity
+            it.count = request.count
+            it.time = request.time
+            it.online = request.online
         }
 
         // Query #3, #4
@@ -329,20 +329,20 @@ class SeminarService(
     }
 
 
-    private fun SeminarEntity(seminar: SeminarRequest, userId: Long) = seminar.run {
-        com.wafflestudio.seminar.core.user.domain.SeminarEntity(
-                name = seminar.name,
-                capacity = seminar.capacity,
-                count = seminar.count,
-                time = seminar.time,//LocalTime.parse(seminar.time, DateTimeFormatter.ISO_TIME),
+    private fun SeminarEntity(request: SeminarRequest) = request.run {
+        SeminarEntity(
+                name = request.name,
+                capacity = request.capacity,
+                count = request.count,
+                time = request.time,
                 online = true,
         )
     }
 
-    private fun userSeminarInstructorEntity(seminar: SeminarRequest, userId: Long): UserSeminarEntity {
+    private fun userSeminarInstructorEntity(request: SeminarRequest, userId: Long): UserSeminarEntity {
         return UserSeminarEntity(
                 user = userRepository.findByIdOrNull(userId),
-                seminar = seminarRepository.findByName(seminar.name),
+                seminar = seminarRepository.findByName(request.name),
                 role = "INSTRUCTOR",
                 joinedAt = LocalDateTime.now(),
                 isActive = true,

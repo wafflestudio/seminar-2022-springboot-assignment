@@ -19,39 +19,38 @@ import java.time.LocalDate
 class AuthService(
     private val userRepository: UserRepository,
     private val authTokenService: AuthTokenService,
-    private val seminarRepository: SeminarRepository,
     private val passwordEncoder: PasswordEncoder
 )  {
-    fun signup(user: SignUpRequest): UserEntity {
+    fun signup(request: SignUpRequest): UserEntity {
         
-        if(userRepository.findByEmail(user.email) != null) {
+        if(userRepository.findByEmail(request.email) != null) {
             throw Seminar400("해당 아이디로 가입할 수 없습니다")
         }
-        return if(user.role == "PARTICIPANT"){
-             val encodedPassword = this.passwordEncoder.encode(user.password)
-             userRepository.save(signupParticipantEntity(user,encodedPassword))
+        return if(request.role == "PARTICIPANT"){
+             val encodedPassword = this.passwordEncoder.encode(request.password)
+             userRepository.save(signupParticipantEntity(request,encodedPassword))
             
             
-        } else if(user.role == "INSTRUCTOR"){
-            val encodedPassword = this.passwordEncoder.encode(user.password)
-            if (user.instructor?.year != null) {
+        } else if(request.role == "INSTRUCTOR"){
+            val encodedPassword = this.passwordEncoder.encode(request.password)
+            if (request.instructor?.year != null) {
                 
-                if(user.instructor.year < 0){
+                if(request.instructor.year < 0){
                     throw Seminar400("연도에는 0 또는 양의 정수만 입력할 수 있습니다")
                 }
             }
-            userRepository.save(signupInstructorEntity(user, encodedPassword))
+            userRepository.save(signupInstructorEntity(request, encodedPassword))
             
         } else throw Seminar400("오류")
     }
     
-    fun login(userLogin: LoginRequest): AuthToken {
+    fun login(request: LoginRequest): AuthToken {
         
-        val userEntity = userRepository.findByEmail(userLogin.email)
-        if(this.passwordEncoder.matches(userLogin.password, userEntity?.password)) {
-            val token = authTokenService.generateTokenByEmail(userLogin.email)
+        val userEntity = userRepository.findByEmail(request.email)
+        if(this.passwordEncoder.matches(request.password, userEntity?.password)) {
+            val token = authTokenService.generateTokenByEmail(request.email)
             val lastLogin = LocalDate.from(authTokenService.getCurrentIssuedAt(token.accessToken))
-            loginEntity(userLogin.email, lastLogin)
+            loginEntity(request.email, lastLogin)
             return token
         } else {
             throw Seminar401("인증이 되지 않았습니다")
@@ -59,14 +58,13 @@ class AuthService(
         
     }
     
-    val emptyMutableList1 = mutableListOf<UserSeminarEntity>()
-    val emptyMutableList2 = mutableListOf<UserSeminarEntity>()
+    val emptyMutableList = mutableListOf<UserSeminarEntity>()
     private fun signupParticipantEntity(user: SignUpRequest, encodedPassword: String) = user.run {
-        UserEntity(username, email, encodedPassword, LocalDate.now(), null, ParticipantProfileEntity(participant), null, emptyMutableList1)
+        UserEntity(username, email, encodedPassword, LocalDate.now(), null, ParticipantProfileEntity(participant), null, emptyMutableList)
     }
     
     private fun signupInstructorEntity(user: SignUpRequest, encodedPassword: String) = user.run {
-        UserEntity(username, email, encodedPassword, LocalDate.now(), null, null, InstructorProfileEntity(instructor),emptyMutableList1)
+        UserEntity(username, email, encodedPassword, LocalDate.now(), null, null, InstructorProfileEntity(instructor),emptyMutableList)
 
     }
     
