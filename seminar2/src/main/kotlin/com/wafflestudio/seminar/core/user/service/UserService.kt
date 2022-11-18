@@ -4,22 +4,17 @@ import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar401
+import com.wafflestudio.seminar.common.Seminar404
 import com.wafflestudio.seminar.common.Seminar409
-import com.wafflestudio.seminar.core.user.domain.QUserSeminarEntity.userSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.QUserEntity.userEntity
-import com.wafflestudio.seminar.core.user.domain.QSeminarEntity.seminarEntity
 import com.wafflestudio.seminar.core.user.api.request.BeParticipantRequest
 import com.wafflestudio.seminar.core.user.api.request.UpdateProfileRequest
 import com.wafflestudio.seminar.core.user.api.response.GetProfile
 import com.wafflestudio.seminar.core.user.database.*
 import com.wafflestudio.seminar.core.user.domain.*
-import com.wafflestudio.seminar.core.user.domain.QParticipantProfileEntity.participantProfileEntity
-import com.wafflestudio.seminar.core.user.domain.QInstructorProfileEntity.instructorProfileEntity
 import com.wafflestudio.seminar.core.user.dto.seminar.SeminarInfoDto
-import com.wafflestudio.seminar.core.user.dto.seminar.StudentDto
 import com.wafflestudio.seminar.core.user.dto.seminar.UserProfileDto
 import com.wafflestudio.seminar.core.user.dto.user.*
-import org.modelmapper.ModelMapper
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -34,21 +29,23 @@ class UserService(
 ) {
     fun getProfile(id : Long, userId: Long): GetProfile {
 
-        val findByEmailEntity = userRepository.findByIdOrNull(userId)
+        val user = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당하는 유저가 없습니다")
         
         
         if(userId != id){
             throw Seminar401("정보에 접근할 수 없습니다")
         }
 
-        //val qUserEntity: QUserEntity = QUserEntity.userEntity
-        //val qParticipantProfileEntity: QParticipantProfileEntity? = participantProfileEntity
-        //val qInstructorProfileEntity: QInstructorProfileEntity? = QInstructorProfileEntity.instructorProfileEntity
-        //val qSeminarEntity: QSeminarEntity = QSeminarEntity.seminarEntity
-        //val qUserSeminarEntity: QUserSeminarEntity = QUserSeminarEntity.userSeminarEntity
+       
         
+        val profileDto: UserEntity = queryFactory.select(userEntity).from(userEntity).where(userEntity.id.eq(userId)).fetchOne() ?: throw Seminar404("해당하는 유저가 없습니다")
+        
+        
+        return GetProfile.of(profileDto)
+        /*
         val userProfileDto = makeUserProfileDto(id, userEntity, participantProfileEntity, instructorProfileEntity)
 
+        
         
         
         val userEntity1 = userProfileDto[0].userEntity
@@ -111,7 +108,7 @@ class UserService(
         }
         
         
-        return if(findByEmailEntity?.participant != null && findByEmailEntity?.instructor == null) {
+        return if(user?.participant != null && user?.instructor == null) {
             GetProfile(
                 userEntity1?.id, 
                 userEntity1?.username, 
@@ -124,7 +121,7 @@ class UserService(
                null
             )
             
-        } else if(findByEmailEntity?.participant == null && findByEmailEntity?.instructor != null){
+        } else if(user?.participant == null && user?.instructor != null){
             GetProfile(
                 userEntity1?.id, 
                 userEntity1?.username, 
@@ -136,7 +133,7 @@ class UserService(
                     instructorProfileEntity1?.id, instructorProfileEntity1?.company, instructorProfileEntity1?.year, newListInstructor
                 )
             )
-        } else if(findByEmailEntity?.participant != null && findByEmailEntity?.instructor != null){
+        } else if(user?.participant != null && user?.instructor != null){
             GetProfile(
                 userEntity1?.id, 
                 userEntity1?.username, 
@@ -150,7 +147,7 @@ class UserService(
         } else{
             throw Seminar400("오류")
         }
-        
+        */
     }
     
     fun updateProfile(user: UpdateProfileRequest, token: String): GetProfile{
@@ -237,7 +234,8 @@ class UserService(
                 userEntity.email,
                 userEntity.lastLogin,
                 userEntity.dateJoined,
-                GetProfileParticipantDto(participantProfileEntity.id,participantProfileEntity.university, participantProfileEntity.isRegistered, newListParticipant),
+                GetProfileParticipantDto(participantProfileEntity.id,participantProfileEntity.university, participantProfileEntity.isRegistered, //newListParticipant
+                        ),
                 null)
         } else if(userEntity?.participant == null && userEntity?.instructor != null){
             val instructorProfileEntity = instructorProfileRepository.findById(authTokenService.getCurrentInstructorId(token)).get()
@@ -271,7 +269,8 @@ class UserService(
                 userEntity?.lastLogin,
                 userEntity?.dateJoined,
                null,
-                GetProfileInstructorDto(instructorProfileEntity.id, instructorProfileEntity.company, instructorProfileEntity.year, newListInstructor)
+                GetProfileInstructorDto(instructorProfileEntity.id, instructorProfileEntity.company, instructorProfileEntity.year, //newListInstructor
+                         )
             )
         } else if(userEntity?.participant != null && userEntity?.instructor != null){
             val participantProfileEntity = participantProfileRepository.findById(authTokenService.getCurrentParticipantId(token)).get()
@@ -300,8 +299,10 @@ class UserService(
                 userEntity.email,
                 userEntity.lastLogin,
                 userEntity.dateJoined,
-                GetProfileParticipantDto(participantProfileEntity.id,participantProfileEntity.university, participantProfileEntity.isRegistered,newListParticipant),
-                GetProfileInstructorDto(instructorProfileEntity.id, instructorProfileEntity.company, instructorProfileEntity.year,newListInstructor)
+                GetProfileParticipantDto(participantProfileEntity.id,participantProfileEntity.university, participantProfileEntity.isRegistered,// newListParticipant 
+                         ),
+                GetProfileInstructorDto(instructorProfileEntity.id, instructorProfileEntity.company, instructorProfileEntity.year,//newListInstructor
+                        )
             )
         } else{
             throw Seminar400("오류입니다")
@@ -371,7 +372,6 @@ class UserService(
                     seminarEntity?.id,
                     seminarEntity?.name,
                     teacherSeminarEntity?.joinedAt,
-
                     )
             )
         }
@@ -399,8 +399,10 @@ class UserService(
             userEntity?.email,
             userEntity?.lastLogin,
             userEntity?.dateJoined,
-            GetProfileParticipantDto(participantEntity.id,participantEntity.university, participantEntity.isRegistered,newListParticipant),
-            GetProfileInstructorDto(userEntity?.instructor?.id, userEntity?.instructor?.company, userEntity?.instructor?.year,newListInstructor)
+            GetProfileParticipantDto(participantEntity.id,participantEntity.university, participantEntity.isRegistered,//newListParticipant
+                     ),
+            GetProfileInstructorDto(userEntity?.instructor?.id, userEntity?.instructor?.company, userEntity?.instructor?.year,//newListInstructor
+                     )
         )
     }
     
