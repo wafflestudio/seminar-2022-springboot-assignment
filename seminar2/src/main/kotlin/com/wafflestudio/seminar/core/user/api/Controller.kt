@@ -43,13 +43,14 @@ class Controller(
     
     @Authenticated
     @PutMapping("user/me")
-    fun updateProfile(@RequestBody userProfile: UpdateProfileRequest, @RequestHeader("Authorization") token: String): GetProfile{
-        return userService.updateProfile(userProfile, token)
+    fun updateProfile(@RequestBody userProfile: UpdateProfileRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetProfile{
+        return userService.updateProfile(userProfile, userId)
     }
 
+    @Authenticated
     @PostMapping("user/participant")
-    fun beParticipant(@RequestBody participant: BeParticipantRequest, @RequestHeader("Authorization") token: String): GetProfile{
-        return userService.beParticipant(participant, token)
+    fun beParticipant(@RequestBody participant: BeParticipantRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetProfile{
+        return userService.beParticipant(participant, userId)
     }
     
     @Authenticated
