@@ -11,9 +11,7 @@ data class UpdateSeminarInfo(
     val online: Boolean? = true,
 ) {
     companion object {
-        fun of(
-                seminarEntity: SeminarEntity
-        ) = seminarEntity.run {
+        fun of(seminarEntity: SeminarEntity) = seminarEntity.run {
             UpdateSeminarInfo(id, name, capacity, count, time, online)
         }
     }

@@ -9,13 +9,30 @@ import com.wafflestudio.seminar.core.user.domain.QSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.QUserEntity.userEntity
 import com.wafflestudio.seminar.core.user.domain.QUserSeminarEntity.userSeminarEntity
 import com.wafflestudio.seminar.core.user.dto.seminar.TeacherDto
+import com.wafflestudio.seminar.core.user.dto.user.InstructingSeminarsDto
+import com.wafflestudio.seminar.core.user.dto.user.SeminarsDto
 import org.springframework.stereotype.Component
 
 @Component
 class UserSeminarDslRepository(
         private val queryFactory: JPAQueryFactory
 ) {
+    fun getUserProfileSeminars(userId: Long?) : List<SeminarsDto>? {
+        return queryFactory.select(Projections.constructor(
+                SeminarsDto::class.java, QSeminarEntity.seminarEntity.id, QSeminarEntity.seminarEntity.name,
+                userSeminarEntity.joinedAt, userSeminarEntity.isActive, userSeminarEntity.droppedAt))
+                .from(userSeminarEntity)
+                .leftJoin(QSeminarEntity.seminarEntity).on(QSeminarEntity.seminarEntity.id.eq(userSeminarEntity.seminar.id)).fetchJoin()
+                .where(userSeminarEntity.user.id.eq(userId), userSeminarEntity.role.eq("PARTICIPANT")).fetch()
+    }
     
+    fun getUserProfileInstructingSeminars(userId: Long?): List<InstructingSeminarsDto>? {
+        return queryFactory.select(Projections.constructor(
+                InstructingSeminarsDto::class.java, QSeminarEntity.seminarEntity.id, QSeminarEntity.seminarEntity.name, userSeminarEntity.joinedAt))
+                .from(QSeminarEntity.seminarEntity)
+                .leftJoin(userSeminarEntity).on(QSeminarEntity.seminarEntity.id.eq(userSeminarEntity.seminar.id)).fetchJoin()
+                .where(userSeminarEntity.user.id.eq(userId), userSeminarEntity.role.eq("INSTRUCTOR")).fetch()
+    }
     fun getInstructorList(name: String?, order: String?) : List<Tuple> {
 
         return if(order == "earliest") {

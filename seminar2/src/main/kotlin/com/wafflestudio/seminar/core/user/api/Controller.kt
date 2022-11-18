@@ -49,8 +49,8 @@ class Controller(
 
     @Authenticated
     @PostMapping("user/participant")
-    fun beParticipant(@RequestBody participant: BeParticipantRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetProfile{
-        return userService.beParticipant(participant, userId)
+    fun beParticipant(@RequestBody participant: RegisterParticipantRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetProfile{
+        return userService.registerParticipant(participant, userId)
     }
     
     @Authenticated
