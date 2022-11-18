@@ -32,7 +32,7 @@ class UserService(
     fun getProfile(id: Long, userId: Long): GetProfile {
 
         val user = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당하는 유저가 없습니다")
-        
+
         if (userId != id) {
             throw Seminar401("정보에 접근할 수 없습니다")
         }
@@ -41,120 +41,20 @@ class UserService(
         val profileEntity: UserEntity = queryFactory.select(userEntity).from(userEntity).where(userEntity.id.eq(userId)).fetchOne()
                 ?: throw Seminar404("해당하는 유저가 없습니다")
 
-        val seminarsDto = queryFactory.select(Projections.constructor(
+        val seminarsDto: List<SeminarsDto>? = queryFactory.select(Projections.constructor(
                 SeminarsDto::class.java, seminarEntity.id, seminarEntity.name,
                 userSeminarEntity.joinedAt, userSeminarEntity.isActive, userSeminarEntity.droppedAt))
                 .from(seminarEntity)
                 .leftJoin(userSeminarEntity).on(seminarEntity.id.eq(userSeminarEntity.seminar.id)).fetchJoin()
-                .where(userSeminarEntity.user.id.eq(userId), userSeminarEntity.role.eq("PARTICIPANT")).fetch() ?: null
+                .where(userSeminarEntity.user.id.eq(userId), userSeminarEntity.role.eq("PARTICIPANT")).fetch()
 
-        return GetProfile.of(profileEntity,seminarsDto)
-        /*
-        val userProfileDto = makeUserProfileDto(id, userEntity, participantProfileEntity, instructorProfileEntity)
+        val instructingSeminarsDto: List<InstructingSeminarsDto>? = queryFactory.select(Projections.constructor(
+                InstructingSeminarsDto::class.java, seminarEntity.id, seminarEntity.name, userSeminarEntity.joinedAt))
+                .from(seminarEntity)
+                .leftJoin(userSeminarEntity).on(seminarEntity.id.eq(userSeminarEntity.seminar.id)).fetchJoin()
+                .where(userSeminarEntity.user.id.eq(userId), userSeminarEntity.role.eq("INSTRUCTOR")).fetch()
 
-        
-        
-        
-        val userEntity1 = userProfileDto[0].userEntity
-        val participantProfileEntity1 = userProfileDto[0].participantProfileEntity
-        val instructorProfileEntity1 = userProfileDto[0].instructorProfileEntity
-
-        val seminarsList = queryFactory.select(Projections.constructor(
-            SeminarInfoDto::class.java,
-            seminarEntity,
-            userSeminarEntity,
-            userEntity
-        ))
-            .from(seminarEntity)
-            .innerJoin(userSeminarEntity).on(seminarEntity.id.eq(userSeminarEntity.seminar.id))
-            .innerJoin(userEntity).on(userSeminarEntity.user.id.eq(userEntity.id))
-            .where(userEntity.id.eq(id))
-            .where(userSeminarEntity.role.eq("PARTICIPANT")).fetch()
-
-        val instructingSeminarsList = queryFactory.select(Projections.constructor(
-            SeminarInfoDto::class.java,
-            seminarEntity,
-            userSeminarEntity,
-            userEntity
-        ))
-            .from(seminarEntity)
-            .innerJoin(userSeminarEntity).on(seminarEntity.id.eq(userSeminarEntity.seminar.id))
-            .innerJoin(userEntity).on(userSeminarEntity.user.id.eq(userEntity.id))
-            .where(userEntity.id.eq(id))
-            .where(userSeminarEntity.role.eq("INSTRUCTOR")).fetch()
-
-        val newListParticipant = mutableListOf<SeminarsDto>()
-        val newListInstructor = mutableListOf<InstructingSeminarsDto>()
-        
-        for(i in 0 until seminarsList.size){
-            val seminarEntity1 = seminarsList[i].seminarEntity
-            val studentSeminarEntity = seminarsList[i].userSeminarEntity
-            newListParticipant.add(
-                SeminarsDto(
-                    seminarEntity1?.id,
-                    seminarEntity1?.name,
-                    studentSeminarEntity?.joinedAt,
-                    studentSeminarEntity?.isActive,
-                    studentSeminarEntity?.droppedAt
-
-                )
-            )
-        }
-
-        for(i in 0 until instructingSeminarsList.size){
-            val seminarEntity1 = instructingSeminarsList[i].seminarEntity
-            val teacherSeminarEntity = instructingSeminarsList[i].userSeminarEntity
-            newListInstructor.add(
-                InstructingSeminarsDto(
-                    seminarEntity1?.id,
-                    seminarEntity1?.name,
-                    teacherSeminarEntity?.joinedAt,
-
-                )
-            )
-        }
-        
-        
-        return if(user?.participant != null && user?.instructor == null) {
-            GetProfile(
-                userEntity1?.id, 
-                userEntity1?.username, 
-                userEntity1?.email, 
-                userEntity1?.lastLogin,
-                userEntity1?.dateJoined,
-                GetProfileParticipantDto(
-                    participantProfileEntity1?.id, participantProfileEntity1?.university, participantProfileEntity1?.isRegistered, newListParticipant
-                ),
-               null
-            )
-            
-        } else if(user?.participant == null && user?.instructor != null){
-            GetProfile(
-                userEntity1?.id, 
-                userEntity1?.username, 
-                userEntity1?.email, 
-                userEntity1?.lastLogin, 
-                userEntity1?.dateJoined,
-               null,
-                GetProfileInstructorDto(
-                    instructorProfileEntity1?.id, instructorProfileEntity1?.company, instructorProfileEntity1?.year, newListInstructor
-                )
-            )
-        } else if(user?.participant != null && user?.instructor != null){
-            GetProfile(
-                userEntity1?.id, 
-                userEntity1?.username, 
-                userEntity1?.email, 
-                userEntity1?.lastLogin, 
-                userEntity1?.dateJoined,
-                GetProfileParticipantDto(participantProfileEntity1?.id,participantProfileEntity1?.university, participantProfileEntity1?.isRegistered, newListParticipant),
-                GetProfileInstructorDto(instructorProfileEntity1?.id, instructorProfileEntity1?.company, instructorProfileEntity1?.year, newListInstructor)
-            )
-            
-        } else{
-            throw Seminar400("오류")
-        }
-        */
+        return GetProfile.of(profileEntity, seminarsDto,instructingSeminarsDto)
     }
 
     fun updateProfile(user: UpdateProfileRequest, token: String): GetProfile {
@@ -242,7 +142,7 @@ class UserService(
                     userEntity.lastLogin,
                     userEntity.dateJoined,
                     GetProfileParticipantDto(
-                            participantProfileEntity.id, participantProfileEntity.university, participantProfileEntity.isRegistered,newListParticipant),
+                            participantProfileEntity.id, participantProfileEntity.university, participantProfileEntity.isRegistered, newListParticipant),
                     null)
         } else if (userEntity?.participant == null && userEntity?.instructor != null) {
             val instructorProfileEntity = instructorProfileRepository.findById(authTokenService.getCurrentInstructorId(token)).get()
@@ -277,8 +177,7 @@ class UserService(
                     userEntity?.dateJoined,
                     null,
                     GetProfileInstructorDto(
-                            instructorProfileEntity.id, instructorProfileEntity.company, instructorProfileEntity.year, //newListInstructor
-                    )
+                            instructorProfileEntity.id, instructorProfileEntity.company, instructorProfileEntity.year, newListInstructor)
             )
         } else if (userEntity?.participant != null && userEntity?.instructor != null) {
             val participantProfileEntity = participantProfileRepository.findById(authTokenService.getCurrentParticipantId(token)).get()
@@ -308,10 +207,9 @@ class UserService(
                     userEntity.lastLogin,
                     userEntity.dateJoined,
                     GetProfileParticipantDto(
-                            participantProfileEntity.id, participantProfileEntity.university, participantProfileEntity.isRegistered,newListParticipant),
+                            participantProfileEntity.id, participantProfileEntity.university, participantProfileEntity.isRegistered, newListParticipant),
                     GetProfileInstructorDto(
-                            instructorProfileEntity.id, instructorProfileEntity.company, instructorProfileEntity.year,//newListInstructor
-                    )
+                            instructorProfileEntity.id, instructorProfileEntity.company, instructorProfileEntity.year,newListInstructor)
             )
         } else {
             throw Seminar400("오류입니다")
@@ -409,10 +307,9 @@ class UserService(
                 userEntity?.lastLogin,
                 userEntity?.dateJoined,
                 GetProfileParticipantDto(
-                        participantEntity.id, participantEntity.university, participantEntity.isRegistered,newListParticipant),
+                        participantEntity.id, participantEntity.university, participantEntity.isRegistered, newListParticipant),
                 GetProfileInstructorDto(
-                        userEntity?.instructor?.id, userEntity?.instructor?.company, userEntity?.instructor?.year,//newListInstructor
-                )
+                        userEntity?.instructor?.id, userEntity?.instructor?.company, userEntity?.instructor?.year,newListInstructor)
         )
     }
 

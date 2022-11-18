@@ -8,16 +8,17 @@ data class GetProfileInstructorDto(
     val id: Long?,
     val company: String?,
     val year: Int?,
-    // val instructingSeminars: List<InstructingSeminarsDto>?
+    val instructingSeminars: List<InstructingSeminarsDto>?
 ) {
 
     companion object {
-        fun of(instructorProfileEntity: InstructorProfileEntity) : GetProfileInstructorDto{
+        fun of(instructorProfileEntity: InstructorProfileEntity, instructingSeminars: List<InstructingSeminarsDto>?) : GetProfileInstructorDto{
             instructorProfileEntity.run {
                 return GetProfileInstructorDto(
                         id = id,
                         company =company,
-                        year = year
+                        year = year,
+                        instructingSeminars = instructingSeminars
                 )
             }
         }
