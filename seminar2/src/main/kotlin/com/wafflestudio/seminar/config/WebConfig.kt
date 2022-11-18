@@ -82,6 +82,8 @@ class WebConfig {
             val handlerCasted = (handler as? HandlerMethod) ?: return true
             if (handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
                 val authToken = request.getHeader("Authorization") ?: throw Seminar401("토큰 인증 적절하지 않음")
+                val isTokenValid = authTokenService.verifyToken(authToken) ?: throw Seminar401("NOT VALID ACCESS TOKEN")
+            
                 val userId = authTokenService.getCurrentUserId(authToken)
                 request.setAttribute("userId", userId)
             }

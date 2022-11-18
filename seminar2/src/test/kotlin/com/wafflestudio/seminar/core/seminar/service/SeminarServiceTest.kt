@@ -56,6 +56,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
     // Failed: [N+1]
     @Test
+    @Transactional
     fun `(createSeminar) 세미나 생성하기`() {
         // Given
         val seminarRequest = SeminarRequest("spring", 30, 6, "19:00", false)

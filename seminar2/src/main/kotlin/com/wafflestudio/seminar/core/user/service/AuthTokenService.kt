@@ -45,8 +45,14 @@ class AuthTokenService(
     return AuthToken(resultToken)
   }
 
-  fun verifyToken(authToken: String) {
-    parse(authToken)
+  fun verifyToken(authToken: String): Boolean? {
+    try {
+      val email = getCurrentEmail(authToken)
+      userRepository.findByEmail(email)?.id
+    } catch (exception: Exception) {
+      return false
+    }
+    return true
   }
 
   fun getCurrentUserId(authToken: String) :Long{

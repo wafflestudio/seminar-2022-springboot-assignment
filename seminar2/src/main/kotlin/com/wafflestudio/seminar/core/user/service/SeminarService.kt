@@ -54,21 +54,17 @@ class SeminarService(
 
         // Query #2
         val saveSeminarEntity = seminarRepository.save(SeminarEntity(seminar, userId))
-
         // Query #3, #4, #5 -> [N+1] but was 4:  fetching instructor profile
         userSeminarRepository.save(userSeminarInstructorEntity(seminar, userId))
-
         // Query #6, #7
 
         val seminarInfoDto = seminarDslRepository.getListById(saveSeminarEntity.id)
-
         val teacherDto = queryFactory.select(Projections.constructor(
                 TeacherDto::class.java,
                 userEntity.id, userEntity.username, userEntity.email, userSeminarEntity.joinedAt
         )).from(userEntity)
                 .innerJoin(userSeminarEntity).on(userSeminarEntity.user.id.eq(userEntity.id))
                 .where(userSeminarEntity.seminar.name.eq(seminar.name), userSeminarEntity.role.eq("INSTRUCTOR")).fetch()
-
 
         val seminarEntity = seminarInfoDto[0]
 

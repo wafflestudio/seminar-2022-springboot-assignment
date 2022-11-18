@@ -1,8 +1,11 @@
 package com.wafflestudio.seminar.core.user.api.response
 
+import com.wafflestudio.seminar.core.user.domain.SeminarEntity
 import com.wafflestudio.seminar.core.user.domain.UserEntity
+import com.wafflestudio.seminar.core.user.domain.UserSeminarEntity
 import com.wafflestudio.seminar.core.user.dto.user.GetProfileInstructorDto
 import com.wafflestudio.seminar.core.user.dto.user.GetProfileParticipantDto
+import com.wafflestudio.seminar.core.user.dto.user.SeminarsDto
 import java.time.LocalDate
 
 data class GetProfile(
@@ -13,10 +16,9 @@ data class GetProfile(
         val dateJoined: LocalDate?,
         val participant: GetProfileParticipantDto? = null,
         val instructor: GetProfileInstructorDto? = null
-
 ) {
    companion object {
-       fun of(userEntity: UserEntity): GetProfile{
+       fun of(userEntity: UserEntity,seminarsDtoList: List<SeminarsDto>?): GetProfile{
             return userEntity.run { 
                GetProfile(
                        id = id,
@@ -24,10 +26,8 @@ data class GetProfile(
                        email = email,
                        lastLogin = lastLogin,
                        dateJoined = dateJoined,
-                       participant = if(participant?.id != null) GetProfileParticipantDto.of(participant!!) else null,
+                       participant = if(participant?.id != null) GetProfileParticipantDto.of(participant!!, seminarsDtoList) else null,
                        instructor = if(instructor?.id != null) GetProfileInstructorDto.of(instructor!!) else null
-                       
-                    
                )
            }
        }

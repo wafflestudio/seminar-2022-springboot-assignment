@@ -8,16 +8,17 @@ data class GetProfileParticipantDto(
     val id: Long?,
     val university: String?,
     val isRegistered: Boolean?,
-    // val seminars: List<SeminarsDto>?
+    val seminars: List<SeminarsDto>?
     
 ) {
     companion object {
-        fun of(participantProfileEntity: ParticipantProfileEntity) : GetProfileParticipantDto{
+        fun of(participantProfileEntity: ParticipantProfileEntity, seminarsDtoList: List<SeminarsDto>?) : GetProfileParticipantDto{
             participantProfileEntity.run { 
                 return GetProfileParticipantDto(
                         id = id,
                         university = university,
-                        isRegistered = isRegistered
+                        isRegistered = isRegistered,
+                        seminars = seminarsDtoList
                 )
             }
         }

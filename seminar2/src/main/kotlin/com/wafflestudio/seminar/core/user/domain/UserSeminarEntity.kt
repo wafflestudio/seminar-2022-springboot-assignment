@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
-@Table(name = "UserSeminar")
+@Table(name = "UserSeminars")
 class UserSeminarEntity(
 
         @ManyToOne(fetch = FetchType.LAZY) // 1

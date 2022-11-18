@@ -52,12 +52,14 @@ class Controller(
         return userService.beParticipant(participant, token)
     }
     
+    @Authenticated
     @PostMapping("seminar")
     fun createSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetSeminarInfo {
         
         return seminarService.createSeminar(seminar, userId)
     }
 
+    @Authenticated
     @PutMapping("seminar")
     fun updateSeminar(@RequestBody seminar: SeminarRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): UpdateSeminarInfo {
 
@@ -75,14 +77,15 @@ class Controller(
         return seminarService.getSeminarList(name, order)
     }
 
-   
-    
+
+    @Authenticated
     @PostMapping("seminar/{seminar_id}/user")
     fun joinSeminar(@PathVariable seminar_id: Long, @RequestBody role: Map<String,String>, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetSeminarInfo{
         
         return seminarService.joinSeminar(seminar_id,role, userId)
     }
-    
+
+    @Authenticated
     @DeleteMapping("seminar/{seminar_id}/user")
     fun dropSeminar(@PathVariable seminar_id: Long,@RequestHeader("Authorization") token: String, @UserContext userId: Long): GetSeminarInfo {
         return seminarService.dropSeminar(seminar_id,userId)
