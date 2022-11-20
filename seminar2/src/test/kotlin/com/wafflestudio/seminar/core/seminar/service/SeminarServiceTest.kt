@@ -1,6 +1,5 @@
 package com.wafflestudio.seminar.core.seminar.service
 
-import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar403
 import com.wafflestudio.seminar.common.Seminar404
@@ -22,10 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.`in`
 import org.junit.jupiter.api.assertThrows
-import org.mockito.BDDMockito.anyLong
-import org.springframework.data.repository.findByIdOrNull
 import java.time.LocalDateTime
 import javax.transaction.Transactional
 

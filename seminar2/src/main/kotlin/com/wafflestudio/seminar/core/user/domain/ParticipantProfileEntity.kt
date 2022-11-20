@@ -17,7 +17,7 @@ class ParticipantProfileEntity (
     var university: String? = "",
     
     @Column
-    var isRegistered: Boolean = true,
+    var isRegistered: Boolean? = true,
 
 
     
