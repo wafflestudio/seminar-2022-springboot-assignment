@@ -1,0 +1,39 @@
+{
+	"username": "inst1",
+	"email": "inst1",
+	"password": "inst1",
+	"role": "Instructor",
+	"company": "waffle"
+}
+
+{
+	"username": "part1",
+	"email": "part1",
+	"password": "part1",
+	"role": "Participant",
+	"university": "SNU",
+	"isRegistered": "true"
+}
+
+{
+	"name": "seminar1",
+	"capacity": 1,
+	"count": 10,
+	"time": "19:30",
+	"online": "true"
+}
+
+inst1 token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Njc0MDcxMDYsImlzcyI6InJvb3QiLCJlbWFpbCI6Imluc3QxIn0.S4GJq6fhQadB8HFAePqPEN6_rPNLRl_iJZhB1JGZ06c
+
+inst2 token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Njc0MDcyNjcsImlzcyI6InJvb3QiLCJlbWFpbCI6Imluc3QyIn0.iNd6FlNRlstUjDPlEluzX-OY1kZNSVC-NbLipOSAjdM
+
+part1 token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Njc0MDcxNDksImlzcyI6InJvb3QiLCJlbWFpbCI6InBhcnQxIn0.E22DfId3j9B_dQQYewokNIgFlqWSM4yP_eb81yrskDM
+
+part2 token (inactive)
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Njc0MDcxODMsImlzcyI6InJvb3QiLCJlbWFpbCI6InBhcnQyIn0.qYK_b8DVKt-3akrhwMjFKsktYzE93iwCJ-Vwbi1n55c
+
+part3 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Njc0MDcyMjMsImlzcyI6InJvb3QiLCJlbWFpbCI6InBhcnQzIn0.X1AEiOM4PxPLEV3Nv9N_DCwN3umKAeNhD-pdKc3O6XY

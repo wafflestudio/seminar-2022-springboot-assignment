@@ -54,6 +54,12 @@ dependencies {
     
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    implementation("org.springframework.boot:spring-boot-configuration-processor")
+
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    implementation("org.springframework.boot:spring-boot-starter-aop")
 }
 
 tasks.withType<KotlinCompile> {
