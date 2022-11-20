@@ -5,7 +5,7 @@ import com.wafflestudio.seminar.core.user.dto.seminar.StudentDto
 import javax.persistence.*
 
 @Entity
-@Table(name="seminars")
+@Table(name="Seminars")
 class SeminarEntity(
         
     @Column

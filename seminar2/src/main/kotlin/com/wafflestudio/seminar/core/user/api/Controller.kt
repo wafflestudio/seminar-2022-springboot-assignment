@@ -4,6 +4,7 @@ import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.api.response.*
+import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.service.*
 import org.springframework.lang.Nullable
 import org.springframework.web.bind.annotation.*
@@ -16,12 +17,12 @@ class Controller(
         private var authService: AuthService,
         private var authTokenService: AuthTokenService,
         private var userService: UserService,
-        private var seminarService: SeminarService
+        private var seminarService: SeminarService,
+        private var userRepository: UserRepository
 ) {
 
     @PostMapping("signup")
     fun signup(@RequestBody @Valid request: SignUpRequest): AuthToken {
-
         return authService.signup(request)
     }
 
@@ -34,7 +35,6 @@ class Controller(
     @Authenticated
     @GetMapping("user/{user_id}")
     fun getProfile(@PathVariable user_id: Long, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetProfile {
-
         return userService.getProfile(user_id, userId)
 
     }
@@ -54,14 +54,12 @@ class Controller(
     @Authenticated
     @PostMapping("seminar")
     fun createSeminar(@RequestBody request: SeminarRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetSeminarInfo {
-
         return seminarService.createSeminar(request, userId)
     }
 
     @Authenticated
     @PutMapping("seminar")
     fun updateSeminar(@RequestBody request: SeminarRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): UpdateSeminarInfo {
-
         return seminarService.updateSeminar(request, userId)
     }
 
@@ -80,7 +78,6 @@ class Controller(
     @Authenticated
     @PostMapping("seminar/{seminar_id}/user")
     fun joinSeminar(@PathVariable seminar_id: Long, @RequestBody role: Map<String, String>, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetSeminarInfo {
-
         return seminarService.joinSeminar(seminar_id, role, userId)
     }
 
@@ -88,7 +85,7 @@ class Controller(
     @DeleteMapping("seminar/{seminar_id}/user")
     fun dropSeminar(@PathVariable seminar_id: Long, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetSeminarInfo {
         return seminarService.dropSeminar(seminar_id, userId)
-
     }
 
+   
 }

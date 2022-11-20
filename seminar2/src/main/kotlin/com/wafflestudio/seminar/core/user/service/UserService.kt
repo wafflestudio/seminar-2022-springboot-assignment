@@ -63,7 +63,7 @@ class UserService(
         if (user.participant != null) {
             throw Seminar409("이미 참가자로 등록되어 있습니다")
         }
-        user.participant = ParticipantProfileEntity(request.university, request.isRegistered)
+        user.participant = ParticipantProfileEntity(user, request.university, request.isRegistered)
         
         return getProfile(userId)
     }
