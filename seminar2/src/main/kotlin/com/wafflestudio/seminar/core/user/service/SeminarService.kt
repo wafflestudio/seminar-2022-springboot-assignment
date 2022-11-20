@@ -5,25 +5,21 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.common.Seminar403
 import com.wafflestudio.seminar.common.Seminar404
-import com.wafflestudio.seminar.core.user.domain.QSeminarEntity.seminarEntity
 import com.wafflestudio.seminar.core.user.domain.QUserSeminarEntity.userSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.QUserEntity.userEntity
 import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.user.api.response.*
 import com.wafflestudio.seminar.core.user.database.*
-//import com.wafflestudio.seminar.core.user.database.QUserEntity
 import com.wafflestudio.seminar.core.user.domain.*
 import com.wafflestudio.seminar.core.user.dto.seminar.*
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.util.*
 import javax.transaction.Transactional
 
 
 @Service
 class SeminarService(
-        private val authTokenService: AuthTokenService,
         private val seminarRepository: SeminarRepository,
         private val userSeminarRepository: UserSeminarRepository,
         private val userRepository: UserRepository,
@@ -36,15 +32,7 @@ class SeminarService(
     @Transactional
     // Query Count 예상: 8, 실제: 10
     fun createSeminar(request: SeminarRequest, userId: Long): GetSeminarInfo {
-        if (request.name == null || request.capacity == null || request.count == null || request.time == null) {
-            throw Seminar400("입력하지 않은 값이 있습니다")
-
-
-        } else {
-            if (request.name == "" || request.capacity <= 0 || request.count <= 0) {
-                throw Seminar400("형식에 맞지 않게 입력하지 않은 값이 있습니다")
-            }
-        }
+        
 
         // Query #1 -> [N+1] but was 2: fetching instructor profile
         if (userRepository.findByIdOrNull(userId)?.instructor == null) {
@@ -79,20 +67,11 @@ class SeminarService(
     // Query Count 예상: 4, 실제: 5
     @Transactional
     fun updateSeminar(request: SeminarRequest, userId: Long): UpdateSeminarInfo {
-
-        if (request.name == null || request.capacity == null || request.count == null || request.time == null) {
-            throw Seminar400("입력하지 않은 값이 있습니다")
-
-
-        } else {
-            if (request.name == "" || request.capacity <= 0 || request.count <= 0) {
-                throw Seminar400("형식에 맞지 않게 입력하지 않은 값이 있습니다")
-            }
-        }
+        
 
         // Query #1 -> [N+1] but was 2: fetching instructor profile
         if (userRepository.findByIdOrNull(userId)?.instructor == null) {
-            throw Seminar403("세미나를 수정할 자격이 없습니다")
+            throw Seminar403("진행자만 세미나를 수정할 수 있습니다")
         }
 
 
@@ -173,9 +152,9 @@ class SeminarService(
 
         return seminarList.map { seminarEntity ->
 
-            val instructors = newTeacherList?.filter { it.key == seminarEntity.id }?.getOrDefault(seminarEntity.id, null)
+            val instructors = newTeacherList.filter { it.key == seminarEntity.id }.getOrDefault(seminarEntity.id, null)
             val teacherDto = instructors?.map { TeacherDto(it[userEntity.id], it[userEntity.username], it[userEntity.email], it[userSeminarEntity.joinedAt]) }
-            val participants = newStudentList?.filter { it.key == seminarEntity.id }?.getOrDefault(seminarEntity.id, null)
+            val participants = newStudentList.filter { it.key == seminarEntity.id }.getOrDefault(seminarEntity.id, null)
             val studentDto = participants?.map { StudentDto(it[userEntity.id], it[userEntity.username], it[userEntity.email], it[userSeminarEntity.joinedAt], it[userSeminarEntity.isActive], it[userSeminarEntity.droppedAt]) }
 
             GetSeminarInfo.of(seminarEntity, teacherDto, studentDto)
@@ -191,7 +170,7 @@ class SeminarService(
         val seminar = seminarRepository.findByIdOrNull(id) ?: throw Seminar404("해당하는 세미나가 없습니다.")
         // Query #2
         val user = userRepository.findByIdOrNull(userId)
-                ?: throw Seminar403("등록되어 있지 않습니다")
+                ?: throw Seminar403("진행자 또는 수강자로 등록되어 있지 않습니다")
 
         // Query #3 -> [N+1]
         if (!userSeminarRepository.findByUser(user)?.filter { it.seminar.id == id && it.isActive == true }.isNullOrEmpty()) {
@@ -212,7 +191,7 @@ class SeminarService(
 
             } else {
                 if (user.participant?.isRegistered == false) {
-                    throw Seminar403("활성회원이 아닙니다")
+                    throw Seminar403("활성 회원이 아닙니다")
                 }
             }
             // Query #5

@@ -15,10 +15,8 @@ import javax.validation.Valid
 class Controller(
 
         private var authService: AuthService,
-        private var authTokenService: AuthTokenService,
         private var userService: UserService,
         private var seminarService: SeminarService,
-        private var userRepository: UserRepository
 ) {
 
     @PostMapping("signup")
@@ -53,7 +51,7 @@ class Controller(
 
     @Authenticated
     @PostMapping("seminar")
-    fun createSeminar(@RequestBody request: SeminarRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetSeminarInfo {
+    fun createSeminar(@RequestBody @Valid request: SeminarRequest, @RequestHeader("Authorization") token: String, @UserContext userId: Long): GetSeminarInfo {
         return seminarService.createSeminar(request, userId)
     }
 

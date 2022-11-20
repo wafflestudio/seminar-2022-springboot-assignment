@@ -22,9 +22,7 @@ class UserService(
 ) {
     fun getProfile(id: Long, userId: Long?): GetProfile {
 
-        if (userId == null) {
-            throw Seminar404("해당하는 유저가 없습니다")
-        } else if (userId != id) {
+        if (userId != id) {
             throw Seminar401("정보에 접근할 수 없습니다")
         }
         userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당하는 유저가 없습니다")
@@ -35,9 +33,6 @@ class UserService(
     @Transactional
     fun updateProfile(request: UpdateProfileRequest, userId: Long?): GetProfile {
 
-        if (userId == null) {
-            throw Seminar404("해당하는 유저가 없습니다")
-        }
         val user = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당하는 유저가 없습니다")
 
         user.username = request.username
@@ -55,9 +50,7 @@ class UserService(
 
     @Transactional
     fun registerParticipant(request: RegisterParticipantRequest, userId: Long?): GetProfile {
-        if (userId == null) {
-            throw Seminar404("해당하는 유저가 없습니다")
-        }
+        
         val user = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당하는 유저가 없습니다")
 
         if (user.participant != null) {
