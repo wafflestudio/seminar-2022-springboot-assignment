@@ -1,8 +1,6 @@
 package com.wafflestudio.seminar.core.user.dto.user
 
 import com.wafflestudio.seminar.core.user.domain.InstructorProfileEntity
-import com.wafflestudio.seminar.core.user.domain.ParticipantProfileEntity
-import com.wafflestudio.seminar.core.user.dto.seminar.SeminarInfoDto
 
 data class GetProfileInstructorDto(
     val id: Long?,

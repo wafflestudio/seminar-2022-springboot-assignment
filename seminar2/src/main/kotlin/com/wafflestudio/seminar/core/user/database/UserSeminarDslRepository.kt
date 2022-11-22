@@ -8,6 +8,7 @@ import com.wafflestudio.seminar.core.user.api.request.SeminarRequest
 import com.wafflestudio.seminar.core.user.domain.QSeminarEntity
 import com.wafflestudio.seminar.core.user.domain.QUserEntity.userEntity
 import com.wafflestudio.seminar.core.user.domain.QUserSeminarEntity.userSeminarEntity
+import com.wafflestudio.seminar.core.user.dto.seminar.StudentDto
 import com.wafflestudio.seminar.core.user.dto.seminar.TeacherDto
 import com.wafflestudio.seminar.core.user.dto.user.InstructingSeminarsDto
 import com.wafflestudio.seminar.core.user.dto.user.SeminarsDto
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component
 class UserSeminarDslRepository(
         private val queryFactory: JPAQueryFactory
 ) {
-    fun getUserProfileSeminars(userId: Long?) : List<SeminarsDto>? {
+    fun getProfileSeminars(userId: Long?) : List<SeminarsDto>? {
         return queryFactory.select(Projections.constructor(
                 SeminarsDto::class.java, QSeminarEntity.seminarEntity.id, QSeminarEntity.seminarEntity.name,
                 userSeminarEntity.joinedAt, userSeminarEntity.isActive, userSeminarEntity.droppedAt))
@@ -26,7 +27,7 @@ class UserSeminarDslRepository(
                 .where(userSeminarEntity.user.id.eq(userId), userSeminarEntity.role.eq("PARTICIPANT")).fetch()
     }
     
-    fun getUserProfileInstructingSeminars(userId: Long?): List<InstructingSeminarsDto>? {
+    fun getProfileInstructingSeminars(userId: Long?): List<InstructingSeminarsDto>? {
         return queryFactory.select(Projections.constructor(
                 InstructingSeminarsDto::class.java, QSeminarEntity.seminarEntity.id, QSeminarEntity.seminarEntity.name, userSeminarEntity.joinedAt))
                 .from(QSeminarEntity.seminarEntity)
@@ -49,21 +50,45 @@ class UserSeminarDslRepository(
             participantQuery(name).orderBy(userSeminarEntity.seminar.id.desc()).fetch()
         }
     }
-    
-    private fun instructorQuery(name: String?) :JPAQuery<Tuple> {
+    fun instructorQuery(name: String?) :JPAQuery<Tuple> {
         return queryFactory.select(
                 userSeminarEntity.seminar.id,
                 userEntity.id, userEntity.username, userEntity.email, userSeminarEntity.joinedAt).from(userSeminarEntity)
                 .leftJoin(userEntity).on(userSeminarEntity.user.eq(userEntity)).fetchJoin()
                 .where(userSeminarEntity.role.eq("INSTRUCTOR")).where(name?.let { userSeminarEntity.seminar.name.contains(name) })
+        
+        
     }
     
-    private fun participantQuery(name: String?) :JPAQuery<Tuple> {
+    fun participantQuery(name: String?) :JPAQuery<Tuple> {
         return queryFactory.select(
                 userSeminarEntity.seminar.id,
                 userEntity.id, userEntity.username, userEntity.email,
                 userSeminarEntity.joinedAt, userSeminarEntity.isActive, userSeminarEntity.droppedAt).from(userSeminarEntity)
                 .leftJoin(userEntity).on(userSeminarEntity.user.eq(userEntity)).fetchJoin()
                 .where(userSeminarEntity.role.eq("PARTICIPANT")).where(name?.let { userSeminarEntity.seminar.name.contains(name) })
+    }
+    
+    fun getTeacherListById(seminarId: Long?) :List<TeacherDto> {
+        return queryFactory.select(Projections.constructor(
+                TeacherDto::class.java,
+                userEntity.id, userEntity.username, userEntity.email, userSeminarEntity.joinedAt
+        ))
+                .from(userEntity)
+                .innerJoin(userSeminarEntity).on(userEntity.eq(userSeminarEntity.user)).fetchJoin()
+                .where(userSeminarEntity.seminar.id.eq(seminarId), userSeminarEntity.role.eq("INSTRUCTOR"))
+                .fetch()
+    }
+    
+    fun getStudentListById(seminarId: Long) : List<StudentDto> {
+        return queryFactory.select(Projections.constructor(
+                StudentDto::class.java,
+                userEntity.id, userEntity.username, userEntity.email,
+                userSeminarEntity.joinedAt, userSeminarEntity.isActive, userSeminarEntity.droppedAt
+        ))
+                .from(userEntity)
+                .innerJoin(userSeminarEntity).on(userEntity.eq(userSeminarEntity.user)).fetchJoin()
+                .where(userSeminarEntity.seminar.id.eq(seminarId), userSeminarEntity.role.eq("PARTICIPANT"))
+                .fetch()
     }
 }

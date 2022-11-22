@@ -22,8 +22,11 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertThrows
+import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.MethodArgumentNotValidException
 import java.time.LocalDateTime
 import javax.transaction.Transactional
+import javax.validation.Valid
 
 @SpringBootTest
 internal class SeminarServiceTest @Autowired constructor(
@@ -68,37 +71,43 @@ internal class SeminarServiceTest @Autowired constructor(
     }
 
     // Passed
+    /*
     @Test
-    fun `(createSeminar) request body에 필수 정보가 누락되면 400으로 응답`() {
+    fun `(createSeminar) request body에 이름이 누락되면 400으로 응답`() {
         // Given
         val seminarRequest = SeminarRequest(null, 30, 6, "19:00", false)
 
         // When
-        val response = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest, 1) }
+        val response = assertThrows<MethodArgumentNotValidException> { seminarService.createSeminar(seminarRequest, 1) }
 
         // Then
-        assertThat(response.message).isEqualTo("입력하지 않은 값이 있습니다")
+        assertThat(response.message).isEqualTo("이름을 입력하지 않았습니다")
     }
-
+    
+     */
+/*
     // Passed
     @Test
+    @Transactional
     fun `(createSeminar) name에 0글자가 오는 경우, capacity와 count에 양의 정수가 아닌 값이 오는 경우는 400으로 응답`() {
         // Given
-        val seminarRequest1 = SeminarRequest("", 30, 6, "19:00", false)
-        val seminarRequest2 = SeminarRequest("spring", 0, 6, "19:00", false)
+        //val seminarRequest1 = SeminarRequest("", 30, 6, "19:00", false)
+        val seminarRequest2 = SeminarRequest("spring", null, 6, "19:00", false)
         val seminarRequest3 = SeminarRequest("spring", 30, -2, "19:00", false)
 
         // When
-        val response1 = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest1, 1) }
-        val response2 = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest2, 1) }
-        val response3 = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest3, 1) }
+       // val response1 = assertThrows<Seminar400> { seminarService.createSeminar(seminarRequest1, 1) }
+        val response2 = assertThrows<MethodArgumentNotValidException> { seminarService.createSeminar(seminarRequest2, 1) }
+        val response3 = assertThrows<MethodArgumentNotValidException> { seminarService.createSeminar(seminarRequest3, 1) }
 
         // Then
-        assertThat(response1.message).isEqualTo("형식에 맞지 않게 입력하지 않은 값이 있습니다")
+       // assertThat(response1.message).isEqualTo("형식에 맞지 않게 입력하지 않은 값이 있습니다")
         assertThat(response2.message).isEqualTo("형식에 맞지 않게 입력하지 않은 값이 있습니다")
         assertThat(response3.message).isEqualTo("형식에 맞지 않게 입력하지 않은 값이 있습니다")
     }
 
+
+ */
     // Passed
     @Test
     fun `(createSeminar) 진행자 자격이 없는 User가 요청하면 403으로 응답`() {
@@ -141,7 +150,7 @@ internal class SeminarServiceTest @Autowired constructor(
         println(queryCount)
         //assertThat(queryCount).isEqualTo(4) // [N+1] but was 5
     }
-
+/*
     // Passed
     @Test
     fun `(updateSeminar) request body에 필수 정보가 누락되면 400으로 응답`() {
@@ -154,7 +163,9 @@ internal class SeminarServiceTest @Autowired constructor(
         // Then
         assertThat(response.message).isEqualTo("입력하지 않은 값이 있습니다")
     }
-
+    
+ */
+/*
     // Passed
     @Test
     fun `(updateSeminar) name에 0글자가 오는 경우, capacity와 count에 양의 정수가 아닌 값이 오는 경우는 400으로 응답`() {
@@ -173,6 +184,8 @@ internal class SeminarServiceTest @Autowired constructor(
         assertThat(response2.message).isEqualTo("형식에 맞지 않게 입력하지 않은 값이 있습니다")
         assertThat(response3.message).isEqualTo("형식에 맞지 않게 입력하지 않은 값이 있습니다")
     }
+    
+ */
 
     // Passed
     @Test
@@ -186,7 +199,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val response = assertThrows<Seminar403> { seminarService.updateSeminar(seminarRequest, 1) }
 
         // Then
-        assertThat(response.message).isEqualTo("세미나를 수정할 자격이 없습니다")
+        assertThat(response.message).isEqualTo("진행자만 세미나를 수정할 수 있습니다")
     }
 
     // Failed: 에러가 발생하지 않고 정상적으로 수행됨
@@ -367,7 +380,7 @@ internal class SeminarServiceTest @Autowired constructor(
     fun `(joinSeminar) 해당하는 자격을 가지지 못한 경우 403으로 응답`() {
         // Given
         val list = createFixtures()
-        val participant = userRepository.save(UserEntity("", "", "", LocalDate.now()))
+        val participant = userRepository.save(UserEntity("", "", ""))
         val role = mapOf<String, String>("role" to "PARTICIPANT")
 
         // When
@@ -389,7 +402,7 @@ internal class SeminarServiceTest @Autowired constructor(
         val response = assertThrows<Seminar403> { seminarService.joinSeminar(list[0].id, role, participant.id) }
 
         // Then
-        assertThat(response.message).isEqualTo("활성회원이 아닙니다")
+        assertThat(response.message).isEqualTo("활성 회원이 아닙니다")
     }
 
     // Passed
@@ -516,11 +529,6 @@ internal class SeminarServiceTest @Autowired constructor(
         assertThat(response.message).isEqualTo("진행자는 세미나를 드랍할 수 없습니다")
     }
 
-
-
- 
-
- 
     private fun createFixtures(num: Int = 1): List<SeminarEntity> {
 
         val list = mutableListOf<SeminarEntity>()

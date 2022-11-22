@@ -17,7 +17,7 @@ internal class UserTestHelper @Autowired constructor(
         username: String = "",
         password: String = "",
     ): UserEntity {
-        return userRepository.save(UserEntity(email, username, password, LocalDate.now()))
+        return userRepository.save(UserEntity(email, username, password))
     }
 
     fun createInstructor(
@@ -27,8 +27,10 @@ internal class UserTestHelper @Autowired constructor(
         company: String = "",
         year: Int? = null,
     ): UserEntity {
-        val instructor = InstructorProfileEntity(company, year)
-        return userRepository.save(UserEntity(username, email, password, LocalDate.now(), instructor = instructor))
+        val user = UserEntity(username, email, password)
+        val instructor = InstructorProfileEntity(user, company, year)
+        user.instructor = instructor
+        return userRepository.save(user)
     }
 
     fun createParticipant(
@@ -38,7 +40,9 @@ internal class UserTestHelper @Autowired constructor(
         university: String = "",
         isRegistered: Boolean = true,
     ): UserEntity {
-        val participant = ParticipantProfileEntity(university, isRegistered)
-        return userRepository.save(UserEntity(username, email, password, LocalDate.now(), participant = participant))
+        val user = UserEntity(username, email, password)
+        val participant = ParticipantProfileEntity(user, university, isRegistered)
+        user.participant = participant
+        return userRepository.save(user)
     }
 }

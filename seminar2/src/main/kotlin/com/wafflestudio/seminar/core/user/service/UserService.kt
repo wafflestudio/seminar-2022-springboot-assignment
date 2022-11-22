@@ -63,8 +63,8 @@ class UserService(
 
     private fun getProfile(userId: Long?): GetProfile {
         val userProfile = userDslRepository.getUserProfile(userId)
-        val userProfileSeminars = userSeminarDslRepository.getUserProfileSeminars(userId)
-        val userProfileInstructingSeminars = userSeminarDslRepository.getUserProfileInstructingSeminars(userId)
+        val userProfileSeminars = userSeminarDslRepository.getProfileSeminars(userId)
+        val userProfileInstructingSeminars = userSeminarDslRepository.getProfileInstructingSeminars(userId)
 
         return GetProfile.of(userProfile, userProfileSeminars, userProfileInstructingSeminars)
     }

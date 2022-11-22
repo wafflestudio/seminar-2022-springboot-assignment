@@ -51,7 +51,7 @@ class SeminarService(
                 TeacherDto::class.java,
                 userEntity.id, userEntity.username, userEntity.email, userSeminarEntity.joinedAt
         )).from(userEntity)
-                .innerJoin(userSeminarEntity).on(userSeminarEntity.user.id.eq(userEntity.id))
+                .innerJoin(userSeminarEntity).on(userEntity.eq(userSeminarEntity.user)).fetchJoin()
                 .where(userSeminarEntity.seminar.name.eq(request.name), userSeminarEntity.role.eq("INSTRUCTOR")).fetch()
 
         val seminarEntity = seminarInfoDto[0]
@@ -112,26 +112,15 @@ class SeminarService(
 
         // Query #3 -> [N+1] but was 2: fetch join을 사용하지 않았습니다.
         // 과제 레포의 (branch: asmt2) findAllWithProfiles()를 참고하시면 좋을 것 같습니다.
-        val teacherDto = queryFactory.select(Projections.constructor(
-                TeacherDto::class.java,
-                userEntity.id, userEntity.username, userEntity.email, userSeminarEntity.joinedAt
-        ))
-                .from(userEntity)
-                .innerJoin(userSeminarEntity).on(userEntity.id.eq(userSeminarEntity.user.id)).fetchJoin()
-                .where(userSeminarEntity.seminar.id.eq(id), userSeminarEntity.role.eq("INSTRUCTOR"))
-                .fetch()
+        val teacherDto = userSeminarDslRepository.getTeacherListById(id)
+        
+        
 
         
         // Query #4 -> [N+1] but was 11: fetch join을 사용하지 않았습니다.
-        val studentDto = queryFactory.select(Projections.constructor(
-                StudentDto::class.java,
-                userEntity.id, userEntity.username, userEntity.email,
-                userSeminarEntity.joinedAt, userSeminarEntity.isActive, userSeminarEntity.droppedAt
-        ))
-                .from(userEntity)
-                .innerJoin(userSeminarEntity).on(userSeminarEntity.user.id.eq(userEntity.id)).fetchJoin()
-                .where(userSeminarEntity.seminar.id.eq(id), userSeminarEntity.role.eq("PARTICIPANT"))
-                .fetch()
+        val studentDto = userSeminarDslRepository.getStudentListById(id)
+        
+        
 
         return GetSeminarInfo.of(seminarEntity, teacherDto, studentDto)
 
@@ -219,24 +208,11 @@ class SeminarService(
 
         // Query #9 -> [N+1] but was 2
 
-        val teacherDto = queryFactory.select(Projections.constructor(
-                TeacherDto::class.java,
-                userEntity.id, userEntity.username, userEntity.email, userSeminarEntity.joinedAt
-        ))
-                .from(userEntity)
-                .innerJoin(userSeminarEntity).on(userEntity.id.eq(userSeminarEntity.user.id)).fetchJoin()
-                .where(userSeminarEntity.seminar.id.eq(id), userSeminarEntity.role.eq("INSTRUCTOR"))
-                .fetch()
+        val teacherDto = userSeminarDslRepository.getTeacherListById(id)
+        
+        
 
-        val studentDto = queryFactory.select(Projections.constructor(
-                StudentDto::class.java,
-                userEntity.id, userEntity.username, userEntity.email,
-                userSeminarEntity.joinedAt, userSeminarEntity.isActive, userSeminarEntity.droppedAt
-        ))
-                .from(userEntity)
-                .innerJoin(userSeminarEntity).on(userSeminarEntity.user.id.eq(userEntity.id)).fetchJoin()
-                .where(userSeminarEntity.seminar.id.eq(id), userSeminarEntity.role.eq("PARTICIPANT"))
-                .fetch()
+        val studentDto = userSeminarDslRepository.getStudentListById(id)
 
 
         // Query #11
@@ -285,25 +261,12 @@ class SeminarService(
         val seminarList = seminarDslRepository.getListById(id)
         val seminarEntity = seminarList[0]
 
-        val teacherDto = queryFactory.select(Projections.constructor(
-                TeacherDto::class.java,
-                userEntity.id, userEntity.username, userEntity.email, userSeminarEntity.joinedAt
-        ))
-                .from(userEntity)
-                .innerJoin(userSeminarEntity).on(userEntity.id.eq(userSeminarEntity.user.id)).fetchJoin()
-                .where(userSeminarEntity.seminar.id.eq(id), userSeminarEntity.role.eq("INSTRUCTOR"))
-                .fetch()
+        val teacherDto = userSeminarDslRepository.getTeacherListById(id)
 
-        val studentDto = queryFactory.select(Projections.constructor(
-                StudentDto::class.java,
-                userEntity.id, userEntity.username, userEntity.email,
-                userSeminarEntity.joinedAt, userSeminarEntity.isActive, userSeminarEntity.droppedAt
-        ))
-                .from(userEntity)
-                .innerJoin(userSeminarEntity).on(userSeminarEntity.user.id.eq(userEntity.id)).fetchJoin()
-                .where(userSeminarEntity.seminar.id.eq(id), userSeminarEntity.role.eq("PARTICIPANT"))
-                .fetch()
-
+       
+        
+        val studentDto = userSeminarDslRepository.getStudentListById(id)
+        
         return GetSeminarInfo.of(seminarEntity, teacherDto, studentDto)
     }
 
