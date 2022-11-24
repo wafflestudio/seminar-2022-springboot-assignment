@@ -123,7 +123,7 @@ class UserServiceImpl(
                 if (modifyUserRequest.year <= 0) { throw UserException400("Not Appropriate Year given") } else { meUser.instructorProfile!!.year = modifyUserRequest.year }
             }
         }
-        
+
         return constructUserInformationByUser(meUser)
     }
 

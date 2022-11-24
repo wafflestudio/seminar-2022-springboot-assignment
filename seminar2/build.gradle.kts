@@ -66,7 +66,7 @@ dependencies {
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    
+
     // Swagger
     implementation("org.springdoc:springdoc-openapi-ui:1.5.0")
     implementation("org.springdoc:springdoc-openapi-kotlin:1.5.0")

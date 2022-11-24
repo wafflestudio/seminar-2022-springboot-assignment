@@ -28,9 +28,9 @@ class UserController(
     @LogExecutionTime
     @PutMapping("/api/v1/user/me")
     fun putUserInformation(
-            @Valid @RequestBody modifyUserRequest: ModifyUserRequest,
-            bindingResult: BindingResult,
-            @LoginUser meUser: UserEntity?,
+        @Valid @RequestBody modifyUserRequest: ModifyUserRequest,
+        bindingResult: BindingResult,
+        @LoginUser meUser: UserEntity?,
     ) = if (bindingResult.hasErrors()) {
         throw SeminarRequestBodyException(bindingResult.fieldErrors)
     } else {
