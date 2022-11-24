@@ -11,7 +11,6 @@ plugins {
     kotlin("plugin.noarg") version "1.3.71"
     kotlin("kapt") version "1.3.61" // Queryds
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
-    id("org.springdoc.openapi-gradle-plugin") version "1.5.0"
 }
 
 apply {
@@ -68,8 +67,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     // Swagger
-    implementation("org.springdoc:springdoc-openapi-ui:1.5.0")
-    implementation("org.springdoc:springdoc-openapi-kotlin:1.5.0")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.12")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.12")
 }
 
 tasks.withType<KotlinCompile> {
