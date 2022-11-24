@@ -9,7 +9,9 @@ auth.jwt:
   
 ---
 spring:
-  profiles: dev
+  config:
+    activate:
+      on-profile: dev
   datasource:
     url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
     username: root
@@ -23,9 +25,11 @@ spring:
   
 ---
 spring:
-  profiles: release
+  config:
+    activate:
+      on-profile: release
   datasource:
-    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
+    url: jdbc:mysql://database:3306/seminar?serverTimezone=UTC
     username: root
     password: seminar
   jpa:
