@@ -3,7 +3,7 @@ version: "3.8"
 # 이 항목 밑에 실행하려는 컨테이너 들을 정의
 services: 
   # 서비스 명
-  db:
+  database:
     # 사용할 이미지
     image: mysql:latest
     # 컨테이너 이름 설정
@@ -23,7 +23,32 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     volumes:
       - ./db:/var/lib/mysql
+    networks:
+      - seminar_network
+  server:
+    # Build from
+    build: .
+    # Set image name
+    image: seminar_docker
+    # Set container name
+    container_name: seminar_service
+#    volumes:
+#      - ./ /home
+    # External -> Internal
+    ports:
+      - "80:8080"
+    # Wait until given list of container started
+    depends_on:
+      - database
+    # Network
+    networks:
+      - seminar_network
 
 volumes:
   db: 
     driver: local
+#  server:
+#    driver: local
+
+networks:
+  seminar_network:
