@@ -11,6 +11,9 @@ plugins {
     kotlin("plugin.noarg") version "1.3.71"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
     kotlin("kapt") version "1.7.10"
+
+    //dockerfile
+    id("com.google.cloud.tools.jib") version "3.1.2"
     
     idea
 }
