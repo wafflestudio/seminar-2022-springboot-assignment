@@ -8,11 +8,11 @@ plugins {
     kotlin("plugin.jpa") version "1.6.21"
     kotlin("plugin.allopen") version "1.3.71"
     kotlin("plugin.noarg") version "1.3.71"
-    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+//    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
 apply {
-    plugin("org.jlleitschuh.gradle.ktlint")
+//    plugin("org.jlleitschuh.gradle.ktlint")
 }
 
 allOpen {
@@ -36,24 +36,32 @@ dependencies {
     // Web & DB
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
 
 
     // Auth
     implementation("org.springframework.boot:spring-boot-starter-security")
-
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
 
     // Kotlin Features
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+
 }
 
 tasks.withType<KotlinCompile> {
