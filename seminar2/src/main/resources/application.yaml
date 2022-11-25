@@ -2,9 +2,10 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
-    username: root
-    password: seminar
+    url: jdbc:mysql://spring-seminar-db.cm3moxor0p4m.ap-northeast-2.rds.amazonaws.com:3306/seminar?serverTimezone=UTC
+    username: admin
+    password: springseminar!
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     properties:
       hibernate:
