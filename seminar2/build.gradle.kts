@@ -8,11 +8,11 @@ plugins {
     kotlin("plugin.jpa") version "1.6.21"
     kotlin("plugin.allopen") version "1.3.71"
     kotlin("plugin.noarg") version "1.3.71"
-    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+//    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
 apply {
-    plugin("org.jlleitschuh.gradle.ktlint")
+//    plugin("org.jlleitschuh.gradle.ktlint")
 }
 
 allOpen {
@@ -48,8 +48,8 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
     // Swagger
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.0")
-    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.0")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
 
     // Kotlin Features
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

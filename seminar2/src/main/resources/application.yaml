@@ -2,14 +2,14 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3307/seminar2?serverTimezone=UTC
+    url: jdbc:mysql://52.78.216.39:3307/seminar2?serverTimezone=UTC
     username: root
     password: 1234
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
 #    show-sql: true
-    database-platform: org.hibernate.dialect.MySQL5Dialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
       
 auth.jwt:
   jwtSecret: dhkvmftmxbeldhtmvmfldzhxmfflsrlawhkgns
