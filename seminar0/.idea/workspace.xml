@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5b627be3-bd4e-4f08-9f81-2b348427fa8f" name="변경" comment="">
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/InstructorProfileEntity.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/InstructorProfile.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/AuthController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/api/AuthController.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/AuthRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/AuthRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/UserEntity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/database/UserEntity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/ParticipantProfile.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/ParticipantProfile.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserLogin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserLogin.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserSignup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/domain/UserSignup.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthTokenService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../seminar2/src/main/kotlin/com/wafflestudio/seminar/core/user/service/AuthTokenService.kt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2F1qr5dnxQlefVlgnJFYVnz7WbX" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../seminar-2022/spring/seminar1" />
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="seminar0" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="seminar0" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="5b627be3-bd4e-4f08-9f81-2b348427fa8f" name="변경" comment="" />
+      <created>1663670134495</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1663670134495</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
