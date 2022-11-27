@@ -2,16 +2,23 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
-    username: root
-    password: seminar
+    url: jdbc:mysql://seminar-db.c6jkdkhnr8z1.ap-northeast-2.rds.amazonaws.com:3306/seminar?serverTimezone=UTC
+    username: admin
+    password: seminarpw
   jpa:
     properties:
       hibernate:
         show_sql: true
     hibernate:
       ddl-auto: update
-      
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
 auth.jwt:
-  jwtSecret: SEMINAR_SECRET_KEY
-  # TODO 누락된 정보를 추가해 주세요.
+  jwtSecret: ah3fafk83fh38a4h8oa4gh8oa3kh8ag3al9g3ag39h
+  issuer: leeeryboy
+  jwtExpiration: 3600000
+
+server:
+  port: 80
