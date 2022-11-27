@@ -7,4 +7,4 @@ data class ParticipantProfile(
     var university: String,
     val isRegistered: Boolean,
     val seminars: List<ParticipatingSeminar>,
-) 
+)

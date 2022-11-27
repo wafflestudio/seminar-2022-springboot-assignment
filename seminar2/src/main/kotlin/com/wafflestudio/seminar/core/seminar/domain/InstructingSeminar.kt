@@ -6,4 +6,4 @@ data class InstructingSeminar(
     val id: Long,
     val name: String,
     val joinedAt: LocalDateTime,
-) 
+)

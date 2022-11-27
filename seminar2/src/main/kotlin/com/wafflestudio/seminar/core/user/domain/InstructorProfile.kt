@@ -7,4 +7,4 @@ data class InstructorProfile(
     var company: String,
     var year: Number?,
     val instructingSeminars: InstructingSeminar?,
-) 
+)

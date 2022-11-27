@@ -35,8 +35,8 @@ class WebConfig(
 @Configuration
 class AuthArgumentResolver : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean {
-        return parameter.hasParameterAnnotation(UserContext::class.java)
-                && parameter.parameterType == Long::class.java
+        return parameter.hasParameterAnnotation(UserContext::class.java) &&
+            parameter.parameterType == Long::class.java
     }
 
     override fun resolveArgument(

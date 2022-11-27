@@ -4,7 +4,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
 
-interface UserSeminarRepository : JpaRepository<UserSeminarEntity, Long>,
+interface UserSeminarRepository :
+    JpaRepository<UserSeminarEntity, Long>,
     UserSeminarRepositoryCustom
 
 interface UserSeminarRepositoryCustom

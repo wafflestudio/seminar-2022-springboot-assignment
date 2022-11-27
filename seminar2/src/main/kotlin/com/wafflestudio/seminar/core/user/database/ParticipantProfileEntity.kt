@@ -11,4 +11,4 @@ data class ParticipantProfileEntity(
     val user: UserEntity? = null,
     var university: String,
     val isRegistered: Boolean,
-) : BaseTimeEntity() 
+) : BaseTimeEntity()

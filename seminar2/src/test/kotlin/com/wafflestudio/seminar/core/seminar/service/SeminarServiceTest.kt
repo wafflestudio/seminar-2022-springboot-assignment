@@ -91,7 +91,6 @@ internal class SeminarServiceTest @Autowired constructor(
         assertThat(queryCount).isEqualTo(2)
     }
 
-
     /*
     * getSeminar()
     */
@@ -118,7 +117,6 @@ internal class SeminarServiceTest @Autowired constructor(
         assertThat(response.participants).hasSize(10)
         assertThat(queryCount).isEqualTo(1)
     }
-
 
     /*
     * searchSeminar()
@@ -203,7 +201,6 @@ internal class SeminarServiceTest @Autowired constructor(
         val seminarId = seminar.id
         val participant = seminar.userSeminars.find { it.role == User.Role.PARTICIPANT }!!.user
         val userId = participant.id
-
 
         // When
         val (response, queryCount) = hibernateQueryCounter.count {

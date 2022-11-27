@@ -8,4 +8,4 @@ data class ParticipatingSeminar(
     val joinedAt: LocalDateTime,
     val isActive: Boolean,
     val droppedAt: LocalDateTime? = null
-) 
+)

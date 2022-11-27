@@ -7,4 +7,4 @@ data class Instructor(
     val username: String,
     val email: String,
     val joinedAt: LocalDateTime
-) 
+)

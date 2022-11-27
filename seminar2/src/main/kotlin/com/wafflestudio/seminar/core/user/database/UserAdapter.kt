@@ -56,10 +56,9 @@ class UserAdapter(
         userRepository.save(userEntity)
     }
 
-
     @Transactional
     override fun getUser(signInRequest: SignInRequest) = signInRequest.run {
-        val userEntity = userRepository.findByEmail(email) ?: throw Seminar404("해당 이메일(${email})로 등록된 사용자가 없어요.")
+        val userEntity = userRepository.findByEmail(email) ?: throw Seminar404("해당 이메일($email)로 등록된 사용자가 없어요.")
         if (!passwordEncoder.matches(password, userEntity.encodedPassword)) {
             throw Seminar401("비밀번호가 잘못되었습니다.")
         }
@@ -68,18 +67,18 @@ class UserAdapter(
     }
 
     override fun getUserIdByEmail(email: String): Long {
-        val userEntity = userRepository.findByEmail(email) ?: throw Seminar404("해당 이메일(${email})로 등록된 사용자가 없어요.")
+        val userEntity = userRepository.findByEmail(email) ?: throw Seminar404("해당 이메일($email)로 등록된 사용자가 없어요.")
         return userEntity.id
     }
 
     override fun getProfile(userId: Long): ProfileResponse {
-        val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
+        val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디($userId)로 등록된 사용자가 없어요.")
         return userEntity.toProfileResponse()
     }
 
     @Transactional
     override fun editProfile(userId: Long, editProfileRequest: EditProfileRequest) = editProfileRequest.run {
-        val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
+        val userEntity = userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디($userId)로 등록된 사용자가 없어요.")
         if (username != null) userEntity.username = username
         userEntity.participantProfile?.let { it.university = university }
         userEntity.instructorProfile?.let {
@@ -93,13 +92,13 @@ class UserAdapter(
     override fun registerParticipant(userId: Long, registerParticipantRequest: RegisterParticipantRequest) =
         registerParticipantRequest.run {
             val userEntity =
-                userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디(${userId})로 등록된 사용자가 없어요.")
+                userRepository.findByIdOrNull(userId) ?: throw Seminar404("해당 아이디($userId)로 등록된 사용자가 없어요.")
             if (userEntity.participantProfile != null) throw Seminar409("이미 수강생 신분입니다.")
             userEntity.participantProfile = ParticipantProfileEntity(userEntity, university, isRegistered)
             userRepository.save(userEntity).toProfileResponse()
         }
 
     fun checkDuplicatedEmail(email: String) {
-        userRepository.findByEmail(email)?.let { throw Seminar409("${email}: 중복된 이메일입니다.") }
+        userRepository.findByEmail(email)?.let { throw Seminar409("$email: 중복된 이메일입니다.") }
     }
 }

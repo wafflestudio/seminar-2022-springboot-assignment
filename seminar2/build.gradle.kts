@@ -41,8 +41,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
-
-
     // Auth
     implementation("org.springframework.boot:spring-boot-starter-security")
 
@@ -72,8 +70,8 @@ dependencies {
     kapt(group = "com.querydsl", name = "querydsl-apt", classifier = "jpa")
 
     // Swagger
-    implementation("org.springdoc:springdoc-openapi-ui")
-    implementation("org.springdoc:springdoc-openapi-kotlin")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
 }
 
 // QueryDSL

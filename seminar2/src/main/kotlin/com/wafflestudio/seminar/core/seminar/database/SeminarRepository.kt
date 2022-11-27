@@ -7,7 +7,8 @@ import com.wafflestudio.seminar.core.seminar.database.QSeminarEntity.seminarEnti
 import com.wafflestudio.seminar.core.seminar.database.QUserSeminarEntity.userSeminarEntity as userSeminar
 import com.wafflestudio.seminar.core.user.database.QUserEntity.userEntity as user
 
-interface SeminarRepository : JpaRepository<SeminarEntity, Long>,
+interface SeminarRepository :
+    JpaRepository<SeminarEntity, Long>,
     SeminarRepositoryCustom
 
 interface SeminarRepositoryCustom {

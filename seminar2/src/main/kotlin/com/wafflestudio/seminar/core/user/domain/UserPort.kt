@@ -11,7 +11,6 @@ interface UserPort {
 
     fun getUser(signInRequest: SignInRequest): UserEntity
 
-
     fun getUserIdByEmail(email: String): Long
 
     fun getProfile(userId: Long): ProfileResponse

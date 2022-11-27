@@ -16,4 +16,4 @@ data class EditSeminarRequest(
 
     val time: String? = null,
     val online: Boolean? = null,
-) 
+)
