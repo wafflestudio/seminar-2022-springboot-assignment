@@ -68,6 +68,9 @@ dependencies {
     // Validation
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
+    // Swagger
+    implementation("io.springfox:springfox-boot-starter:3.0.0")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
