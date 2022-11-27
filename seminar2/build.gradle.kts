@@ -12,9 +12,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
     kotlin("kapt") version "1.7.10"
 
-    //dockerfile
-    id("com.google.cloud.tools.jib") version "3.1.2"
-    
+
     idea
 }
 
@@ -59,18 +57,18 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    
-    
+
+
     // QueryDsl
     implementation("com.querydsl:querydsl-jpa:5.0.0")
     kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
-    
+
     // ModelMapper
     implementation("org.modelmapper:modelmapper:2.1.1")
 
     //javax.annotation.meta.When
-    implementation ("com.google.code.findbugs:jsr305:3.0.2")
+    implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -80,9 +78,12 @@ dependencies {
     val mockkVersion = "1.12.+"
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:3.1.1")
-    
-    
-    
+
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    // Swagger-ui
+    implementation("io.springfox:springfox-boot-starter:3.0.0")
+
 }
 
 tasks.withType<KotlinCompile> {

@@ -3,22 +3,26 @@ package com.wafflestudio.seminar.core.user.api
 import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.user.api.request.*
-import com.wafflestudio.seminar.core.user.api.response.*
-import com.wafflestudio.seminar.core.user.database.UserRepository
-import com.wafflestudio.seminar.core.user.service.*
+import com.wafflestudio.seminar.core.user.api.response.GetProfile
+import com.wafflestudio.seminar.core.user.api.response.GetSeminarInfo
+import com.wafflestudio.seminar.core.user.api.response.UpdateSeminarInfo
+import com.wafflestudio.seminar.core.user.service.AuthService
+import com.wafflestudio.seminar.core.user.service.AuthToken
+import com.wafflestudio.seminar.core.user.service.SeminarService
+import com.wafflestudio.seminar.core.user.service.UserService
 import org.springframework.lang.Nullable
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
+
 @RestController
 @RequestMapping("/api/v1")
 class Controller(
-
         private var authService: AuthService,
         private var userService: UserService,
         private var seminarService: SeminarService,
-) {
-
+) { 
+    
     @PostMapping("signup")
     fun signup(@RequestBody @Valid request: SignUpRequest): AuthToken {
         return authService.signup(request)
