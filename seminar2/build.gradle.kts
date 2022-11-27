@@ -57,6 +57,12 @@ dependencies {
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
+
+    // Mockk
+    val mockkVersion = "1.12.+"
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("com.ninja-squad:springmockk:3.1.1")
 
     // QueryDSL
     val querydslVersion = "5.0.0"
@@ -64,6 +70,10 @@ dependencies {
     implementation("com.querydsl:querydsl-core:$querydslVersion")
     kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa")
     kapt(group = "com.querydsl", name = "querydsl-apt", classifier = "jpa")
+
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-ui")
+    implementation("org.springdoc:springdoc-openapi-kotlin")
 }
 
 // QueryDSL
