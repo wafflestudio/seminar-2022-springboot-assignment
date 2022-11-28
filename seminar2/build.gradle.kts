@@ -40,7 +40,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
-    
+
     // QueryDSL
     implementation("com.querydsl:querydsl-jpa:5.0.0")
     kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
@@ -57,7 +57,11 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    
+
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
