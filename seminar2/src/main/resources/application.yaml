@@ -2,16 +2,19 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
-    username: root
-    password: seminar
+    url: jdbc:mysql://seminar2-db.cgumwnkxn1r6.ap-northeast-1.rds.amazonaws.com:3306/seminar2?serverTimezone=Asia/Seoul
+    username: qhtjd
+    password: suzy990322!
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     properties:
       hibernate:
         show_sql: true
     hibernate:
       ddl-auto: update
-      
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
 auth.jwt:
-  jwtSecret: SEMINAR_SECRET_KEY
-  # TODO 누락된 정보를 추가해 주세요.
+  issuer: BOSEONG
+  jwtSecret: qpwoeirutyghfjdkslamznxbcvxbznma
+  jwtExpiration: 10800
