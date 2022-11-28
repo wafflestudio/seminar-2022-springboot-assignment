@@ -1,15 +1,15 @@
 version: '3.8'
-services:
-  db:
-    image: mysql:latest
+services:  
+  application:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     restart: always
-    environment:
-      - MYSQL_DATABASE=seminar        
-      - MYSQL_ROOT_PASSWORD=seminar
     ports:
-      - '3306:3306'
-    volumes:
-      - db:/var/lib/mysql
-volumes:
-  db:
-    driver: local
+      # (컨테이너 외부) : http 80번 포트로 접속이 가능해야
+      # (컨테이너 내부) : 톰캣이 8080번 포트로 염 -> "Tomcat initialized with port(s): 8080 (http)"
+      - '80:8080'
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://seminar2-db.cgumwnkxn1r6.ap-northeast-1.rds.amazonaws.com:3306/seminar2?serverTimezone=Asia/Seoul
+      - SPRING_DATASOURCE_USERNAME=qhtjd
+      - SPRING_DATASOURCE_PASSWORD=suzy990322!

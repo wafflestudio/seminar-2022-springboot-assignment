@@ -12,15 +12,13 @@ import javax.persistence.*
 abstract class BaseTimeEntity {
 
     @CreatedDate
-    @Column(columnDefinition = "datetime(6) default '1999-01-01'")
-    var createdAt: LocalDateTime? = LocalDateTime.parse(
+    var createdAt: LocalDateTime = LocalDateTime.parse(
         LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     )
 
     @LastModifiedDate
-    @Column(columnDefinition = "datetime(6) default '1999-01-01'")
-    var modifiedAt: LocalDateTime? = LocalDateTime.parse(
+    var modifiedAt: LocalDateTime = LocalDateTime.parse(
         LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     )

@@ -9,11 +9,11 @@ plugins {
     kotlin("plugin.jpa") version "1.6.21"
     kotlin("plugin.allopen") version "1.3.71"
     kotlin("plugin.noarg") version "1.3.71"
-    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+    //id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
 apply {
-    plugin("org.jlleitschuh.gradle.ktlint")
+    //plugin("org.jlleitschuh.gradle.ktlint")
 }
 
 allOpen {
@@ -38,7 +38,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("com.h2database:h2")
-    runtimeOnly("mysql:mysql-connector-java")
+    implementation("mysql:mysql-connector-java")
     
     // QueryDSL
     val querydslVersion = "5.0.0"
@@ -67,6 +67,11 @@ dependencies {
     
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.12")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.12")
+    
 }
 
 // QueryDSL
