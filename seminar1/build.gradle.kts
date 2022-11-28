@@ -37,6 +37,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-security")
+<<<<<<< HEAD
+    implementation("org.projectlombok:lombok:1.18.20")
+    implementation("org.projectlombok:lombok:1.18.20")
+    implementation("org.projectlombok:lombok:1.18.20")
+=======
+>>>>>>> 70abd32c4e04fc14d4120c219eb493f4add948bc
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
 
