@@ -34,7 +34,7 @@ class SeminarServiceImpl(
 
     @Transactional
     override fun createSeminar(user_id: Long, createSeminarRequest: CreateSeminarRequest): SeminarDetailInfo {
-        val user = findUser(user_id)
+        val user = findInstructor(user_id)
         if (user.instructingSeminars.size > 0) {
             throw MultipleInstructingSeminarException
         }
@@ -45,7 +45,7 @@ class SeminarServiceImpl(
 
         val instructorSeminarTableEntity = instructorSeminarTableRepository.save(
             InstructorSeminarTableEntity(
-                findUser(user_id),
+                user,
                 seminarEntity,
             )
         )
@@ -60,10 +60,10 @@ class SeminarServiceImpl(
         if (updateSeminarRequest.name != null && updateSeminarRequest.name.isEmpty()) {
             throw BlankSeminarNameNotAllowedException
         }
-        val seminar = findSeminar(updateSeminarRequest.id)
         val instructorSeminarTableEntity = instructorSeminarTableRepository.findByInstructorId(user_id)
             ?: throw NoInstructingSeminarException
-        if (instructorSeminarTableEntity.seminar != seminar) {
+        val seminar = instructorSeminarTableEntity.seminar
+        if (seminar.id != updateSeminarRequest.id) {
             throw NotAllowedToUpdateSeminarException
         }
 
@@ -95,11 +95,13 @@ class SeminarServiceImpl(
 
     @Transactional
     override fun participateSeminar(user_id: Long, seminar_id: Long): SeminarDetailInfo {
-        val user = findUser(user_id)
+        val user = userRepository.findUserWithAllInfo(user_id)
+            ?: throw UserNotFoundException
         if (user.participantProfile == null || !user.participantProfile!!.isRegistered) {
             throw NotAllowedToParticipateException
         }
-        val seminar = findSeminar(seminar_id)
+        val seminar = seminarRepository.findWithParticipants(seminar_id)
+            ?: throw SeminarNotFoundException
         if (seminar.capacity <= seminar.participantSet.size) {
             throw SeminarCapacityFullException
         }
@@ -131,14 +133,15 @@ class SeminarServiceImpl(
 
     @Transactional
     override fun instructSeminar(user_id: Long, seminar_id: Long): SeminarDetailInfo {
-        val user = findUser(user_id)
+        val user = findInstructor(user_id)
         if (user.instructorProfile == null) {
             throw NotAllowedToInstructException
         }
         if (user.instructingSeminars.size > 0) {
             throw MultipleInstructingSeminarException
         }
-        val seminar = findSeminar(seminar_id)
+        val seminar = seminarRepository.findWithInstructors(seminar_id)
+            ?: throw SeminarNotFoundException
 
         val instructorSeminarTableEntity = instructorSeminarTableRepository.save(
             InstructorSeminarTableEntity(
@@ -154,25 +157,28 @@ class SeminarServiceImpl(
 
     @Transactional
     override fun dropSeminar(user_id: Long, seminar_id: Long): SeminarDetailInfo {
-        val user = findUser(user_id)
+        val user = findUserWithAllInfo(user_id)
         val seminar = findSeminar(seminar_id)
-        user.instructingSeminars.forEach {
-            if (it.seminar == seminar) {
-                throw InstructorNotAllowedToDropException
-            }
+        user.instructingSeminars.find {
+            it.seminar == seminar
+        }?.let {
+            throw InstructorNotAllowedToDropException
         }
 
-        user.participatingSeminars.forEach {
-            if (it.seminar == seminar) {
-                it.isActive = false
-                it.droppedAt = LocalDateTime.now()
-            }
+        user.participatingSeminars.find {
+            it.seminar == seminar
+        }?.let {
+            it.isActive = false
+            it.droppedAt = LocalDateTime.now()
         }
 
         return seminar.toSeminarDetailInfo()
     }
 
-    private fun findUser(user_id: Long): UserEntity = userRepository.findByIdOrNull(user_id)
+    private fun findInstructor(user_id: Long): UserEntity = userRepository.findInstructor(user_id)
+        ?: throw UserNotFoundException
+    
+    private fun findUserWithAllInfo(user_id: Long): UserEntity = userRepository.findUserWithAllInfo(user_id)
         ?: throw UserNotFoundException
 
     private fun findSeminar(seminar_id: Long): SeminarEntity = seminarRepository.findByIdOrNull(seminar_id)
