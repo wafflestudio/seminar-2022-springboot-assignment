@@ -70,8 +70,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop")
     
     // Swagger
-    implementation("org.springdoc:springdoc-openapi-ui")
-    implementation("org.springdoc:springdoc-openapi-kotlin")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
 }
 
 // QueryDSL
@@ -91,4 +91,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named("jar") {
+    enabled = false
 }

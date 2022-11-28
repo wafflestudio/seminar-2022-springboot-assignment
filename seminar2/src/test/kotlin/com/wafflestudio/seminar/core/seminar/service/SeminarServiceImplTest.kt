@@ -224,7 +224,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
             createTestSeminar(instructorEmail = "participateSeminarSucceed_asParticipant_Participant1@gmail.com")
         val participant = createParticipant(email = "participateSeminarSucceed_asParticipant_Participant2@gmail.com")
         val seminarProfileResponse =
-            seminarService.participateSeminar(seminarResponse.id, "PARTICIPANT", participant.id)
+            seminarService.participateSeminar(seminarResponse.id, UserDto.Role.PARTICIPANT, participant.id)
 
         Assertions.assertThat(seminarProfileResponse.participants!!.size).isEqualTo(1)
         Assertions.assertThat(seminarProfileResponse.participants!!.get(0).id).isEqualTo(participant.id)
@@ -238,7 +238,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val seminarResponse =
             createTestSeminar(instructorEmail = "participateSeminarSucceed_asInstructor_Instructor@gmail.com")
         val instructor = createInstructor(email = "participateSeminarSucceed_asInstructor_Instructor2@gmail.com")
-        val seminarProfileResponse = seminarService.participateSeminar(seminarResponse.id, "INSTRUCTOR", instructor.id)
+        val seminarProfileResponse = seminarService.participateSeminar(seminarResponse.id, UserDto.Role.INSTRUCTOR, instructor.id)
 
         Assertions.assertThat(seminarProfileResponse.participants!!.size).isEqualTo(0)
         Assertions.assertThat(seminarProfileResponse.instructors!!.size).isEqualTo(2)
@@ -256,7 +256,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
 
         // when & then
         val exception: SeminarException = assertThrows(SeminarException::class.java) {
-            seminarService.participateSeminar(seminarResponse.id, "INSTRUCTOR", instructor.id)
+            seminarService.participateSeminar(seminarResponse.id, UserDto.Role.INSTRUCTOR, instructor.id)
         }
         Assertions.assertThat(exception.message).isEqualTo("Only instructor can conduct a seminar.")
         Assertions.assertThat(exception.status).isEqualTo(HttpStatus.FORBIDDEN)
@@ -273,7 +273,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val exception1: SeminarException = assertThrows(SeminarException::class.java) {
             seminarService.participateSeminar(
                 seminarResponse.id,
-                "PARTICIPANT",
+                UserDto.Role.PARTICIPANT,
                 seminarResponse.instructors!!.get(0).id
             )
         }
@@ -290,7 +290,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val instructor = createInstructor(email = "newinstructor@gmail.com")
 
         // when
-        val seminarProfileResponse = seminarService.participateSeminar(seminarResponse.id, "INSTRUCTOR", instructor.id)
+        val seminarProfileResponse = seminarService.participateSeminar(seminarResponse.id, UserDto.Role.INSTRUCTOR, instructor.id)
 
         // then
         Assertions.assertThat(seminarProfileResponse.instructors!!.size).isEqualTo(2)
@@ -299,20 +299,20 @@ internal class SeminarServiceImplTest @Autowired constructor(
         Assertions.assertThat(seminarProfileResponse.instructors!!.get(1).id).isEqualTo(instructor.id)
     }
 
-    @Test
-    @Transactional
-    fun participateSeminarsFailed_WrongRole() {
-        // given
-        val seminarResponse = createTestSeminar(instructorEmail = "participateSeminarsFailed_WrongRole1@gmail.com")
-        val participant = createParticipant(email = "participateSeminarsFailed_WrongRole2@gmail.com")
-
-        // when & then
-        val exception1: SeminarException = assertThrows(SeminarException::class.java) {
-            seminarService.participateSeminar(seminarResponse.id, "WRONG", participant.id)
-        }
-        Assertions.assertThat(exception1.message).isEqualTo("'role' should be either PARTICIPANT or INSTRUCTOR.")
-        Assertions.assertThat(exception1.status).isEqualTo(HttpStatus.BAD_REQUEST)
-    }
+//    @Test
+//    @Transactional
+//    fun participateSeminarsFailed_WrongRole() {
+//        // given
+//        val seminarResponse = createTestSeminar(instructorEmail = "participateSeminarsFailed_WrongRole1@gmail.com")
+//        val participant = createParticipant(email = "participateSeminarsFailed_WrongRole2@gmail.com")
+//
+//        // when & then
+//        val exception1: SeminarException = assertThrows(SeminarException::class.java) {
+//            seminarService.participateSeminar(seminarResponse.id, USER, participant.id)
+//        }
+//        Assertions.assertThat(exception1.message).isEqualTo("'role' should be either PARTICIPANT or INSTRUCTOR.")
+//        Assertions.assertThat(exception1.status).isEqualTo(HttpStatus.BAD_REQUEST)
+//    }
 
     @Test
     @Transactional
@@ -322,7 +322,7 @@ internal class SeminarServiceImplTest @Autowired constructor(
         val seminarResponse = createTestSeminar(instructorEmail = "dropSeminarSucceed1@gmail.com")
         val participant = createParticipant(email = "dropSeminarSucceed2@gmail.com")
         val seminarProfileResponseBeforeDrop =
-            seminarService.participateSeminar(seminarResponse.id, "PARTICIPANT", participant.id)
+            seminarService.participateSeminar(seminarResponse.id, UserDto.Role.PARTICIPANT, participant.id)
 
         // when
         val seminarProfileResponseAfterDrop = seminarService.dropSeminar(seminarResponse.id, participant.id)
@@ -366,14 +366,14 @@ internal class SeminarServiceImplTest @Autowired constructor(
         // given
         val seminarResponse = createTestSeminar(instructorEmail = "participateSemainarsFailed_droppedUserCannotParticipate1@gmail.com")
         val participant = createParticipant(email = "participateSemainarsFailed_droppedUserCannotParticipate2@gmail.com")
-        seminarService.participateSeminar(seminarResponse.id, "PARTICIPANT", participant.id)
+        seminarService.participateSeminar(seminarResponse.id, UserDto.Role.PARTICIPANT, participant.id)
 
         /* TODO: 이 테스트 코드에서는 Exception throw가 발생돼야 하는데 왜 안되는지 이유를 모르겠습니다 */
 
         // when & then
         seminarService.dropSeminar(seminarResponse.id, participant.id)
         val exception: SeminarException = assertThrows(SeminarException::class.java) {
-            seminarService.participateSeminar(seminarResponse.id, "PARTICIPANT", participant.id)
+            seminarService.participateSeminar(seminarResponse.id, UserDto.Role.PARTICIPANT, participant.id)
         }
         Assertions.assertThat(exception.message).isEqualTo("You dropped this seminar before. You can not participate in this seminar again.")
         Assertions.assertThat(exception.status).isEqualTo(HttpStatus.BAD_REQUEST)
