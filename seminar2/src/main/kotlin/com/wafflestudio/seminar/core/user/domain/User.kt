@@ -10,9 +10,9 @@ data class User(
     val username: String,
     @JsonIgnore
     val password: String,
-    @JsonFormat(pattern = "yyyy-mm-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     val lastLogin: LocalDateTime,
-    @JsonFormat(pattern = "yyyy-mm-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     val dateJoined: LocalDateTime,
     val participant: Participant? = null,
     val instructor: Instructor? = null,

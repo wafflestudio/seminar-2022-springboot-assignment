@@ -6,6 +6,6 @@ import java.time.LocalDateTime
 data class InstructingSeminar(
     val seminarId: Long,
     val name: String,
-    @JsonFormat(pattern = "yyyy-mm-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     val joinedAt: LocalDateTime,
 )
