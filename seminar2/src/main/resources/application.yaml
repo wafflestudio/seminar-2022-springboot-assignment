@@ -2,7 +2,7 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://seminar4.cxiwzzxhzov5.ap-northeast-1.rds.amazonaws.com:3306/seminar?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://seminar4.cxiwzzxhzov5.ap-northeast-1.rds.amazonaws.com:3306/seminar?serverTimezone=UTC
     username: admin
     password: seminar4
   jpa:
