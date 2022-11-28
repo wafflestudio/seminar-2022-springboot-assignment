@@ -1,7 +1,6 @@
 package com.wafflestudio.seminar.config
 
 import com.wafflestudio.seminar.core.user.service.AuthInterceptor
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
