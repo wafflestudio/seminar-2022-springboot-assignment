@@ -6,6 +6,7 @@ import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.userseminar.database.UserSeminarEntity
 import java.time.LocalDateTime
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 import javax.validation.constraints.PositiveOrZero
 
 class UserDto {
@@ -17,8 +18,8 @@ class UserDto {
         val username: String?,
         @field:NotBlank(message = "You should write 'password'.")
         val password: String?,
-        @field:NotBlank(message = "You should write 'role'.")
-        val role: Role,
+        @field:NotNull(message = "You should write 'role'.")
+        val role: Role?,
         val university: String?,
         val isRegistered: Boolean?,
         val company: String?,

@@ -25,6 +25,11 @@ class SeminarDto {
         val online: Boolean? = true
     )
 
+    data class ParticipateSeminarRequest(
+        @field:NotNull(message = "You should write 'role'.")
+        val role: UserDto.Role?
+    )
+    
     data class UpdateSeminarRequest(
         val name: String?,
         @field:Positive(message = "'capacity' should be positive.")

@@ -4,10 +4,7 @@
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/seminar0" />
     <file type="web" url="file://$PROJECT_DIR$/seminar1" />
-<<<<<<< HEAD
-=======
     <file type="web" url="file://$PROJECT_DIR$/seminar2" />
->>>>>>> 70abd32c4e04fc14d4120c219eb493f4add948bc
     <file type="web" url="file://$PROJECT_DIR$/seminar_0" />
   </component>
   <component name="ProjectRootManager">

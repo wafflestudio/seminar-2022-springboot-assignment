@@ -2,15 +2,15 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="demo.seminar2" target="11" />
+      <module name="demo.seminar2.main" target="11" />
+      <module name="demo.seminar2.test" target="11" />
       <module name="seminar-2022" target="11" />
       <module name="seminar-2022.main" target="11" />
       <module name="seminar-2022.test" target="11" />
       <module name="seminar1" target="11" />
       <module name="seminar1.main" target="11" />
       <module name="seminar1.test" target="11" />
-      <module name="seminar2" target="11" />
-      <module name="seminar2.main" target="11" />
-      <module name="seminar2.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

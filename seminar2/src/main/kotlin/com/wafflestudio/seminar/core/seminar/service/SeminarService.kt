@@ -23,7 +23,7 @@ interface SeminarService {
     fun updateSeminar(userId: Long, req: SeminarDto.UpdateSeminarRequest): SeminarDto.SeminarProfileResponse
     fun getSeminarById(seminarId: Long): SeminarDto.SeminarProfileResponse
     fun getSeminars(name: String?, earliest: String?): List<SeminarDto.SeminarProfileSimplifiedResponse>
-    fun participateSeminar(seminarId: Long, role: String, userId: Long): SeminarDto.SeminarProfileResponse
+    fun participateSeminar(seminarId: Long, role: UserDto.Role, userId: Long): SeminarDto.SeminarProfileResponse
     fun dropSeminar(seminarId: Long, userId: Long): SeminarDto.SeminarProfileResponse
 }
 
@@ -139,14 +139,9 @@ class SeminarServiceImpl(
     @Transactional
     override fun participateSeminar(
         seminarId: Long,
-        roleString: String,
+        role: UserDto.Role,
         userId: Long
     ): SeminarDto.SeminarProfileResponse {
-        val role = when (roleString) {
-            "PARTICIPANT" -> UserDto.Role.PARTICIPANT
-            "INSTRUCTOR" -> UserDto.Role.INSTRUCTOR
-            else -> throw Seminar400("'role' should be either PARTICIPANT or INSTRUCTOR.")
-        }
         val seminarEntity =
             seminarRepository.findByIdOrNull(seminarId) ?: throw Seminar404("This seminar doesn't exist.")
         val userEntity = userRepository.findById(userId).get()

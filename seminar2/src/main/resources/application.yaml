@@ -10,7 +10,7 @@ spring:
       hibernate:
         show_sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       
 auth.jwt:
   issuer: CHANHYUK_YANG

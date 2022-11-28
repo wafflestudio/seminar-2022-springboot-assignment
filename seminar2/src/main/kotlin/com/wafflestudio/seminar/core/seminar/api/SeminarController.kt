@@ -54,10 +54,10 @@ class SeminarController(
     fun participateSeminar(
         @RequestHeader(value = "Authorization") authorization: String,
         @PathVariable seminar_id: Long,
-        @RequestBody role: String,
+        @RequestBody request: SeminarDto.ParticipateSeminarRequest,
         @UserContext userId: Long
     ): ResponseEntity<SeminarDto.SeminarProfileResponse> =
-        ResponseEntity(seminarService.participateSeminar(seminar_id, role, userId), HttpStatus.OK)
+        ResponseEntity(seminarService.participateSeminar(seminar_id, request.role!!, userId), HttpStatus.OK)
 
     @Authenticated
     @DeleteMapping("/api/v1/seminar/{seminar_id}/user/")
