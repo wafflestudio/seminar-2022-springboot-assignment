@@ -8,12 +8,14 @@ plugins {
     kotlin("plugin.jpa") version "1.6.21"
     kotlin("plugin.allopen") version "1.3.71"
     kotlin("plugin.noarg") version "1.3.71"
-    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+//    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+
+    kotlin("kapt") version "1.7.10"
 }
 
-apply {
-    plugin("org.jlleitschuh.gradle.ktlint")
-}
+//apply {
+//    plugin("org.jlleitschuh.gradle.ktlint")
+//}
 
 allOpen {
     annotation("javax.persistence.Entity")
@@ -39,7 +41,6 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     runtimeOnly("mysql:mysql-connector-java")
 
-
     // Auth
     implementation("org.springframework.boot:spring-boot-starter-security")
 
@@ -51,9 +52,33 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
+
+    // Mockk
+    val mockkVersion = "1.12.+"
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("com.ninja-squad:springmockk:3.1.1")
+
+    // QueryDSL
+    val querydslVersion = "5.0.0"
+    implementation("com.querydsl:querydsl-jpa:$querydslVersion")
+    implementation("com.querydsl:querydsl-core:$querydslVersion")
+    kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa")
+    kapt(group = "com.querydsl", name = "querydsl-apt", classifier = "jpa")
+    
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
+}
+
+// QueryDSL
+sourceSets {
+    named("main") {
+        java.srcDir("$buildDir/generated/source/kapt/main")
+    }
 }
 
 tasks.withType<KotlinCompile> {
