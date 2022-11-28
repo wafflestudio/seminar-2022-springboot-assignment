@@ -2,17 +2,23 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
-    username: root
-    password: seminar
+    url: jdbc:mysql://seminar-database.chn3znu9sys9.ap-northeast-2.rds.amazonaws.com:3306/seminar
+    username: waffle
+    password: seminar1128
   jpa:
     properties:
       hibernate:
         show_sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
       
 auth.jwt:
   jwtSecret: WAFFLE_STUDIO_SEMINAR_SECRET_KEY
   issuer: Waffle_Studio
   jwtExpiration: 86400
+  
+server:
+  port: 80
