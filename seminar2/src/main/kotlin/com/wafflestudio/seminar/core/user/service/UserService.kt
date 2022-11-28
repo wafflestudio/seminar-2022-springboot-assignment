@@ -40,7 +40,7 @@ class UserServiceImpl(
                     signUpRequest.toInstructorProfileEntry()
                 )
         }
-        
+
         try {
             userRepository.save(
                 userEntity
@@ -70,7 +70,7 @@ class UserServiceImpl(
     @Transactional
     override fun updateUser(user_id: Long, updateRequest: UpdateRequest): UserInfo {
         val user = findUserWithAllInfo(user_id)
-        
+
         return user.updateUser(updateRequest, passwordEncoder)
     }
 
@@ -80,14 +80,14 @@ class UserServiceImpl(
         if (user.participantProfile != null) {
             throw DuplicateParticipantEnrollmentException
         }
-        
+
         user.participantProfile = participantProfileRepository.save(
             participantEnrollRequest.toParticipantProfileEntity()
         )
-        
+
         return user.toUserInfo()
     }
-    
+
     private fun findUserWithAllInfo(user_id: Long): UserEntity = userRepository.findUserWithAllInfo(user_id)
         ?: throw UserNotFoundException
 

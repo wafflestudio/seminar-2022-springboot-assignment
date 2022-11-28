@@ -40,7 +40,7 @@ class AuthController(
     ): UserInfo {
         return userService.getUserById(userid)
     }
-    
+
     @Authenticated
     @GetMapping("/api/v1/user/{userid}")
     fun getUser(
@@ -48,7 +48,7 @@ class AuthController(
     ): UserInfo {
         return userService.getUserById(userid)
     }
-    
+
     @Authenticated
     @PutMapping("/api/v1/user/me")
     fun updateUser(
@@ -57,7 +57,7 @@ class AuthController(
     ): UserInfo {
         return userService.updateUser(userid, updateRequest)
     }
-    
+
     @Authenticated
     @PostMapping("api/v1/user/participant")
     fun participantEnroll(

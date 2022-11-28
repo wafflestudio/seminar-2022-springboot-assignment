@@ -32,7 +32,7 @@ class ParticipantSeminarTableEntity(
         isActive,
         droppedAt,
     )
-    
+
     fun toParticipatingSeminarInfo(): ParticipatingSeminarInfo = ParticipatingSeminarInfo(
         seminar.id,
         seminar.name,
@@ -60,7 +60,7 @@ class InstructorSeminarTableEntity(
         instructor.email,
         createdAt!!,
     )
-    
+
     fun toInstructingSeminarInfo(): InstructingSeminarInfo = InstructingSeminarInfo(
         seminar.id,
         seminar.name,

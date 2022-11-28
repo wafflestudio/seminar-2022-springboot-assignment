@@ -13,7 +13,7 @@ class ParticipantProfileEntity(
     var university: String?,
     var isRegistered: Boolean,
 ) : BaseTimeEntity() {
-    
+
     fun toParticipantProfile(seminars: List<ParticipatingSeminarInfo>): ParticipantProfile = ParticipantProfile(
         id,
         university,

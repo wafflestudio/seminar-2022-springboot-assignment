@@ -3,10 +3,10 @@ package com.wafflestudio.seminar.core.seminar.database
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.seminar.core.seminar.database.QInstructorSeminarTableEntity.instructorSeminarTableEntity
 import com.wafflestudio.seminar.core.seminar.database.QParticipantSeminarTableEntity.participantSeminarTableEntity
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import com.wafflestudio.seminar.core.seminar.database.QSeminarEntity.seminarEntity
 import com.wafflestudio.seminar.core.user.database.QUserEntity.userEntity
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Repository
 
 interface SeminarRepository : JpaRepository<SeminarEntity, Long>, SeminarSupport
@@ -21,8 +21,8 @@ interface SeminarSupport {
 @Repository
 class SeminarSupportImpl(
     val jpaQueryFactory: JPAQueryFactory
-): QuerydslRepositorySupport(SeminarEntity::class.java), SeminarSupport {
-    
+) : QuerydslRepositorySupport(SeminarEntity::class.java), SeminarSupport {
+
     override fun findByNameLatest(name: String?): MutableList<SeminarEntity> {
         return jpaQueryFactory
             .selectFrom(seminarEntity)
@@ -75,5 +75,5 @@ class SeminarSupportImpl(
             .fetchJoin()
             .fetchOne()
     }
-    
+
 }

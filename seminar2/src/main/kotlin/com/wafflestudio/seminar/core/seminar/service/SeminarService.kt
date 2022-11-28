@@ -3,8 +3,8 @@ package com.wafflestudio.seminar.core.seminar.service
 import com.wafflestudio.seminar.common.*
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarRequest
-import com.wafflestudio.seminar.core.seminar.domain.SeminarDetailInfo
 import com.wafflestudio.seminar.core.seminar.database.*
+import com.wafflestudio.seminar.core.seminar.domain.SeminarDetailInfo
 import com.wafflestudio.seminar.core.seminar.domain.SeminarInfo
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
@@ -177,7 +177,7 @@ class SeminarServiceImpl(
 
     private fun findInstructor(user_id: Long): UserEntity = userRepository.findInstructor(user_id)
         ?: throw UserNotFoundException
-    
+
     private fun findUserWithAllInfo(user_id: Long): UserEntity = userRepository.findUserWithAllInfo(user_id)
         ?: throw UserNotFoundException
 

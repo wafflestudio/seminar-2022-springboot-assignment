@@ -13,13 +13,13 @@ internal class SeminarTestHelper @Autowired constructor(
 ) {
     fun createSeminar(
         name: String = "",
-        capacity : Int = 10,
-        count : Int = 1,
-        time : LocalTime = LocalTime.MIDNIGHT,
-        online : Boolean = true,
+        capacity: Int = 10,
+        count: Int = 1,
+        time: LocalTime = LocalTime.MIDNIGHT,
+        online: Boolean = true,
         instructor: UserEntity,
     ): SeminarEntity {
-        val seminar =  seminarRepository.save(
+        val seminar = seminarRepository.save(
             SeminarEntity(
                 name,
                 capacity,
@@ -28,7 +28,7 @@ internal class SeminarTestHelper @Autowired constructor(
                 online,
             )
         )
-        
+
         instructorSeminarTableRepository.save(
             InstructorSeminarTableEntity(
                 instructor,

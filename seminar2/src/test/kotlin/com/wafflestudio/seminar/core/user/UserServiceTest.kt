@@ -144,7 +144,7 @@ internal class UserServiceTest @Autowired constructor(
         val userId = userRepository.findByEmail(email)!!.id
         val university = "university"
         val name = "name"
-        val request = UpdateRequest(name,null, university, null, null)
+        val request = UpdateRequest(name, null, university, null, null)
 
         // when
         val result = userService.updateUser(userId, request)
@@ -155,7 +155,7 @@ internal class UserServiceTest @Autowired constructor(
         assertThat(result.participant!!.university).isEqualTo(university)
         assertThat(result.instructor).isNull()
     }
-    
+
     @Test
     fun `진행자가 수강생으로 등록 성공`() {
         // given

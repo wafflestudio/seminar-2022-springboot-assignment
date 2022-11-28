@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
@@ -29,25 +28,25 @@ internal class UserWebMvcTest @Autowired constructor(
     private val userRepository: UserRepository,
     private val authTokenService: AuthTokenService,
 ) {
-    
+
     @MockBean
     private lateinit var userService: UserService
-    
+
     @BeforeEach
     fun cleanRepository() {
         userRepository.deleteAll()
     }
-    
+
     fun givenAuthToken(): String {
         userRepository.save(UserEntity("", "", ""))
         return "Bearer " + authTokenService.generateTokenByEmail("").accessToken
     }
-    
+
     @Test
     fun `회원가입 constraints`() {
         // given
         given(userService.signUp(any())).willReturn(AuthToken("AUTH_TOKEN"))
-        
+
         // when
         // successful
         mockMvc.perform(
@@ -66,7 +65,7 @@ internal class UserWebMvcTest @Autowired constructor(
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.accessToken").value("AUTH_TOKEN"))
-        
+
         // wrong email
         mockMvc.perform(
             post("/api/v1/signup")
@@ -117,7 +116,7 @@ internal class UserWebMvcTest @Autowired constructor(
                 )
         )
             .andExpect(status().isBadRequest)
-        
+
         // wrong role
         mockMvc.perform(
             post("/api/v1/signup")
@@ -135,7 +134,7 @@ internal class UserWebMvcTest @Autowired constructor(
         )
             .andExpect(status().isBadRequest)
     }
-    
+
     @Test
     fun `Authentication 확인`() {
         // given
@@ -152,14 +151,14 @@ internal class UserWebMvcTest @Autowired constructor(
                 .header("Authorization", token)
         )
             .andExpect(status().isOk)
-        
+
         // no token
         mockMvc.perform(
             get("/api/v1/me")
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isUnauthorized)
-        
+
         // invalid token
         mockMvc.perform(
             get("/api/v1/me")
@@ -167,7 +166,7 @@ internal class UserWebMvcTest @Autowired constructor(
                 .header("Authorization", invalidToken)
         )
             .andExpect(status().isUnauthorized)
-        
+
         // user not found token
         mockMvc.perform(
             get("/api/v1/me")
@@ -176,13 +175,13 @@ internal class UserWebMvcTest @Autowired constructor(
         )
             .andExpect(status().isNotFound)
     }
-    
+
     @Test
     fun `유저정보 수정 constraints`() {
         // given
         given(userService.updateUser(any(), any())).willReturn(UserInfo(1, "", "", LocalDateTime.now(), LocalDateTime.now(), null, null))
         val token = givenAuthToken()
-        
+
         // when
         // negative year value
         mockMvc.perform(
@@ -198,7 +197,7 @@ internal class UserWebMvcTest @Autowired constructor(
                 )
         )
             .andExpect(status().isBadRequest)
-        
+
     }
-    
+
 }

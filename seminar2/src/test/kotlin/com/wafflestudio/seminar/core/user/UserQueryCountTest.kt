@@ -99,14 +99,14 @@ internal class UserQueryCountTest @Autowired constructor(
         assertThat(result.email).isEqualTo(email)
         assertThat(queryCount).isEqualTo(1)
     }
-    
+
     @Test
     fun `updateUser() Query Count`() {
         givenDefaultCreatedParticipant()
         val userId = userRepository.findByEmail(email)!!.id
         val university = "university"
         val name = "name"
-        val request = UpdateRequest(name,null, university, null, null)
+        val request = UpdateRequest(name, null, university, null, null)
 
         // when
         val (result, queryCount) = hibernateQueryCounter.count {
@@ -120,7 +120,7 @@ internal class UserQueryCountTest @Autowired constructor(
         assertThat(result.instructor).isNull()
         assertThat(queryCount).isEqualTo(3)
     }
-    
+
     @Test
     fun `participantEnroll() Query Count`() {
         // given

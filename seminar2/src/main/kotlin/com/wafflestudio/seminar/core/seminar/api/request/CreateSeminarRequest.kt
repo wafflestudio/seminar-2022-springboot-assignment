@@ -17,7 +17,7 @@ data class CreateSeminarRequest(
     val time: LocalTime,
     val online: Boolean = true,
 ) {
-    
+
     fun toSeminarEntity(): SeminarEntity = SeminarEntity(
         name,
         capacity,

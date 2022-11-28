@@ -20,7 +20,7 @@ class AuthTokenService(
 ) {
     private val tokenPrefix = "Bearer "
     private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
-    
+
     fun generateTokenByEmail(email: String): AuthToken {
         val issuedDate = LocalDateTime.now()
         val expiryDate = issuedDate.plusSeconds(authProperties.jwtExpiration)
@@ -51,7 +51,7 @@ class AuthTokenService(
             ?.id
             ?: throw UserNotFoundException
     }
-    
+
     private fun parse(authToken: String): Jws<Claims> {
         val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
         return Jwts.parserBuilder()

@@ -26,7 +26,7 @@ internal class SeminarServiceTest @Autowired constructor(
     private val seminarRepository: SeminarRepository,
     private val participantSeminarTableRepository: ParticipantSeminarTableRepository,
 ) {
-    
+
     private val email = "example@email.com"
     private val seminarName = "seminarname"
 
@@ -110,7 +110,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // when
         val result = seminarService.participateSeminar(userId, seminarId)
-        
+
         // then
         assertThat(result.name).isEqualTo(seminarName)
         assertThat(result.participants).isNotNull

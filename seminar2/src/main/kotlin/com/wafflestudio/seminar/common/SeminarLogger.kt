@@ -14,11 +14,11 @@ class SeminarLogger {
 
     @Around("within(com.wafflestudio.seminar..*Controller*)")
     fun logRequestHandlingTime(jp: ProceedingJoinPoint): Any? {
-        var response: Any? = null
-        
+        var response: Any?
+
         val executionTime = measureTimeMillis { response = jp.proceed() }
         logger.info("Execution time: $executionTime (ms)")
-        
+
         return response
     }
 }

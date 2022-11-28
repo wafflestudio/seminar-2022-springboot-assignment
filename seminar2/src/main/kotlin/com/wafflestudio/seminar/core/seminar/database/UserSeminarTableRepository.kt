@@ -18,7 +18,7 @@ interface InstructorSeminarTableSupport {
 @Repository
 class InstructorSeminarTableSupportImpl(
     val jpaQueryFactory: JPAQueryFactory
-): QuerydslRepositorySupport(InstructorSeminarTableEntity::class.java), InstructorSeminarTableSupport {
+) : QuerydslRepositorySupport(InstructorSeminarTableEntity::class.java), InstructorSeminarTableSupport {
 
     override fun findByInstructorId(instructorId: Long): InstructorSeminarTableEntity? {
         return jpaQueryFactory

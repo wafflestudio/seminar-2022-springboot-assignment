@@ -19,7 +19,7 @@ interface UserSupport {
 @Repository
 class UserSupportImpl(
     val jpaQueryFactory: JPAQueryFactory
-): QuerydslRepositorySupport(UserEntity::class.java), UserSupport {
+) : QuerydslRepositorySupport(UserEntity::class.java), UserSupport {
 
     override fun findByEmailWithAllProfile(email: String): UserEntity? {
         return jpaQueryFactory
@@ -58,4 +58,3 @@ class UserSupportImpl(
             .fetchOne()
     }
 }
-

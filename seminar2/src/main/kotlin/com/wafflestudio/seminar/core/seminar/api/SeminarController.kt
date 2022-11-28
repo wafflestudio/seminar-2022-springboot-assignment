@@ -4,9 +4,9 @@ import com.wafflestudio.seminar.common.AuthInstructor
 import com.wafflestudio.seminar.common.Authenticated
 import com.wafflestudio.seminar.common.UserContext
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarRequest
-import com.wafflestudio.seminar.core.seminar.domain.SeminarDetailInfo
 import com.wafflestudio.seminar.core.seminar.api.request.JoinSeminarRequest
 import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarRequest
+import com.wafflestudio.seminar.core.seminar.domain.SeminarDetailInfo
 import com.wafflestudio.seminar.core.seminar.domain.SeminarInfo
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
 import com.wafflestudio.seminar.core.user.domain.UserRole
@@ -24,7 +24,7 @@ import javax.validation.Valid
 class SeminarController(
     private val seminarService: SeminarService
 ) {
-    
+
     @Authenticated
     @AuthInstructor
     @PostMapping("/api/v1/seminar")
@@ -34,7 +34,7 @@ class SeminarController(
     ): SeminarDetailInfo {
         return seminarService.createSeminar(userid, createSeminarRequest)
     }
-    
+
     @Authenticated
     @PutMapping("/api/v1/seminar")
     fun updateSeminar(
@@ -60,7 +60,7 @@ class SeminarController(
     ): SeminarInfo {
         return seminarService.getSeminarById(seminar_id)
     }
-    
+
     @Authenticated
     @PostMapping("/api/v1/seminar/{seminar_id}/user")
     fun joinSeminar(
@@ -73,7 +73,7 @@ class SeminarController(
             UserRole.INSTRUCTOR -> seminarService.instructSeminar(user_id, seminar_id)
         }
     }
-    
+
     @Authenticated
     @DeleteMapping("/api/v1/seminar/{seminar_id}/user")
     fun dropSeminar(
@@ -82,5 +82,5 @@ class SeminarController(
     ): SeminarDetailInfo {
         return seminarService.dropSeminar(user_id, seminar_id)
     }
-    
+
 }

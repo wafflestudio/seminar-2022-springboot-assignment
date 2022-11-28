@@ -7,7 +7,7 @@ data class LogInRequest(
     @field: NotBlank
     @field: Email
     val email: String,
-    
+
     @field: NotBlank
     val password: String,
 )

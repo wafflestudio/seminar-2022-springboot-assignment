@@ -16,22 +16,22 @@ class SeminarEntity(
     var online: Boolean,
 ) : BaseTimeEntity() {
     @OneToMany(mappedBy = "seminar", cascade = [CascadeType.REMOVE])
-    val participantSet: MutableSet<ParticipantSeminarTableEntity> = mutableSetOf();
-    
+    val participantSet: MutableSet<ParticipantSeminarTableEntity> = mutableSetOf()
+
     @OneToMany(mappedBy = "seminar", cascade = [CascadeType.REMOVE])
-    val instructorSet: MutableSet<InstructorSeminarTableEntity> = mutableSetOf();
-    
+    val instructorSet: MutableSet<InstructorSeminarTableEntity> = mutableSetOf()
+
     fun toSeminarDetailInfo(): SeminarDetailInfo {
         val instructorInfoList = mutableListOf<SeminarInstructorInfo>()
         instructorSet.forEach {
             instructorInfoList.add(it.toSeminarInstructorInfo())
         }
-        
+
         val participantInfoList = mutableListOf<SeminarParticipantInfo>()
         participantSet.forEach {
             participantInfoList.add(it.toSeminarParticipantInfo())
         }
-        
+
         return SeminarDetailInfo(
             id,
             name,
@@ -43,23 +43,23 @@ class SeminarEntity(
             participantInfoList,
         )
     }
-    
+
     fun updateSeminar(updateSeminarRequest: UpdateSeminarRequest): SeminarDetailInfo {
         name = updateSeminarRequest.name ?: name
         capacity = updateSeminarRequest.capacity ?: capacity
         count = updateSeminarRequest.count ?: count
         time = updateSeminarRequest.time ?: time
         online = updateSeminarRequest.online ?: online
-        
+
         return this.toSeminarDetailInfo()
     }
-    
+
     fun toSeminarInfo(): SeminarInfo {
         val instructorInfoList = mutableListOf<SeminarInstructorInfo>()
-        instructorSet.forEach { 
+        instructorSet.forEach {
             instructorInfoList.add(it.toSeminarInstructorInfo())
         }
-        
+
         return SeminarInfo(
             id,
             name,

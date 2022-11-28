@@ -39,15 +39,15 @@ data class SignUpRequest(
         username,
         passwordEncoder.encode(password),
     )
-    
+
     fun toParticipantProfileEntity(): ParticipantProfileEntity = ParticipantProfileEntity(
         university,
         isRegistered,
     )
-    
+
     fun toInstructorProfileEntry(): InstructorProfileEntity = InstructorProfileEntity(
         company,
         year,
     )
-    
+
 }

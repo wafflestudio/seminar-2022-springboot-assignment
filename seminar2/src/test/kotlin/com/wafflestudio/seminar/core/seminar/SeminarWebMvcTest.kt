@@ -19,18 +19,17 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @AutoConfigureMockMvc
 @SpringBootTest
-internal class UserWebMvcTest @Autowired constructor(
+internal class SeminarWebMvcTest @Autowired constructor(
     private val mockMvc: MockMvc,
     private val userService: UserService,
     private val userRepository: UserRepository,
     private val authTokenService: AuthTokenService,
 ) {
-    
+
     @MockBean
     private lateinit var seminarService: SeminarService
 
@@ -38,29 +37,31 @@ internal class UserWebMvcTest @Autowired constructor(
         userRepository.save(UserEntity("", "", ""))
         return "Bearer " + authTokenService.generateTokenByEmail("").accessToken
     }
-    
+
     fun givenInstAuthToken(): String {
-        userService.signUp(SignUpRequest(
-            "inst@ructor.com",
-            "instructor",
-            "secret",
-            UserRole.INSTRUCTOR,
-        ))
+        userService.signUp(
+            SignUpRequest(
+                "inst@ructor.com",
+                "instructor",
+                "secret",
+                UserRole.INSTRUCTOR,
+            )
+        )
         return "Bearer " + authTokenService.generateTokenByEmail("inst@ructor.com").accessToken
     }
-    
+
     @BeforeEach
     fun cleanRepository() {
         userRepository.deleteAll()
     }
-    
+
     @Test
     fun `세미나 개설 constraints`() {
         // given
         given(seminarService.createSeminar(any(), any())).willReturn(any())
         val token = givenInstAuthToken()
         val notInstructorToken = givenAuthToken()
-        
+
         // when
         // successful
         mockMvc.perform(
@@ -79,7 +80,7 @@ internal class UserWebMvcTest @Autowired constructor(
                 )
         )
             .andExpect(status().isOk)
-        
+
         // not instructor
         mockMvc.perform(
             post("/api/v1/seminar")
@@ -134,5 +135,5 @@ internal class UserWebMvcTest @Autowired constructor(
         )
             .andExpect(status().isBadRequest)
     }
-    
+
 }

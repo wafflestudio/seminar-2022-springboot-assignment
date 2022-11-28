@@ -37,7 +37,7 @@ internal class UserTestHelper @Autowired constructor(
         instructor.instructorProfile = instructorProfileRepository.save(
             InstructorProfileEntity(company, year)
         )
-        
+
         return userRepository.save(instructor)
     }
 
@@ -52,7 +52,7 @@ internal class UserTestHelper @Autowired constructor(
         participant.participantProfile = participantProfileRepository.save(
             ParticipantProfileEntity(university, isActive)
         )
-        
+
         return userRepository.save(participant)
     }
 }

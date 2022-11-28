@@ -16,21 +16,21 @@ class UserEntity(
     var username: String,
     var password: String,
 ) : BaseTimeEntity() {
-    
+
     @OneToOne(cascade = [CascadeType.REMOVE])
     @JoinColumn(name = "participant_profile_id")
-    var participantProfile: ParticipantProfileEntity? = null;
+    var participantProfile: ParticipantProfileEntity? = null
 
     @OneToMany(mappedBy = "participant", cascade = [CascadeType.REMOVE])
-    val participatingSeminars: MutableSet<ParticipantSeminarTableEntity> = mutableSetOf();
-    
+    val participatingSeminars: MutableSet<ParticipantSeminarTableEntity> = mutableSetOf()
+
     @OneToOne(cascade = [CascadeType.REMOVE])
     @JoinColumn(name = "instructor_profile_id")
-    var instructorProfile: InstructorProfileEntity? = null;
+    var instructorProfile: InstructorProfileEntity? = null
 
     @OneToMany(mappedBy = "instructor", cascade = [CascadeType.REMOVE])
-    val instructingSeminars: MutableSet<InstructorSeminarTableEntity> = mutableSetOf();
-    
+    val instructingSeminars: MutableSet<InstructorSeminarTableEntity> = mutableSetOf()
+
     fun updateUser(updateRequest: UpdateRequest, passwordEncoder: PasswordEncoder): UserInfo {
         username = updateRequest.username ?: username
         password = updateRequest.password ?: passwordEncoder.encode(password)
@@ -41,10 +41,10 @@ class UserEntity(
             it.company = updateRequest.company ?: it.company
             it.year = updateRequest.year ?: it.year
         }
-        
+
         return this.toUserInfo()
     }
-    
+
     fun toUserInfo(): UserInfo = UserInfo(
         id,
         username,
@@ -58,5 +58,5 @@ class UserEntity(
             instructingSeminars.map { it.toInstructingSeminarInfo() }
         ),
     )
-    
+
 }

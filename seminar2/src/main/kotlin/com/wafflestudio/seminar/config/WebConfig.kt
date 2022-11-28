@@ -20,8 +20,8 @@ import javax.servlet.http.HttpServletResponse
 class WebConfig(
     private val authArgumentResolver: AuthArgumentResolver,
     private val authInterceptor: AuthInterceptor,
-): WebMvcConfigurer {
-    
+) : WebMvcConfigurer {
+
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
         resolvers.add(authArgumentResolver)
     }
@@ -29,17 +29,17 @@ class WebConfig(
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(authInterceptor)
     }
-    
+
 }
 
 @Configuration
 class AuthArgumentResolver(
     private val authTokenService: AuthTokenService
-): HandlerMethodArgumentResolver {
-    
+) : HandlerMethodArgumentResolver {
+
     override fun supportsParameter(parameter: MethodParameter): Boolean {
-        return parameter.hasParameterAnnotation(UserContext::class.java)
-                && parameter.parameterType == Long::class.java
+        return parameter.hasParameterAnnotation(UserContext::class.java) &&
+            parameter.parameterType == Long::class.java
     }
 
     override fun resolveArgument(
@@ -64,20 +64,20 @@ class AuthArgumentResolver(
 class AuthInterceptor(
     private val authTokenService: AuthTokenService,
     private val userService: UserService,
-): HandlerInterceptor {
-    
+) : HandlerInterceptor {
+
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val handlerCasted = handler as? HandlerMethod ?: return true
-        
+
         if (handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
-            val authToken = request.getHeader("Authorization") 
+            val authToken = request.getHeader("Authorization")
                 ?: throw AuthTokenMissingException
-            
+
             authTokenService.verifyToken(authToken)
 
             if (handlerCasted.hasMethodAnnotation((AuthParticipant::class.java))) {
                 val userid = authTokenService.getCurrentUserId(authToken)
-                
+
                 if (userService.getUserById(userid).participant == null) {
                     throw NotAllowedToParticipateException
                 }
@@ -89,7 +89,7 @@ class AuthInterceptor(
                 }
             }
         }
-        
+
         return super.preHandle(request, response, handler)
     }
 }

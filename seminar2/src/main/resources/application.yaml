@@ -2,9 +2,9 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
-    username: root
-    password: seminar
+    url: jdbc:mysql://seminar4-rds.cpgvbah4f0xo.ap-northeast-1.rds.amazonaws.com:3306/seminar_db?serverTimezone=UTC
+    username: admin
+    password: seminar4-admin
   jpa:
     properties:
       hibernate:
@@ -15,4 +15,4 @@ spring:
 auth.jwt:
   issuer: seminar2assignment
   jwtSecret: SEMINAR_SECRET_KEY_MAKE_IT_LONG_ENOUGH
-  jwtExpiration: 1800
+  jwtExpiration: 7200
