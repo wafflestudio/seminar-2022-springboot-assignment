@@ -5,9 +5,12 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
+#    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
+    url: jdbc:mysql://waffle-assignment.cwuqup5zz9a8.ap-northeast-2.rds.amazonaws.com:3306/seminar
     username: root
-    password: seminar
+    password: seminarpassword
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     properties:
       hibernate:

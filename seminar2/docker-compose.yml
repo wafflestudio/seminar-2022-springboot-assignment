@@ -11,3 +11,24 @@ services:
       MYSQL_DATABASE: seminar
     volumes:
       - ./db:/var/lib/mysql
+    restart: always
+    networks: 
+      - network
+  
+  application:
+    container_name: application
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/seminar?serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: seminar
+    depends_on:
+      - mysql
+    networks:
+      - network
+
+networks:
+  network:

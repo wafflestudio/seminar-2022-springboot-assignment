@@ -27,6 +27,7 @@ class WebConfig(
         registry.addInterceptor(authInterceptor)
             .excludePathPatterns("/api/v1/signup")
             .excludePathPatterns("/api/v1/signin")
+            .excludePathPatterns("/swagger-ui/index.html")
     }
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {

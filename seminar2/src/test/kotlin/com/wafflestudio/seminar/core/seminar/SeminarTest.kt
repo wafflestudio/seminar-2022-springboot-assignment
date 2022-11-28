@@ -34,12 +34,12 @@ internal class SeminarServiceTest @Autowired constructor(
         seminarTestHelper.deleteAllSeminar()
         userSeminarRepository.deleteAll()
     }
-    
+
     @Test
     fun `세미나 조회 - 전체 세미나를 조회 쿼리 수`() {
         // given
         createFixtures()
-        
+
         // when
         val (result, queryCount) = hibernateQueryCounter.count<List<Seminar>> {
             seminarService.getSeminarList("", "")
@@ -57,18 +57,18 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // when
         val seminarList: List<Seminar> = seminarService.getSeminarList("", "")
-        
+
         // then
         assertThat(seminarList).hasSize(2)
         assertThat(seminarList[0].name).isEqualTo("seminar#2")
         assertThat(seminarList[1].name).isEqualTo("seminar#1")
     }
-    
+
     @Test
     fun `세미나 조회 - 시간 순서대로 정렬할 수 있다`() {
         //given
         createFixtures()
-        
+
         // when
         val seminarList: List<Seminar> = seminarService.getSeminarList("", "earliest")
 
@@ -77,7 +77,7 @@ internal class SeminarServiceTest @Autowired constructor(
         assertThat(seminarList[0].name).isEqualTo("seminar#1")
         assertThat(seminarList[1].name).isEqualTo("seminar#2")
     }
-    
+
     @Test
     fun `세미나 조회 - 세미나 이름으로 검색할 수 있다`() {
         //given
@@ -90,16 +90,16 @@ internal class SeminarServiceTest @Autowired constructor(
         assertThat(seminarList).hasSize(1)
         assertThat(seminarList[0].name).isEqualTo("seminar#1")
     }
-    
+
     @Test
     fun `세미나 생성 - 세미나를 만들 수 있다`() {
         // given
         val instructor: UserEntity = userTestHelper.createInstructor("instructor@email.com", "", "", "", null)
         val createSeminarDTO = CreateSeminarDTO("seminar#1", 100, 10, "00:00", true)
-        
+
         // when
         seminarService.createSeminar(instructor, createSeminarDTO)
-        
+
         // then
         val seminarList: List<SeminarEntity> = seminarRepository.findAll()
         assertThat(seminarList).hasSize(1)
@@ -111,24 +111,24 @@ internal class SeminarServiceTest @Autowired constructor(
         //given
         val participant: UserEntity = userTestHelper.createParticipant("participant@email.com", "", "", "", true)
         val createSeminarDTO = CreateSeminarDTO("seminar#1", 100, 10, "00:00", true)
-        
+
         // when
         val thrown: Throwable = Assertions.catchThrowable{ seminarService.createSeminar(participant, createSeminarDTO) }
-        
+
         // then
         assertThat(thrown).isInstanceOf(Seminar400::class.java)
     }
-    
+
     @Test
     fun `세미나 참여 - participant 가 세미나를 참여할 수 있다`() {
         // given
         val participant: UserEntity = userTestHelper.createParticipant("participant@email.com", "", "", "", true)
         val joinSeminarDTO = JoinSeminarDTO(role = "participant")
         val seminar: SeminarEntity = seminarTestHelper.createSeminar("seminar#1", 100, 10, "00:00", true)
-        
+
         // when
         seminarService.joinSeminar(participant, seminar.id, joinSeminarDTO)
-        
+
         // then
         val userSeminarList: List<UserSeminarEntity> = userSeminarRepository.findAll()
         assertThat(userSeminarList).hasSize(1)
@@ -145,7 +145,7 @@ internal class SeminarServiceTest @Autowired constructor(
 
         // when
         val thrown: Throwable = Assertions.catchThrowable{ seminarService.joinSeminar(participant, seminar.id, joinSeminarDTO) }
-        
+
         // then
         assertThat(thrown).isInstanceOf(Seminar400::class.java)
     }
@@ -160,7 +160,7 @@ internal class SeminarServiceTest @Autowired constructor(
         // when
         seminarService.joinSeminar(participant, seminar.id, joinSeminarDTO)
         val thrown: Throwable = Assertions.catchThrowable{ seminarService.joinSeminar(participant, seminar.id, joinSeminarDTO) }
-        
+
         // then
         assertThat(thrown).isInstanceOf(Seminar400::class.java)
     }
@@ -187,17 +187,17 @@ internal class SeminarServiceTest @Autowired constructor(
         val instructor: UserEntity = userTestHelper.createInstructor("instructor@email.com", "", "", "", null)
         val joinSeminarDTO = JoinSeminarDTO(role = "instructor")
         val seminar: SeminarEntity = seminarTestHelper.createSeminar("seminar#1", 100, 10, "00:00", true)
-        
+
         // when
         seminarService.joinSeminar(instructor, seminar.id, joinSeminarDTO)
-        
+
         // then
         val userSeminarList: List<UserSeminarEntity> = userSeminarRepository.findAll()
         assertThat(userSeminarList).hasSize(1)
         assertThat(userSeminarList[0].user.id).isEqualTo(instructor.id)
         assertThat(userSeminarList[0].seminar.id).isEqualTo(seminar.id)
     }
-    
+
     @Test
     fun `세미나 참여 - instructor 가 동일한 세미나를 참여하면 400을 반환한다`() {
         // given
@@ -222,7 +222,7 @@ internal class SeminarServiceTest @Autowired constructor(
         // when
         seminarService.joinSeminar(participant, seminar.id, joinSeminarDTO)
         seminarService.dropSeminar(participant, seminar.id)
-        
+
         // then
         val userSeminarList: List<UserSeminarEntity> = userSeminarRepository.findAll()
         assertThat(userSeminarList).hasSize(1)
@@ -240,7 +240,7 @@ internal class SeminarServiceTest @Autowired constructor(
         // when
         seminarService.joinSeminar(participant, seminar.id, joinSeminarDTO)
         val thrown: Throwable = Assertions.catchThrowable{ seminarService.dropSeminar(participant, seminar.id + 1) }
-        
+
         // then
         assertThat(thrown).isInstanceOf(Seminar400::class.java)
     }
@@ -257,7 +257,7 @@ internal class SeminarServiceTest @Autowired constructor(
         // then
         assertThat(thrown).isInstanceOf(Seminar400::class.java)
     }
-    
+
     @Test
     fun `세미나 드랍 - participant 가 세미나를 두 번 드랍할 수 없다`() {
         val participant: UserEntity = userTestHelper.createParticipant("participant@email.com", "", "", "", true)
@@ -286,7 +286,7 @@ internal class SeminarServiceTest @Autowired constructor(
         // then
         assertThat(thrown).isInstanceOf(Seminar400::class.java)
     }
-    
+
     private fun createFixtures() {
         val seminar = seminarTestHelper.createSeminar("seminar#1")
         val seminar2 = seminarTestHelper.createSeminar("seminar#2")

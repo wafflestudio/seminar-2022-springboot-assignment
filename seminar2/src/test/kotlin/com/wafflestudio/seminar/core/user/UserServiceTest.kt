@@ -52,58 +52,58 @@ internal class UserServiceTest @Autowired constructor(
         // then
         assertThat(thrown).isInstanceOf(Seminar400::class.java)
     }
-    
+
     @Test
     fun `회원가입 - instructor 의 year 가 음수면 400를 반환한다`() {
         // given
         val instructorRequest = CreateInstructorDTO("company", -1)
         val request = SignUpRequest("email@waffle.com", "", "", "instructor", null, instructorRequest)
-        
+
         // when
         val throwable = catchThrowable { userService.createUser(request) }
-        
+
         // then
         assertThat(throwable).isInstanceOf(Seminar400::class.java)
     }
-    
+
     @Test
     fun `회원가입 - participant 로 회원가입 할 수 있다`() {
         // given
         val participantRequest = CreateParticipantDTO("university", true)
         val request = SignUpRequest("email@waffle.com", "", "", "participant", participantRequest, null)
-        
+
         // when
         userService.createUser(request)
-        
+
         // then
         val user = userRepository.findByEmail(request.email)
         assertThat(user).isNotNull
     }
-    
+
     @Test
     fun `회원가입 - participant 정보가 없으면 400을 반환한다`() {
         // given
         val request = SignUpRequest("email@waffle.com", "", "", "participant", null, null)
-        
+
         // when
         val throwable = catchThrowable { userService.createUser(request) }
-        
+
         // then
         assertThat(throwable).isInstanceOf(Seminar400::class.java)
     }
-    
+
     @Test
     fun `회원가입 - 잘못된 role 이면 400을 반환한다`() {
         // given
         val request = SignUpRequest("email@waffle.com", "", "", "role", null, null)
-        
+
         // when
         val throwable = catchThrowable { userService.createUser(request) }
-        
+
         // then
         assertThat(throwable).isInstanceOf(Seminar400::class.java)
     }
-    
+
     @Test
     fun `로그인 - 유저를 만들고 로그인 할 수 있다`() {
         // given
@@ -123,10 +123,10 @@ internal class UserServiceTest @Autowired constructor(
         // given
         userTestHelper.createUser("waffle@email.com", password = "1234")
         val request = SignInRequest("waffle", "1234")
-        
+
         // when
         val throwable = catchThrowable { userService.loginUser(request) }
-        
+
         // then
         assertThat(throwable).isInstanceOf(Seminar400::class.java)
     }
