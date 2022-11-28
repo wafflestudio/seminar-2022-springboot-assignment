@@ -11,6 +11,8 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 
     kotlin("kapt") version "1.7.10"
+    
+    id("com.google.cloud.tools.jib") version "3.3.1"
 }
 
 apply {
@@ -58,6 +60,10 @@ dependencies {
     
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    
+    // swagger
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
 
     // QueryDSL
     val querydslVersion = "5.0.0"
@@ -83,4 +89,10 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+jib {
+    to {
+        image = "suminkim96/seminar4:1.0.0"
+    }
 }
