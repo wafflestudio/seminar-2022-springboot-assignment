@@ -3,10 +3,8 @@ package com.wafflestudio.seminar.core.seminar.service
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarDTO
 import com.wafflestudio.seminar.core.seminar.api.request.JoinSeminarDTO
-import com.wafflestudio.seminar.core.seminar.database.SeminarDslRepository
-import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
-import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
-import com.wafflestudio.seminar.core.seminar.database.UserSeminarRepository
+import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarDTO
+import com.wafflestudio.seminar.core.seminar.database.*
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import org.springframework.data.repository.findByIdOrNull
@@ -47,6 +45,14 @@ class SeminarService(
         ))
         user.userSeminars.add(userSeminarEntity)
         seminarEntity.userSeminars.add(userSeminarEntity)
+        
+        return seminarEntity.toSeminar()
+    }
+    
+    @Transactional
+    fun updateSeminar(userEntity: UserEntity, seminarId: Long, updateSeminarDTO: UpdateSeminarDTO): Seminar {
+        val seminarEntity = seminarRepository.findByIdOrNull(seminarId)
+            ?: throw Seminar400("$seminarId 의 세미나는 존재하지 않습니다.")
         
         return seminarEntity.toSeminar()
     }

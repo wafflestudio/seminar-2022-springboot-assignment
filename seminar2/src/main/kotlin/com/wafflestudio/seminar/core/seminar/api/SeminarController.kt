@@ -3,6 +3,7 @@ package com.wafflestudio.seminar.core.seminar.api
 import com.wafflestudio.seminar.common.Seminar403
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarDTO
 import com.wafflestudio.seminar.core.seminar.api.request.JoinSeminarDTO
+import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarDTO
 import com.wafflestudio.seminar.core.seminar.domain.Seminar
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
 import com.wafflestudio.seminar.core.user.database.UserEntity
@@ -34,6 +35,16 @@ class SeminarController(
     @GetMapping("/api/v1/seminar/{seminarId}")
     fun getSeminar(@PathVariable seminarId: Long): Seminar {
         return seminarService.getSeminar(seminarId)
+    }
+    
+    @PutMapping("/api/v1/seminar/{seminarId}")
+    fun updateSeminar(
+        @RequestAttribute userId: Long,
+        @PathVariable seminarId: Long,
+        @RequestBody updateSeminarDTO: UpdateSeminarDTO
+    ): Seminar {
+        val userEntity: UserEntity = userService.getUser(userId)
+        return seminarService.updateSeminar(userEntity, seminarId, updateSeminarDTO)
     }
     
     @PostMapping("/api/v1/seminar/{seminarId}/user")
