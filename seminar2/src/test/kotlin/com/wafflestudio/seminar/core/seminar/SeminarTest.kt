@@ -277,11 +277,6 @@ internal class SeminarServiceTest @Autowired constructor(
     }
     
     @Test
-    fun `세미나 참여 - instructor 가 참가자로 세미나를 참여할 수 있다`() {
-        throw Error()
-    }
-    
-    @Test
     fun `세미나 참여 - instructor 가 동일한 세미나를 참여하면 400을 반환한다`() {
         // given
         val instructor: UserEntity = userTestHelper.createInstructor("instructor@email.com", "", "", "", null)
