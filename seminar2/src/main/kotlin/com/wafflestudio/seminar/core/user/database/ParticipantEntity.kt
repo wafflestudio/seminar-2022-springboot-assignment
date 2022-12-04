@@ -7,7 +7,7 @@ import javax.persistence.*
 
 @Entity
 class ParticipantEntity(
-    val university: String,
+    var university: String,
     val isRegistered: Boolean,
 ): BaseTimeEntity() {
     fun toParticipant(seminars: List<SeminarParticipant>): Participant {

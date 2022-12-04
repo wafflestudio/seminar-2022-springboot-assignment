@@ -7,9 +7,9 @@ import javax.persistence.*
 
 @Entity
 class UserEntity(
-    val username: String,
-    val email: String,
-    val password: String,
+    var username: String,
+    var email: String,
+    var password: String,
 
     @OneToOne(cascade = [CascadeType.ALL], optional = true, orphanRemoval = true)
     @JoinColumn(name = "participant_id")
@@ -44,4 +44,14 @@ class UserEntity(
         lastLogin = LocalDateTime.now()
     }
     
+    fun updateInstructor(company: String, year: Int?) {
+        if (instructor == null) return
+        if (company != "") instructor!!.company = company
+        if (year != null) instructor!!.year = year
+    }
+    
+    fun updateParticipant(university: String) {
+        if (participant == null) return
+        if (university != "") participant!!.university = university
+    }
 }

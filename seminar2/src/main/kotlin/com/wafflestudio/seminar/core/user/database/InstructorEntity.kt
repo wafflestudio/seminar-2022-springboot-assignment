@@ -7,8 +7,8 @@ import javax.persistence.*
 
 @Entity
 class InstructorEntity(
-    val company: String,
-    val year: Int?,
+    var company: String,
+    var year: Int?,
 ): BaseTimeEntity() {
     fun toInstructor(instructingSeminars: List<SeminarInstructor>): Instructor {
         return Instructor(

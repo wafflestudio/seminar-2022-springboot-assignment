@@ -1,10 +1,7 @@
 package com.wafflestudio.seminar.core.user.service
 
 import com.wafflestudio.seminar.common.Seminar400
-import com.wafflestudio.seminar.core.user.api.request.CreateInstructorDTO
-import com.wafflestudio.seminar.core.user.api.request.CreateParticipantDTO
-import com.wafflestudio.seminar.core.user.api.request.SignInRequest
-import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.api.request.*
 import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import org.springframework.stereotype.Service
@@ -13,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 interface UserService {
     fun getUser(id: Long): UserEntity
     fun createUser(user: SignUpRequest): AuthToken
+    fun updateUser(id: Long, request: UpdateUserRequest): UserEntity
     fun loginUser(user: SignInRequest): AuthToken
 }
 
@@ -34,7 +32,7 @@ class UserServiceImpl(
     override fun createUser(user: SignUpRequest): AuthToken {
         val entityByEmail = userRepository.findByEmail(user.email)
         if (entityByEmail != null) throw Seminar400("이미 존재하는 이메일입니다.")
-        var newUser = UserEntity(
+        val newUser = UserEntity(
             username = user.username,
             email = user.email,
             password = user.password,
@@ -67,6 +65,21 @@ class UserServiceImpl(
         val entity = userRepository.save(newUser)
         return authTokenService.generateTokenByUsername(entity.id)
     }
+
+    @Transactional
+    override fun updateUser(id: Long, request: UpdateUserRequest): UserEntity {
+        val userEntity = userRepository.findById(id)
+        if (userEntity.isEmpty) throw Seminar400("해당 id로 유저를 찾을 수 없습니다.")
+        
+        if (request.password != null) userEntity.get().password = request.password
+        if (request.email != null) userEntity.get().email = request.email
+        
+        userEntity.get().updateInstructor(request.company, request.year)
+        userEntity.get().updateParticipant(request.university)
+        
+        return userEntity.get()
+    }
+    
     
     @Transactional
     override fun loginUser(user: SignInRequest): AuthToken {
