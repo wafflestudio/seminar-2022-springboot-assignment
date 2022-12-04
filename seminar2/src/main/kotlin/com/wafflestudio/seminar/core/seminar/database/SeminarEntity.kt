@@ -7,11 +7,11 @@ import javax.persistence.*
 
 @Entity
 class SeminarEntity (
-    val name: String,
-    val capacity: Int,
-    val count: Int,
-    val time: String,
-    val online: Boolean = true,
+    var name: String,
+    var capacity: Int,
+    var count: Int,
+    var time: String,
+    var online: Boolean = true,
     
     @OneToMany(mappedBy="seminar", fetch = FetchType.LAZY)
     val userSeminars: MutableList<UserSeminarEntity> = mutableListOf()

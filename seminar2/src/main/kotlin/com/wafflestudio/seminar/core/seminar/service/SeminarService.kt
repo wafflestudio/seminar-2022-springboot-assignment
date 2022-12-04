@@ -51,8 +51,19 @@ class SeminarService(
     
     @Transactional
     fun updateSeminar(userEntity: UserEntity, seminarId: Long, updateSeminarDTO: UpdateSeminarDTO): Seminar {
-        val seminarEntity = seminarRepository.findByIdOrNull(seminarId)
+        val seminarEntity: SeminarEntity = seminarRepository.findByIdOrNull(seminarId)
             ?: throw Seminar400("$seminarId 의 세미나는 존재하지 않습니다.")
+        
+        if (updateSeminarDTO.name != null) seminarEntity.name = updateSeminarDTO.name
+        if (updateSeminarDTO.time != null) seminarEntity.time = updateSeminarDTO.time
+        if (updateSeminarDTO.count != null) seminarEntity.count = updateSeminarDTO.count
+        if (updateSeminarDTO.online != null) seminarEntity.online = updateSeminarDTO.online
+        
+        if (updateSeminarDTO.capacity != null) {
+            val curCount = seminarEntity.userSeminars.count { it.role == "participant" }
+            if (updateSeminarDTO.capacity < curCount) throw Seminar400("현재 인원보다 작게 capacity 를 설정할 수 없습니다")
+            seminarEntity.capacity = updateSeminarDTO.capacity
+        }
         
         return seminarEntity.toSeminar()
     }
