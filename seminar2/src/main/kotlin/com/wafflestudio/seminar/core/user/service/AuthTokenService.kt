@@ -16,32 +16,36 @@ class AuthTokenService(
   private val tokenPrefix = "Bearer "
   private val signingKey = Keys.hmacShaKeyFor(authProperties.jwtSecret.toByteArray())
 
-  /**
-   * TODO Jwts.builder() 라이브러리를 통해서, 어떻게 필요한 정보를 토큰에 넣어 발급하고,
-   *   검증할지, 또 만료는 어떻게 시킬 수 있을지 고민해보아요.
-   */
-  fun generateTokenByUsername(username: String): AuthToken {
-    val claims: MutableMap<String, Any>
-    val expiryDate: Date
-    val resultToken = Jwts.builder().compact() 
+  fun generateTokenByUsername(userId: Long): AuthToken {
+    val now = Date()
+    val expiryDate = Date(now.time + authProperties.jwtExpiration * 1000)
+    
+    val resultToken = Jwts.builder()
+      .claim("userId", userId)
+      .setIssuedAt(now)
+      .setExpiration(expiryDate)
+      .signWith(signingKey)
+      .compact()
 
     return AuthToken(resultToken)
   }
 
-  fun verifyToken(authToken: String) {
-    TODO()
+  fun verifyToken(authToken: String): Boolean {
+    val parseResult: Jws<Claims> = parse(authToken)
+    val tokenExpiredSec = (parseResult.body["exp"] as Int).toLong()
+    return Date().time < tokenExpiredSec * 1000
   }
 
   fun getCurrentUserId(authToken: String): Long {
-    TODO()
+    val parseResult: Jws<Claims> = parse(authToken)
+    return (parseResult.body["userId"] as Int).toLong()
   }
 
-  /**
-   * TODO Jwts.parserBuilder() 빌더 패턴을 통해 토큰을 읽어올 수도 있습니다.
-   *   적절한 인증 처리가 가능하도록 구현해주세요!
-   */
   private fun parse(authToken: String): Jws<Claims> {
     val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
-    return Jwts.parserBuilder().build().parseClaimsJws(prefixRemoved)
+    return Jwts.parserBuilder()
+      .setSigningKey(signingKey)
+      .build()
+      .parseClaimsJws(prefixRemoved)
   }
 }
