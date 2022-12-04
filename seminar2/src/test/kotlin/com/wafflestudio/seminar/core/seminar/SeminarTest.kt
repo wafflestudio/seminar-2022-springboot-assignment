@@ -3,6 +3,7 @@ package com.wafflestudio.seminar.core.seminar
 import com.wafflestudio.seminar.common.Seminar400
 import com.wafflestudio.seminar.core.seminar.api.request.CreateSeminarDTO
 import com.wafflestudio.seminar.core.seminar.api.request.JoinSeminarDTO
+import com.wafflestudio.seminar.core.seminar.api.request.UpdateSeminarDTO
 import com.wafflestudio.seminar.core.seminar.database.SeminarEntity
 import com.wafflestudio.seminar.core.seminar.database.SeminarRepository
 import com.wafflestudio.seminar.core.seminar.database.UserSeminarEntity
@@ -11,9 +12,11 @@ import com.wafflestudio.seminar.core.seminar.domain.Seminar
 import com.wafflestudio.seminar.core.seminar.service.SeminarService
 import com.wafflestudio.seminar.core.user.UserTestHelper
 import com.wafflestudio.seminar.core.user.database.UserEntity
+import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.global.HibernateQueryCounter
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,6 +27,7 @@ internal class SeminarServiceTest @Autowired constructor(
     private val seminarService: SeminarService,
     private val seminarRepository: SeminarRepository,
     private val seminarTestHelper: SeminarTestHelper,
+    private val userRepository: UserRepository,
     private val userSeminarRepository: UserSeminarRepository,
     private val userTestHelper: UserTestHelper,
     private val hibernateQueryCounter: HibernateQueryCounter,
@@ -120,6 +124,80 @@ internal class SeminarServiceTest @Autowired constructor(
     }
     
     @Test
+    fun `세미나 수정 - instructor 는 세미나를 수정할 수 있다`() {
+        // given
+        val instructor: UserEntity = userTestHelper.createInstructor("instructor@email.com", "", "", "", null)
+        val seminar: SeminarEntity = seminarTestHelper.createSeminar("seminar", 100, 10, "00:00", true)
+        seminarTestHelper.joinSeminar(userEntity = instructor, seminarEntity = seminar, role = "instructor")
+        
+        val newName = "newSeminar"
+        val newCapacity = 1000
+        val newCount = 100
+        val newTime = "00:01"
+        val newOnline = false
+        val updateSeminarDTO = UpdateSeminarDTO(
+            name = newName,
+            capacity = newCapacity,
+            count = newCount,
+            time = newTime,
+            online = newOnline
+        )
+        
+        // when
+        val newSeminar = seminarService.updateSeminar(instructor, seminar.id, updateSeminarDTO)
+        
+        // then
+        assertThat(newSeminar.name).isEqualTo(newName)
+        assertThat(newSeminar.time).isEqualTo(newTime)
+        assertThat(newSeminar.count).isEqualTo(newCount)
+        assertThat(newSeminar.capacity).isEqualTo(newCapacity)
+        assertThat(newSeminar.online).isEqualTo(newOnline)
+    }
+    
+    @Test
+    fun `세미나 수정 - participant 가 세미나를 수정하면 400을 반환한다`() {
+        // given 
+        val participant: UserEntity = userTestHelper.createParticipant("participant@email.com", "", "", "", true)
+        val seminar: SeminarEntity = seminarTestHelper.createSeminar("seminar#1", 100, 10, "00:00", true)
+        val updateSeminarDTO = UpdateSeminarDTO(name = null, capacity = null, time = null, count = null, online = null)
+        
+        // when
+        val thrown: Throwable = catchThrowable{ seminarService.updateSeminar(participant, seminar.id, updateSeminarDTO) }
+
+        // then
+        assertThat(thrown).isInstanceOf(Seminar400::class.java)
+    }
+
+    @Test
+    fun `세미나 수정 - 참여하지 않는 instructor 가 세미나를 수정하면 400을 반환한다`() {
+        // given 
+        val instructor: UserEntity = userTestHelper.createInstructor("instructor@email.com", "", "", "", null)
+        val seminar: SeminarEntity = seminarTestHelper.createSeminar("seminar#1", 100, 10, "00:00", true)
+        val updateSeminarDTO = UpdateSeminarDTO(name = null, capacity = null, time = null, count = null, online = null)
+
+        // when
+        val thrown: Throwable = catchThrowable{ seminarService.updateSeminar(instructor, seminar.id, updateSeminarDTO) }
+
+        // then
+        assertThat(thrown).isInstanceOf(Seminar400::class.java)
+    }
+    
+    @Test
+    fun `세미나 수정 - 현재 인원보다 적은 capacity 로 수정하면 400을 반환한다`() {
+        // given
+        createFixtures()
+        val updateSeminarDTO = UpdateSeminarDTO(name = null, capacity = 1, time = null, count = null, online = null)
+        val seminar = seminarRepository.findByName("seminar#1")
+        val instructor = userRepository.findByEmail("instructor@email.com") ?: throw Error()
+
+        // when
+        val thrown: Throwable = catchThrowable{ seminarService.updateSeminar(instructor, seminar.id, updateSeminarDTO) }
+
+        // then
+        assertThat(thrown).isInstanceOf(Seminar400::class.java)
+    }
+    
+    @Test
     fun `세미나 참여 - participant 가 세미나를 참여할 수 있다`() {
         // given
         val participant: UserEntity = userTestHelper.createParticipant("participant@email.com", "", "", "", true)
@@ -196,6 +274,11 @@ internal class SeminarServiceTest @Autowired constructor(
         assertThat(userSeminarList).hasSize(1)
         assertThat(userSeminarList[0].user.id).isEqualTo(instructor.id)
         assertThat(userSeminarList[0].seminar.id).isEqualTo(seminar.id)
+    }
+    
+    @Test
+    fun `세미나 참여 - instructor 가 참가자로 세미나를 참여할 수 있다`() {
+        throw Error()
     }
     
     @Test

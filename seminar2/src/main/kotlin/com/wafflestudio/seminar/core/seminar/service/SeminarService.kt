@@ -32,7 +32,7 @@ class SeminarService(
     }
     
     @Transactional
-    fun createSeminar(user: UserEntity, createSeminarDTO: CreateSeminarDTO): Seminar {
+    fun createSeminar(user: UserEntity, createSeminarDTO: CreateSeminarDTO): SeminarEntity {
         if (user.instructor == null) {
             throw Seminar400("강사가 아닌 사용자는 세미나를 생성할 수 없습니다.")
         }
@@ -46,13 +46,17 @@ class SeminarService(
         user.userSeminars.add(userSeminarEntity)
         seminarEntity.userSeminars.add(userSeminarEntity)
         
-        return seminarEntity.toSeminar()
+        return seminarEntity
     }
     
     @Transactional
     fun updateSeminar(userEntity: UserEntity, seminarId: Long, updateSeminarDTO: UpdateSeminarDTO): Seminar {
         val seminarEntity: SeminarEntity = seminarRepository.findByIdOrNull(seminarId)
             ?: throw Seminar400("$seminarId 의 세미나는 존재하지 않습니다.")
+        
+        if (userEntity.instructor == null) throw Seminar400("참가자는 세미나를 수정할 수 없습니다.")
+        seminarEntity.userSeminars.firstOrNull { it.user.id == userEntity.id && it.role == "instructor" }
+            ?: throw Seminar400("참여하지 않는 강사는 세미나를 수정할 수 없습니다.")
         
         if (updateSeminarDTO.name != null) seminarEntity.name = updateSeminarDTO.name
         if (updateSeminarDTO.time != null) seminarEntity.time = updateSeminarDTO.time

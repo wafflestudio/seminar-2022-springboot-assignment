@@ -21,7 +21,7 @@ class SeminarController(
         if (userEntity.instructor == null) {
             throw Seminar403("세미나는 강사만 생성할 수 있습니다.")
         }
-        return  seminarService.createSeminar(userEntity, createSeminarDTO)
+        return  seminarService.createSeminar(userEntity, createSeminarDTO).toSeminar()
     }
     
     @GetMapping("/api/v1/seminar")
