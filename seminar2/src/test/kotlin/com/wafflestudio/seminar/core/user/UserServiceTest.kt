@@ -1,10 +1,8 @@
 package com.wafflestudio.seminar.core.user
 
 import com.wafflestudio.seminar.common.Seminar400
-import com.wafflestudio.seminar.core.user.api.request.CreateInstructorDTO
-import com.wafflestudio.seminar.core.user.api.request.CreateParticipantDTO
-import com.wafflestudio.seminar.core.user.api.request.SignInRequest
-import com.wafflestudio.seminar.core.user.api.request.SignUpRequest
+import com.wafflestudio.seminar.core.user.api.request.*
+import com.wafflestudio.seminar.core.user.database.UserEntity
 import com.wafflestudio.seminar.core.user.database.UserRepository
 import com.wafflestudio.seminar.core.user.service.UserService
 import org.assertj.core.api.Assertions.assertThat
@@ -142,5 +140,43 @@ internal class UserServiceTest @Autowired constructor(
 
         // then
         assertThat(throwable).isInstanceOf(Seminar400::class.java)
+    }
+    
+    @Test
+    fun `유저 수정 - participant 는 유저 정보를 수정할 수 있다`() {
+        // given
+        val participant: UserEntity = userTestHelper.createParticipant("participant@email.com", "", "", "", true)
+        val newEmail: String = "participant#new@email.com"
+        val newPassword: String = "newPassword"
+        val newUniversity: String = "newSNU"
+        val request: UpdateUserRequest = UpdateUserRequest(email = newEmail, password = newPassword, university = newUniversity)
+        
+        // when
+        val userEntity = userService.updateUser(participant.id, request)
+        
+        // then
+        assertThat(userEntity.email).isEqualTo(newEmail)
+        assertThat(userEntity.password).isEqualTo(newPassword)
+        assertThat(userEntity.participant).isNotNull
+        assertThat(userEntity.participant!!.university).isEqualTo(newUniversity)
+    }
+
+    @Test
+    fun `유저 수정 - instructor 는 유저 정보를 수정할 수 있다`() {
+        // given
+        val instructor: UserEntity = userTestHelper.createInstructor("instructor@email.com", "", "", "", null)
+        val newEmail = "instructor#new@email.com"
+        val newCompany = "newCompany"
+        val newYear = 10
+        val request: UpdateUserRequest = UpdateUserRequest(email = newEmail, company = newCompany, year = newYear)
+
+        // when
+        val userEntity = userService.updateUser(instructor.id, request)
+
+        // then
+        assertThat(userEntity.email).isEqualTo(newEmail)
+        assertThat(userEntity.instructor).isNotNull
+        assertThat(userEntity.instructor!!.company).isEqualTo(newCompany)
+        assertThat(userEntity.instructor!!.year).isEqualTo(newYear)
     }
 }
