@@ -1,9 +1,11 @@
 package com.wafflestudio.seminar.survey.domain
 
+import com.wafflestudio.seminar.user.domain.User
 import java.time.LocalDateTime
 
 data class SurveyResponse(
     val id: Long,
+    val user: User?,
     val operatingSystem: OperatingSystem,
     val springExp: Int,
     val rdbExp: Int,

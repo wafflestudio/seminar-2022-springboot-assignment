@@ -25,7 +25,11 @@ class AuthConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
+            .antMatchers("/h2-console/**")
+            .permitAll()                
             .anyRequest().permitAll()
+            .and()
+            .headers().frameOptions().disable()
             .and()
             .build()
 }
