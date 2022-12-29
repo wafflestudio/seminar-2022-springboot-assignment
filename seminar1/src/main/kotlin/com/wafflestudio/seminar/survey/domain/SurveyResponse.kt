@@ -4,6 +4,7 @@ import java.time.LocalDateTime
 
 data class SurveyResponse(
     val id: Long,
+    val userID: Long?,
     val operatingSystem: OperatingSystem,
     val springExp: Int,
     val rdbExp: Int,
