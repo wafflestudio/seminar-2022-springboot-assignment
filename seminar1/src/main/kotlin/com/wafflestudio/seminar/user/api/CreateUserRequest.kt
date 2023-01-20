@@ -1,4 +1,4 @@
-package com.wafflestudio.seminar.user.api.request
+package com.wafflestudio.seminar.user.api
 
 data class CreateUserRequest(
     val nickname: String,
