@@ -1,25 +1,42 @@
 
 
-spring:
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-  
+
+ 
+
+
 auth.jwt:
   jwtSecret: SEMINAR_SECRET_KEYfkrhsksmsakfgoTekdkfrpTsi
   issuer: TEST
   jwtExpiration: 86400
-
----
-
-spring:
-  profiles:
-    active: dev
-    
----
+  
+server:
+  port: 8080
 
 spring:
-  profiles:
-    active: prod
+  datasource:
+    url: jdbc:mysql://localhost:3308/seminar2?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 1234
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+    hibernate:
+      ddl-auto: update
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+---
+#
+#spring:
+#  profiles:
+#    active: dev
+#    
+#---
+#
+#spring:
+#  profiles:
+#    active: prod
 
 
