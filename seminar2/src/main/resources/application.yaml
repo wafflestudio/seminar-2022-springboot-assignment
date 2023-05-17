@@ -1,17 +1,42 @@
+
+
+
+ 
+
+
+auth.jwt:
+  jwtSecret: SEMINAR_SECRET_KEYfkrhsksmsakfgoTekdkfrpTsi
+  issuer: TEST
+  jwtExpiration: 86400
+  
+server:
+  port: 8080
+
 spring:
-  profiles:
-    active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/seminar?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3308/seminar2?useSSL=false&serverTimezone=UTC
     username: root
-    password: seminar
+    password: 1234
   jpa:
     properties:
       hibernate:
         show_sql: true
     hibernate:
       ddl-auto: update
-      
-auth.jwt:
-  jwtSecret: SEMINAR_SECRET_KEY
-  # TODO 누락된 정보를 추가해 주세요.
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+---
+#
+#spring:
+#  profiles:
+#    active: dev
+#    
+#---
+#
+#spring:
+#  profiles:
+#    active: prod
+
+
